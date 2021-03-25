@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+  "name": "CarbonViz",
+  "description": "Analyse Internet usage carbon footprint",
+  "author": "Media Engineering Institute - HEIG-VD",
+  "version": "0.0.1",
+  "icons": {
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "webRequest",
+    "<all_urls>"
+  ],
+  "background": {
+    "page": "background/background.html"
+  },
+  "browser_action": {
+    "browser_style": true,
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+    }
+  },
+  "web_accessible_resources": [
+    "content/*",
+    "unplug/js/*",
+    "unplug/assets/*"
+  ]
+}

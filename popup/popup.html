@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CarbonViz</title>
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"  href="./popup.css">
+    <script type="module"  src="popup.mjs"></script>
+    <script src="../unplug/js/matter.min.js"></script>
+  </head>
+  <body>
+    <div class="navigation">
+      <div class="co2-highlight"></div>
+      <div class="navigation-boxes">
+        <div class="navigation-box up" id="navCo2">
+          <div class="icon"><img src="assets/arrow_up.svg"></div><div class="title">Co2</div>
+        </div>
+        <div class="navigation-box selected middle" id="navFlux">
+          <div class="icon"><img src="assets/flux.svg"></div><div class="title">Flux</div>
+        </div>
+        <div class="navigation-box down" id="navData">
+          <div class="icon"><img src="assets/arrow_down.svg"></div><div class="title">Data</div>
+        </div>
+      </div>
+      <div class="data-highlight"></div>
+    </div>
+    <div id="main" class="animation">
+      <div id="unplug" class="unplug"></div>
+    </div>
+    <div class="menu">
+      <div class="options">
+        <div>
+          <button id="embed">Embed &#x2198;</button>
+        </div>
+        <div>
+          <input type="checkbox" id="debounce">
+          <label for="debounce">Debounce</label>
+        </div>
+      </div>
+      <div class="info">
+        <div class="packet">
+          <div>
+            <img class="icon" id="packet-icon">
+          </div>
+          <div class="initiator" id="packet-initiator">
+          </div>
+          <div class="type" id="packet-type">
+          </div>
+          <div class="time" id="packet-time">
+          </div>
+          <div class="size" id="packet-size">
+          </div>
+          <div class="co2" id="packet-co2">
+          </div>
+        </div>
+        <div id="legend" class="legend">
+          <div class="co2">
+            <img src="assets/co2.png">
+            <div class="caption">Co2</div>
+          </div>
+          <div class="data">
+            <img src="assets/data.png">
+            <div class="caption">Data</div>
+          </div>
+        </div>
+        <div id="history" class="history">
+          <div class="header">Packet <br> history</div>
+        </div>
+      </div>
+      <div class="reset">
+        <div>
+          <button class="reset"><div class="icon">&#x21BB;</div>Reset data</button>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

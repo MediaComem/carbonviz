@@ -1,0 +1,261 @@
+body {
+  background-color: #333333;;
+  scrollbar-width: none; /* firefox: disable scroll bar */
+}
+body::-webkit-scrollbar {
+  display: none; /* webkit: disable scrollbar */
+}
+canvas {
+  display: block;
+  margin: 0 auto;
+  z-index: 0;
+}
+
+button {
+  color:white;
+  background-color: #333;
+  border: solid 1px white;
+  border-radius: 2px;
+  padding: 2px;
+  font-size: 10px;
+  padding: 4px;
+}
+
+.hidden {
+  display: none;
+}
+
+.navigation {
+  width: 100px;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.co2-highlight {
+  height: 6px;
+  width: 85%;
+  background-color: #fd4d4d;
+}
+
+.data-highlight {
+  height: 6px;
+  width: 85%;
+  background-color: #58b8ce;
+}
+
+.navigation-boxes {
+  box-shadow: 5px 5px 2px #272727;
+}
+
+.navigation-box {
+  height: 49px;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  vertical-align: middle;
+  display: flex;
+  padding-left: 20px;
+}
+
+.navigation-box.selected {
+  background-color: #ffffff4d;
+  border-left: solid 10px white;
+  padding-left: 10px;
+}
+
+.navigation-box .icon {
+  padding-right: 10px;
+  align-self: center;
+}
+
+.navigation-box .title {
+  align-self: center;
+}
+
+.animation {
+  margin-left: 100px;
+  margin-right: 100px;
+  width: 400px;
+}
+
+.menu {
+  width: 100px;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+}
+
+.menu .options {
+ color: white;
+ margin-top: 60px;
+}
+
+.menu .options div{
+  margin-bottom: 10px;
+}
+
+.menu .info {
+  position: absolute;
+  bottom: 40px;
+  width: 100%;
+}
+
+.info .packet {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+  color: #333;
+  padding-top: 5px;
+  padding-left: 20px;
+  padding-bottom: 10px;
+  border-bottom: solid 2px #ccc;
+}
+
+.info .packet .icon {
+  max-height: 20px;
+}
+
+.info .packet .initiator,
+.info .packet .type,
+.info .packet .time,
+.info .packet .size,
+.info .packet .co2 {
+  max-width: 60px;
+  overflow: hidden;
+  color: #333333;
+}
+.info .packet .initiator {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.info .packet .type,
+.info .packet .time,
+.info .packet .size,
+.info .packet .co2 {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 11px;
+}
+
+
+.legend {
+  height: 95px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+}
+
+.legend .co2 {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  color: #fd4d4d;
+  font-weight: 700;
+  padding: 5px;
+  text-align: center;
+}
+
+.legend .co2 img {
+  height: 24px;
+  width: 24px;
+  margin-bottom: 5px;
+}
+
+.legend .data {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  color: #58b8ce;
+  font-weight: 700;
+  padding: 5px;
+  text-align: center;
+}
+
+.legend .data img {
+  height: 20px;
+  width: 20px;
+  padding-left: 4px;
+  transform: rotate(45deg);
+}
+
+.legend .data .caption {
+  padding-top: 8px;
+}
+
+.history {
+  box-shadow: -5px 5px 2px #272727;
+}
+
+.history .header {
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  height: 41px;
+}
+
+.history .data-info {
+  height: 41px;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  width: 100%;
+  text-align: left;
+  color: #A0A0A0;
+  font-weight: 700;
+  padding: 2px;
+}
+
+.history .data-info:nth-child(2n) {
+  background-color: #272727;
+}
+
+.history .tab-info {
+  display: flex;
+  color: white;
+}
+
+.history .tab-icon {
+  max-height: 10px;
+  margin-right: 5px;
+  margin-top: 4px;
+}
+
+.history .tab-title {
+  overflow: hidden;
+  line-height: 16px;
+  max-height: 16px;
+  color: #A0A0A0;
+}
+
+.history .packet-date, .history .packet-size {
+  font-size: 9px;
+  margin-left: 15px;
+}
+
+.menu .reset {
+  position: absolute;
+  bottom: 3px;
+  width: 100%;
+}
+
+button.reset {
+  border: none;
+  width: 100%;
+}
+
+button.reset .icon {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  font-size: 2em;
+  padding-right: 5px;
+  transform: rotate(90deg);
+}
