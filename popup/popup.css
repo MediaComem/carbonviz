@@ -1,5 +1,6 @@
 body {
-  background-color: #333333;;
+  background-color: #fff;
+  margin: 0px;
   scrollbar-width: none; /* firefox: disable scroll bar */
 }
 body::-webkit-scrollbar {
@@ -13,7 +14,6 @@ canvas {
 
 button {
   color:white;
-  background-color: #333;
   border: solid 1px white;
   border-radius: 2px;
   padding: 2px;
@@ -22,11 +22,59 @@ button {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+.icon.up svg,
+.icon.down svg {
+  fill: none;
+  stroke: #000
+}
+
+.icon.up:hover svg,
+.icon.down:hover svg {
+  fill: none;
+  stroke: #888
+}
+
+.icon.up.disabled svg,
+.icon.down.disabled svg {
+  fill: none;
+  stroke: #bfbfbf
+}
+
+.icon.flux svg {
+  fill: #bfbfbf;
+}
+
+.navigation-box:hover .icon.flux svg {
+  fill: #000;
+}
+
+.navigation-box.selected .icon.flux svg {
+  fill: #000;
+}
+
+.icon.co2 svg,
+.icon.data svg{
+  stroke: #bfbfbf;
+  fill: none;
+}
+
+.navigation-box:hover .icon.co2 svg,
+.navigation-box:hover .icon.data svg{
+  stroke: #888;
+  fill: none;
+}
+
+.navigation-box.selected .icon.co2 svg,
+.navigation-box.selected .icon.data svg{
+  stroke: #000;
+  fill: none;
 }
 
 .navigation {
-  width: 100px;
+  width: 59px;
   position: absolute;
   top: 0px;
   bottom: 0px;
@@ -36,55 +84,59 @@ button {
   justify-content: center;
 }
 
-.co2-highlight {
-  height: 6px;
-  width: 85%;
-  background-color: #fd4d4d;
+.navigation-up {
+  position: fixed;
+  top: 14px;
+  left: 19px;
 }
 
-.data-highlight {
-  height: 6px;
-  width: 85%;
-  background-color: #58b8ce;
-}
-
-.navigation-boxes {
-  box-shadow: 5px 5px 2px #272727;
+.navigation-down {
+  position: fixed;
+  bottom: 14px;
+  left: 19px;
 }
 
 .navigation-box {
   height: 49px;
-  color: white;
+  color: #bfbfbf;
   font-size: 12px;
   font-weight: 700;
   vertical-align: middle;
   display: flex;
-  padding-left: 20px;
+  margin-left: 8px;
+}
+
+.navigation-box.middle {
+  border-top: solid 1px black;
+  border-bottom: solid 1px black;
+}
+
+.navigation-box:hover {
+  color: #888;
 }
 
 .navigation-box.selected {
-  background-color: #ffffff4d;
-  border-left: solid 10px white;
-  padding-left: 10px;
+  color: #000;
 }
 
 .navigation-box .icon {
-  padding-right: 10px;
+  padding-right: 7px;
   align-self: center;
 }
 
 .navigation-box .title {
   align-self: center;
+  padding-bottom: 2px;
 }
 
 .animation {
-  margin-left: 100px;
-  margin-right: 100px;
-  width: 400px;
+  margin-left: 59px;
+  margin-right: 121px;
+  width: 320px;
 }
 
 .menu {
-  width: 100px;
+  width: 121px;
   position: absolute;
   top: 0px;
   bottom: 0px;
@@ -102,7 +154,7 @@ button {
 
 .menu .info {
   position: absolute;
-  bottom: 40px;
+  bottom: 0px;
   width: 100%;
 }
 
@@ -113,9 +165,14 @@ button {
   background-color: white;
   color: #333;
   padding-top: 5px;
-  padding-left: 20px;
+  padding-left: 30px;
   padding-bottom: 10px;
-  border-bottom: solid 2px #ccc;
+}
+
+.info .packet .legend-anchor {
+  position: fixed;
+  right: 121px;
+  top: 290px;
 }
 
 .info .packet .icon {
@@ -145,7 +202,6 @@ button {
   line-height: 11px;
 }
 
-
 .legend {
   height: 95px;
   background-color: white;
@@ -157,7 +213,7 @@ button {
   display: flex;
   flex-direction: column;
   align-self: center;
-  color: #fd4d4d;
+  color: #906C0D;
   font-weight: 700;
   padding: 5px;
   text-align: center;
@@ -167,22 +223,23 @@ button {
   height: 24px;
   width: 24px;
   margin-bottom: 5px;
+  padding:5px;
 }
 
 .legend .data {
   display: flex;
   flex-direction: column;
   align-self: center;
-  color: #58b8ce;
+  color: #384E50;
   font-weight: 700;
   padding: 5px;
   text-align: center;
 }
 
 .legend .data img {
-  height: 20px;
-  width: 20px;
-  padding-left: 4px;
+  height: 32px;
+  width: 32px;
+  padding-left: 3px;
   transform: rotate(45deg);
 }
 
@@ -190,40 +247,45 @@ button {
   padding-top: 8px;
 }
 
-.history {
-  box-shadow: -5px 5px 2px #272727;
-}
-
 .history .header {
-  color: white;
+  display: flex;
+  flex-direction: row;
+  color: #020202;
   font-weight: 700;
   font-size: 12px;
-  height: 41px;
+  height: 50px;
+  border-top: solid 1px black;
+  margin-left: 31px;
+}
+
+.history .header .title {
+  align-self: center;
+}
+
+.history .separator {
+  border-top: dashed 1px black;
+  margin-left: 21px;
 }
 
 .history .data-info {
-  height: 41px;
+  height: 50px;
   display: flex;
   flex-direction: column;
-  color: white;
   width: 100%;
   text-align: left;
-  color: #A0A0A0;
+  color: #020202;
   font-weight: 700;
   padding: 2px;
-}
-
-.history .data-info:nth-child(2n) {
-  background-color: #272727;
+  margin-left: 10px;
 }
 
 .history .tab-info {
   display: flex;
-  color: white;
 }
 
 .history .tab-icon {
-  max-height: 10px;
+  width: 15px;
+  height: auto;
   margin-right: 5px;
   margin-top: 4px;
 }
@@ -232,12 +294,12 @@ button {
   overflow: hidden;
   line-height: 16px;
   max-height: 16px;
-  color: #A0A0A0;
+  padding-top: 2px;
 }
 
 .history .packet-date, .history .packet-size {
   font-size: 9px;
-  margin-left: 15px;
+  margin-left: 21px;
 }
 
 .menu .reset {

@@ -165,9 +165,18 @@ function initLayoutMgmt() {
 export function configure() {
   const assetCo2 = chrome.extension.getURL('../unplug/assets/co2.png');
   const assetData = chrome.extension.getURL('../unplug/assets/data.png');
-
+  conf.assets.co2 = assetCo2;
+  conf.assets.data = assetData;
   conf.matterOpts.co2.render = {sprite: {texture: assetCo2}};
   conf.matterOpts.data.render = {sprite: {texture: assetData}};
+  const assetCo2Hover = chrome.extension.getURL('../unplug/assets/co2Hover.png');
+  const assetDataHover = chrome.extension.getURL('../unplug/assets/dataHover.png');
+  conf.assets.co2Hover = assetCo2Hover;
+  conf.assets.dataHover = assetDataHover;
+  const assetCo2Active = chrome.extension.getURL('../unplug/assets/co2Active.png');
+  const assetDataActive = chrome.extension.getURL('../unplug/assets/dataActive.png');
+  conf.assets.co2Active = assetCo2Active;
+  conf.assets.dataActive = assetDataActive;
 }
 
 export function main() {

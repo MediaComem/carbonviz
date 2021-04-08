@@ -143,18 +143,20 @@ const completedListener = (responseDetails) => {
   info.co2 = co2Internet;
   info.energyNRE = energyInternet.energyNRE;
   info.energyRE = energyInternet.energyRE;
+  info.extraInfo = { timeStamp, type };
 
   // retrieve tab name
   if (responseDetails.tabId > 0 ) {
     chrome.tabs.get(responseDetails.tabId, tab => {
       if(chrome.runtime.lastError) {
-        // tab probably closed after response received
+        // tab probably closed after response received or coming from extension
         console.log(`Error retrieving tab: ${chrome.runtime.lastError}`);
+        return;
       }
       if (tab) {
-        info.tabIcon = tab.favIconUrl;
-        info.tabTitle = tab.title;
-        info.tabUrl = tab.url;
+        info.extraInfo.tabIcon = tab.favIconUrl;
+        info.extraInfo.tabTitle = tab.title;
+        info.extraInfo.tabUrl = tab.url;
       }
       // send data to animation
       chrome.runtime.sendMessage({ data: info });

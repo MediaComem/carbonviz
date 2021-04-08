@@ -9,25 +9,42 @@
   </head>
   <body>
     <div class="navigation">
-      <div class="co2-highlight"></div>
-      <div class="navigation-boxes">
-        <div class="navigation-box up" id="navCo2">
-          <div class="icon"><img src="assets/arrow_up.svg"></div><div class="title">Co2</div>
-        </div>
-        <div class="navigation-box selected middle" id="navFlux">
-          <div class="icon"><img src="assets/flux.svg"></div><div class="title">Flux</div>
-        </div>
-        <div class="navigation-box down" id="navData">
-          <div class="icon"><img src="assets/arrow_down.svg"></div><div class="title">Data</div>
+      <div class="navigation-up">
+        <div class="icon up" id="navUp">
+          <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg"><path d="M16.1 11.5l-4.2-4.2c-.4-.4-1-.4-1.4 0l-4.2 4.2c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.5-3.5 3.5 3.5c.2.2.4.3.7.3.3 0 .5-.1.7-.3.4-.4.4-1 0-1.4z" fill="#090909"/><circle cx="11" cy="11" r="10" stroke-width="2"/></svg>
         </div>
       </div>
-      <div class="data-highlight"></div>
+      <div class="navigation-boxes">
+        <div class="navigation-box up" id="navCo2">
+          <div class="icon co2">
+            <svg width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.467 7a4.533 4.533 0 109.066 0 4.533 4.533 0 00-9.066 0z" stroke-width="4"/></svg>
+          </div>
+          <div class="title">Co2</div>
+        </div>
+        <div class="navigation-box selected middle" id="navFlux">
+          <div class="icon flux">
+            <svg width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 0a7 7 0 110 14A7 7 0 017 0zM1.167 7c0 .4.04.79.118 1.167h2.247a12.469 12.469 0 010-2.334H1.285A5.824 5.824 0 001.167 7zm2.532-2.333H1.657a5.861 5.861 0 013.178-3.08c-.522.892-.913 1.936-1.136 3.08zm1.198 0h1.52v-3.3c-.71.85-1.235 1.988-1.52 3.3zm2.686 0v-3.3c.71.85 1.235 1.988 1.52 3.3h-1.52zm0 1.166v2.334h1.71c.085-.83.085-1.504 0-2.334h-1.71zm0 6.8v-3.3h1.52c-.285 1.312-.81 2.45-1.52 3.3zm-1.166 0v-3.3h-1.52c.285 1.312.81 2.45 1.52 3.3zm0-6.8v2.334h-1.71a10.686 10.686 0 010-2.334h1.71zm2.748-4.245c.522.89.913 1.935 1.136 3.079h2.042a5.861 5.861 0 00-3.178-3.08zm1.303 4.245h2.248a5.824 5.824 0 010 2.334h-2.248c.075-.805.07-1.585 0-2.334zm1.875 3.5H10.3c-.223 1.144-.614 2.188-1.136 3.08a5.861 5.861 0 003.178-3.08zm-8.644 0c.223 1.144.614 2.188 1.136 3.08a5.861 5.861 0 01-3.178-3.08H3.7z"/></svg>
+          </div>
+          <div class="title">Flux</div>
+        </div>
+        <div class="navigation-box down" id="navData">
+          <div class="icon data">
+            <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 13.212L13.212 8 8 2.788 2.788 8 8 13.212z" stroke-width="3"/></svg>          </div>
+          <div class="title">Data</div>
+        </div>
+      </div>
+      <div class="navigation-down">
+        <div class="icon down" id="navDown">
+          <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg"><path d="M5.9 10.5l4.2 4.2c.4.4 1 .4 1.4 0l4.2-4.2c.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0l-3.5 3.5-3.5-3.5c-.2-.2-.4-.3-.7-.3-.3 0-.5.1-.7.3-.4.4-.4 1 0 1.4z" fill="#000"/><circle cx="11" cy="11" r="10" transform="rotate(-180 11 11)" stroke-width="2"/></svg>
+        </div>
+      </div>
     </div>
     <div id="main" class="animation">
       <div id="unplug" class="unplug"></div>
     </div>
     <div class="menu">
       <div class="options">
+        <!--
         <div>
           <button id="embed">Embed &#x2198;</button>
         </div>
@@ -35,9 +52,15 @@
           <input type="checkbox" id="debounce">
           <label for="debounce">Debounce</label>
         </div>
+        -->
       </div>
       <div class="info">
-        <div class="packet">
+        <div class="packet hidden" id="packet-info">
+          <div class="legend-anchor">
+            <svg width="6" height="6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="3" cy="3" r="2.5" fill="white" stroke="black"/>
+            </svg>
+          </div>
           <div>
             <img class="icon" id="packet-icon">
           </div>
@@ -63,15 +86,9 @@
           </div>
         </div>
         <div id="history" class="history">
-          <div class="header">Packet <br> history</div>
+          <div class="header"><div class="title">Packet <br> history</div></div>
         </div>
       </div>
-      <div class="reset">
-        <div>
-          <button class="reset"><div class="icon">&#x21BB;</div>Reset data</button>
-        </div>
-      </div>
-
     </div>
   </body>
 </html>
