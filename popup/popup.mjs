@@ -1,6 +1,6 @@
 import PubSub from '../unplug/js/modules/pubsub.mjs';
 import conf from '../unplug/js/conf.mjs';
-import { engine, render, mouseConstraint, metaData } from '../unplug/js/main.mjs';
+import { render } from '../unplug/js/main.mjs';
 
 const pubSub = new PubSub();
 const defaultOptions = { debounce: true};
@@ -69,6 +69,7 @@ const co2 = (packet) => {
 }
 
 // User interface
+const moveToTabButton = window.document.getElementById("moveToTab");
 const embedButton = window.document.getElementById("embed");
 const debounceCheckbox = window.document.getElementById("debounce");
 // Navigation
@@ -94,6 +95,14 @@ const legend = window.document.getElementById("legend");
 const historyContainer = window.document.getElementById("history");
 
 // Define UI Actions
+const addPluginToNewTab = () => {
+  const options = {
+    active: true,
+    url: 'popup/popup.html'
+  }
+  chrome.tabs.create( options, () => {});
+}
+
 const embedPlugin = () => {
   // if embed activated - send message to background script to embed view
   chrome.runtime.sendMessage({ query: 'embedPlugin' }, {},  () => {});
@@ -107,28 +116,27 @@ const toggleDebounce = () => {
 }
 
 const goToCo2 = () => {
-  navUp.classList.add("disabled");
+  navUp.classList.add("hidden");
   navCo2.classList.add("selected");
   navFlux.classList.remove("selected");
   navData.classList.remove("selected");
-  navDown.classList.remove("disabled");
+  navDown.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: -conf.pageHeight});
 }
 const goToFlux = () => {
   navFlux.classList.add("selected");
   navCo2.classList.remove("selected");
   navData.classList.remove("selected");
-  navUp.classList.remove("disabled");
-  navDown.classList.remove("disabled");
+  navUp.classList.remove("hidden");
+  navDown.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: 0});
 }
 const goToData = () => {
-  navDown.classList.add("disabled");
+  navDown.classList.add("hidden");
   navData.classList.add("selected");
   navCo2.classList.remove("selected");
   navFlux.classList.remove("selected");
-  navCo2.classList.remove("disabled");
-  navUp.classList.remove("disabled");
+  navUp.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: conf.pageHeight});
 }
 
@@ -155,8 +163,18 @@ navFlux.addEventListener('click', goToFlux)
 navData.addEventListener('click', goToData)
 navDown.addEventListener('click', goDown)
 
+moveToTabButton.addEventListener('click', addPluginToNewTab)
 // embedButton.addEventListener('click', embedPlugin)
 // debounceCheckbox.addEventListener('click', toggleDebounce)
+
+window.document.onwheel = (e) => {
+  if (e.deltaY < 0) {
+    // Zoom in
+    goUp();
+  } else {
+    goDown();
+  }
+};
 
 // Packet info display
 const showLegend = () => {
@@ -201,94 +219,16 @@ const displayDataInfo = (data) => {
   packetInitiator.innerHTML = domain(data);
 }
 
-const resetSelection = () => {
-  // Reset clicked state
-  if (clickedChunk.texture) {
-    clickedChunk.body.render.sprite.texture = clickedChunk.texture;
-    clickedChunk = {};
-    Matter.World.remove(
-      engine.world,
-      infoConstraint
-    );
-    showLegend();
-  }
-}
-
-// Handle click on animation elements
-// Clear animation event
-Matter.Events.off(mouseConstraint, "mousemove");
-Matter.Events.off(mouseConstraint, "mousedown");
-
-let hoverChunk = {}; // storage for the entity in the "hover" state
-let clickedChunk = {}; // storage for the entity in the "clicked" state
-let infoConstraint; // line between selection and info
-
-Matter.Events.on(mouseConstraint, "mousemove", event => {
-  // Reset hover state
-  if (hoverChunk.body && (clickedChunk.body != hoverChunk.body)) {
-    hoverChunk.body.render.sprite.texture = hoverChunk.texture;
-    hoverChunk = {};
-  }
-  // Find the body in collision with the mouse position
-  const bodies = Matter.Composite.allBodies(engine.world);
-  const foundBodies = Matter.Query.point(bodies, event.mouse.position);
-  if (foundBodies.length < 1) return;
-  let body = foundBodies[0];
-  if (!metaData.has(body) || body == clickedChunk.body) return;
-  // Change the asset of the body
-  const asset = body.label == "data" || body.label == "fall" ? conf.assets.dataHover : conf.assets.co2Hover;
-  hoverChunk = {body, texture: body.render.sprite.texture};
-  body.render.sprite.texture = asset;
+pubSub.subscribe('clear-selection', data => {
+  showLegend();
 });
 
-Matter.Events.on(mouseConstraint, "mousedown", event => {
+pubSub.subscribe('selected-data', data => {
+  displayDataInfo(data);
+});
 
-  resetSelection();
-  // Find the body in collision with the mouse position
-  const bodies = Matter.Composite.allBodies(engine.world);
-  const foundBodies = Matter.Query.point(bodies, event.mouse.position);
-  if (foundBodies.length < 1) {
-    return;
-  }
-  let body = foundBodies[0];
-  if (!metaData.has(body)) {
-    return;
-  }
-
-  let data = metaData.get(body);
-  // Change the asset of the body
-  const isData = body.label == "data" || body.label == "fall";
-  const asset = isData ? conf.assets.dataActive : conf.assets.co2Active;
-  const texture = hoverChunk.body == body ? hoverChunk.texture : body.render.sprite.texture;
-  clickedChunk = {body, texture};
-  body.render.sprite.texture = asset;
-
-  // Link body to info box
-  infoConstraint = Matter.Constraint.create({
-    pointA: { x: render.options.width, y: render.options.height / 2 },
-    bodyB: body,
-    pointB: { x: (body.bounds.max.x-body.bounds.min.x)/2, y: 0 },
-    stiffness: 1e-10,
-    render: {
-        strokeStyle: "#000",
-        lineWidth: 1,
-        anchors: false,
-        type: 'line'
-    }
-  });
-  Matter.World.add(
-    engine.world,
-    infoConstraint
-  );
-  // display block info
-  show([packetIcon, packetType, packetTime, packetCo2, packetSize]);
-  if (body.label == "data" || body.label == "fall") {
-    displayDataInfo(data);
-  } else {
-    displayCo2Info(data);
-  }
-  // automatically reset selection after 2 seconds
-  setTimeout( resetSelection, 3000 )
+pubSub.subscribe('selected-co2', data => {
+  displayCo2Info(data);
 });
 
 const sendToAnimation = () => {
@@ -356,7 +296,8 @@ const handleMessage = (request) => {
     // update history
     shiftHistory();
     // update new favIcon + title
-    if (packet.extraInfo.tabIcon) {
+    const icon = packet.extraInfo.tabIcon;
+    if ( icon ) {
       history[0].icon.hidden = false;
       history[0].icon.src = packet.extraInfo.tabIcon;
     } else {
@@ -372,7 +313,10 @@ const handleMessage = (request) => {
 const shiftHistory = () => {
   for ( let i=history.length-1; i>0; i--) {
     history[i].icon.hidden = history[i-1].icon.hidden;
-    history[i].icon.src = history[i-1].icon.src;
+    let icon = history[i-1].icon.src;
+    if (!icon.startsWith('chrome-extension:')) {
+      history[i].icon.src = icon;
+    }
     history[i].title.innerText = history[i-1].title.innerText;
     history[i].date.innerText = history[i-1].date.innerText;
     history[i].size.innerText = history[i-1].size.innerText;
@@ -386,15 +330,18 @@ const createHistoryPacket = () => {
   separator.className = 'separator';
   const info = document.createElement('div');
   info.className = 'tab-info';
+  const iconContainer = document.createElement('div');
+  iconContainer.className = 'tab-icon';
   const icon = document.createElement('img');
-  icon.className = 'tab-icon';
+  icon.src = '';
   const title = document.createElement('div');
   title.className = 'tab-title';
   const date = document.createElement('div');
   date.className = 'packet-date';
   const size = document.createElement('div');
   size.className = 'packet-size';
-  info.appendChild(icon);
+  info.appendChild(iconContainer);
+  iconContainer.appendChild(icon);
   info.appendChild(title);
   block.appendChild(separator);
   block.appendChild(info);
@@ -411,10 +358,53 @@ const initHistory = () => {
   }
 }
 
+const configureDarkMode = (mode) => {
+  if (mode.matches) {
+    //dark mode
+    render.options.background = '#000';
+    conf.assets.data = 'assets/dataDark.png';
+    conf.assets.co2 = 'assets/co2Dark.png';
+    conf.matterOpts =  {
+      data: {
+        render: {sprite: {texture: conf.assets.data}},
+        label: 'data',
+        collisionFilter: {category: conf.categories.data}
+      },
+      co2: {
+        render: {sprite: {texture: conf.assets.co2}},
+        label: 'co2',
+        collisionFilter: {category: conf.categories.co2}
+      }
+    }
+  } else {
+    //light mode
+    render.options.background = '#fff';
+    conf.assets.data = 'assets/data.png';
+    conf.assets.co2 = 'assets/co2.png';
+    conf.matterOpts =  {
+      data: {
+        render: {sprite: {texture: conf.assets.data}},
+        label: 'data',
+        collisionFilter: {category: conf.categories.data}
+      },
+      co2: {
+        render: {sprite: {texture: conf.assets.co2}},
+        label: 'co2',
+        collisionFilter: {category: conf.categories.co2}
+      }
+    }
+  }
+}
+
+// Handle dark mode change
+window.matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener('change', configureDarkMode);
+
 const configure = () => {
   conf.uiElements = [];
   conf.mouseManagement = false;
   // debounceCheckbox.checked = userOptions.debounce;
+  configureDarkMode(window.matchMedia('(prefers-color-scheme: dark)'));
 }
 
 const init = () => {

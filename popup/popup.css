@@ -1,11 +1,18 @@
 body {
-  background-color: #fff;
+  background-color: #000;
   margin: 0px;
-  scrollbar-width: none; /* firefox: disable scroll bar */
 }
 body::-webkit-scrollbar {
   display: none; /* webkit: disable scrollbar */
 }
+
+.container {
+  background-color: white;
+  position: relative;
+  width: 500px;
+  height: 600px;
+}
+
 canvas {
   display: block;
   margin: 0 auto;
@@ -13,12 +20,12 @@ canvas {
 }
 
 button {
-  color:white;
-  border: solid 1px white;
-  border-radius: 2px;
-  padding: 2px;
-  font-size: 10px;
-  padding: 4px;
+  background: none;
+  color:black;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .hidden {
@@ -85,15 +92,17 @@ button {
 }
 
 .navigation-up {
-  position: fixed;
+  position: absolute;
   top: 14px;
   left: 19px;
+  cursor: pointer;
 }
 
 .navigation-down {
-  position: fixed;
+  position: absolute;
   bottom: 14px;
   left: 19px;
+  cursor: pointer;
 }
 
 .navigation-box {
@@ -104,6 +113,7 @@ button {
   vertical-align: middle;
   display: flex;
   margin-left: 8px;
+  cursor: pointer;
 }
 
 .navigation-box.middle {
@@ -144,8 +154,8 @@ button {
 }
 
 .menu .options {
- color: white;
- margin-top: 60px;
+ margin-top: 20px;
+ padding-left: 30px;
 }
 
 .menu .options div{
@@ -170,7 +180,7 @@ button {
 }
 
 .info .packet .legend-anchor {
-  position: fixed;
+  position: absolute;
   right: 121px;
   top: 290px;
 }
@@ -220,10 +230,9 @@ button {
 }
 
 .legend .co2 img {
-  height: 24px;
-  width: 24px;
-  margin-bottom: 5px;
-  padding:5px;
+  height: 30px;
+  width: 30px;
+  padding: 1px;
 }
 
 .legend .data {
@@ -237,8 +246,8 @@ button {
 }
 
 .legend .data img {
-  height: 32px;
-  width: 32px;
+  height: 24px;
+  width: 24px;
   padding-left: 3px;
   transform: rotate(45deg);
 }
@@ -285,9 +294,13 @@ button {
 
 .history .tab-icon {
   width: 15px;
-  height: auto;
   margin-right: 5px;
   margin-top: 4px;
+}
+
+.history .tab-icon img {
+  width: 15px;
+  height: auto;
 }
 
 .history .tab-title {
@@ -320,4 +333,116 @@ button.reset .icon {
   font-size: 2em;
   padding-right: 5px;
   transform: rotate(90deg);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #fff;
+  }
+
+  .container {
+    background-color: #000;
+  }
+
+  button {
+    color:white;
+  }
+
+  .icon.up svg,
+  .icon.down svg {
+    stroke: #fff
+  }
+
+  .icon.up:hover svg,
+  .icon.down:hover svg {
+    stroke: #888
+  }
+
+  .icon.up.disabled svg,
+  .icon.down.disabled svg {
+    stroke: #404040
+  }
+
+  .icon.flux svg {
+    fill: #404040;
+  }
+
+  .navigation-box:hover .icon.flux svg {
+    fill: #fff;
+  }
+
+  .navigation-box.selected .icon.flux svg {
+    fill: #fff;
+  }
+
+  .icon.co2 svg,
+  .icon.data svg{
+    stroke: #404040;
+  }
+
+  .navigation-box:hover .icon.co2 svg,
+  .navigation-box:hover .icon.data svg{
+    stroke: #888;
+  }
+
+  .navigation-box.selected .icon.co2 svg,
+  .navigation-box.selected .icon.data svg{
+    stroke: #fff;
+  }
+
+  .navigation-box {
+    color: #404040;
+  }
+
+  .navigation-box.middle {
+    border-top: solid 1px white;
+    border-bottom: solid 1px white;
+  }
+
+  .navigation-box:hover {
+    color: #888;
+  }
+
+  .navigation-box.selected {
+    color: #fff;
+  }
+
+  .info .packet {
+    background-color: black;
+    color: #ccc;
+  }
+
+  .info .packet .initiator,
+  .info .packet .type,
+  .info .packet .time,
+  .info .packet .size,
+  .info .packet .co2 {
+    color: #ccc;
+  }
+
+  .legend {
+    background-color: black;
+  }
+
+  .legend .co2 {
+    color: #c0a96d;
+  }
+
+  .legend .data {
+    color: #a0b0b1;
+  }
+
+  .history .header {
+    color: #fff;
+    border-top: solid 1px white;
+  }
+
+  .history .separator {
+    border-top: dashed 1px white;
+    margin-left: 21px;
+  }
+
+  .history .data-info {
+    color: white;
+  }
 }

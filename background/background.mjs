@@ -130,11 +130,13 @@ const completedListener = (responseDetails) => {
   const packetSize = parseInt(info.contentLength);
 
   if (info.fromCache || // skip data from cache
-      !packetWithSize || packetSize < 1// skip no data packet or packet less than 1 byte
+      !packetWithSize || packetSize < 1 ||// skip no data packet or packet less than 1 byte
+      url.startsWith('http://localhost') || url.startsWith('https://localhost') || // skip localhost (since local)
+      url.startsWith('chrome-extension:') // skip extension files (since local)
   ){
-    // skip no data packet or packet less than 1 byte
     return;
   }
+
   info.headers = headers;
 
   // compute Co2 + energy (primary + renewable)
@@ -154,6 +156,11 @@ const completedListener = (responseDetails) => {
         return;
       }
       if (tab) {
+        if (tab.url.startsWith('http://localhost') || tab.url.startsWith('https://localhost') || // skip localhost (since local)
+            tab.url.startsWith('chrome-extension:') // skip extension files (since local)
+      ){
+        return;
+      }
         info.extraInfo.tabIcon = tab.favIconUrl;
         info.extraInfo.tabTitle = tab.title;
         info.extraInfo.tabUrl = tab.url;
