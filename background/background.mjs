@@ -222,3 +222,7 @@ chrome.webRequest.onCompleted.addListener(
 );
 
 chrome.runtime.onMessage.addListener(handleMessage);
+
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  chrome.browserAction.setIcon({path: '../icons/iconDark.png'});
+}
