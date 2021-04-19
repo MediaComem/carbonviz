@@ -167,13 +167,19 @@ moveToTabButton.addEventListener('click', addPluginToNewTab)
 // embedButton.addEventListener('click', embedPlugin)
 // debounceCheckbox.addEventListener('click', toggleDebounce)
 
+let scrolling = false;
+
 window.document.onwheel = (e) => {
+  if (scrolling) {
+    return;
+  }
+  scrolling = true;
   if (e.deltaY < 0) {
-    // Zoom in
     goUp();
   } else {
     goDown();
   }
+  setTimeout(() => { scrolling = false; }, 1000)
 };
 
 // Packet info display
