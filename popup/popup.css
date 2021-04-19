@@ -44,12 +44,6 @@ button {
   stroke: #888
 }
 
-.icon.up.disabled svg,
-.icon.down.disabled svg {
-  fill: none;
-  stroke: #bfbfbf
-}
-
 .icon.flux svg {
   fill: #bfbfbf;
 }
@@ -105,10 +99,19 @@ button {
   cursor: pointer;
 }
 
+.navigation {
+  background-color: transparent;
+}
+
+.navigation-boxes {
+  background-color: #f8f8f8;
+  padding-right: 8px;
+}
+
 .navigation-box {
   height: 49px;
   color: #bfbfbf;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   vertical-align: middle;
   display: flex;
@@ -134,49 +137,119 @@ button {
   align-self: center;
 }
 
+.navigation-box .icon.data {
+  padding-right: 4px;
+}
+
 .navigation-box .title {
   align-self: center;
   padding-bottom: 2px;
 }
 
 .animation {
-  margin-left: 59px;
-  margin-right: 121px;
-  width: 320px;
+  width: 500px;
 }
 
 .menu {
   width: 121px;
+  background-color: #f8f8f8;
   position: absolute;
-  top: 0px;
-  bottom: 0px;
+  top: 60px;
+  bottom: 60px;
   right: 0px;
 }
 
-.menu .options {
- margin-top: 20px;
- padding-left: 30px;
+
+.menu .header {
+  display: flex;
+  flex-direction: column;
+  color: #020202;
+  font-weight: 700;
+  font-size: 12px;
+  margin-left: 12px;
 }
 
-.menu .options div{
-  margin-bottom: 10px;
+.menu .header .title {
+  align-self: start;
+  height: 20px;
+  margin-bottom: 4px;
+}
+
+.menu .header .header-separator {
+  align-self: center;
+  margin: 0px;
+  width: 71px;
+  border-top: solid 1px black;
+}
+
+
+.menu .options {
+ margin-top: 20px;
+ font-size: 10px;
+ font-weight: 700;
+}
+
+.menu .options .option{
+  display: flex;
+  flex-direction: row;
+  margin-left: 11px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.menu .options .option .title{
+  margin-left: 4px;;
+}
+
+
+.menu .options .option.active{
+  color: #000;
+  fill: #000;
+  stroke: #000;
+}
+
+.menu .options .option.inactive{
+  color: #bfbfbf;
+  fill: #bfbfbf;
+  stroke: #bfbfbf;
+}
+
+.menu .options .option:hover{
+  color: #888;
+  fill: #888;
+  stroke: #888;
 }
 
 .menu .info {
   position: absolute;
-  bottom: 0px;
+  top: 190px;
+  height: 100px;
   width: 100%;
+  font-size: 10px;
 }
 
 .info .packet {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: white;
-  color: #333;
-  padding-top: 5px;
-  padding-left: 30px;
-  padding-bottom: 10px;
+  color: #c1c1c1;
+  margin-bottom: 21px;
+  padding-top: 0px;
+  padding-left: 15px;
+  padding-bottom: 7px;
+}
+
+.info .packet .subheader {
+  color: white;
+  margin-top: 6px;
+}
+
+.info .packet.co2-highlight{
+  background-color: #906C0D;
+}
+
+.info .packet.data-highlight{
+  background-color: #384E50;
 }
 
 .info .packet .legend-anchor {
@@ -185,36 +258,18 @@ button {
   top: 290px;
 }
 
-.info .packet .icon {
-  max-height: 20px;
-}
-
-.info .packet .initiator,
 .info .packet .type,
 .info .packet .time,
 .info .packet .size,
 .info .packet .co2 {
-  max-width: 60px;
+  max-width: 90px;
   overflow: hidden;
-  color: #333333;
-}
-.info .packet .initiator {
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.info .packet .type,
-.info .packet .time,
-.info .packet .size,
-.info .packet .co2 {
   font-size: 10px;
-  font-weight: 700;
   line-height: 11px;
 }
 
 .legend {
   height: 95px;
-  background-color: white;
   display: flex;
   justify-content: center;
 }
@@ -256,24 +311,18 @@ button {
   padding-top: 8px;
 }
 
-.history .header {
-  display: flex;
-  flex-direction: row;
-  color: #020202;
-  font-weight: 700;
-  font-size: 12px;
-  height: 50px;
-  border-top: solid 1px black;
-  margin-left: 31px;
-}
-
-.history .header .title {
-  align-self: center;
+.menu .history {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
 }
 
 .history .separator {
   border-top: dashed 1px black;
   margin-left: 21px;
+  width: 30px;
+  margin-top: 10px;
+  margin-top: 4px;
 }
 
 .history .data-info {
@@ -350,25 +399,22 @@ button.reset .icon {
 
   .icon.up svg,
   .icon.down svg {
-    stroke: #fff
+    fill: none;
+    stroke: white;
   }
 
   .icon.up:hover svg,
   .icon.down:hover svg {
-    stroke: #888
-  }
-
-  .icon.up.disabled svg,
-  .icon.down.disabled svg {
-    stroke: #404040
+    fill: none;
+    stroke: #bfbfbf;
   }
 
   .icon.flux svg {
-    fill: #404040;
+    fill: #b8b8b8;
   }
 
   .navigation-box:hover .icon.flux svg {
-    fill: #fff;
+    fill: #555;
   }
 
   .navigation-box.selected .icon.flux svg {
@@ -377,21 +423,28 @@ button.reset .icon {
 
   .icon.co2 svg,
   .icon.data svg{
-    stroke: #404040;
+    stroke: #b8b8b8;
+    fill: none;
   }
 
   .navigation-box:hover .icon.co2 svg,
   .navigation-box:hover .icon.data svg{
-    stroke: #888;
+    stroke: #555;
+    fill: none;
   }
 
   .navigation-box.selected .icon.co2 svg,
   .navigation-box.selected .icon.data svg{
     stroke: #fff;
+    fill: none;
+  }
+
+  .navigation-boxes {
+    background-color: #070707;
   }
 
   .navigation-box {
-    color: #404040;
+    color: #b8b8b8;
   }
 
   .navigation-box.middle {
@@ -407,17 +460,57 @@ button.reset .icon {
     color: #fff;
   }
 
+  .menu {
+    background-color: #070707;
+  }
+
+  .menu .header {
+    color: #fdfdfd;
+
+  }
+
+  .menu .header .header-separator {
+    border-top: solid 1px white;
+  }
+
+  .menu .options .option.active{
+    color: #fff;
+    fill: #fff;
+    stroke: #fff;
+  }
+
+  .menu .options .option.inactive{
+    color: #414141;
+    fill: #414141;
+    stroke: #414141;
+  }
+
+  .menu .options .option:hover{
+    color: #777;
+    fill: #777;
+    stroke: #777;
+  }
+
   .info .packet {
     background-color: black;
     color: #ccc;
   }
 
-  .info .packet .initiator,
-  .info .packet .type,
-  .info .packet .time,
-  .info .packet .size,
-  .info .packet .co2 {
-    color: #ccc;
+  .info .packet .subheader {
+    color: black;
+    margin-top: 6px;
+  }
+
+  .info .packet.co2-highlight{
+    background-color: #C0A96D;
+  }
+
+  .info .packet.data-highlight{
+    background-color: #A0B0B1;
+  }
+
+  .info .packet {
+    color: #3e3e3e;
   }
 
   .legend {
@@ -430,11 +523,6 @@ button.reset .icon {
 
   .legend .data {
     color: #a0b0b1;
-  }
-
-  .history .header {
-    color: #fff;
-    border-top: solid 1px white;
   }
 
   .history .separator {

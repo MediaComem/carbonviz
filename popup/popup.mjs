@@ -65,12 +65,11 @@ const type = (packet) => {
   return capitalized;
 }
 const co2 = (packet) => {
-  return `${Math.floor(1000000*packet.chunkSizeCo2)/1000} g Co2`;
+  return `${Math.floor(1000000*packet.chunkSizeCo2)/1000} g`;
 }
 
 // User interface
-const moveToTabButton = window.document.getElementById("moveToTab");
-const embedButton = window.document.getElementById("embed");
+const openTabButton = window.document.getElementById("moveToTab");
 const debounceCheckbox = window.document.getElementById("debounce");
 // Navigation
 const navUp = window.document.getElementById("navUp");
@@ -81,12 +80,12 @@ const navDown = window.document.getElementById("navDown");
 // Menu
 // Packet info
 const info = window.document.getElementById("packet-info");
-const packetIcon = window.document.getElementById("packet-icon");
-const packetInitiator = window.document.getElementById("packet-initiator");
 const packetType = window.document.getElementById("packet-type");
 const packetTime = window.document.getElementById("packet-time");
 const packetSize = window.document.getElementById("packet-size");
+const packetSizeSubheader = window.document.getElementById("packet-size-subheader");
 const packetCo2 = window.document.getElementById("packet-co2");
+const packetCo2Subheader = window.document.getElementById("packet-co2-subheader");
 
 // Legend
 const legend = window.document.getElementById("legend");
@@ -96,11 +95,33 @@ const historyContainer = window.document.getElementById("history");
 
 // Define UI Actions
 const addPluginToNewTab = () => {
+  const tabId = localStorage.getItem('extensionTabId');
+  if (tabId) {
+    chrome.tabs.get(parseInt(tabId), tab => {
+      if(chrome.runtime.lastError) {
+        // tab probably closed
+      }
+      if (tab) {
+        chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
+        return;
+      } else {
+        createExtensionTab();
+      }
+    });
+  } else {
+    createExtensionTab();
+  }
+
+}
+
+const createExtensionTab = () => {
   const options = {
     active: true,
     url: 'popup/popup.html'
   }
-  chrome.tabs.create( options, () => {});
+  chrome.tabs.create( options, (tab) => {
+    localStorage.setItem('extensionTabId', tab.id);
+  });
 }
 
 const embedPlugin = () => {
@@ -115,7 +136,12 @@ const toggleDebounce = () => {
   localStorage.setItem('options', JSON.stringify(userOptions));
 }
 
+const resetSelection = () => {
+  pubSub.publish('clear-selection', null); // reset selection if navigating
+}
+
 const goToCo2 = () => {
+  resetSelection();
   navUp.classList.add("hidden");
   navCo2.classList.add("selected");
   navFlux.classList.remove("selected");
@@ -124,6 +150,7 @@ const goToCo2 = () => {
   Matter.Bounds.shift(render.bounds, {x:0, y: -conf.pageHeight});
 }
 const goToFlux = () => {
+  resetSelection();
   navFlux.classList.add("selected");
   navCo2.classList.remove("selected");
   navData.classList.remove("selected");
@@ -132,6 +159,7 @@ const goToFlux = () => {
   Matter.Bounds.shift(render.bounds, {x:0, y: 0});
 }
 const goToData = () => {
+  resetSelection();
   navDown.classList.add("hidden");
   navData.classList.add("selected");
   navCo2.classList.remove("selected");
@@ -163,9 +191,7 @@ navFlux.addEventListener('click', goToFlux)
 navData.addEventListener('click', goToData)
 navDown.addEventListener('click', goDown)
 
-moveToTabButton.addEventListener('click', addPluginToNewTab)
-// embedButton.addEventListener('click', embedPlugin)
-// debounceCheckbox.addEventListener('click', toggleDebounce)
+openTabButton.addEventListener('click', addPluginToNewTab)
 
 let scrolling = false;
 
@@ -179,7 +205,7 @@ window.document.onwheel = (e) => {
   } else {
     goDown();
   }
-  setTimeout(() => { scrolling = false; }, 1000)
+  setTimeout(() => { scrolling = false; }, 2000)
 };
 
 // Packet info display
@@ -188,41 +214,32 @@ const showLegend = () => {
   hide(info);
 }
 
-const showPacketIcon = (data) => {
-  if (data.extraInfo.tabIcon) {
-    packetIcon.hidden = false;
-    packetIcon.src = data.extraInfo.tabIcon;
-  } else {
-    packetIcon.hidden = true;
-  }
-}
-
 const displayCo2Info = (data) => {
-  hide([ legend, packetSize ]);
-  show([info, packetTime, packetCo2 ]);
+  hide([ legend, packetSize, packetSizeSubheader ]);
+  show([info, packetTime, packetType, packetCo2, packetCo2Subheader ]);
+  info.classList.add("co2-highlight");
+  info.classList.remove("data-highlight");
 
   packetTime.innerHTML = time(data);
   packetCo2.innerHTML = co2(data);
 
   if (data.initiator === 'computer') {
-    hide([ packetIcon, packetType ]);
-    packetInitiator.innerHTML = 'Computer';
+    packetType.innerHTML = 'Computer';
   } else {
-    show([ packetIcon, packetType]);
-    showPacketIcon(data);
-    packetInitiator.innerHTML = domain(data);
     packetType.innerHTML = type(data);
   }
 }
 
 const displayDataInfo = (data) => {
-  hide([ legend, packetCo2]);
-  show([info, packetIcon, packetType, packetTime, packetSize ]);
-  showPacketIcon(data);
+  hide([ legend, packetCo2, packetCo2Subheader ]);
+  show([info, packetType, packetTime, packetSize, packetSizeSubheader ]);
+
+  info.classList.add("data-highlight");
+  info.classList.remove("co2-highlight");
+
   packetTime.innerHTML = time(data);
   packetType.innerHTML = type(data);
   packetSize.innerHTML = size(data);
-  packetInitiator.innerHTML = domain(data);
 }
 
 pubSub.subscribe('clear-selection', data => {
@@ -287,8 +304,11 @@ const debounce = (packet, waitMs, maxWaitMs) => {
 const handleMessage = (request) => {
   if (request.data) {
     const packet = request.data;
-    // skip too small packets
-    if(packet.contentLength < 1) {
+    // skip too small packets or extension packets
+    if(packet.contentLength < 1 ||
+       !packet.extraInfo.tabIcon ||
+       packet.extraInfo.tabIcon.startsWith('chrome-extension:')
+      ) {
       return true;
     }
     if (userOptions.debounce) {
@@ -301,17 +321,17 @@ const handleMessage = (request) => {
     }
     // update history
     shiftHistory();
-    // update new favIcon + title
     const icon = packet.extraInfo.tabIcon;
+    let block = history[0];
     if ( icon ) {
-      history[0].icon.hidden = false;
-      history[0].icon.src = packet.extraInfo.tabIcon;
+      block.icon.hidden = false;
+      block.icon.src = packet.extraInfo.tabIcon;
     } else {
-      history[0].icon.hidden = true;
+      block.icon.hidden = true;
     }
-    history[0].title.innerText = domain(packet);
-    history[0].date.innerText = time(packet);
-    history[0].size.innerText = size(packet);
+    block.title.innerText = domain(packet);
+    block.date.innerText = time(packet);
+    block.size.innerText = size(packet);
   }
   return true;
 }
@@ -320,16 +340,14 @@ const shiftHistory = () => {
   for ( let i=history.length-1; i>0; i--) {
     history[i].icon.hidden = history[i-1].icon.hidden;
     let icon = history[i-1].icon.src;
-    if (!icon.startsWith('chrome-extension:')) {
-      history[i].icon.src = icon;
-    }
+    history[i].icon.src = icon;
     history[i].title.innerText = history[i-1].title.innerText;
     history[i].date.innerText = history[i-1].date.innerText;
     history[i].size.innerText = history[i-1].size.innerText;
   }
 }
 
-const createHistoryPacket = () => {
+const createHistoryPacket = (last) => {
   const block = document.createElement('div');
   block.className = 'data-info';
   const separator = document.createElement('div');
@@ -339,7 +357,7 @@ const createHistoryPacket = () => {
   const iconContainer = document.createElement('div');
   iconContainer.className = 'tab-icon';
   const icon = document.createElement('img');
-  icon.src = '';
+  icon.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
   const title = document.createElement('div');
   title.className = 'tab-title';
   const date = document.createElement('div');
@@ -349,27 +367,34 @@ const createHistoryPacket = () => {
   info.appendChild(iconContainer);
   iconContainer.appendChild(icon);
   info.appendChild(title);
-  block.appendChild(separator);
   block.appendChild(info);
   block.appendChild(date);
   block.appendChild(size);
+  if (!last) {
+    block.appendChild(separator);
+  }
   historyContainer.appendChild(block);
-  return { icon, title, date, size };
+  return { icon, title, date, size, separator };
 }
 
-let history = [{}, {}, {}, {}];
+let history = [{}, {}, {}];
 const initHistory = () => {
-  for ( let i=0; i< history.length; i++) {
-    history[i] = createHistoryPacket();
+  for ( let i=0; i < history.length; i++) {
+    const last = (i === (history.length - 1)) ;
+    history[i] = createHistoryPacket(last);
   }
 }
 
 const configureDarkMode = (mode) => {
   if (mode.matches) {
     //dark mode
-    render.options.background = '#000';
+    render.options.background = '#363636';
     conf.assets.data = 'assets/dataDark.png';
+    conf.assets.dataHover = 'assets/dataDarkHover.png';
+    conf.assets.dataActive = 'assets/dataDarkActive.png';
     conf.assets.co2 = 'assets/co2Dark.png';
+    conf.assets.co2Hover = 'assets/co2DarkHover.png';
+    conf.assets.co2Active = 'assets/co2DarkActive.png';
     conf.matterOpts =  {
       data: {
         render: {sprite: {texture: conf.assets.data}},
@@ -382,11 +407,17 @@ const configureDarkMode = (mode) => {
         collisionFilter: {category: conf.categories.co2}
       }
     }
+    conf.assets.selectLine = 'white';
+    conf.assets.selectCircle = 'black';
   } else {
     //light mode
     render.options.background = '#fff';
     conf.assets.data = 'assets/data.png';
+    conf.assets.dataHover = 'assets/dataHover.png';
+    conf.assets.dataActive = 'assets/dataActive.png';
     conf.assets.co2 = 'assets/co2.png';
+    conf.assets.co2Hover = 'assets/co2Hover.png';
+    conf.assets.co2Active = 'assets/co2Active.png';
     conf.matterOpts =  {
       data: {
         render: {sprite: {texture: conf.assets.data}},
@@ -399,6 +430,8 @@ const configureDarkMode = (mode) => {
         collisionFilter: {category: conf.categories.co2}
       }
     }
+    conf.assets.selectLine = 'black';
+    conf.assets.selectCircle = 'white';
   }
 }
 
@@ -423,6 +456,21 @@ const init = () => {
     } catch(error) {
       console.log(`Invalid options stored: ${userOptions}`);
     }
+  }
+
+  // check if tab extension opened
+  const tabId = localStorage.getItem('extensionTabId');
+  if (tabId) {
+    chrome.tabs.get(parseInt(tabId), tab => {
+      if(chrome.runtime.lastError) {
+        // tab probably closed
+      }
+      if (tab) {
+        // set button stlye as active
+        openTabButton.classList.add('active');
+        openTabButton.classList.remove('inactive');
+      }
+    });
   }
 
   configure();
