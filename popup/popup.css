@@ -38,11 +38,24 @@ button {
   stroke: #000
 }
 
+.icon.up svg .arrow,
+.icon.down svg .arrow {
+  fill: black;
+  stroke: #000
+}
+
 .icon.up:hover svg,
 .icon.down:hover svg {
   fill: none;
   stroke: #888
 }
+
+.icon.up:hover svg .arrow,
+.icon.down:hover svg .arrow{
+  fill: #888;
+  stroke: #888
+}
+
 
 .icon.flux svg {
   fill: #bfbfbf;
@@ -403,9 +416,21 @@ button.reset .icon {
     stroke: white;
   }
 
+  .icon.up svg .arrow,
+  .icon.down svg .arrow{
+    fill: white;
+    stroke: white;
+  }
+
   .icon.up:hover svg,
   .icon.down:hover svg {
     fill: none;
+    stroke: #bfbfbf;
+  }
+
+  .icon.up:hover svg .arrow,
+  .icon.down:hover svg .arrow{
+    fill: #bfbfbf;
     stroke: #bfbfbf;
   }
 
