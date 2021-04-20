@@ -29,7 +29,9 @@ const show = (elt) => {
 
 const time = (packet) => {
   const date = new Date(packet.extraInfo.timeStamp);
-  return `${ date.getHours() }H${ date.getMinutes() }`;
+  const hour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+  const minute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+  return `${ hour }H${ minute }`;
 }
 const size = (packet) => {
   const size = packet.chunkSizeData ? parseInt(packet.chunkSizeData) : parseInt(packet.contentLength);
