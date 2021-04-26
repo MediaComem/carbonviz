@@ -3,9 +3,10 @@ import conf from '../unplug/js/conf.mjs';
 import { render } from '../unplug/js/main.mjs';
 
 const pubSub = new PubSub();
-const defaultOptions = { debounce: true};
+const defaultOptions = { debounce: true, showTabConfirmation: true };
 let userOptions = defaultOptions;
 
+const manifest = chrome.runtime.getManifest();
 
 // Utility function
 const hide = (elt) => {
@@ -71,7 +72,9 @@ const co2 = (packet) => {
 }
 
 // User interface
-const openTabButton = window.document.getElementById("moveToTab");
+const openTabDialog = window.document.getElementById("tabDialog");
+const openTabButton = window.document.getElementById("switchToTab");
+const tabConfirmationCheckbox = window.document.getElementById("disableNewTabConfirmation");
 const debounceCheckbox = window.document.getElementById("debounce");
 // Navigation
 const navUp = window.document.getElementById("navUp");
@@ -96,14 +99,41 @@ const legend = window.document.getElementById("legend");
 const historyContainer = window.document.getElementById("history");
 
 // Define UI Actions
-const addPluginToNewTab = () => {
-  const tabId = localStorage.getItem('extensionTabId');
+const openNewTabDialog = () => {
+  // Open tab dialog (if tab not yet opened), else show tab
+  const tabId = localStorage.getItem('extensionAnimationTabId');
   if (tabId) {
     chrome.tabs.get(parseInt(tabId), tab => {
       if(chrome.runtime.lastError) {
         // tab probably closed
       }
-      if (tab) {
+      if (tab && tab.title === manifest.name) {
+        chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
+        return;
+      }
+    });
+  }
+
+  if (!userOptions.showTabConfirmation) {
+    return addPluginToNewTab();
+  }
+
+  if (typeof openTabDialog.showModal === "function") {
+    openTabDialog.showModal();
+  } else {
+    alert("The <dialog> API is not supported by this browser");
+  }
+
+}
+
+const addPluginToNewTab = () => {
+  const tabId = localStorage.getItem('extensionAnimationTabId');
+  if (tabId) {
+    chrome.tabs.get(parseInt(tabId), tab => {
+      if(chrome.runtime.lastError) {
+        // tab probably closed
+      }
+      if (tab && tab.title === manifest.name) {
         chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
         return;
       } else {
@@ -117,12 +147,19 @@ const addPluginToNewTab = () => {
 }
 
 const createExtensionTab = () => {
+  // store current tab id to come back to extension pop-up if needed
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    if (tabs && tabs[0]) {
+      const tab = tabs[0];
+      localStorage.setItem('previousTabId', tab.id);
+    }
+  });
   const options = {
     active: true,
     url: 'popup/popup.html'
   }
   chrome.tabs.create( options, (tab) => {
-    localStorage.setItem('extensionTabId', tab.id);
+    localStorage.setItem('extensionAnimationTabId', tab.id);
   });
 }
 
@@ -193,7 +230,17 @@ navFlux.addEventListener('click', goToFlux)
 navData.addEventListener('click', goToData)
 navDown.addEventListener('click', goDown)
 
-openTabButton.addEventListener('click', addPluginToNewTab)
+openTabButton.addEventListener('click', openNewTabDialog)
+tabDialog.addEventListener('close', (event) => {
+  if (tabDialog.returnValue !== 'cancel') {
+    if (tabConfirmationCheckbox.checked) {
+      // do not show again
+      userOptions.showTabConfirmation = false;
+      localStorage.setItem('options', JSON.stringify(userOptions));
+    }
+    addPluginToNewTab();
+  }
+});
 
 let scrolling = false;
 
@@ -461,7 +508,7 @@ const init = () => {
   }
 
   // check if tab extension opened
-  const tabId = localStorage.getItem('extensionTabId');
+  const tabId = localStorage.getItem('extensionAnimationTabId');
   if (tabId) {
     chrome.tabs.get(parseInt(tabId), tab => {
       if(chrome.runtime.lastError) {

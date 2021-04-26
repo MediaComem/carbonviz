@@ -1,9 +1,19 @@
 body {
-  background-color: #000;
+  background-color: #f8f8f8;
   margin: 0px;
 }
 body::-webkit-scrollbar {
   display: none; /* webkit: disable scrollbar */
+}
+
+dialog {
+  max-width: 350px;
+  border-radius: 10px;
+  border-width: 1px;
+}
+
+dialog menu {
+  text-align: right;
 }
 
 .container {
@@ -11,6 +21,7 @@ body::-webkit-scrollbar {
   position: relative;
   width: 500px;
   height: 600px;
+  margin: auto;
 }
 
 canvas {
@@ -377,29 +388,14 @@ button {
   margin-left: 21px;
 }
 
-.menu .reset {
-  position: absolute;
-  bottom: 3px;
-  width: 100%;
-}
-
-button.reset {
-  border: none;
-  width: 100%;
-}
-
-button.reset .icon {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  font-size: 2em;
-  padding-right: 5px;
-  transform: rotate(90deg);
-}
-
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #fff;
+    background-color: #262626;
+  }
+
+  dialog {
+    background-color: #262626;
+    color: white;
   }
 
   .container {
@@ -486,7 +482,7 @@ button.reset .icon {
   }
 
   .menu {
-    background-color: #070707;
+    background-color: #262626;
   }
 
   .menu .header {
@@ -505,15 +501,15 @@ button.reset .icon {
   }
 
   .menu .options .option.inactive{
-    color: #414141;
-    fill: #414141;
-    stroke: #414141;
+    color: #b8b8b8;
+    fill: #b8b8b8;
+    stroke: #b8b8b8;
   }
 
   .menu .options .option:hover{
-    color: #777;
-    fill: #777;
-    stroke: #777;
+    color: #888;
+    fill: #888;
+    stroke: #888;
   }
 
   .info .packet {
