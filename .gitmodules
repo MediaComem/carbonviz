@@ -1,4 +1,4 @@
 [submodule "unplug"]
 	path = unplug
-	url = git@github.com:MediaComem/unplug.git
+	url = https://github.com/MediaComem/unplug.git
 	branch = main
