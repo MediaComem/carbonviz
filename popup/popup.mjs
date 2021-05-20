@@ -3,7 +3,7 @@ import conf from '../unplug/js/conf.mjs';
 import { render } from '../unplug/js/main.mjs';
 
 const pubSub = new PubSub();
-const defaultOptions = { debounce: true, showTabConfirmation: true };
+const defaultOptions = { debounce: true, showTabConfirmation: true, showOnBoarding: true };
 let userOptions = defaultOptions;
 
 const manifest = chrome.runtime.getManifest();
@@ -496,8 +496,15 @@ const configure = () => {
 }
 
 const initAnimation = () => {
-  body.classList.add('anim-onboarding');
-  setTimeout(() => body.classList.remove('anim-onboarding'), 11000);
+  // Onboarding (do it only once)
+  if (userOptions.showOnBoarding) {
+    body.classList.add('anim-onboarding');
+    setTimeout(() => {
+      body.classList.remove('anim-onboarding');
+      userOptions.showOnBoarding = false;
+      localStorage.setItem('options', JSON.stringify(userOptions));
+    }, 11000);
+  }
 }
 
 const init = () => {
