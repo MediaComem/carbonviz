@@ -22,6 +22,7 @@ dialog menu {
   width: 500px;
   height: 600px;
   margin: auto;
+  overflow: hidden
 }
 
 canvas {
@@ -107,6 +108,7 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  z-index: 100;
 }
 
 .navigation-up {
@@ -554,4 +556,35 @@ button {
   .history .data-info {
     color: white;
   }
+}
+
+/* ANIMATIONS */
+.onboarding {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+body.anim-onboarding .navigation-box.up *,
+body.anim-onboarding .navigation-box.down *,
+body.anim-onboarding .navigation-up,
+body.anim-onboarding .navigation-down,
+body.anim-onboarding .unplug,
+body.anim-onboarding .menu {
+  display: none;
+}
+body:not(.anim-onboarding) .onboarding {
+  display: none;
+}
+body:not(.anim-onboarding) .menu {
+  --translate-amount:  125px;
+  animation: slide-from-right 0.4s ease-in;
+}
+body:not(.anim-onboarding) .unplug {
+  --translate-amount: 200px;
+  animation: slide-from-right 0.4s ease-in;
+}
+
+@keyframes slide-from-right {
+  0% {transform: translateX(var(--translate-amount))}
+  100% {transform: translateX(0)}
 }

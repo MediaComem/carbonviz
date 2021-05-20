@@ -72,6 +72,7 @@ const co2 = (packet) => {
 }
 
 // User interface
+const body = window.document.body;
 const openTabDialog = window.document.getElementById("tabDialog");
 const openTabButton = window.document.getElementById("switchToTab");
 const tabConfirmationCheckbox = window.document.getElementById("disableNewTabConfirmation");
@@ -245,9 +246,8 @@ tabDialog.addEventListener('close', (event) => {
 let scrolling = false;
 
 window.document.onwheel = (e) => {
-  if (scrolling) {
-    return;
-  }
+  if (body.classList.contains('anim-onboarding')) return; // disabled at onboarding
+  if (scrolling) return;
   scrolling = true;
   if (e.deltaY < 0) {
     goUp();
@@ -495,6 +495,11 @@ const configure = () => {
   configureDarkMode(window.matchMedia('(prefers-color-scheme: dark)'));
 }
 
+const initAnimation = () => {
+  body.classList.add('anim-onboarding');
+  setTimeout(() => body.classList.remove('anim-onboarding'), 11000);
+}
+
 const init = () => {
 
   const options = localStorage.getItem('options');
@@ -525,6 +530,8 @@ const init = () => {
   configure();
 
   initHistory();
+
+  initAnimation();
 
   // listen to nee packets
   chrome.runtime.onMessage.addListener(handleMessage);
