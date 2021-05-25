@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Matter</title>
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        background-color:#111;
+        scrollbar-width: none; /* firefox: disable scroll bar */
+      }
+      body::-webkit-scrollbar {
+        display: none; /* webkit: disable scrollbar */
+      }
+      canvas {
+        display: block;
+        margin: 0 auto;
+        z-index: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="unplug" class="unplug"></div>
+    <script src="js/matter.min.js"></script>
+    <script src="js/data/video_2160p.js"></script>
+    <script type="module" src="js/main.mjs"></script>
+  </body>
+</html>
