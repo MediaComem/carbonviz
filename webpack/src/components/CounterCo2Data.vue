@@ -41,7 +41,7 @@ export default {
     padding-left: 1px;
   }
   section > span {
-    padding-left: 10px;
+    padding-left: 4px;
   }
   .val {
     font-weight: 500;
