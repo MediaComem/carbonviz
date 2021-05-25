@@ -1,0 +1,23 @@
+{
+  "name": "carbonviz",
+  "version": "0.0.5",
+  "description": "Carbon Viz Vue3",
+  "main": "src/main.js",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --mode=development --watch"
+  },
+  "author": "MEI",
+  "license": "ISC",
+  "devDependencies": {
+    "@vue/compiler-sfc": "^3.0.11",
+    "css-loader": "^5.2.6",
+    "mini-css-extract-plugin": "^1.6.0",
+    "vue-loader": "^16.2.0",
+    "webpack": "^5.37.1",
+    "webpack-cli": "^4.7.0"
+  },
+  "dependencies": {
+    "vue": "^3.0.11"
+  }
+}

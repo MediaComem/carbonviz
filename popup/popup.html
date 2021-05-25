@@ -4,6 +4,7 @@
     <title>CarbonViz</title>
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"  href="./popup.css">
+    <link rel="stylesheet"  href="../bundle/popup.css">
     <script type="module"  src="popup.mjs"></script>
     <script src="../unplug/js/matter.min.js"></script>
   </head>
@@ -96,6 +97,13 @@
             <div class="title">Tab</div>
           </div>
         </div>
+        <div class="option inactive consumption">
+          <div class="header">
+            <div class="title">Consumption</div>
+            <div class="header-separator"></div>
+          </div>
+          <div id="vue-co2-data-counter"></div>
+        </div>
         <div class="info">
           <div class="packet hidden" id="packet-info">
             <div class="subheader" id="packet-size-subheader"> Size </div>
@@ -133,8 +141,9 @@
               <div class="title">Network Packets</div>
               <div class="header-separator"></div>
             </div>
-       </div>
+        </div>
       </div>
     </div>
+    <script src="../bundle/popup.js"></script>
   </body>
 </html>

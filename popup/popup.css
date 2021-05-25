@@ -337,6 +337,10 @@ button {
   padding-top: 8px;
 }
 
+.menu .consumption {
+  margin-top: 20px;
+}
+
 .menu .history {
   position: absolute;
   bottom: 0px;
