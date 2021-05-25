@@ -5,9 +5,9 @@ export function roundToPrecision(val, precision = 2) {
 export function formatSize(size, precision = 2) {
   if (size < 1000) {
     return `${ roundToPrecision(size, precision) } B`;
-  } else if (size <= 1000000) {
+  } else if (size < 1000000) {
     return `${ roundToPrecision(size / 1000, precision) } KB`;
-  } else if (size <= 1000000000) {
+  } else if (size < 1000000000) {
     return `${ roundToPrecision(size / 1000000, precision) } MB`;
   } else {
     return `${ roundToPrecision(size / 1000000000, precision) } GB`;
