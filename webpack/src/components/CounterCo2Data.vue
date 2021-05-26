@@ -44,7 +44,8 @@ export default {
     padding-left: 4px;
   }
   .val {
-    font-weight: 500;
+    color: grey;
+    font-weight: 400;
   }
 
 
