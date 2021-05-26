@@ -127,6 +127,9 @@ const updateHistory = (today, lastdateStored, sameMonth, currentMonthTotal, hist
 
     if (!sameMonth) {
         let numMonths = today.getMonth() - lastdateStored.getMonth();
+        if (numMonths < 0) {
+            numMonths += 12; //to compare months in the new year
+        }
         for ( ; numMonths > 0; numMonths--) {
             for (let i=4; i>1; i--) {
                 historyStorage.months[i].total = historyStorage.months[i-1].total;
