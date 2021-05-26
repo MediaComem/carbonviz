@@ -408,6 +408,10 @@ button {
     background-color: #000;
   }
 
+  .animation, .onboarding {
+    background-color: #363636;
+  }
+
   button {
     color:white;
   }

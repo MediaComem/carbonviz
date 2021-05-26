@@ -505,7 +505,7 @@ const initAnimation = () => {
       body.classList.remove('anim-onboarding');
       userOptions.showOnBoarding = false;
       localStorage.setItem('options', JSON.stringify(userOptions));
-    }, 11000);
+    }, 10000);
   }
 }
 
