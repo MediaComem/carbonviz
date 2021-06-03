@@ -319,7 +319,7 @@ mainLoop.setInterval(1000, () => {
     energyRE: 3.34e-5,
     extraInfo: { timeStamp: new Date() }
   });
-  CarbonVue.co2DataCounter.co2 += 6.57e-6;
+  CarbonVue.co2DataCounter.co2 += 6.57e-3;
 });
 
 // Mouse management
