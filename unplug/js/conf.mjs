@@ -10,7 +10,7 @@ let conf = {
     data : 'assets/data.png',
     dataActive: 'assets/dataActive.png',
     dataHover: 'assets/dataHover.png',
-    edge: 50, // Data asset edge size
+    edge: 49, // Data asset edge size
     co2 : 'assets/co2.png',
     co2Active: 'assets/co2Active.png',
     co2Hover: 'assets/co2Hover.png',
@@ -23,8 +23,8 @@ let conf = {
   timers: {
     bgDeleteAfter: 5000,  // timer in [ms] for deleteing a background created entity
     drop: 6000,  // timer in [ms] for the gravity to take effect on an entity
-    minLifetime: 30000, // minimal lifetime in [ms] of an entity
-    maxLifetime: 80000, // maximal lifetime in [ms] of an entity
+    minLifetime: 35000, // minimal lifetime in [ms] of an entity
+    maxLifetime: 85000, // maximal lifetime in [ms] of an entity
     variation: { // variation in [ms] for timers
       drop: 1000,
       lifetime: 5000
