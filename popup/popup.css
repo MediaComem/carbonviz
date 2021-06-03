@@ -394,6 +394,11 @@ button {
   margin-left: 21px;
 }
 
+.histo-co2 {
+  height: 137px;
+  background-color: #906C0D;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #262626;
