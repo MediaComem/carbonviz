@@ -17,10 +17,8 @@ export default {
     // for DATA we need "move up" the animation by the height of the sratums
     if (props.type == 'data') {
       const anim = window.document.querySelector('.animation');
-
       watch(show, val => anim.style.top = val ? `-${totalHeight.value}px` : '0');
       anim.style.top = 0;
-
       expandIt = () => {
         expand();
         anim.style.top = `-${totalHeight.value}px`;
