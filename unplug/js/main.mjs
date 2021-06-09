@@ -134,13 +134,22 @@ const drawSelectionLine = (body, ctx) => {
   ctx.strokeStyle = conf.assets.selectLine;
   ctx.fillStyle = conf.assets.selectCircle;
   ctx.lineWidth = 1;
+
   let x = conf.width - conf.rightPadding - conf.assets.selectCircleSize;
   let y = conf.height / 2;
+  // remove height of the today histo startum
+  if (CarbonVue.historyCO2.show) {
+    y -= CarbonVue.historyCO2.totalHeight;
+  } else if (CarbonVue.historyData.show) {
+    y += CarbonVue.historyData.totalHeight;
+  }
+
   let angle = Math.atan2(y - (center.y - render.bounds.min.y), x - center.x);
   let factor = (body.label == "data" || body.label == "fall") ? 1.25 : 1.4;
   let edge = ((body.render.sprite.yScale * conf.assets.edge) / 2) * factor;
   let centerX = center.x + edge * Math.cos(angle);
   let centerY = center.y + edge * Math.sin(angle);
+
   ctx.beginPath();
   ctx.moveTo(x, y);
   ctx.lineTo(centerX, centerY - render.bounds.min.y);

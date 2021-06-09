@@ -188,6 +188,8 @@ const goToCo2 = () => {
   navData.classList.remove("selected");
   navDown.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: -conf.pageHeight});
+  CarbonVue.historyCO2.show = true;
+  CarbonVue.historyData.show = false;
 }
 const goToFlux = () => {
   resetSelection();
@@ -197,6 +199,8 @@ const goToFlux = () => {
   navUp.classList.remove("hidden");
   navDown.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: 0});
+  CarbonVue.historyCO2.show = false;
+  CarbonVue.historyData.show = false;
 }
 const goToData = () => {
   resetSelection();
@@ -206,6 +210,8 @@ const goToData = () => {
   navFlux.classList.remove("selected");
   navUp.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: conf.pageHeight});
+  CarbonVue.historyCO2.show = false;
+  CarbonVue.historyData.show = true;
 }
 
 const goUp = () => {

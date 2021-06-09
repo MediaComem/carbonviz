@@ -113,14 +113,14 @@ button {
 
 .navigation-up {
   position: absolute;
-  top: 14px;
+  top: 7px;
   left: 19px;
   cursor: pointer;
 }
 
 .navigation-down {
   position: absolute;
-  bottom: 14px;
+  bottom: 7px;
   left: 19px;
   cursor: pointer;
 }
@@ -173,7 +173,11 @@ button {
 }
 
 .animation {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 500px;
+  height: 600px;
 }
 
 .menu {
@@ -600,4 +604,9 @@ body:not(.anim-onboarding) .unplug {
 @keyframes slide-from-right {
   0% {transform: translateX(var(--translate-amount))}
   100% {transform: translateX(0)}
+}
+
+@keyframes slide-to-left {
+  0% {transform: translateX(0)}
+  100% {transform: translateX(var(--translate-amount))}
 }
