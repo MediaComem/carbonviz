@@ -11,7 +11,8 @@ export default {
   },
 
   setup(props, context) {
-    const {totalHeight, show, expanded, expand} = history();
+    const stage = 50;
+    const {totalHeight, show, expanded, expand} = history(stage);
     let expandIt = () => expand();
 
     // for DATA we need "move up" the animation by the height of the sratums
@@ -23,10 +24,9 @@ export default {
         expand();
         anim.style.top = `-${totalHeight.value}px`;
       };
-
     }
 
-    return {totalHeight, show, expanded, expandIt};
+    return {stage, totalHeight, show, expanded, expandIt};
   }
 
 }
@@ -34,7 +34,7 @@ export default {
 
 <template>
   <div v-if="show">
-    <stratum :amount="100" :expanded="expanded" label="Today" :type="type"  @click="expandIt"></stratum>
+    <stratum :amount="stage" :expanded="expanded" label="Today" :type="type"  @click="expandIt"></stratum>
   </div>
 </template>
 

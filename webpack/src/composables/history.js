@@ -1,8 +1,8 @@
 import { ref, watchEffect } from 'vue';
 
-export default function () {
-  // TODO How to pass the nb of stratums  ? (calculate ? or nb strats (max 4 ( = 150*4)) ?)
-  const totalHeight = ref(100);
+export default function (stage) {
+  // TODO How to pass the nb of stratums from history stage  ? (calculate ? or nb strats (max 4 ( = 150*4)) ?)
+  const totalHeight = ref(stage);
   const show = ref(false);
   // TODO expanded reactive value for each stratum instead of a single one
   const expanded = ref(false);
