@@ -8,7 +8,7 @@ export default {
     label: {type: String},
     stage: {type: Number}
   },
-  emits: ['sizeChanged'],
+  emits: ['expanded', 'collapsed'],
   setup(props, { emit }) {
     const fullHeight = 200;
     const {stage} = toRefs(props);
@@ -18,7 +18,11 @@ export default {
     const expand = () => {
       expanded.value = !expanded.value;
       shouldAnimate.value = true;
-      emit('sizeChanged', expanded.value ? fullHeight-height.value : height.value-fullHeight);
+      if (expanded.value) {
+        emit('expanded', fullHeight-height.value);
+      } else {
+        emit('collapsed', fullHeight-height.value);
+      }
     };
     watch(stage, () => { expanded.value = false, shouldAnimate.value = false; });
     return {height, expanded, expand, shouldAnimate};

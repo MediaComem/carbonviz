@@ -134,6 +134,14 @@ button {
   padding-right: 8px;
 }
 
+.navigation-boxes {
+  transition: margin-left 0.5s ease, margin-right 0.5s ease;
+}
+.navigation-boxes.outside {
+  margin-left: -59px;
+  margin-right: 59px;
+}
+
 .navigation-box {
   height: 49px;
   color: #bfbfbf;
@@ -189,6 +197,12 @@ button {
   right: 0px;
 }
 
+.menu {
+  transition: right 0.5s ease;
+}
+.menu.outside {
+  right: -121px;
+}
 
 .menu .header {
   display: flex;

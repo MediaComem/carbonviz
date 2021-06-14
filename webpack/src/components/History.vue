@@ -34,12 +34,26 @@ export default {
     }
 
     const layerExpanded = (height) => {
+      const navigation = window.document.querySelector('.navigation-boxes');
+      const menu = window.document.querySelector('.menu');
+      navigation.classList.add('outside');
+      menu.classList.add('outside');
       if (isData.value) {
         scroll.value += height;
       }
     }
 
-    return {isCo2, isData, layers, marginTop, scroll, show, stage, nextStage, previousStage, layerExpanded};
+    const layerCollapsed = (height) => {
+      const navigation = window.document.querySelector('.navigation-boxes');
+      const menu = window.document.querySelector('.menu');
+      navigation.classList.remove('outside');
+      menu.classList.remove('outside');
+      if (isData.value) {
+        scroll.value -= height;
+      }
+    }
+
+    return {isCo2, isData, layers, marginTop, scroll, show, stage, nextStage, previousStage, layerExpanded, layerCollapsed};
   }
 
 }
@@ -48,7 +62,8 @@ export default {
 <template>
   <div v-if="show" :style="`--top: ${isCo2 ? -scroll : 0}px`" class="history-wrapper">
     <stratum v-for="(layer, index) in layers" :key="index"
-      :amount="layer.amount" :label="layer.label" :type="type" :stage="stage" @sizeChanged="layerExpanded"></stratum>
+      :amount="layer.amount" :label="layer.label" :type="type" :stage="stage"
+      @expanded="layerExpanded" @collapsed="layerCollapsed"></stratum>
   </div>
 </template>
 
