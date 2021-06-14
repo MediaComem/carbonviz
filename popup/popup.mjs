@@ -83,6 +83,11 @@ const navCo2 = window.document.getElementById("navCo2");
 const navFlux = window.document.getElementById("navFlux");
 const navData = window.document.getElementById("navData");
 const navDown = window.document.getElementById("navDown");
+const co2Older = window.document.getElementById("co2Older");
+const co2Newer = window.document.getElementById("co2Newer");
+const dataOlder = window.document.getElementById("dataOlder");
+const dataNewer = window.document.getElementById("dataNewer");
+
 // Menu
 // Packet info
 const info = window.document.getElementById("packet-info");
@@ -164,18 +169,6 @@ const createExtensionTab = () => {
   });
 }
 
-const embedPlugin = () => {
-  // if embed activated - send message to background script to embed view
-  chrome.runtime.sendMessage({ query: 'embedPlugin' }, {},  () => {});
-  // close popup
-  window.close();
-}
-
-const toggleDebounce = () => {
-  userOptions.debounce = debounceCheckbox.checked;
-  localStorage.setItem('options', JSON.stringify(userOptions));
-}
-
 const resetSelection = () => {
   pubSub.publish('clear-selection', null); // reset selection if navigating
 }
@@ -183,10 +176,14 @@ const resetSelection = () => {
 const goToCo2 = () => {
   resetSelection();
   navUp.classList.add("hidden");
+  dataNewer.classList.add("hidden");
+  dataOlder.classList.add("hidden");
+  navUp.classList.add("hidden");
   navCo2.classList.add("selected");
   navFlux.classList.remove("selected");
   navData.classList.remove("selected");
   navDown.classList.remove("hidden");
+  co2Older.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: -conf.pageHeight});
   CarbonVue.historyCO2.show = true;
   CarbonVue.historyData.show = false;
@@ -198,6 +195,10 @@ const goToFlux = () => {
   navData.classList.remove("selected");
   navUp.classList.remove("hidden");
   navDown.classList.remove("hidden");
+  co2Newer.classList.add("hidden");
+  co2Older.classList.add("hidden");
+  dataNewer.classList.add("hidden");
+  dataOlder.classList.add("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: 0});
   CarbonVue.historyCO2.show = false;
   CarbonVue.historyData.show = false;
@@ -205,14 +206,46 @@ const goToFlux = () => {
 const goToData = () => {
   resetSelection();
   navDown.classList.add("hidden");
+  co2Newer.classList.add("hidden");
+  co2Older.classList.add("hidden");
   navData.classList.add("selected");
   navCo2.classList.remove("selected");
   navFlux.classList.remove("selected");
   navUp.classList.remove("hidden");
+  dataOlder.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: conf.pageHeight});
   CarbonVue.historyCO2.show = false;
   CarbonVue.historyData.show = true;
 }
+
+const nextStageCo2 = () => {
+  CarbonVue.historyCO2.nextStage();
+  navDown.classList.add("hidden");
+  co2Newer.classList.remove("hidden");
+}
+
+const previousStageCo2 = () => {
+  CarbonVue.historyCO2.previousStage();
+  if (CarbonVue.historyCO2.stage === 0) {
+    navDown.classList.remove("hidden");
+    co2Newer.classList.add("hidden");
+  }
+}
+
+const nextStageData = () => {
+  CarbonVue.historyData.nextStage();
+  navUp.classList.add("hidden");
+  dataNewer.classList.remove("hidden");
+}
+
+const previousStageData = () => {
+  CarbonVue.historyData.previousStage();
+  if (CarbonVue.historyData.stage === 0) {
+    navUp.classList.remove("hidden");
+    dataNewer.classList.add("hidden");
+  }
+}
+
 
 const goUp = () => {
   if (render.bounds.min.y === 0){
@@ -236,6 +269,10 @@ navCo2.addEventListener('click', goToCo2)
 navFlux.addEventListener('click', goToFlux)
 navData.addEventListener('click', goToData)
 navDown.addEventListener('click', goDown)
+co2Newer.addEventListener('click', previousStageCo2)
+co2Older.addEventListener('click', nextStageCo2)
+dataNewer.addEventListener('click', previousStageData)
+dataOlder.addEventListener('click', nextStageData)
 
 openTabButton.addEventListener('click', openNewTabDialog)
 tabDialog.addEventListener('close', (event) => {
