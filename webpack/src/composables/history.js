@@ -1,5 +1,9 @@
 import { ref, onMounted, watch, watchEffect } from 'vue';
 
+const layerHeight = (layer) => {
+  return layer.amount; // TODO create computation based on amount between minHeight and maxHeight
+}
+
 export default function (type) {
   // TODO How to pass the nb of stratums from history stage ? (calculate ? or nb strats (max 4 ( = 150*4)) ?)
   const maxHeight = 600;
@@ -9,6 +13,8 @@ export default function (type) {
   const show = ref(false);
   const isData = type === 'data';
   const isCo2 = type === 'co2';
+  const maxStage = ref(0);
+
   // get layers from history
   const fullHistoryCo2 = [
     { amount: 120, label: 'week 21' }, { amount: 75, label: 'week 22' },
@@ -32,7 +38,8 @@ export default function (type) {
     layers = ref(fullHistoryData);
   }
 
-  totalHeight.value = layers.value.reduce((acc, layer) => acc + layer.amount, 0);
+  totalHeight.value = layers.value.reduce((acc, layer) => acc + layerHeight(layer), 0);
+  maxStage.value = layers.value.length === 1 ? 0 : Math.ceil(totalHeight.value / maxHeight);
 
   const updateScroll = () => {
     let layer;
@@ -72,5 +79,5 @@ export default function (type) {
     stage.value--;
   }
 
-  return {layers, scroll, totalHeight, show, stage, nextStage, previousStage};
+  return {layers, scroll, totalHeight, show, stage, maxStage, nextStage, previousStage};
 }

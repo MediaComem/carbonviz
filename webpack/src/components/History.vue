@@ -20,7 +20,7 @@ export default {
 
   setup(props, context) {
     const { type } = toRefs(props)
-    const { layers, marginTop, scroll, show, stage, nextStage, previousStage } = history(type.value);
+    const { layers, marginTop, scroll, show, stage, maxStage, nextStage, previousStage } = history(type.value);
     const isCo2 = computed(() => type.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const isData = computed(() => type.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
 
@@ -53,7 +53,7 @@ export default {
       }
     }
 
-    return {isCo2, isData, layers, marginTop, scroll, show, stage, nextStage, previousStage, layerExpanded, layerCollapsed};
+    return {isCo2, isData, layers, marginTop, scroll, show, stage, maxStage, nextStage, previousStage, layerExpanded, layerCollapsed};
   }
 
 }

@@ -183,10 +183,12 @@ const goToCo2 = () => {
   navFlux.classList.remove("selected");
   navData.classList.remove("selected");
   navDown.classList.remove("hidden");
-  co2Older.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: -conf.pageHeight});
   CarbonVue.historyCO2.show = true;
   CarbonVue.historyData.show = false;
+  if (CarbonVue.historyCO2.maxStage > 0) {
+    co2Older.classList.remove("hidden");
+  }
 }
 const goToFlux = () => {
   resetSelection();
@@ -212,16 +214,21 @@ const goToData = () => {
   navCo2.classList.remove("selected");
   navFlux.classList.remove("selected");
   navUp.classList.remove("hidden");
-  dataOlder.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: conf.pageHeight});
   CarbonVue.historyCO2.show = false;
   CarbonVue.historyData.show = true;
+  if (CarbonVue.historyData.maxStage > 0) {
+    dataOlder.classList.remove("hidden");
+  }
 }
 
 const nextStageCo2 = () => {
   CarbonVue.historyCO2.nextStage();
   navDown.classList.add("hidden");
   co2Newer.classList.remove("hidden");
+  if (CarbonVue.historyCO2.stage === CarbonVue.historyCO2.maxStage) {
+    co2Older.classList.add("hidden");
+  }
 }
 
 const previousStageCo2 = () => {
@@ -230,12 +237,18 @@ const previousStageCo2 = () => {
     navDown.classList.remove("hidden");
     co2Newer.classList.add("hidden");
   }
+  if (CarbonVue.historyCO2.stage < CarbonVue.historyCO2.maxStage) {
+    co2Older.classList.remove("hidden");
+  }
 }
 
 const nextStageData = () => {
   CarbonVue.historyData.nextStage();
   navUp.classList.add("hidden");
   dataNewer.classList.remove("hidden");
+  if (CarbonVue.historyData.stage === CarbonVue.historyData.maxStage) {
+    dataOlder.classList.add("hidden");
+  }
 }
 
 const previousStageData = () => {
@@ -243,6 +256,9 @@ const previousStageData = () => {
   if (CarbonVue.historyData.stage === 0) {
     navUp.classList.remove("hidden");
     dataNewer.classList.add("hidden");
+  }
+  if (CarbonVue.historyCO2.stage < CarbonVue.historyData.maxStage) {
+    dataOlder.classList.remove("hidden");
   }
 }
 
