@@ -20,10 +20,10 @@ export default {
 
   setup(props, context) {
     const { type } = toRefs(props)
-    const { layers, marginTop, scroll, show, stage, maxStage, nextStage, previousStage } = history(type.value);
+    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = history(type.value);
     const isCo2 = computed(() => type.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const isData = computed(() => type.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
-
+    const scrollDataComponent = ref(0);
 		const active_index = ref(-1);
 
 		provide('active_index', active_index);
@@ -33,9 +33,15 @@ export default {
       const anim = window.document.querySelector('.animation');
       anim.style.transition = 'top 0.5s ease';
       watch(show, val => anim.style.top = val ? `${-scroll.value}px` : '0px');
-      watch(scroll, val => anim.style.top = show.value ? `${-val}px` : '0px');
+      watch(scroll, val => scrollDataComponent.value = scroll.value);
+      watch(scrollDataComponent, val => anim.style.top = show.value ? `${-val}px` : '0px');
       anim.style.top = 0;
     }
+
+    watch(stage, () => {
+      // reset active index when moving to another stage
+      active_index.value = -1;
+    })
 
     watch(active_index, index => {
       const navigation = window.document.querySelector('.navigation-boxes');
@@ -48,22 +54,21 @@ export default {
         navigation.classList.remove('outside');
         menu.classList.remove('outside');
       }
-
     });
 
     const layerExpanded = (height) => {
       if (isData.value) {
-        scroll.value += height;
+        scrollDataComponent.value = scroll.value + height;
       }
     }
 
     const layerCollapsed = (height) => {
       if (isData.value) {
-        scroll.value -= height;
+        scrollDataComponent.value = scroll.value;
       }
     }
 
-    return {isCo2, isData, layers, marginTop, scroll, show, stage, maxStage, nextStage, previousStage, layerExpanded, layerCollapsed};
+    return {isCo2, isData, layers, scroll, scrollDataComponent, show, stage, maxStage, nextStage, previousStage, layerExpanded, layerCollapsed};
   }
 
 }
@@ -73,7 +78,7 @@ export default {
   <div v-if="show" :style="`--top: ${isCo2 ? -scroll : 0}px`" class="history-wrapper">
     <stratum v-for="(layer, index) in layers" :key="index"
       :index="index" :amount="layer.amount" :label="layer.label" :type="type" :stage="stage"
-      @expanded="layerExpanded" @collapsed="layerCollapsed"></stratum>
+      @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>
   </div>
 </template>
 

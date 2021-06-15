@@ -9,7 +9,7 @@ export default {
     label: {type: String},
     stage: {type: Number}
   },
-  emits: ['expanded', 'collapsed'],
+  emits: ['willExpand', 'willCollapse'],
   setup(props, { emit }) {
 
     const active_index = inject('active_index');
@@ -20,8 +20,14 @@ export default {
     const shouldAnimate = ref(false);
     const height = computed(() => props.amount); //formula to find ! borne entre min max(200px) (easing linear ?)
     const expand = () => {
-      active_index.value = expanded.value ? -1 : index.value;
+      const isExpanded = expanded.value;
+      active_index.value = isExpanded ? -1 : index.value;
       shouldAnimate.value = true;
+      if (!isExpanded) {
+        emit('willExpand', fullHeight-height.value);
+      } else {
+        emit('willCollapse', fullHeight-height.value);
+      }
     };
     watch(active_index, () => {
       const active = active_index.value===index.value;
@@ -29,13 +35,7 @@ export default {
         return;
       }
       expanded.value = active;
-      if (expanded.value) {
-        emit('expanded', fullHeight-height.value);
-      } else {
-        emit('collapsed', fullHeight-height.value);
-      }
     });
-    watch(stage, () => { expanded.value = false, shouldAnimate.value = false; });
     return {active_index, height, expanded, expand, shouldAnimate};
 }
 
