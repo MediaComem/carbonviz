@@ -1,8 +1,9 @@
 <script>
-import { computed, ref, toRefs, watch } from 'vue';
+import { computed, inject, ref, toRefs, watch } from 'vue';
 
 export default {
   props: {
+    index: {type: Number},
     amount: {type: Number},
     type: {type: String},
     label: {type: String},
@@ -10,23 +11,33 @@ export default {
   },
   emits: ['expanded', 'collapsed'],
   setup(props, { emit }) {
+
+    const active_index = inject('active_index');
+
     const fullHeight = 200;
-    const {stage} = toRefs(props);
+    const { index, stage } = toRefs(props);
     const expanded = ref(false);
     const shouldAnimate = ref(false);
     const height = computed(() => props.amount); //formula to find ! borne entre min max(200px) (easing linear ?)
     const expand = () => {
-      expanded.value = !expanded.value;
+      active_index.value = expanded.value ? -1 : index.value;
       shouldAnimate.value = true;
+    };
+    watch(active_index, () => {
+      const active = active_index.value===index.value;
+      if(!expanded.value && !active) {
+        return;
+      }
+      expanded.value = active;
       if (expanded.value) {
         emit('expanded', fullHeight-height.value);
       } else {
         emit('collapsed', fullHeight-height.value);
       }
-    };
+    });
     watch(stage, () => { expanded.value = false, shouldAnimate.value = false; });
-    return {height, expanded, expand, shouldAnimate};
-  }
+    return {active_index, height, expanded, expand, shouldAnimate};
+}
 
 }
 </script>

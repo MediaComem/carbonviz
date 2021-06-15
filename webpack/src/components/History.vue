@@ -1,7 +1,7 @@
 <script>
 import history from '../composables/history';
 import Stratum from './HistoryStratum.vue';
-import { computed, watch, toRefs } from 'vue';
+import { computed, provide, watch, toRefs, ref } from 'vue';
 
 /*
 interface HistoryLayerData {
@@ -24,6 +24,10 @@ export default {
     const isCo2 = computed(() => type.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const isData = computed(() => type.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
 
+		const active_index = ref(-1);
+
+		provide('active_index', active_index);
+
     // for DATA we need "move up" the animation by the height of the stratums
     if (isData.value) {
       const anim = window.document.querySelector('.animation');
@@ -33,21 +37,27 @@ export default {
       anim.style.top = 0;
     }
 
-    const layerExpanded = (height) => {
+    watch(active_index, index => {
       const navigation = window.document.querySelector('.navigation-boxes');
       const menu = window.document.querySelector('.menu');
-      navigation.classList.add('outside');
-      menu.classList.add('outside');
+      const expanded = index !== -1;
+      if (expanded) {
+        navigation.classList.add('outside');
+        menu.classList.add('outside');
+      } else {
+        navigation.classList.remove('outside');
+        menu.classList.remove('outside');
+      }
+
+    });
+
+    const layerExpanded = (height) => {
       if (isData.value) {
         scroll.value += height;
       }
     }
 
     const layerCollapsed = (height) => {
-      const navigation = window.document.querySelector('.navigation-boxes');
-      const menu = window.document.querySelector('.menu');
-      navigation.classList.remove('outside');
-      menu.classList.remove('outside');
       if (isData.value) {
         scroll.value -= height;
       }
@@ -62,7 +72,7 @@ export default {
 <template>
   <div v-if="show" :style="`--top: ${isCo2 ? -scroll : 0}px`" class="history-wrapper">
     <stratum v-for="(layer, index) in layers" :key="index"
-      :amount="layer.amount" :label="layer.label" :type="type" :stage="stage"
+      :index="index" :amount="layer.amount" :label="layer.label" :type="type" :stage="stage"
       @expanded="layerExpanded" @collapsed="layerCollapsed"></stratum>
   </div>
 </template>
