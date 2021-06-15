@@ -34,7 +34,7 @@ export default function (type) {
 
   totalHeight.value = layers.value.reduce((acc, layer) => acc + layer.amount, 0);
 
-  const updateScroll = (extraHeight = 0) => {
+  const updateScroll = () => {
     let layer;
     if (isCo2) {
       if (stage.value === 0) {
@@ -51,10 +51,9 @@ export default function (type) {
         layer.visible = true;
         scroll.value = layer.amount;
       } else {
-        scroll.value = Math.max(stage.value*maxHeight, totalHeight.value);
+        scroll.value = Math.min(stage.value*maxHeight, totalHeight.value);
       };
     }
-    scroll.value += extraHeight;
   }
 
   onMounted(updateScroll);
