@@ -130,6 +130,8 @@ const destroyEntity = (entity) => {
 
 // draw the selection line for the meta data popup
 const drawSelectionLine = (body, ctx) => {
+  //if menu is outside off the screen, dosent draw the selection line
+  if (window.document.querySelector('.menu').classList.contains('outside')) return;
   let center = body.position;
   ctx.strokeStyle = conf.assets.selectLine;
   ctx.fillStyle = conf.assets.selectCircle;
@@ -139,9 +141,10 @@ const drawSelectionLine = (body, ctx) => {
   let y = conf.height / 2;
   // remove height of the today histo startum
   if (CarbonVue.historyCO2.show) {
-    y -= CarbonVue.historyCO2.totalHeight;
+    let layers = CarbonVue.historyCO2.layers;
+    if (layers.length>0) y -= layers[layers.length-1].amount; // TODO use height insetead
   } else if (CarbonVue.historyData.show) {
-    y += CarbonVue.historyData.totalHeight;
+    y += CarbonVue.historyData.scrollDataComponent;
   }
 
   let angle = Math.atan2(y - (center.y - render.bounds.min.y), x - center.x);
