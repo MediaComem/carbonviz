@@ -21,6 +21,14 @@ function getMonday(date) {
   return new Date(date.setDate(diff));
 }
 
+function dateStringWithHour(dataObject, withHour) {
+  if (withHour) {
+    return dataObject.toISOString().slice(0,13)
+  } else {
+    return dataObject.toISOString().slice(0,10)
+  }
+}
+
 co2HistoryDB.open = () => {
 
   return new Promise(function(resolve) {
@@ -70,7 +78,7 @@ co2HistoryDB.open = () => {
     request.onsuccess = function (e) {
       co2HistoryDB.db = request.result;
       console.log("DB created");
-      resolve();
+      return resolve();
     };
 
     request.onerror = co2HistoryDB.onerror;
@@ -83,7 +91,7 @@ function init() {
 
 window.addEventListener("DOMContentLoaded", init, false);
 
-async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, DomainTotal, timeStamp) {
+async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, domainTotal, timeStamp) {
   const db = co2HistoryDB.db;
   let trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readwrite");
   let daysStore = trans.objectStore("dataTimeStamp");
@@ -91,26 +99,26 @@ async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, DomainTotal,
   let historySummaryStore = trans.objectStore("historySummary");
   let domainStore = trans.objectStore("domains");
 
-  const sotredData = {
+  const storedData  = {
     index: 0,
     lastStoredDate: timeStamp,
     weekStartDate: getMonday(timeStamp)
   }
   const history = {
-    index: timeStamp.toISOString().slice(0,13),
+    index: dateStringWithHour(timeStamp, true),
     co2: hourCo2,
     data: hourData
   }
   const historySummary = {
-    index: timeStamp.toISOString().slice(0,10),
+    index: dateStringWithHour(timeStamp, false),
     co2: dayCo2,
     data: dayData
   }
 
-  daysStore.put(sotredData);
+  daysStore.put(storedData );
   historyStore.put(history);
   historySummaryStore.put(historySummary);
-  domainStore.put(DomainTotal);
+  domainStore.put(domainTotal);
 };
 
 
@@ -150,7 +158,7 @@ function getLastStoredTime(today, domainName) {
   });
 }
 
-function addnewRecord(co2Size, sizeData, DomainTotal, timeStamp) {
+function addnewRecord(co2Size, sizeData, domainTotal, timeStamp) {
   const db = co2HistoryDB.db;
   let trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readwrite");
   let daysStore = trans.objectStore("dataTimeStamp");
@@ -158,7 +166,7 @@ function addnewRecord(co2Size, sizeData, DomainTotal, timeStamp) {
   let historySummaryStore = trans.objectStore("historySummary");
   let domainStore = trans.objectStore("domains");
 
-  const sotredData = {
+  const storedData  = {
     index: 0,
     lastStoredDate: timeStamp,
     weekStartDate: getMonday(timeStamp)
@@ -174,10 +182,10 @@ function addnewRecord(co2Size, sizeData, DomainTotal, timeStamp) {
     data: sizeData
   }
 
-  daysStore.put(sotredData);
+  daysStore.put(storedData );
   historyStore.put(history);
   historySummaryStore.put(historySummary);
-  domainStore.put(DomainTotal);
+  domainStore.put(domainTotal);
 
 }
 

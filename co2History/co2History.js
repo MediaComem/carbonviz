@@ -25,13 +25,13 @@ const co2Size = (value) => {
     }
 }
 
-export function updateCo2Total(domain, sizeCo2, sizeData) {
+export function updateCo2Total(domain, sizeCo2, sizeData, timestamp) {
     return new Promise(async function(resolve) {
-        const today = new Date();
-        let DayTotalCo2 = 0;
-        let DayTotalData = 0;
-        let HourTotalCo2 = 0;
-        let HourTotalData = 0;
+        const today = new Date(timestamp);
+        let dayTotalCo2 = 0;
+        let dayTotalData = 0;
+        let hourTotalCo2 = 0;
+        let hourTotalData = 0;
         const lastStoredDBEntry = await getLastStoredTime(today, domain);
         const dataBytes = getUnit(sizeData);
         let lastStoredDate = lastStoredDBEntry.dataTimeStamp.lastStoredDate;
@@ -56,19 +56,19 @@ export function updateCo2Total(domain, sizeCo2, sizeData) {
         }
         // same hour
         if (history != undefined) {
-            HourTotalCo2 = parseFloat((sizeCo2 + history.co2).toFixed(3));
-            HourTotalData = parseFloat((dataBytes + history.data).toFixed(3));
+            hourTotalCo2 = parseFloat((sizeCo2 + history.co2).toFixed(3));
+            hourTotalData = parseFloat((dataBytes + history.data).toFixed(3));
         }
         // same day
         if (historySummry != undefined) {
-            DayTotalCo2 = parseFloat((sizeCo2 + historySummry.co2).toFixed(3));
-            DayTotalData = parseFloat((dataBytes + historySummry.data).toFixed(3));
-            updateTodaysData(DayTotalCo2, HourTotalCo2, DayTotalData, HourTotalData, newDomainTotal, today);
+            dayTotalCo2 = parseFloat((sizeCo2 + historySummry.co2).toFixed(3));
+            dayTotalData = parseFloat((dataBytes + historySummry.data).toFixed(3));
+            updateTodaysData(dayTotalCo2, hourTotalCo2, dayTotalData, hourTotalData, newDomainTotal, today);
         } else {
             addnewRecord(sizeCo2, dataBytes, newDomainTotal, today);
         }
 
-        document.getElementById("todayCo2").innerHTML="Today: "+co2Size(DayTotalCo2);
+        document.getElementById("todayCo2").innerHTML="Today: "+co2Size(dayTotalCo2);
         resolve();
     });
 }
