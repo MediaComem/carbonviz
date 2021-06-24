@@ -6,10 +6,7 @@ if ('webkitIndexedDB' in window) {
 }
 
 const co2HistoryDB = {
-  db: null,
-  onerror: function (e) {
-    console.log(e);
-  }
+  db: null
 };
 
 const today = new Date();
@@ -20,6 +17,14 @@ function getMonday(date) {
   let diff = date.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
   return new Date(date.setDate(diff));
 }
+
+function getWeekOfYear(date){
+  let d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  let dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  let yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
+};
 
 function dateStringWithHour(dataObject, withHour) {
   if (withHour) {
@@ -32,56 +37,68 @@ function dateStringWithHour(dataObject, withHour) {
 co2HistoryDB.open = () => {
 
   return new Promise(function(resolve) {
-
     let version = 1;
     const request = indexedDB.open("co2HistoryDB", version);
-
-    // We can only create Object stores in a versionchange transaction.
+    // For any changes to an existing DB structure, the version number needs to be incremented.
+    // Only then will the onupgradeneeded function run.
     request.onupgradeneeded = function () {
-      request.transaction.onerror = co2HistoryDB.onerror;
       let db = request.result;
 
-      const storeDays = db.createObjectStore("dataTimeStamp", { keyPath: "index" });
-      storeDays.createIndex("by_index", "index", { unique: true });
-      storeDays.add({
-        index: 0,
-        lastStoredDate: today,
-        weekStartDate: getMonday(today)
-      });
+      if (!db.objectStoreNames.contains('dataTimeStamp')) {
+        const storeDays = db.createObjectStore("dataTimeStamp", { keyPath: "index" });
+        storeDays.createIndex("by_index", "index", { unique: true });
+        storeDays.add({
+          index: 0,
+          lastStoredDate: today,
+          weekStartDate: getMonday(today)
+        });
+      }
 
-      const storeHistory = db.createObjectStore("history", { keyPath: "index" });
-      storeHistory.createIndex("by_index", "index", { unique: true });
-      storeHistory.add({
-        index: today.toISOString().slice(0,13),
-        co2: 0,
-        data: 0
-      });
+      if (!db.objectStoreNames.contains('history')) {
+        const storeHistory = db.createObjectStore("history", { keyPath: "index" });
+        storeHistory.createIndex("by_index", "index", { unique: true });
+        storeHistory.add({
+          index: dateStringWithHour(today, true),
+          month: today.getMonth()+1,
+          date: today.getDate(),
+          weekOfMonth: (today.getDate() / 7)+1,
+          co2: 0,
+          data: 0
+        });
+      }
 
-      const storeHistorySummary = db.createObjectStore("historySummary", { keyPath: "index" });
-      storeHistorySummary.createIndex("by_index", "index", { unique: true });
-      storeHistorySummary.add({
-        index: today.toISOString().slice(0,10),
-        co2: 0,
-        data: 0
-      });
+      if (!db.objectStoreNames.contains('historySummary')) {
+        const storeHistorySummary = db.createObjectStore("historySummary", { keyPath: "index" });
+        storeHistorySummary.createIndex("by_index", "index", { unique: true });
+        storeHistorySummary.add({
+          index: dateStringWithHour(today, false),
+          month: today.getMonth()+1,
+          date: today.getDate(),
+          weekOfMonth: (today.getDate() / 7)+1,
+          co2: 0,
+          data: 0
+        });
+      }
 
-      const storeDomains = db.createObjectStore("domains", { keyPath: "name" });
-      storeDomains.createIndex("by_name", "name", { unique: true });
-      storeDomains.add({
-        name: "0.0",
-        co2: 0,
-        data: 0
-      });
-      console.log("onupgradeneeded");
+      if (!db.objectStoreNames.contains('domains')) {
+        const storeDomains = db.createObjectStore("domains", { keyPath: "name" });
+        storeDomains.createIndex("by_name", "name", { unique: true });
+        storeDomains.add({
+          name: "0.0",
+          co2: 0,
+          data: 0
+        });
+      }
     };
 
     request.onsuccess = function (e) {
       co2HistoryDB.db = request.result;
-      console.log("DB created");
       return resolve();
     };
 
-    request.onerror = co2HistoryDB.onerror;
+    request.onerror = function (e) {
+      return reject();
+    }
   })
 };
 
@@ -106,11 +123,20 @@ async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, domainTotal,
   }
   const history = {
     index: dateStringWithHour(timeStamp, true),
+    month: today.getMonth()+1,
+    date: today.getDate(),
+    hour: today.getUTCHours(),
+    weekOfYear: getWeekOfYear(today),
+    weekOfMonth: parseInt((today.getDate() / 7)+1),
     co2: hourCo2,
     data: hourData
   }
   const historySummary = {
     index: dateStringWithHour(timeStamp, false),
+    month: today.getMonth()+1,
+    date: today.getDate(),
+    weekOfYear: getWeekOfYear(today),
+    weekOfMonth: parseInt((today.getDate() / 7)+1),
     co2: dayCo2,
     data: dayData
   }
@@ -123,20 +149,22 @@ async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, domainTotal,
 
 
 function getLastStoredTime(today, domainName) {
-  const historyIndex = today.toISOString().slice(0,13);
-  const historySummaryIndex = today.toISOString().slice(0,10);
+  const historyIndex = dateStringWithHour(today, true);
+  const historySummaryIndex = dateStringWithHour(today, false);
   const data = {
     dataTimeStamp: {},
     history: {},
-    historySummary: {}
+    historySummary: {},
+    domain: {},
+    storedDates: {}
   };
   return new Promise(function (resolve) {
     const db = co2HistoryDB.db;
-    const tx = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readonly");
-    const DayStore = tx.objectStore("dataTimeStamp");
-    const historyStore = tx.objectStore("history");
-    const historySummaryStore = tx.objectStore("historySummary");
-    const domainStore = tx.objectStore("domains");
+    const trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readonly");
+    const DayStore = trans.objectStore("dataTimeStamp");
+    const historyStore = trans.objectStore("history");
+    const historySummaryStore = trans.objectStore("historySummary");
+    const domainStore = trans.objectStore("domains");
 
     DayStore.get(0).onsuccess = function (event) {
       data.dataTimeStamp = event.target.result;
@@ -150,8 +178,11 @@ function getLastStoredTime(today, domainName) {
     domainStore.get(domainName).onsuccess = function (event) {
       data.domain = event.target.result;
     }
+    historySummaryStore.getAllKeys().onsuccess = function (event) {
+      data.storedDates = event.target.result;
+    }
 
-    tx.oncomplete = function() {
+    trans.oncomplete = function() {
       return resolve(data);
     }
 
@@ -172,12 +203,21 @@ function addnewRecord(co2Size, sizeData, domainTotal, timeStamp) {
     weekStartDate: getMonday(timeStamp)
   }
   const history = {
-    index: timeStamp.toISOString().slice(0,13),
+    index: dateStringWithHour(timeStamp, true),
+    month: today.getMonth()+1,
+    date: today.getDate(),
+    hour: today.getUTCHours(),
+    weekOfYear: getWeekOfYear(today),
+    weekOfMonth: parseInt((today.getDate() / 7)+1),
     co2: co2Size,
     data: sizeData
   }
   const historySummary = {
-    index: timeStamp.toISOString().slice(0,10),
+    index: dateStringWithHour(timeStamp, false),
+    month: today.getMonth()+1,
+    date: today.getDate(),
+    weekOfYear: getWeekOfYear(today),
+    weekOfMonth: parseInt((today.getDate() / 7)+1),
     co2: co2Size,
     data: sizeData
   }
@@ -189,5 +229,71 @@ function addnewRecord(co2Size, sizeData, domainTotal, timeStamp) {
 
 }
 
+function getkeyRange(period, occurrence) {
+  let endDate = new Date();
+  let startDate = new Date(endDate);
+  let startKey = '';
+  let endKey = '';
 
-export { getLastStoredTime, updateTodaysData, addnewRecord }
+  if (period == 'day') {
+    startDate = new Date(startDate.setDate(startDate.getDate() - occurrence));
+    endKey = dateStringWithHour(endDate, true);
+    startKey = dateStringWithHour(startDate, true);
+  }
+  if (period == 'week') {
+    startDate = new Date(startDate.setDate(startDate.getDate() - (7 * occurrence)));
+    endKey = dateStringWithHour(endDate, false);
+    startKey = dateStringWithHour(startDate, false);
+  }
+  if (period == 'month') {
+    startDate = new Date(startDate.setMonth(startDate.getMonth() - occurrence));
+    endKey = dateStringWithHour(endDate, false);
+    startKey = dateStringWithHour(startDate, false);
+  }
+  return {startKey, endKey};
+}
+
+function getHistory(period, occurrence) {
+  let data = [];
+  const keys = getkeyRange(period, occurrence);
+  let keyRangeValue = IDBKeyRange.bound(keys.startKey, keys.endKey);
+
+  const db = co2HistoryDB.db;
+  const trans = db.transaction(["history", "historySummary"], "readonly");
+  const historyStore = trans.objectStore("history");
+  const historySummaryStore = trans.objectStore("historySummary");
+
+  if (period == 'day') {
+    historyStore.openCursor(keyRangeValue).onsuccess = function(event) {
+      let cursor = event.target.result;
+      if(cursor) {
+        data.push(cursor.value);
+        cursor.continue();
+      } else {
+        return data;
+      }
+    };
+  } else {
+    historySummaryStore.openCursor(keyRangeValue).onsuccess = function(event) {
+      let cursor = event.target.result;
+      if(cursor) {
+        data.push(cursor.value);
+        cursor.continue();
+      } else {
+        return data;
+      }
+    };
+  }
+}
+
+function deleteData(key) {
+  const db = co2HistoryDB.db;
+  const trans = db.transaction(["history", "historySummary"], "readwrite");
+  const historyStore = trans.objectStore("history");
+  const historySummaryStore = trans.objectStore("historySummary");
+  let keyRangeValue = IDBKeyRange.bound(key+"T00", key+"T23");
+  historyStore.delete(keyRangeValue);
+  historySummaryStore.delete(key);
+}
+
+export { getLastStoredTime, updateTodaysData, addnewRecord, getHistory, deleteData }

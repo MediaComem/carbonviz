@@ -1,4 +1,4 @@
-import { getLastStoredTime, updateTodaysData, addnewRecord } from "./indexedDB.js";
+import { getLastStoredTime, updateTodaysData, addnewRecord, getHistory, deleteData } from "./indexedDB.js";
 
 const getUnit = (randamUnit) => {
     var unit = /[A-Za-z]+$/;
@@ -34,8 +34,7 @@ export function updateCo2Total(domain, sizeCo2, sizeData, timestamp) {
         let hourTotalData = 0;
         const lastStoredDBEntry = await getLastStoredTime(today, domain);
         const dataBytes = getUnit(sizeData);
-        let lastStoredDate = lastStoredDBEntry.dataTimeStamp.lastStoredDate;
-        let weekStartDate = lastStoredDBEntry.dataTimeStamp.weekStartDate;
+        let storedDates = lastStoredDBEntry.storedDates;
         let history = lastStoredDBEntry.history;
         let historySummry = lastStoredDBEntry.historySummary;
         const domainTotal = lastStoredDBEntry.domain;
@@ -53,6 +52,12 @@ export function updateCo2Total(domain, sizeCo2, sizeData, timestamp) {
                 co2: sizeCo2,
                 data: dataBytes
             }
+        }
+
+        // Clean obsolete data storage (older than four months)
+        let oldestDate = new Date(storedDates[0]);
+        if (oldestDate.getFullYear != today.getFullYear || oldestDate.getMonth() < today.getMonth() - 4) {
+            deleteData(storedDates[0]);
         }
         // same hour
         if (history != undefined) {
