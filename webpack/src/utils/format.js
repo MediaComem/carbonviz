@@ -1,3 +1,5 @@
+export const days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'So'];
+
 export function roundToPrecision(val, precision = 2) {
   return parseFloat(val.toFixed(precision).toString());
 }

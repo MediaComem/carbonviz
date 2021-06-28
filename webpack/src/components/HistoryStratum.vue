@@ -1,7 +1,12 @@
 <script>
+import weekChart from '../composables/weekChart';
 import { computed, inject, ref, toRefs, watch } from 'vue';
+import VueApexCharts from "vue3-apexcharts";
 
 export default {
+  components: {
+    apexchart: VueApexCharts,
+  },
   props: {
     index: {type: Number},
     amount: {type: Number},
@@ -36,7 +41,12 @@ export default {
       }
       expanded.value = active;
     });
-    return {active_index, height, expanded, expand, shouldAnimate};
+
+    // TODO: replace with some real DATA from the indexedDB
+    const showGraph = props.type == 'co2' ? props.index < 4 : props.index > 3;
+    const {options, series} = weekChart(props.type, [30, 36.34, 70, 23, 34, 23, 46]);
+
+    return {active_index, height, expanded, expand, shouldAnimate, showGraph, options, series};
 }
 
 }
@@ -49,7 +59,7 @@ export default {
       @click="expand()"
   >
     <div class="label">{{ label }}</div><img :src="`assets/${type}.svg`" :style="`--amount: ${amount - 10}px;`">
-    <div class="metadata">internal data</div>
+    <apexchart v-if="showGraph" class="graph" type="bar" height="200" width="130" :options="options" :series="series"></apexchart>
   </div>
 </template>
 
@@ -84,12 +94,13 @@ export default {
     top: 10px;
     left: 10px;
   }
-
-  .metadata {
+  .graph {
     display: none;
   }
-  .expanded .metadata {
+  .expanded .graph {
     position: absolute;
+    top: 0;
+    right: 0;
     display: block;
   }
 
@@ -115,4 +126,12 @@ export default {
 
   }
 
+</style>
+<style>
+  .apexcharts-yaxis-inversed {
+    display: none;
+  }
+  .apexcharts-yaxis-label title {
+    display: none;
+  }
 </style>
