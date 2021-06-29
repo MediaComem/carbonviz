@@ -3,7 +3,7 @@ import conf from '../unplug/js/conf.mjs';
 import { render } from '../unplug/js/main.mjs';
 
 const pubSub = new PubSub();
-const defaultOptions = { debounce: true, showTabConfirmation: true };
+const defaultOptions = { debounce: true, showTabConfirmation: true, showOnBoarding: true };
 let userOptions = defaultOptions;
 
 const manifest = chrome.runtime.getManifest();
@@ -68,10 +68,11 @@ const type = (packet) => {
   return capitalized;
 }
 const co2 = (packet) => {
-  return `${Math.floor(1000000*packet.chunkSizeCo2)/1000} g`;
+  return `${CarbonVue.co2DataCounter.formatCo2(1000*packet.chunkSizeCo2)}`;
 }
 
 // User interface
+const body = window.document.body;
 const openTabDialog = window.document.getElementById("tabDialog");
 const openTabButton = window.document.getElementById("switchToTab");
 const tabConfirmationCheckbox = window.document.getElementById("disableNewTabConfirmation");
@@ -82,6 +83,11 @@ const navCo2 = window.document.getElementById("navCo2");
 const navFlux = window.document.getElementById("navFlux");
 const navData = window.document.getElementById("navData");
 const navDown = window.document.getElementById("navDown");
+const co2Older = window.document.getElementById("co2Older");
+const co2Newer = window.document.getElementById("co2Newer");
+const dataOlder = window.document.getElementById("dataOlder");
+const dataNewer = window.document.getElementById("dataNewer");
+
 // Menu
 // Packet info
 const info = window.document.getElementById("packet-info");
@@ -163,18 +169,6 @@ const createExtensionTab = () => {
   });
 }
 
-const embedPlugin = () => {
-  // if embed activated - send message to background script to embed view
-  chrome.runtime.sendMessage({ query: 'embedPlugin' }, {},  () => {});
-  // close popup
-  window.close();
-}
-
-const toggleDebounce = () => {
-  userOptions.debounce = debounceCheckbox.checked;
-  localStorage.setItem('options', JSON.stringify(userOptions));
-}
-
 const resetSelection = () => {
   pubSub.publish('clear-selection', null); // reset selection if navigating
 }
@@ -182,11 +176,19 @@ const resetSelection = () => {
 const goToCo2 = () => {
   resetSelection();
   navUp.classList.add("hidden");
+  dataNewer.classList.add("hidden");
+  dataOlder.classList.add("hidden");
+  navUp.classList.add("hidden");
   navCo2.classList.add("selected");
   navFlux.classList.remove("selected");
   navData.classList.remove("selected");
   navDown.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: -conf.pageHeight});
+  CarbonVue.historyCO2.show = true;
+  CarbonVue.historyData.show = false;
+  if (CarbonVue.historyCO2.maxStage > 0) {
+    co2Older.classList.remove("hidden");
+  }
 }
 const goToFlux = () => {
   resetSelection();
@@ -195,17 +197,71 @@ const goToFlux = () => {
   navData.classList.remove("selected");
   navUp.classList.remove("hidden");
   navDown.classList.remove("hidden");
+  co2Newer.classList.add("hidden");
+  co2Older.classList.add("hidden");
+  dataNewer.classList.add("hidden");
+  dataOlder.classList.add("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: 0});
+  CarbonVue.historyCO2.show = false;
+  CarbonVue.historyData.show = false;
 }
 const goToData = () => {
   resetSelection();
   navDown.classList.add("hidden");
+  co2Newer.classList.add("hidden");
+  co2Older.classList.add("hidden");
   navData.classList.add("selected");
   navCo2.classList.remove("selected");
   navFlux.classList.remove("selected");
   navUp.classList.remove("hidden");
   Matter.Bounds.shift(render.bounds, {x:0, y: conf.pageHeight});
+  CarbonVue.historyCO2.show = false;
+  CarbonVue.historyData.show = true;
+  if (CarbonVue.historyData.maxStage > 0) {
+    dataOlder.classList.remove("hidden");
+  }
 }
+
+const nextStageCo2 = () => {
+  CarbonVue.historyCO2.nextStage();
+  navDown.classList.add("hidden");
+  co2Newer.classList.remove("hidden");
+  if (CarbonVue.historyCO2.stage === CarbonVue.historyCO2.maxStage) {
+    co2Older.classList.add("hidden");
+  }
+}
+
+const previousStageCo2 = () => {
+  CarbonVue.historyCO2.previousStage();
+  if (CarbonVue.historyCO2.stage === 0) {
+    navDown.classList.remove("hidden");
+    co2Newer.classList.add("hidden");
+  }
+  if (CarbonVue.historyCO2.stage < CarbonVue.historyCO2.maxStage) {
+    co2Older.classList.remove("hidden");
+  }
+}
+
+const nextStageData = () => {
+  CarbonVue.historyData.nextStage();
+  navUp.classList.add("hidden");
+  dataNewer.classList.remove("hidden");
+  if (CarbonVue.historyData.stage === CarbonVue.historyData.maxStage) {
+    dataOlder.classList.add("hidden");
+  }
+}
+
+const previousStageData = () => {
+  CarbonVue.historyData.previousStage();
+  if (CarbonVue.historyData.stage === 0) {
+    navUp.classList.remove("hidden");
+    dataNewer.classList.add("hidden");
+  }
+  if (CarbonVue.historyCO2.stage < CarbonVue.historyData.maxStage) {
+    dataOlder.classList.remove("hidden");
+  }
+}
+
 
 const goUp = () => {
   if (render.bounds.min.y === 0){
@@ -229,6 +285,10 @@ navCo2.addEventListener('click', goToCo2)
 navFlux.addEventListener('click', goToFlux)
 navData.addEventListener('click', goToData)
 navDown.addEventListener('click', goDown)
+co2Newer.addEventListener('click', previousStageCo2)
+co2Older.addEventListener('click', nextStageCo2)
+dataNewer.addEventListener('click', previousStageData)
+dataOlder.addEventListener('click', nextStageData)
 
 openTabButton.addEventListener('click', openNewTabDialog)
 tabDialog.addEventListener('close', (event) => {
@@ -245,9 +305,8 @@ tabDialog.addEventListener('close', (event) => {
 let scrolling = false;
 
 window.document.onwheel = (e) => {
-  if (scrolling) {
-    return;
-  }
+  if (body.classList.contains('anim-onboarding')) return; // disabled at onboarding
+  if (scrolling) return;
   scrolling = true;
   if (e.deltaY < 0) {
     goUp();
@@ -326,6 +385,8 @@ const sendToAnimation = () => {
 
   for (let id of Object.keys(animations)) {
     pubSub.publish('input-data', animations[id]);
+    CarbonVue.co2DataCounter.data += animations[id].contentLength - 0;
+    CarbonVue.co2DataCounter.co2 += animations[id].co2 - 0;
   }
 
 }
@@ -495,6 +556,18 @@ const configure = () => {
   configureDarkMode(window.matchMedia('(prefers-color-scheme: dark)'));
 }
 
+const initAnimation = () => {
+  // Onboarding (do it only once)
+  if (userOptions.showOnBoarding) {
+    body.classList.add('anim-onboarding');
+    setTimeout(() => {
+      body.classList.remove('anim-onboarding');
+      userOptions.showOnBoarding = false;
+      localStorage.setItem('options', JSON.stringify(userOptions));
+    }, 10000);
+  }
+}
+
 const init = () => {
 
   const options = localStorage.getItem('options');
@@ -525,6 +598,8 @@ const init = () => {
   configure();
 
   initHistory();
+
+  initAnimation();
 
   // listen to nee packets
   chrome.runtime.onMessage.addListener(handleMessage);

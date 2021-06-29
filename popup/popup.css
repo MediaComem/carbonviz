@@ -22,6 +22,7 @@ dialog menu {
   width: 500px;
   height: 600px;
   margin: auto;
+  overflow: hidden
 }
 
 canvas {
@@ -107,18 +108,19 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  z-index: 100;
 }
 
 .navigation-up {
   position: absolute;
-  top: 14px;
+  top: 7px;
   left: 19px;
   cursor: pointer;
 }
 
 .navigation-down {
   position: absolute;
-  bottom: 14px;
+  bottom: 7px;
   left: 19px;
   cursor: pointer;
 }
@@ -130,6 +132,14 @@ button {
 .navigation-boxes {
   background-color: #f8f8f8;
   padding-right: 8px;
+}
+
+.navigation-boxes {
+  transition: margin-left 0.5s ease, margin-right 0.5s ease;
+}
+.navigation-boxes.outside {
+  margin-left: -59px;
+  margin-right: 59px;
 }
 
 .navigation-box {
@@ -171,7 +181,11 @@ button {
 }
 
 .animation {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 500px;
+  height: 600px;
 }
 
 .menu {
@@ -183,6 +197,12 @@ button {
   right: 0px;
 }
 
+.menu {
+  transition: right 0.5s ease;
+}
+.menu.outside {
+  right: -121px;
+}
 
 .menu .header {
   display: flex;
@@ -335,6 +355,10 @@ button {
   padding-top: 8px;
 }
 
+.menu .consumption {
+  margin-top: 20px;
+}
+
 .menu .history {
   position: absolute;
   bottom: 0px;
@@ -388,6 +412,11 @@ button {
   margin-left: 21px;
 }
 
+.histo-co2 {
+  height: 137px;
+  background-color: #906C0D;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #262626;
@@ -400,6 +429,10 @@ button {
 
   .container {
     background-color: #000;
+  }
+
+  .animation, .onboarding {
+    background-color: #363636;
   }
 
   button {
@@ -554,4 +587,40 @@ button {
   .history .data-info {
     color: white;
   }
+}
+
+/* ANIMATIONS */
+.onboarding {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+body.anim-onboarding .navigation-box.up *,
+body.anim-onboarding .navigation-box.down *,
+body.anim-onboarding .navigation-up,
+body.anim-onboarding .navigation-down,
+body.anim-onboarding .unplug,
+body.anim-onboarding .menu {
+  display: none;
+}
+body:not(.anim-onboarding) .onboarding {
+  display: none;
+}
+body:not(.anim-onboarding) .menu {
+  --translate-amount:  125px;
+  animation: slide-from-right 0.4s ease-in;
+}
+body:not(.anim-onboarding) .unplug {
+  --translate-amount: 200px;
+  animation: slide-from-right 0.4s ease-in;
+}
+
+@keyframes slide-from-right {
+  0% {transform: translateX(var(--translate-amount))}
+  100% {transform: translateX(0)}
+}
+
+@keyframes slide-to-left {
+  0% {transform: translateX(0)}
+  100% {transform: translateX(var(--translate-amount))}
 }

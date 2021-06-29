@@ -4,6 +4,7 @@
     <title>CarbonViz</title>
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"  href="./popup.css">
+    <link rel="stylesheet"  href="../bundle/popup.css">
     <script type="module"  src="popup.mjs"></script>
     <script src="../unplug/js/matter.min.js"></script>
   </head>
@@ -31,13 +32,25 @@
               <circle cx="11" cy="11" r="10" stroke-width="2"/>
             </svg>
           </div>
+          <div class="icon up hidden" id="co2Older">
+            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+              <path class="arrow" d="M16.1 11.5l-4.2-4.2c-.4-.4-1-.4-1.4 0l-4.2 4.2c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.5-3.5 3.5 3.5c.2.2.4.3.7.3.3 0 .5-.1.7-.3.4-.4.4-1 0-1.4z"/>
+              <circle cx="11" cy="11" r="10" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="icon up hidden" id="dataNewer">
+            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+              <path class="arrow" d="M16.1 11.5l-4.2-4.2c-.4-.4-1-.4-1.4 0l-4.2 4.2c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.5-3.5 3.5 3.5c.2.2.4.3.7.3.3 0 .5-.1.7-.3.4-.4.4-1 0-1.4z"/>
+              <circle cx="11" cy="11" r="10" stroke-width="2"/>
+            </svg>
+          </div>
         </div>
         <div class="navigation-boxes">
           <div class="navigation-box up" id="navCo2">
             <div class="icon co2">
               <svg width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.467 7a4.533 4.533 0 109.066 0 4.533 4.533 0 00-9.066 0z" stroke-width="4"/></svg>
             </div>
-            <div class="title">Co2</div>
+            <div class="title">CO<sub>2</sub></div>
           </div>
           <div class="navigation-box selected middle" id="navFlux">
             <div class="icon flux">
@@ -58,10 +71,30 @@
               <circle cx="11" cy="11" r="10" transform="rotate(-180 11 11)" stroke-width="2"/>
             </svg>
           </div>
+          <div class="icon down hidden" id="co2Newer">
+            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+              <path class="arrow" d="M5.9 10.5l4.2 4.2c.4.4 1 .4 1.4 0l4.2-4.2c.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0l-3.5 3.5-3.5-3.5c-.2-.2-.4-.3-.7-.3-.3 0-.5.1-.7.3-.4.4-.4 1 0 1.4z"/>
+              <circle cx="11" cy="11" r="10" transform="rotate(-180 11 11)" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="icon down hidden" id="dataOlder">
+            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+              <path class="arrow" d="M5.9 10.5l4.2 4.2c.4.4 1 .4 1.4 0l4.2-4.2c.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0l-3.5 3.5-3.5-3.5c-.2-.2-.4-.3-.7-.3-.3 0-.5.1-.7.3-.4.4-.4 1 0 1.4z"/>
+              <circle cx="11" cy="11" r="10" transform="rotate(-180 11 11)" stroke-width="2"/>
+            </svg>
+          </div>
         </div>
       </div>
       <div id="main" class="animation">
+        <div id="vue-history-co2"></div>
         <div id="unplug" class="unplug"></div>
+        <div id="vue-history-data"></div>
+        <div id="onboarding" class="onboarding"><picture>
+          <source
+            srcset="assets/OnBoarding_darkMode.gif"
+            media="(prefers-color-scheme: dark)">
+          <img src="assets/OnBoarding_lightMode.gif">
+        </picture></div>
       </div>
       <div class="menu">
         <div class="options">
@@ -90,11 +123,18 @@
             <div class="title">Tab</div>
           </div>
         </div>
+        <div class="option inactive consumption">
+          <div class="header">
+            <div class="title">Consumption</div>
+            <div class="header-separator"></div>
+          </div>
+          <div id="vue-co2-data-counter"></div>
+        </div>
         <div class="info">
           <div class="packet hidden" id="packet-info">
             <div class="subheader" id="packet-size-subheader"> Size </div>
             <div class="size" id="packet-size"></div>
-            <div class="subheader" id="packet-co2-subheader"> Co2 </div>
+            <div class="subheader" id="packet-co2-subheader"> CO<sub>2</sub> </div>
             <div class="co2" id="packet-co2"></div>
             <div class="subheader">Type</div>
             <div class="type" id="packet-type"></div>
@@ -109,7 +149,7 @@
                   media="(prefers-color-scheme: dark)">
                 <img src="assets/co2.png">
               </picture>
-              <div class="caption">Co2</div>
+              <div class="caption">CO<sub>2</sub></div>
             </div>
             <div class="data">
               <picture>
@@ -127,8 +167,9 @@
               <div class="title">Network Packets</div>
               <div class="header-separator"></div>
             </div>
-       </div>
+        </div>
       </div>
     </div>
+    <script src="../bundle/popup.js"></script>
   </body>
 </html>
