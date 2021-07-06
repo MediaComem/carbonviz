@@ -38,8 +38,8 @@ export default {
     </nav>
     <nav data-area="subnav">
       <ul>
-        <li v-for="entry of subNav" :key="entry.href">
-          <a :href="entry.anchor" >{{ entry.label }}</a>
+        <li v-for="(label, id) in subNav" :key="id">
+          <a :data-section="id" @click.prevent="">{{ label }}</a>
         </li>
       </ul>
     </nav>
@@ -138,6 +138,7 @@ export default {
     display: inline-block;
   }
   [data-area="subnav"] a {
+    cursor: pointer;
     display: inline-block;
     text-align: center;
     color:#BFBFBF;

@@ -1,16 +1,16 @@
 <script>
 import { inject, onMounted } from 'vue';
 
-const nav = [{
-  anchor: '#trends',
-  label: 'Trends Summary'
-}];
+
+const subNav = {
+  'trends': 'Trends Summary',
+};
 
 export default {
 
   setup() {
     const setSubNav = inject('setSubNav');
-    onMounted(() => setSubNav(nav));
+    onMounted(() => setSubNav(subNav));
     return {};
   }
 

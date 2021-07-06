@@ -1,13 +1,15 @@
 <script>
 import { inject, onMounted } from 'vue';
 
-const nav = [];
+const subNav = {
+  'todo': 'Todo',
+};
 
 export default {
 
   setup() {
     const setSubNav = inject('setSubNav');
-    onMounted(() => setSubNav(nav));
+    onMounted(() => setSubNav(subNav));
     return {};
   }
 

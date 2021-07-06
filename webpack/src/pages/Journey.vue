@@ -1,12 +1,19 @@
 <script>
-  export default {
+import { inject, onMounted } from 'vue';
 
-    setup() {
+const subNav = {
+  'todo': 'Todo',
+};
 
-      return {};
-    }
+export default {
 
+  setup() {
+    const setSubNav = inject('setSubNav');
+    onMounted(() => setSubNav(subNav));
+    return {};
   }
+
+}
 </script>
 
 <template>
