@@ -208,6 +208,14 @@ const handleMessage = (request) => {
     switch (request.query) {
       case 'embedPlugin':
         embedPlugin();
+        break;
+      case 'startMiniViz':
+        chrome.tabs.executeScript({
+          file: 'content/miniViz-script.js'
+        });
+        chrome.tabs.executeScript({
+          file: 'content/matter.js'
+        });
       default:
         break;
     }
