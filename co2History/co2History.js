@@ -25,15 +25,19 @@ const co2Size = (value) => {
     }
 }
 
-export function updateCo2Total(domain, sizeCo2, sizeData, timestamp) {
+export function updateCo2Total(packet) {
     return new Promise(async function(resolve) {
+        const domain = packet.domainName;
+        const sizeCo2 = packet.co2Size;
+        const dataBytes = packet.dataSize;
+        const timestamp = packet.timeStamp;
         const today = new Date(timestamp);
         let dayTotalCo2 = 0;
         let dayTotalData = 0;
         let hourTotalCo2 = 0;
         let hourTotalData = 0;
         const lastStoredDBEntry = await getLastStoredTime(today, domain);
-        const dataBytes = getUnit(sizeData);
+        //const dataBytes = getUnit(sizeData);
         let storedDates = lastStoredDBEntry.storedDates;
         let history = lastStoredDBEntry.history;
         let historySummry = lastStoredDBEntry.historySummary;
@@ -72,8 +76,6 @@ export function updateCo2Total(domain, sizeCo2, sizeData, timestamp) {
         } else {
             addnewRecord(sizeCo2, dataBytes, newDomainTotal, today);
         }
-
-        document.getElementById("todayCo2").innerHTML="Today: "+co2Size(dayTotalCo2);
         resolve();
     });
 }

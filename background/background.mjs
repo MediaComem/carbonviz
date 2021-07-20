@@ -1,3 +1,5 @@
+import { updateCo2Total } from "../co2History/co2History.js";
+
 const usageDevicePerYear = 1917.3;
 const lifetimeLaptopYears = 6.5;
 const lifetimeInternetAccessEquipmentYears = 6;
@@ -10,6 +12,40 @@ const routerEnergyConsumptionKWh = 0.0076;
 
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
+
+let dump = [];
+let addFiveMinuteInterval;
+
+const domain = (packet) => {
+  if (!packet.extraInfo.tabUrl) {
+    return '';
+  }
+  const url = new URL(packet.extraInfo.tabUrl);
+  const hostname = url.hostname;
+  let domain = hostname;
+  let match;
+  if (match = hostname.match(/^[^\.]+\.(.+)\..+$/)) {
+    domain = match[1]
+  }
+  const capitalized = domain.charAt(0).toUpperCase() + domain.slice(1)
+  return capitalized;
+}
+
+const saveToDump = (data) => {
+  let match = false;
+  for(let entry in dump) {
+    if (dump[entry].domainName === data.domainName) {
+      dump[entry].co2Size += data.co2Size;
+      dump[entry].dataSize += data.dataSize;
+      dump[entry].timeStamp = data.timeStamp;
+      match = true;
+      break;
+    }
+  }
+  if(!match) {
+    dump.push(data);
+  }
+}
 
 const energyImpactHome = (timeElapsed) => {
   const timeHour = timeElapsed / (1000 * 3600);
@@ -167,6 +203,15 @@ const completedListener = (responseDetails) => {
       }
       // send data to animation
       chrome.runtime.sendMessage({ data: info });
+
+      if (!addFiveMinuteInterval) {
+        addFiveMinuteInterval = setInterval(addFiveMinute, 300000);
+      }
+      // (domain, sizeCo2, sizeData, timestamp)
+      let domainName = domain(info);
+      let dataSize = info.chunkSizeData ? parseInt(info.chunkSizeData) : parseInt(info.contentLength);
+      let co2Size = 1000*info.co2;
+      saveToDump({domainName, co2Size, dataSize, timeStamp});
     });
   }
 
@@ -222,6 +267,17 @@ const handleMessage = (request) => {
   }
   return true;
 }
+
+const addFiveMinute = () => {
+  for(let store in dump) {
+    updateCo2Total(dump[store]);
+  }
+  if (addFiveMinuteInterval) {
+    clearInterval(addFiveMinuteInterval);
+    addFiveMinuteInterval = null;
+  }
+  dump = [];
+};
 
 chrome.webRequest.onCompleted.addListener(
   completedListener,
