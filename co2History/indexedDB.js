@@ -61,6 +61,8 @@ co2HistoryDB.open = () => {
           index: dateStringWithHour(today, true),
           month: today.getMonth()+1,
           date: today.getDate(),
+          hour: today.getUTCHours(),
+          weekOfYear: getWeekOfYear(today),
           weekOfMonth: (today.getDate() / 7)+1,
           co2: 0,
           data: 0
@@ -74,6 +76,7 @@ co2HistoryDB.open = () => {
           index: dateStringWithHour(today, false),
           month: today.getMonth()+1,
           date: today.getDate(),
+          weekOfYear: getWeekOfYear(today),
           weekOfMonth: (today.getDate() / 7)+1,
           co2: 0,
           data: 0
@@ -123,20 +126,20 @@ async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, domainTotal,
   }
   const history = {
     index: dateStringWithHour(timeStamp, true),
-    month: today.getMonth()+1,
-    date: today.getDate(),
-    hour: today.getUTCHours(),
-    weekOfYear: getWeekOfYear(today),
-    weekOfMonth: parseInt((today.getDate() / 7)+1),
+    month: timeStamp.getMonth()+1,
+    date: timeStamp.getDate(),
+    hour: timeStamp.getUTCHours(),
+    weekOfYear: getWeekOfYear(timeStamp),
+    weekOfMonth: parseInt((timeStamp.getDate() / 7)+1),
     co2: hourCo2,
     data: hourData
   }
   const historySummary = {
     index: dateStringWithHour(timeStamp, false),
-    month: today.getMonth()+1,
-    date: today.getDate(),
-    weekOfYear: getWeekOfYear(today),
-    weekOfMonth: parseInt((today.getDate() / 7)+1),
+    month: timeStamp.getMonth()+1,
+    date: timeStamp.getDate(),
+    weekOfYear: getWeekOfYear(timeStamp),
+    weekOfMonth: parseInt((timeStamp.getDate() / 7)+1),
     co2: dayCo2,
     data: dayData
   }
@@ -204,20 +207,20 @@ function addnewRecord(co2Size, sizeData, domainTotal, timeStamp) {
   }
   const history = {
     index: dateStringWithHour(timeStamp, true),
-    month: today.getMonth()+1,
-    date: today.getDate(),
-    hour: today.getUTCHours(),
-    weekOfYear: getWeekOfYear(today),
-    weekOfMonth: parseInt((today.getDate() / 7)+1),
+    month: timeStamp.getMonth()+1,
+    date: timeStamp.getDate(),
+    hour: timeStamp.getUTCHours(),
+    weekOfYear: getWeekOfYear(timeStamp),
+    weekOfMonth: parseInt((timeStamp.getDate() / 7)+1),
     co2: co2Size,
     data: sizeData
   }
   const historySummary = {
     index: dateStringWithHour(timeStamp, false),
-    month: today.getMonth()+1,
-    date: today.getDate(),
-    weekOfYear: getWeekOfYear(today),
-    weekOfMonth: parseInt((today.getDate() / 7)+1),
+    month: timeStamp.getMonth()+1,
+    date: timeStamp.getDate(),
+    weekOfYear: getWeekOfYear(timeStamp),
+    weekOfMonth: parseInt((timeStamp.getDate() / 7)+1),
     co2: co2Size,
     data: sizeData
   }
