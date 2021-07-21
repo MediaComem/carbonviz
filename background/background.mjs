@@ -209,9 +209,8 @@ const completedListener = (responseDetails) => {
       }
       // (domain, sizeCo2, sizeData, timestamp)
       let domainName = domain(info);
-      let dataSize = info.chunkSizeData ? parseInt(info.chunkSizeData) : parseInt(info.contentLength);
-      let co2Size = 1000*info.co2;
-      saveToDump({domainName, co2Size, dataSize, timeStamp});
+      let co2Size = info.co2;
+      saveToDump({domainName, co2Size, packetSize, timeStamp});
     });
   }
 
@@ -271,10 +270,6 @@ const handleMessage = (request) => {
 const addFiveMinute = () => {
   for(let store in dump) {
     updateCo2Total(dump[store]);
-  }
-  if (addFiveMinuteInterval) {
-    clearInterval(addFiveMinuteInterval);
-    addFiveMinuteInterval = null;
   }
   dump = [];
 };

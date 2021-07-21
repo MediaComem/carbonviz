@@ -14,7 +14,7 @@ const today = new Date();
 function getMonday(date) {
   date = new Date(date);
   let day = date.getDay();
-  let diff = date.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+  let diff = date.getDate() - day + (day === 0 ? -6:1); // adjust when day is sunday
   return new Date(date.setDate(diff));
 }
 
@@ -238,17 +238,17 @@ function getkeyRange(period, occurrence) {
   let startKey = '';
   let endKey = '';
 
-  if (period == 'day') {
+  if (period === 'day') {
     startDate = new Date(startDate.setDate(startDate.getDate() - occurrence));
     endKey = dateStringWithHour(endDate, true);
     startKey = dateStringWithHour(startDate, true);
   }
-  if (period == 'week') {
+  if (period === 'week') {
     startDate = new Date(startDate.setDate(startDate.getDate() - (7 * occurrence)));
     endKey = dateStringWithHour(endDate, false);
     startKey = dateStringWithHour(startDate, false);
   }
-  if (period == 'month') {
+  if (period === 'month') {
     startDate = new Date(startDate.setMonth(startDate.getMonth() - occurrence));
     endKey = dateStringWithHour(endDate, false);
     startKey = dateStringWithHour(startDate, false);
@@ -266,7 +266,7 @@ function getHistory(period, occurrence) {
   const historyStore = trans.objectStore("history");
   const historySummaryStore = trans.objectStore("historySummary");
 
-  if (period == 'day') {
+  if (period === 'day') {
     historyStore.openCursor(keyRangeValue).onsuccess = function(event) {
       let cursor = event.target.result;
       if(cursor) {
