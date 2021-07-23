@@ -253,13 +253,10 @@ const handleMessage = (request) => {
       case 'embedPlugin':
         embedPlugin();
         break;
-      case 'startMiniViz':
-        chrome.tabs.executeScript({
-          file: 'content/miniViz-script.js'
-        });
-        chrome.tabs.executeScript({
-          file: 'content/matter.js'
-        });
+      case 'toggleMiniVizPopup':
+          chrome.tabs.executeScript({
+            file: 'content/miniVizPopup.js'
+          });
       default:
         break;
     }

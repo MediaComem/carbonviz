@@ -75,7 +75,6 @@ const co2 = (packet) => {
 const body = window.document.body;
 const openTabDialog = window.document.getElementById("tabDialog");
 const openTabButton = window.document.getElementById("switchToTab");
-const openMiniVizButton = window.document.getElementById("switchToMiniViz");
 const tabConfirmationCheckbox = window.document.getElementById("disableNewTabConfirmation");
 const debounceCheckbox = window.document.getElementById("debounce");
 // Navigation
@@ -131,11 +130,6 @@ const openNewTabDialog = () => {
     alert("The <dialog> API is not supported by this browser");
   }
 
-}
-
-const openNewMiniVizDialog = () => {
-  chrome.runtime.sendMessage({ query: 'startMiniViz' });
-  window.close();
 }
 
 const addPluginToNewTab = () => {
@@ -297,7 +291,6 @@ dataNewer.addEventListener('click', previousStageData)
 dataOlder.addEventListener('click', nextStageData)
 
 openTabButton.addEventListener('click', openNewTabDialog)
-openMiniVizButton.addEventListener('click', openNewMiniVizDialog)
 tabDialog.addEventListener('close', (event) => {
   if (tabDialog.returnValue !== 'cancel') {
     if (tabConfirmationCheckbox.checked) {

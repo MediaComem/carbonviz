@@ -18,6 +18,13 @@
   "background": {
     "page": "background/background.html"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*"],
+      "css": [],
+      "js": ["content/miniViz-script.js","content/matter.js"]
+    }
+  ],
   "browser_action": {
     "browser_style": true,
     "default_popup": "popup/popup.html",
@@ -27,6 +34,7 @@
   "web_accessible_resources": [
     "content/*",
     "unplug/js/*",
-    "unplug/assets/*"
+    "unplug/assets/*",
+    "bundle/popup.js"
   ]
 }

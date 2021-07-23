@@ -4,8 +4,8 @@
     container.style.position = 'fixed';
     container.style.top = '300px';
     container.style.right = '0px';
-    container.style.width = '50px'; //50px
-    container.style.height = '300px'; //300px
+    container.style.width = '50px';
+    container.style.height = '300px';
     container.style.borderRadius = '25px';
     container.style.backgroundColor = 'none';
     //container.style.opacity = 0.5;

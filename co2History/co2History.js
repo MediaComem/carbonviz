@@ -29,7 +29,7 @@ export function updateCo2Total(packet) {
     return new Promise(async function(resolve) {
         const domain = packet.domainName;
         const sizeCo2 = packet.co2Size;
-        const dataBytes = packet.dataSize;
+        const dataBytes = packet.packetSize ;
         const timestamp = packet.timeStamp;
         const today = new Date(timestamp);
         let dayTotalCo2 = 0;

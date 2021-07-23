@@ -5,6 +5,7 @@ import { render } from '../unplug/js/main.mjs';
 const pubSub = new PubSub();
 const defaultOptions = { debounce: true, showTabConfirmation: true, showOnBoarding: true };
 let userOptions = defaultOptions;
+let miniVizPopupActive = false;
 
 
 const sendToAnimation = () => {
@@ -138,8 +139,6 @@ window.matchMedia('(prefers-color-scheme: dark)')
 export function configure() {
   conf.uiElements = [];
   conf.mouseManagement = false;
-  conf.width = 50, // width of the canvas and ctx in [px]
-  conf.height = 300, // height of the canvas and ctx in [px]
   configureDarkMode(window.matchMedia('(prefers-color-scheme: dark)'));
 }
 
@@ -172,4 +171,17 @@ export function main() {
 
   // listen to nee packets
   chrome.runtime.onMessage.addListener(handleMessage);
+
+  const MiniViz = window.document.getElementById("miniViz_container");
+  MiniViz.addEventListener('click', toggleMiniVizPopup)
+  function toggleMiniVizPopup () {
+    if (!miniVizPopupActive) {
+      chrome.runtime.sendMessage({ query: 'toggleMiniVizPopup' });
+      miniVizPopupActive = true;
+    } else {
+      const miniVizPopup = document.getElementById('miniViz_popup_container');
+      miniVizPopup.remove();
+      miniVizPopupActive = false;
+    }
+  }
 }
