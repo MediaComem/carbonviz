@@ -8,6 +8,7 @@ const config = {
   entry: {
     'popup': './src/popup.js',
     'fullpage': './src/fullpage.js',
+    'miniviz': './src/miniviz.js',
   },
   output: {
     filename: '[name].js',
