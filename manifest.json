@@ -35,6 +35,7 @@
     "content/*",
     "unplug/js/*",
     "unplug/assets/*",
-    "bundle/popup.js"
+    "bundle/popup.js",
+    "popup/*"
   ]
 }

@@ -257,6 +257,9 @@ const handleMessage = (request) => {
           chrome.tabs.executeScript({
             file: 'content/miniVizPopup.js'
           });
+        break;
+      case 'openExtension':
+          window.open("../popup/popup.html", "_blank", "width=600,height=600,status=no,scrollbars=yes");
       default:
         break;
     }
