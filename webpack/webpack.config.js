@@ -5,9 +5,13 @@ const { VueLoaderPlugin } = require('vue-loader');
 
 const config = {
   mode: 'production',
-  entry: './src/popup.js',
+  entry: {
+    'popup': './src/popup.js',
+    'fullpage': './src/fullpage.js',
+    'miniviz': './src/miniviz.js',
+  },
   output: {
-    filename: 'popup.js',
+    filename: '[name].js',
     library: 'CarbonVue',
     path: path.resolve(__dirname, '../bundle')
   },
@@ -36,7 +40,7 @@ const config = {
     ]
   },
   plugins: [
-    new MiniCssExtractPlugin({filename: 'popup.css'}),
+    new MiniCssExtractPlugin({filename: '[name].css'}),
     new VueLoaderPlugin(),
     new webpack.DefinePlugin({
       __VUE_OPTIONS_API__: false,
