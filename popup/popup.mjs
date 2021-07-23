@@ -75,6 +75,7 @@ const co2 = (packet) => {
 const body = window.document.body;
 const openTabDialog = window.document.getElementById("tabDialog");
 const openTabButton = window.document.getElementById("switchToTab");
+const openFullpageButton = window.document.getElementById("switchToFullpage");
 const tabConfirmationCheckbox = window.document.getElementById("disableNewTabConfirmation");
 const debounceCheckbox = window.document.getElementById("debounce");
 // Navigation
@@ -152,6 +153,14 @@ const addPluginToNewTab = () => {
 
 }
 
+const openFullpage = () => {
+  const options = {
+    active: true,
+    url: 'fullpage/fullpage.html'
+  };
+  chrome.tabs.create(options);
+}
+
 const createExtensionTab = () => {
   // store current tab id to come back to extension pop-up if needed
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -163,7 +172,7 @@ const createExtensionTab = () => {
   const options = {
     active: true,
     url: 'popup/popup.html'
-  }
+  };
   chrome.tabs.create( options, (tab) => {
     localStorage.setItem('extensionAnimationTabId', tab.id);
   });
@@ -289,6 +298,7 @@ co2Newer.addEventListener('click', previousStageCo2)
 co2Older.addEventListener('click', nextStageCo2)
 dataNewer.addEventListener('click', previousStageData)
 dataOlder.addEventListener('click', nextStageData)
+openFullpageButton.addEventListener('click', openFullpage);
 
 openTabButton.addEventListener('click', openNewTabDialog)
 tabDialog.addEventListener('close', (event) => {
