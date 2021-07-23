@@ -12,14 +12,11 @@
     //co2 and data totals
     const data = document.createElement("div");
     data.id = "vue-co2-data-counter";
-    
-    const co2History = document.createElement('div');
-    co2History.id = '#vue-history-co2';
-    const dataHistory = document.createElement('div');
-    dataHistory.id = '#vue-history-data';
 
-    const CarbonVueSrc = chrome.extension.getURL('../bundle/popup.js');
-    const CarbonVue = await import(CarbonVueSrc);
+    const CarbonVueSrc = chrome.extension.getURL('../bundle/miniviz.js');
+    await import(CarbonVueSrc);
+    //CarbonVue.co2DataCounter.mount('#vue-co2-data-counter');
+    
 
 
     data.style.cssText = 'margin-top: 30px; padding: 10px';
