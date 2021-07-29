@@ -115,21 +115,45 @@
             <div class="title">Extension</div>
           </div>
           -->
-          <!-- <div class="option inactive" id="switchToTab">
+          <div class="option inactive" data-goto-page="Live">
             <div class="icon tab">
               <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 1.5H3.10845V0H1.17803C0.5284 0 0 0.5284 0 1.17803V9.75576C0 10.4054 0.5284 10.9338 1.17803 10.9338H3.10845V9.43379H1.5V1.5ZM5.89092 0C5.24129 0 4.71289 0.5284 4.71289 1.17803V9.75576C4.71289 10.4054 5.24129 10.9338 5.89092 10.9338H9.75176C10.4014 10.9338 10.9298 10.4054 10.9298 9.75576V1.17803C10.9298 0.5284 10.4014 0 9.75176 0H5.89092Z"/>
               </svg>
             </div>
-            <div class="title">Tab</div>
-          </div> -->
-          <div class="option inactive" id="switchToFullpage">
+            <div class="title">Live Consumption</div>
+          </div>
+          <div class="option inactive" data-goto-page="Statistics">
             <div class="icon tab">
               <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 1.5H3.10845V0H1.17803C0.5284 0 0 0.5284 0 1.17803V9.75576C0 10.4054 0.5284 10.9338 1.17803 10.9338H3.10845V9.43379H1.5V1.5ZM5.89092 0C5.24129 0 4.71289 0.5284 4.71289 1.17803V9.75576C4.71289 10.4054 5.24129 10.9338 5.89092 10.9338H9.75176C10.4014 10.9338 10.9298 10.4054 10.9298 9.75576V1.17803C10.9298 0.5284 10.4014 0 9.75176 0H5.89092Z"/>
               </svg>
             </div>
-            <div class="title">Statistics</div>
+            <div class="title">Statistic</div>
+          </div>
+          <div class="option inactive" data-goto-page="Journey">
+            <div class="icon tab">
+              <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 1.5H3.10845V0H1.17803C0.5284 0 0 0.5284 0 1.17803V9.75576C0 10.4054 0.5284 10.9338 1.17803 10.9338H3.10845V9.43379H1.5V1.5ZM5.89092 0C5.24129 0 4.71289 0.5284 4.71289 1.17803V9.75576C4.71289 10.4054 5.24129 10.9338 5.89092 10.9338H9.75176C10.4014 10.9338 10.9298 10.4054 10.9298 9.75576V1.17803C10.9298 0.5284 10.4014 0 9.75176 0H5.89092Z"/>
+              </svg>
+            </div>
+            <div class="title">Data's journey</div>
+          </div>
+          <div class="option inactive" data-goto-page="Method">
+            <div class="icon tab">
+              <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 1.5H3.10845V0H1.17803C0.5284 0 0 0.5284 0 1.17803V9.75576C0 10.4054 0.5284 10.9338 1.17803 10.9338H3.10845V9.43379H1.5V1.5ZM5.89092 0C5.24129 0 4.71289 0.5284 4.71289 1.17803V9.75576C4.71289 10.4054 5.24129 10.9338 5.89092 10.9338H9.75176C10.4014 10.9338 10.9298 10.4054 10.9298 9.75576V1.17803C10.9298 0.5284 10.4014 0 9.75176 0H5.89092Z"/>
+              </svg>
+            </div>
+            <div class="title">Method & links</div>
+          </div>
+          <div class="option inactive" data-goto-page="Partners">
+            <div class="icon tab">
+              <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 1.5H3.10845V0H1.17803C0.5284 0 0 0.5284 0 1.17803V9.75576C0 10.4054 0.5284 10.9338 1.17803 10.9338H3.10845V9.43379H1.5V1.5ZM5.89092 0C5.24129 0 4.71289 0.5284 4.71289 1.17803V9.75576C4.71289 10.4054 5.24129 10.9338 5.89092 10.9338H9.75176C10.4014 10.9338 10.9298 10.4054 10.9298 9.75576V1.17803C10.9298 0.5284 10.4014 0 9.75176 0H5.89092Z"/>
+              </svg>
+            </div>
+            <div class="title">Partners</div>
           </div>
         </div>
         <div class="option inactive consumption">
@@ -150,7 +174,7 @@
             <div class="subheader">Time</div>
             <div class="time" id="packet-time"></div>
           </div>
-          <div id="legend" class="legend">
+          <!-- <div id="legend" class="legend">
             <div class="co2">
               <picture>
                 <source
@@ -169,7 +193,7 @@
               </picture>
               <div class="caption">Data</div>
             </div>
-          </div>
+          </div> -->
         </div>
         <div id="history" class="history">
             <div class="header">

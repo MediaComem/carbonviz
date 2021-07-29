@@ -5,6 +5,7 @@ import { render } from '../unplug/js/main.mjs';
 const pubSub = new PubSub();
 const defaultOptions = { debounce: true, showTabConfirmation: true, showOnBoarding: true };
 let userOptions = defaultOptions;
+let currentGotoPageBtn = null;
 
 const manifest = chrome.runtime.getManifest();
 
@@ -74,8 +75,7 @@ const co2 = (packet) => {
 // User interface
 const body = window.document.body;
 const openTabDialog = window.document.getElementById("tabDialog");
-const openTabButton = window.document.getElementById("switchToTab");
-const openFullpageButton = window.document.getElementById("switchToFullpage");
+const openTabButtons = window.document.querySelectorAll("[data-goto-page]");
 const tabConfirmationCheckbox = window.document.getElementById("disableNewTabConfirmation");
 const debounceCheckbox = window.document.getElementById("debounce");
 // Navigation
@@ -100,7 +100,7 @@ const packetCo2 = window.document.getElementById("packet-co2");
 const packetCo2Subheader = window.document.getElementById("packet-co2-subheader");
 
 // Legend
-const legend = window.document.getElementById("legend");
+//const legend = window.document.getElementById("legend");
 
 // History
 const historyContainer = window.document.getElementById("history");
@@ -115,6 +115,10 @@ const openNewTabDialog = () => {
         // tab probably closed
       }
       if (tab && tab.title === manifest.name) {
+        let page = currentGotoPageBtn?.dataset.gotoPage;
+        let currentTab = tab.url.substring(tab.url.indexOf('#'));
+        let url = tab.url.replace(currentTab, `#${page}`);
+        chrome.tabs.update(tab.id, {url});
         chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
         return;
       }
@@ -141,6 +145,10 @@ const addPluginToNewTab = () => {
         // tab probably closed
       }
       if (tab && tab.title === manifest.name) {
+        let page = currentGotoPageBtn?.dataset.gotoPage;
+        let currentTab = tab.url.substring(tab.url.indexOf('#'));
+        let url = tab.url.replace(currentTab, `#${page}`);
+        chrome.tabs.update(tab.id, {url});
         chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
         return;
       } else {
@@ -153,14 +161,6 @@ const addPluginToNewTab = () => {
 
 }
 
-const openFullpage = () => {
-  const options = {
-    active: true,
-    url: 'fullpage/fullpage.html'
-  };
-  chrome.tabs.create(options);
-}
-
 const createExtensionTab = () => {
   // store current tab id to come back to extension pop-up if needed
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -169,9 +169,10 @@ const createExtensionTab = () => {
       localStorage.setItem('previousTabId', tab.id);
     }
   });
+  let page = currentGotoPageBtn?.dataset.gotoPage;
   const options = {
     active: true,
-    url: 'popup/popup.html'
+    url: `fullpage/fullpage.html#${page}`
   };
   chrome.tabs.create( options, (tab) => {
     localStorage.setItem('extensionAnimationTabId', tab.id);
@@ -298,9 +299,14 @@ co2Newer.addEventListener('click', previousStageCo2)
 co2Older.addEventListener('click', nextStageCo2)
 dataNewer.addEventListener('click', previousStageData)
 dataOlder.addEventListener('click', nextStageData)
-openFullpageButton.addEventListener('click', openFullpage);
 
-openTabButton.addEventListener('click', openNewTabDialog)
+
+for (const btn of openTabButtons) {
+  btn.addEventListener('click', () => {
+    currentGotoPageBtn = btn;
+    openNewTabDialog();
+  });
+}
 tabDialog.addEventListener('close', (event) => {
   if (tabDialog.returnValue !== 'cancel') {
     if (tabConfirmationCheckbox.checked) {
@@ -328,12 +334,13 @@ window.document.onwheel = (e) => {
 
 // Packet info display
 const showLegend = () => {
-  show(legend);
+  //show(legend);
   hide(info);
 }
 
 const displayCo2Info = (data) => {
-  hide([ legend, packetSize, packetSizeSubheader ]);
+  //hide([ legend, packetSize, packetSizeSubheader ]);
+  hide([ packetSize, packetSizeSubheader ]);
   show([info, packetTime, packetType, packetCo2, packetCo2Subheader ]);
   info.classList.add("co2-highlight");
   info.classList.remove("data-highlight");
@@ -349,7 +356,8 @@ const displayCo2Info = (data) => {
 }
 
 const displayDataInfo = (data) => {
-  hide([ legend, packetCo2, packetCo2Subheader ]);
+  //hide([ legend, packetCo2, packetCo2Subheader ]);
+  hide([ packetCo2, packetCo2Subheader ]);
   show([info, packetType, packetTime, packetSize, packetSizeSubheader ]);
 
   info.classList.add("data-highlight");
@@ -591,19 +599,21 @@ const init = () => {
   }
 
   // check if tab extension opened
-  const tabId = localStorage.getItem('extensionAnimationTabId');
-  if (tabId) {
-    chrome.tabs.get(parseInt(tabId), tab => {
-      if(chrome.runtime.lastError) {
-        // tab probably closed
-      }
-      if (tab) {
-        // set button stlye as active
-        openTabButton.classList.add('active');
-        openTabButton.classList.remove('inactive');
-      }
-    });
-  }
+  // const tabId = localStorage.getItem('extensionAnimationTabId');
+  // if (tabId) {
+  //   chrome.tabs.get(parseInt(tabId), tab => {
+  //     if(chrome.runtime.lastError) {
+  //       // tab probably closed
+  //     }
+  //     if (tab) {
+  //       // set button stlye as active
+  //       for (const btn of openTabButtons) {
+  //         btn.classList.add('active');
+  //         btn.classList.remove('inactive');
+  //       }
+  //     }
+  //   });
+  // }
 
   configure();
 

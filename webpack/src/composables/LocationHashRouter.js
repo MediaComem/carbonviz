@@ -19,6 +19,5 @@ export default function (hashRoutes) {
     let pageName = currentHash.value.substring(1);
     return require(`../pages/${pageName}.vue`).default;
   });
-
   return {currentHash, currentPage};
 }

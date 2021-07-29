@@ -1,9 +1,11 @@
 <script>
 import {ref, provide} from 'vue';
 import LocationHashRouter from '../composables/LocationHashRouter';
+import Live from '../pages/Live.vue';
 
 // Hash's name must mach the Page's name in the pages folder
 const hashRoutes = {
+  '#Live': 'Live consumption',
   '#Statistics': 'Statistics',
   '#Journey': "Data's journey",
   '#Method': 'Method & links',
@@ -11,14 +13,12 @@ const hashRoutes = {
 };
 
 export default {
+  components: { Live },
 
   setup(props, context) {
-
     const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
-
     const subNav = ref([]);
     provide('setSubNav', nav => subNav.value = nav);
-
     return {subNav, hashRoutes, currentHash, currentPage};
   }
 
@@ -37,18 +37,17 @@ export default {
       </ul>
     </nav>
     <nav data-area="subnav">
-      <ul>
+      <ul v-show="currentHash !== '#Live'">
         <li v-for="(label, id) in subNav" :key="id">
           <a :data-section="id" @click.prevent="">{{ label }}</a>
         </li>
       </ul>
     </nav>
     <main data-area="body">
-      <keep-alive>
-        <transition name="fade" mode="out-in">
-          <component :is="currentPage"></component>
-        </transition>
-      </keep-alive>
+      <Live v-show="currentHash === '#Live'"></Live>
+      <transition name="fade" mode="out-in">
+          <component :is="currentPage" v-if="currentHash !== '#Live'"></component>
+      </transition>
     </main>
   </div>
 </template>
@@ -165,6 +164,12 @@ export default {
   [data-area="subnav"] a.active::after, [data-area="subnav"] a:hover::after {
     border-color: black;
     background-color: black;
+  }
+  /* body */
+  [data-area="body"] {
+    background-color: #F8F8F8;
+    width: 1000px;
+    height: 800px;
   }
   /* Vue3 transition */
   .fade-enter-active, .fade-leave-active {
