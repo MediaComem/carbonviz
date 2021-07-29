@@ -138,7 +138,7 @@ const drawSelectionLine = (body, ctx) => {
   ctx.lineWidth = 1;
 
   let x = conf.width - conf.rightPadding - conf.assets.selectCircleSize;
-  let y = conf.height / 2;
+  let y = conf.height / 2 - 10;
   // remove height of the today histo startum
   if (CarbonVue.historyCO2.show) {
     let layers = CarbonVue.historyCO2.layers;
