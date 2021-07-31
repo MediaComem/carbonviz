@@ -125,7 +125,7 @@
       }
     });
 
-    const oneHour = 2000;//1000 * 60 * 60;
+    const oneHour = 1000 * 60 * 60;
     const twoHour = oneHour * 2;
     const tomorrow = oneHour * 3;
 
