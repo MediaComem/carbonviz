@@ -47,8 +47,8 @@ export function updateCo2Total(packet) {
         if(domainTotal != undefined) {
             newDomainTotal = {
                 name: domain,
-                co2: parseFloat((domainTotal.co2 + sizeCo2).toFixed(3)),
-                data: parseFloat((domainTotal.data + dataBytes).toFixed(3))
+                co2: domainTotal.co2 + sizeCo2,
+                data: domainTotal.data + dataBytes
             }
         } else {
             newDomainTotal = {
@@ -65,13 +65,13 @@ export function updateCo2Total(packet) {
         }
         // same hour
         if (history != undefined) {
-            hourTotalCo2 = parseFloat((sizeCo2 + history.co2).toFixed(3));
-            hourTotalData = parseFloat((dataBytes + history.data).toFixed(3));
+            hourTotalCo2 = sizeCo2 + history.co2;
+            hourTotalData = dataBytes + history.data;
         }
         // same day
         if (historySummry != undefined) {
-            dayTotalCo2 = parseFloat((sizeCo2 + historySummry.co2).toFixed(3));
-            dayTotalData = parseFloat((dataBytes + historySummry.data).toFixed(3));
+            dayTotalCo2 = sizeCo2 + historySummry.co2;
+            dayTotalData = dataBytes + historySummry.data;
             updateTodaysData(dayTotalCo2, hourTotalCo2, dayTotalData, hourTotalData, newDomainTotal, today);
         } else {
             addnewRecord(sizeCo2, dataBytes, newDomainTotal, today);

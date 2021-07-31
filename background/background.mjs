@@ -13,6 +13,11 @@ const routerEnergyConsumptionKWh = 0.0076;
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
 
+const minivizOptions = {
+  time: undefined,
+  show: true
+};
+
 let dump = [];
 let addFiveMinuteInterval;
 
@@ -36,7 +41,7 @@ const saveToDump = (data) => {
   for(let entry in dump) {
     if (dump[entry].domainName === data.domainName) {
       dump[entry].co2Size += data.co2Size;
-      dump[entry].dataSize += data.dataSize;
+      dump[entry].packetSize += data.packetSize;
       dump[entry].timeStamp = data.timeStamp;
       match = true;
       break;
@@ -247,19 +252,32 @@ const embedPlugin = () => {
   });
 }
 
-const handleMessage = (request) => {
+const handleMessage = async (request, _sender, sendResponse) => {
   if (request.query) {
     switch (request.query) {
       case 'embedPlugin':
         embedPlugin();
         break;
-      case 'toggleMiniVizPopup':
-          chrome.tabs.executeScript({
-            file: 'content/miniVizPopup.js'
-          });
-        break;
       case 'openExtension':
-          window.open("../popup/popup.html", "_blank", "width=600,height=600,status=no,scrollbars=yes");
+        window.open("../popup/popup.html", "_blank", "width=600,height=600,status=no,scrollbars=yes");
+        break;
+      case 'startMiniviz':
+        if(!minivizOptions.show) {
+          let timeNow = Date.now();
+          if(timeNow > minivizOptions.time) {
+            minivizOptions.show = true;
+          }
+        }
+        sendResponse({show: minivizOptions.show});        
+        break;
+      case 'removeMiniviz':
+        minivizOptions.time = Date.now() + request.time;
+        minivizOptions.show = false;
+        chrome.tabs.query({}, function(tabs) {
+          for (var i=0; i<tabs.length; ++i) {
+            chrome.tabs.sendMessage(tabs[i].id, { query: 'removeMiniviz' });
+          }
+        });
       default:
         break;
     }
