@@ -12,7 +12,10 @@ const config = {
   },
   output: {
     filename: '[name].js',
-    library: 'CarbonVue',
+    library: {
+      name: 'CarbonVue',
+      type: 'window',
+    },
     path: path.resolve(__dirname, '../bundle')
   },
   watch: false,

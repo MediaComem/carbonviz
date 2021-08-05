@@ -571,6 +571,10 @@ const configure = () => {
   conf.uiElements = [];
   conf.mouseManagement = false;
   // debounceCheckbox.checked = userOptions.debounce;
+  // disable options display menu in iframe
+  if (window.self !== window.top) {
+    document.querySelector('.options').style.display = "none";
+  }
   configureDarkMode(window.matchMedia('(prefers-color-scheme: dark)'));
 }
 
