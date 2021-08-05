@@ -1,7 +1,6 @@
 import Loop from './modules/mainloop.mjs';
 import {genVariation} from './modules/utils.mjs';
 import PubSub from './modules/pubsub.mjs';
-//import '../../bundle/miniviz.js';
 
 const conf = {
   width: 50,
@@ -53,6 +52,8 @@ function initMatter() {
       background: conf.background
     }
   });
+  // restet css cascading for the canvas
+  render.canvas.style.all = 'initial';
   render.canvas.style.borderRadius = conf.borderRadius;
   // build walls around the canvas
   let upperWall = Matter.Bodies.rectangle(0, -1, render.options.width * 2, 1, {isStatic: true, label: 'wall'});

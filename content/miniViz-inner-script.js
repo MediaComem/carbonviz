@@ -7,14 +7,27 @@ const pubSub = new PubSub();
 
 
 function createMiniVizContainer() {
+  // document.body.insertAdjacentHTML('beforeend',`<style>
+  //   #miniViz_container {
+  //     all: initial
+  //     position: fixed;
+  //     top: 300px;
+  //     right: 0;
+  //     width: 50px;
+  //     height: 300px;
+  //     borderRadius: 25px;
+  //     z-index: 10000;
+  //   }
+  // </style>`);
+  // document.body.insertAdjacentHTML('beforeend',`<div id="miniViz_container"></div>`);
   const container = document.createElement('div');
+  container.style.all = 'initial';
   container.style.position = 'fixed';
   container.style.top = '300px';
   container.style.right = '0px';
   container.style.width = '50px';
   container.style.height = '300px';
   container.style.borderRadius = '25px';
-  //container.style.backgroundColor = 'tomato';
   container.style['z-index'] = '10000';
   container.id = 'miniViz_container';
   document.body.appendChild(container);

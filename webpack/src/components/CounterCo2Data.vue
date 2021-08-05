@@ -7,7 +7,7 @@ export default {
   setup(props, context) {
     const data = ref(0);
     const co2 = ref(0);
-    return { data, co2, formatSize, formatCo2};
+    return {data, co2, formatSize, formatCo2};
   }
 
 }
