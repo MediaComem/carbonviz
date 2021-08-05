@@ -1,4 +1,11 @@
+//import '../bundle/miniviz.js';
 import '../bundle/miniviz.js';
+import animationInit from '../unplug/js/miniviz.mjs';
+import PubSub from '../unplug/js/modules/pubsub.mjs';
+import {genVariation} from '../unplug/js/modules/utils.mjs';
+
+const pubSub = new PubSub();
+
 
 function createMiniVizContainer() {
   const container = document.createElement('div');
@@ -8,13 +15,19 @@ function createMiniVizContainer() {
   container.style.width = '50px';
   container.style.height = '300px';
   container.style.borderRadius = '25px';
-  container.style.backgroundColor = 'tomato';
+  //container.style.backgroundColor = 'tomato';
   container.style['z-index'] = '10000';
   container.id = 'miniViz_container';
   document.body.appendChild(container);
 }
 
 const handleMessage = (request) => {
+  if (request.data) {
+    const packet = request.data;
+    if(packet.contentLength < 1 || !packet.extraInfo.tabIcon ||packet.extraInfo.tabIcon.startsWith('chrome-extension:')) return true;
+    debounce(packet, 1500 + genVariation(500));
+    return true;
+  }
   if (request.query) {
     switch (request.query) {
       case 'removeMiniviz':
@@ -49,9 +62,44 @@ export function main() {
       minivizPopup.style.display = 'block';
     }
   }
+
+  animationInit();
 }
 
 export function configure() {
   createMiniVizContainer();
   chrome.runtime.onMessage.addListener(handleMessage);
+}
+
+let debounceId;
+let packetsBuffer = [];
+function debounce(packet, waitMs) {
+  const now = new Date();
+  packetsBuffer.push(packet);
+  if (debounceId) return;
+  debounceId = setTimeout( () => sendToAnimation(), waitMs);
+}
+
+function sendToAnimation() {
+  const packets = packetsBuffer;
+  const animations = {};
+  clearTimeout(debounceId);
+  debounceId = null;
+  packetsBuffer = [];
+  for (let packet of packets) {
+    // merge by tab + type
+    const id = `${packet.extraInfo.tabUrl}_${packet.extraInfo.type}`;
+    if (!animations[id]) {
+      animations[id] = packet;
+    } else {
+      const aggregator = animations[id];
+      aggregator.contentLength = parseInt(aggregator.contentLength) + parseInt(packet.contentLength);
+      aggregator.co2 = aggregator.co2 + packet.co2;
+      aggregator.energyNRE = aggregator.energyNRE + packet.energyNRE;
+      aggregator.energyRE = aggregator.energyRE + packet.energyRE;
+    }
+  }
+  for (let id of Object.keys(animations)) {
+    pubSub.publish('input-data', animations[id]);
+  }
 }
