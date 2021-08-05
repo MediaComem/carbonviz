@@ -19,10 +19,6 @@
     const data = document.createElement("div");
     data.id = "vue-co2-data-counter";
 
-    const CarbonVueSrc = await import(chrome.extension.getURL('../bundle/miniviz.js'));
-    //CarbonVue.co2DataCounter.mount('#vue-co2-data-counter');
-    
-
 
     data.style.cssText = 'margin-top: 30px; padding: 10px';
     data.innerHTML = "co2 and data icons here";
@@ -33,7 +29,7 @@
     const openIcon = document.createElement("div");
     openIcon.style.cssText = 'padding: 5px; cursor: pointer;';
     openIcon.innerHTML = '<svg width="20" height="20" style=float:left; viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M5.56068 3.51027H3.51027V11.4897H11.4854V9.43932H12.9957V11.8139C12.9957 12.468 12.4637 13 11.8096 13H3.18609C2.53202 13 2 12.468 2 11.8139V3.18609C2 2.53202 2.53202 2 3.18609 2H5.56068V3.51027ZM7.93124 2.04474C7.41618 2.04474 6.99685 2.46406 6.99685 2.97912V7.07324C6.99685 7.5883 7.41618 8.00762 7.93124 8.00762H12.0254C12.5404 8.00762 12.9597 7.5883 12.9597 7.07324V2.97912C12.9597 2.46406 12.5404 2.04474 12.0254 2.04474H7.93124Z" fill="#333333"/></svg><span style=padding-left:10px;>Open Extension</span>'
-    
+
     openIcon.addEventListener('click', function() {
       chrome.runtime.sendMessage({ query: 'openExtension' });
     });
@@ -94,8 +90,18 @@
     deactivateOptions.style.cssText = 'text-align:left; margin: 20px 0 0 40px;';
     deactivateDiv.appendChild(deactivateOptions);
     container.appendChild(deactivateDiv);
-    
+
+    const cssUrl = chrome.extension.getURL('../bundle/miniviz.css');
+    const cssVue = document.createElement('link');
+    cssVue.setAttribute('rel', 'stylesheet');
+    cssVue.setAttribute('href', cssUrl);
+
+    document.head.appendChild(cssVue);
     document.body.appendChild(container);
+
+
+    const CarbonVueSrc = await import(chrome.extension.getURL('../bundle/miniviz.js'));
+    CarbonVue.co2DataCounter.mount('#vue-co2-data-counter');
 
     let positionRight = true;
     let positionTop = true;

@@ -20,9 +20,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*/*"],
+      "matches": ["https://*/*", "http://*/*"],
       "css": [],
-      "js": ["content/miniViz-script.js","content/miniVizPopup.js"]
+      "js": ["content/miniViz-script.js","content/miniVizPopup.js","content/matter.js"]
     }
   ],
   "browser_action": {
@@ -35,7 +35,7 @@
     "content/*",
     "unplug/js/*",
     "unplug/assets/*",
-    "bundle/miniviz.js",
+    "bundle/*",
     "popup/*"
   ]
 }

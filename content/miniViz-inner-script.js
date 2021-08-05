@@ -8,7 +8,7 @@ function createMiniVizContainer() {
   container.style.width = '50px';
   container.style.height = '300px';
   container.style.borderRadius = '25px';
-  container.style.backgroundColor = 'tomato';  
+  container.style.backgroundColor = 'tomato';
   container.style['z-index'] = '10000';
   container.id = 'miniViz_container';
   document.body.appendChild(container);
@@ -40,11 +40,11 @@ export function main() {
   if (MiniViz) {
     MiniViz.addEventListener('click', toggleMiniVizPopup)
   }
-  
+
   function toggleMiniVizPopup () {
     let minivizPopup = document.getElementById('miniViz_popup_container');
     if(minivizPopup.style.display === 'block') {
-      minivizPopup.style.display = 'none';      
+      minivizPopup.style.display = 'none';
     } else {
       minivizPopup.style.display = 'block';
     }
