@@ -220,9 +220,16 @@ const completedListener = (responseDetails) => {
   }
 
   // send message to inner animation
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  //   if (tabs && tabs[0]) {
+  //     chrome.tabs.sendMessage(tabs[0].id, { data: info });
+  //   }
+  // });
+  chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
-      chrome.tabs.sendMessage(tabs[0].id, { data: info });
+      for (const tab of tabs) {
+        chrome.tabs.sendMessage(tab.id, { data: info });
+      }
     }
   });
 }
@@ -268,7 +275,7 @@ const handleMessage = async (request, _sender, sendResponse) => {
             minivizOptions.show = true;
           }
         }
-        sendResponse({show: minivizOptions.show});        
+        sendResponse({show: minivizOptions.show});
         break;
       case 'removeMiniviz':
         minivizOptions.time = Date.now() + request.time;

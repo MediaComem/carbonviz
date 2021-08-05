@@ -99,10 +99,6 @@
     document.head.appendChild(cssVue);
     document.body.appendChild(container);
 
-
-    const CarbonVueSrc = await import(chrome.extension.getURL('../bundle/miniviz.js'));
-    CarbonVue.co2DataCounter.mount('#vue-co2-data-counter');
-
     let positionRight = true;
     let positionTop = true;
     document.getElementById('positionLeftRight').addEventListener('click', function() {

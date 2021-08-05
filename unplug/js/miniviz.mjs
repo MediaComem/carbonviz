@@ -1,6 +1,7 @@
 import Loop from './modules/mainloop.mjs';
 import {genVariation} from './modules/utils.mjs';
 import PubSub from './modules/pubsub.mjs';
+//import '../../bundle/miniviz.js';
 
 const conf = {
   width: 50,
@@ -103,7 +104,10 @@ function disapearEntity(entity) {
 
 function initComputerConsumption() {
   // doesn't need to calculate, it's a constant value: ~6.57 [mg/sec]
-  mainLoop.setInterval(2000, () => generateCO2(6));
+  mainLoop.setInterval(2000, () => {
+    generateCO2(6);
+    CarbonVue.co2DataCounter.co2 += 6.57e-3;
+  });
 }
 
 function chunkifyCo2(input) {

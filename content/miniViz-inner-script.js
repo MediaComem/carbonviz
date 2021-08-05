@@ -1,4 +1,3 @@
-//import '../bundle/miniviz.js';
 import '../bundle/miniviz.js';
 import animationInit from '../unplug/js/miniviz.mjs';
 import PubSub from '../unplug/js/modules/pubsub.mjs';
@@ -101,5 +100,7 @@ function sendToAnimation() {
   }
   for (let id of Object.keys(animations)) {
     pubSub.publish('input-data', animations[id]);
+    CarbonVue.co2DataCounter.data += animations[id].contentLength - 0;
+    CarbonVue.co2DataCounter.co2 += animations[id].co2 - 0;
   }
 }
