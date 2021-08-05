@@ -59,8 +59,8 @@ function initMatter() {
   let upperWall = Matter.Bodies.rectangle(0, -1, render.options.width * 2, 1, {isStatic: true, label: 'wall'});
   let leftWall = Matter.Bodies.rectangle(-1, -1, 1, render.options.height * 2, {isStatic: true, label: 'wall'});
   let rightWall = Matter.Bodies.rectangle(render.options.width + 1, -1, 1, render.options.height * 2, {isStatic: true, label: 'wall'});
-  // todo svg corners
-  Matter.World.add(engine.world, [upperWall, leftWall, rightWall]);
+  Matter.World.add(engine.world, [leftWall, rightWall]);
+  //Matter.World.add(engine.world, [upperWall, leftWall, rightWall]);
 }
 
 function initMainLoop() {
@@ -72,6 +72,8 @@ function initMainLoop() {
         if (body.label == 'wall') return; // walls doesn't moves !
         let force = {x: 0, y: -body.mass * conf.gravity};
         Matter.Body.applyForce(body, body.position, force);
+        // apply opacity for a disapearing effect
+        body.render.opacity = Math.max(0, body.position.y / conf.height);
       });
       const correction = (lastDelta == 0) ? 1 : delta / lastDelta;
       Matter.Engine.update(engine, delta, correction);
