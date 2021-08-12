@@ -53,6 +53,7 @@ export default {
 </template>
 
 <style>
+  /* global */
   * { box-sizing: border-box }
   body {
     margin: 0;
@@ -60,6 +61,42 @@ export default {
   }
   :root {
     --trans-time: 0.3s;
+  }
+  [data-area="body"] h1 {
+    font-size: 24px;
+    font-weight: 900;
+    margin: 0;
+    padding: 34px 0 17px 59px;
+  }
+  [data-area="body"] h1::after {
+    display: block;
+    margin: 17px 84px 0 23px;
+    content: '';
+    border-bottom: solid #BFBFBF 2px;
+  }
+  [data-area="body"] h2, [data-area="body"] h3, [data-area="body"] ul, [data-area="body"] p {
+    margin-left: 122px;
+  }
+  [data-area="body"] h2 {
+    font-size: 22px;
+    font-weight: 800;
+    margin-top: 0;
+    padding: 34px 0 17px 0;
+  }
+  [data-area="body"] h3 {
+    font-weight: 600;
+    margin-top: 0;
+    padding: 0;
+  }
+  [data-area="body"] p {
+    max-width: 600px;
+    font-weight: 400;
+    font-size: 16px;
+  }
+  [data-area="body"] ul li {
+    max-width: 600px;
+    font-weight: 400;
+    font-size: 16px;
   }
 </style>
 
@@ -132,16 +169,20 @@ export default {
   [data-area="subnav"] {
     font-size: 12px;
     font-weight: 700;
+    margin: 25px 0 0 0;
+    padding: 0;
   }
   [data-area="subnav"] li {
-    display: inline-block;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    text-align: right;
   }
   [data-area="subnav"] a {
     cursor: pointer;
     display: inline-block;
-    text-align: center;
     color:#BFBFBF;
-    min-width: 200px;
+    min-width: 100px;
     text-decoration: none;
     padding-bottom: 8px;
     transition: color var(--trans-time);
@@ -155,6 +196,7 @@ export default {
     border-color: #BFBFBF;
     background-color: white;
     margin-left: 6px;
+    margin-right: 16px;
     border-radius: 12px;
     transition: background-color var(--trans-time), border-color var(--trans-time);
   }
@@ -169,7 +211,7 @@ export default {
   [data-area="body"] {
     background-color: #F8F8F8;
     width: 1000px;
-    height: 800px;
+    min-height: 800px;
   }
   /* Vue3 transition */
   .fade-enter-active, .fade-leave-active {

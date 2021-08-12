@@ -1,9 +1,7 @@
 <script>
 import { inject, onMounted } from 'vue';
 
-const subNav = {
-
-};
+const subNav = {};
 
 export default {
 
