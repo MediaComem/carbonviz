@@ -56,7 +56,7 @@ function initMatter() {
   render.canvas.style.all = 'initial';
   render.canvas.style.borderRadius = conf.borderRadius;
   // build walls around the canvas
-  let upperWall = Matter.Bodies.rectangle(0, -1, render.options.width * 2, 1, {isStatic: true, label: 'wall'});
+  // let upperWall = Matter.Bodies.rectangle(0, -1, render.options.width * 2, 1, {isStatic: true, label: 'wall'});
   let leftWall = Matter.Bodies.rectangle(-1, -1, 1, render.options.height * 2, {isStatic: true, label: 'wall'});
   let rightWall = Matter.Bodies.rectangle(render.options.width + 1, -1, 1, render.options.height * 2, {isStatic: true, label: 'wall'});
   Matter.World.add(engine.world, [leftWall, rightWall]);
@@ -94,7 +94,7 @@ function generateCO2(radius = 10) {
     }},
     label: 'co2'
   };
-  let co2 = Matter.Bodies.circle(conf.width / 2, conf.height - radius, radius, opt);
+  let co2 = Matter.Bodies.circle(conf.width / 2 + genVariation(5), conf.height - radius, radius, opt);
   Matter.World.add(engine.world, co2);
   let disapearT = conf.lifetime + genVariation(conf.variation);
   mainLoop.setTimeout(disapearT, () => disapearEntity(co2));
@@ -107,10 +107,9 @@ function disapearEntity(entity) {
 
 function initComputerConsumption() {
   // doesn't need to calculate, it's a constant value: ~6.57 [mg/sec]
-  mainLoop.setInterval(2000, () => {
-    generateCO2(6);
-    CarbonVue.co2DataCounter.co2 += 6.57e-3;
-  });
+  generateCO2(6); //all radius are divided by 2 in the miniviz animation, 6 here beacause every 2 sec
+  CarbonVue.co2DataCounter.co2 += 6.57e-3 * 2;
+  mainLoop.setTimeout(2000 + genVariation(1000), () => initComputerConsumption());
 }
 
 function chunkifyCo2(input) {

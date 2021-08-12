@@ -266,7 +266,8 @@ const handleMessage = async (request, _sender, sendResponse) => {
         embedPlugin();
         break;
       case 'openExtension':
-        window.open("../popup/popup.html", "_blank", "width=600,height=600,status=no,scrollbars=yes");
+        addPluginToNewTab();
+        //window.open("../popup/popup.html", "_blank", "width=600,height=600,status=no,scrollbars=yes");
         break;
       case 'startMiniviz':
         if(!minivizOptions.show) {
@@ -309,4 +310,20 @@ chrome.runtime.onMessage.addListener(handleMessage);
 
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
   chrome.browserAction.setIcon({path: '../icons/iconDark.png'});
+}
+
+const createExtensionTab = () => {
+  const options = {active: true, url: `fullpage/fullpage.html#Statistics`};
+  chrome.tabs.create(options, tab => localStorage.setItem('extensionAnimationTabId', tab.id));
+}
+const addPluginToNewTab = () => {
+  const tabId = localStorage.getItem('extensionAnimationTabId');
+  if (!tabId) { createExtensionTab(); return; }
+  chrome.tabs.get(parseInt(tabId), tab => {
+    if (!tab || tab.title !== chrome.runtime.getManifest().name) { createExtensionTab(); return; }
+    let currentTab = tab.url.substring(tab.url.indexOf('#'));
+    let url = tab.url.replace(currentTab, `#Statistics`);
+    chrome.tabs.update(tab.id, {url});
+    chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
+  });
 }
