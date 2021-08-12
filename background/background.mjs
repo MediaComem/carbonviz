@@ -1,3 +1,5 @@
+import { updateCo2Total } from "../co2History/co2History.js";
+
 const usageDevicePerYear = 1917.3;
 const lifetimeLaptopYears = 6.5;
 const lifetimeInternetAccessEquipmentYears = 6;
@@ -10,6 +12,45 @@ const routerEnergyConsumptionKWh = 0.0076;
 
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
+
+const minivizOptions = {
+  time: undefined,
+  show: true
+};
+
+let dump = [];
+let addFiveMinuteInterval;
+
+const domain = (packet) => {
+  if (!packet.extraInfo.tabUrl) {
+    return '';
+  }
+  const url = new URL(packet.extraInfo.tabUrl);
+  const hostname = url.hostname;
+  let domain = hostname;
+  let match;
+  if (match = hostname.match(/^[^\.]+\.(.+)\..+$/)) {
+    domain = match[1]
+  }
+  const capitalized = domain.charAt(0).toUpperCase() + domain.slice(1)
+  return capitalized;
+}
+
+const saveToDump = (data) => {
+  let match = false;
+  for(let entry in dump) {
+    if (dump[entry].domainName === data.domainName) {
+      dump[entry].co2Size += data.co2Size;
+      dump[entry].packetSize += data.packetSize;
+      dump[entry].timeStamp = data.timeStamp;
+      match = true;
+      break;
+    }
+  }
+  if(!match) {
+    dump.push(data);
+  }
+}
 
 const energyImpactHome = (timeElapsed) => {
   const timeHour = timeElapsed / (1000 * 3600);
@@ -167,13 +208,28 @@ const completedListener = (responseDetails) => {
       }
       // send data to animation
       chrome.runtime.sendMessage({ data: info });
+
+      if (!addFiveMinuteInterval) {
+        addFiveMinuteInterval = setInterval(addFiveMinute, 300000);
+      }
+      // (domain, sizeCo2, sizeData, timestamp)
+      let domainName = domain(info);
+      let co2Size = info.co2;
+      saveToDump({domainName, co2Size, packetSize, timeStamp});
     });
   }
 
   // send message to inner animation
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  //   if (tabs && tabs[0]) {
+  //     chrome.tabs.sendMessage(tabs[0].id, { data: info });
+  //   }
+  // });
+  chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
-      chrome.tabs.sendMessage(tabs[0].id, { data: info });
+      for (const tab of tabs) {
+        chrome.tabs.sendMessage(tab.id, { data: info });
+      }
     }
   });
 }
@@ -203,17 +259,45 @@ const embedPlugin = () => {
   });
 }
 
-const handleMessage = (request) => {
+const handleMessage = async (request, _sender, sendResponse) => {
   if (request.query) {
     switch (request.query) {
       case 'embedPlugin':
         embedPlugin();
+        break;
+      case 'openExtension':
+        window.open("../popup/popup.html", "_blank", "width=600,height=600,status=no,scrollbars=yes");
+        break;
+      case 'startMiniviz':
+        if(!minivizOptions.show) {
+          let timeNow = Date.now();
+          if(timeNow > minivizOptions.time) {
+            minivizOptions.show = true;
+          }
+        }
+        sendResponse({show: minivizOptions.show});
+        break;
+      case 'removeMiniviz':
+        minivizOptions.time = Date.now() + request.time;
+        minivizOptions.show = false;
+        chrome.tabs.query({}, function(tabs) {
+          for (var i=0; i<tabs.length; ++i) {
+            chrome.tabs.sendMessage(tabs[i].id, { query: 'removeMiniviz' });
+          }
+        });
       default:
         break;
     }
   }
   return true;
 }
+
+const addFiveMinute = () => {
+  for(let store in dump) {
+    updateCo2Total(dump[store]);
+  }
+  dump = [];
+};
 
 chrome.webRequest.onCompleted.addListener(
   completedListener,
