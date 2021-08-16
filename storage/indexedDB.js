@@ -26,12 +26,12 @@ function getWeekOfYear(date){
   return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
 };
 
-function dateStringWithHour(dataObject, withHour) {
-  if (withHour) {
-    return dataObject.toISOString().slice(0,13)
-  } else {
-    return dataObject.toISOString().slice(0,10)
-  }
+function dateStringHour(dataObject) {
+  return dataObject.toISOString().slice(0,13)
+}
+
+function dateString(dataObject) {
+  return dataObject.toISOString().slice(0,10)
 }
 
 co2HistoryDB.open = () => {
@@ -58,12 +58,12 @@ co2HistoryDB.open = () => {
         const storeHistory = db.createObjectStore("history", { keyPath: "index" });
         storeHistory.createIndex("by_index", "index", { unique: true });
         storeHistory.add({
-          index: dateStringWithHour(today, true),
+          index: dateStringHour(today),
           month: today.getMonth()+1,
           date: today.getDate(),
           hour: today.getUTCHours(),
           weekOfYear: getWeekOfYear(today),
-          weekOfMonth: (today.getDate() / 7)+1,
+          weekOfMonth: Math.floor((today.getDate() / 7)+1),
           co2: 0,
           data: 0
         });
@@ -73,11 +73,11 @@ co2HistoryDB.open = () => {
         const storeHistorySummary = db.createObjectStore("historySummary", { keyPath: "index" });
         storeHistorySummary.createIndex("by_index", "index", { unique: true });
         storeHistorySummary.add({
-          index: dateStringWithHour(today, false),
+          index: dateString(today),
           month: today.getMonth()+1,
           date: today.getDate(),
           weekOfYear: getWeekOfYear(today),
-          weekOfMonth: (today.getDate() / 7)+1,
+          weekOfMonth: Math.floor((today.getDate() / 7)+1),
           co2: 0,
           data: 0
         });
@@ -96,7 +96,7 @@ co2HistoryDB.open = () => {
 
     request.onsuccess = function (e) {
       co2HistoryDB.db = request.result;
-      return resolve();
+      return resolve(co2HistoryDB.db);
     };
 
     request.onerror = function (e) {
@@ -106,10 +106,8 @@ co2HistoryDB.open = () => {
 };
 
 function init() {
-  co2HistoryDB.open();
+  return co2HistoryDB.open();
 }
-
-window.addEventListener("DOMContentLoaded", init, false);
 
 async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, domainTotal, timeStamp) {
   const db = co2HistoryDB.db;
@@ -125,21 +123,21 @@ async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, domainTotal,
     weekStartDate: getMonday(timeStamp)
   }
   const history = {
-    index: dateStringWithHour(timeStamp, true),
+    index: dateStringHour(timeStamp),
     month: timeStamp.getMonth()+1,
     date: timeStamp.getDate(),
     hour: timeStamp.getUTCHours(),
     weekOfYear: getWeekOfYear(timeStamp),
-    weekOfMonth: parseInt((timeStamp.getDate() / 7)+1),
+    weekOfMonth: Math.floor((timeStamp.getDate() / 7)+1),
     co2: hourCo2,
     data: hourData
   }
   const historySummary = {
-    index: dateStringWithHour(timeStamp, false),
+    index: dateString(timeStamp),
     month: timeStamp.getMonth()+1,
     date: timeStamp.getDate(),
     weekOfYear: getWeekOfYear(timeStamp),
-    weekOfMonth: parseInt((timeStamp.getDate() / 7)+1),
+    weekOfMonth: Math.floor((timeStamp.getDate() / 7)+1),
     co2: dayCo2,
     data: dayData
   }
@@ -152,8 +150,8 @@ async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, domainTotal,
 
 
 function getLastStoredTime(today, domainName) {
-  const historyIndex = dateStringWithHour(today, true);
-  const historySummaryIndex = dateStringWithHour(today, false);
+  const historyIndex = dateStringHour(today);
+  const historySummaryIndex = dateString(today);
   const data = {
     dataTimeStamp: {},
     history: {},
@@ -206,21 +204,21 @@ function addnewRecord(co2Size, sizeData, domainTotal, timeStamp) {
     weekStartDate: getMonday(timeStamp)
   }
   const history = {
-    index: dateStringWithHour(timeStamp, true),
+    index: dateStringHour(timeStamp),
     month: timeStamp.getMonth()+1,
     date: timeStamp.getDate(),
     hour: timeStamp.getUTCHours(),
     weekOfYear: getWeekOfYear(timeStamp),
-    weekOfMonth: parseInt((timeStamp.getDate() / 7)+1),
+    weekOfMonth: Math.floor((timeStamp.getDate() / 7)+1),
     co2: co2Size,
     data: sizeData
   }
   const historySummary = {
-    index: dateStringWithHour(timeStamp, false),
+    index: dateString(timeStamp),
     month: timeStamp.getMonth()+1,
     date: timeStamp.getDate(),
     weekOfYear: getWeekOfYear(timeStamp),
-    weekOfMonth: parseInt((timeStamp.getDate() / 7)+1),
+    weekOfMonth: Math.floor((timeStamp.getDate() / 7)+1),
     co2: co2Size,
     data: sizeData
   }
@@ -232,7 +230,7 @@ function addnewRecord(co2Size, sizeData, domainTotal, timeStamp) {
 
 }
 
-function getkeyRange(period, occurrence) {
+function getkeyRangeSummary(period, occurrence) {
   let endDate = new Date();
   let startDate = new Date(endDate);
   let startKey = '';
@@ -240,53 +238,60 @@ function getkeyRange(period, occurrence) {
 
   if (period === 'day') {
     startDate = new Date(startDate.setDate(startDate.getDate() - occurrence));
-    endKey = dateStringWithHour(endDate, true);
-    startKey = dateStringWithHour(startDate, true);
   }
   if (period === 'week') {
     startDate = new Date(startDate.setDate(startDate.getDate() - (7 * occurrence)));
-    endKey = dateStringWithHour(endDate, false);
-    startKey = dateStringWithHour(startDate, false);
   }
   if (period === 'month') {
     startDate = new Date(startDate.setMonth(startDate.getMonth() - occurrence));
-    endKey = dateStringWithHour(endDate, false);
-    startKey = dateStringWithHour(startDate, false);
   }
+  endKey = dateString(endDate);
+  startKey = dateString(startDate);
   return {startKey, endKey};
 }
 
-function getHistory(period, occurrence) {
+function getDailyAggregates(period, occurrence) {
+  return new Promise(function (resolve, reject) {
+    let data = [];
+    const keys = getkeyRangeSummary(period, occurrence);
+    let keyRangeValue = IDBKeyRange.bound(keys.startKey, keys.endKey);
+
+    const db = co2HistoryDB.db;
+    const trans = db.transaction(["historySummary"], "readonly");
+    const historySummaryStore = trans.objectStore("historySummary");
+
+    const dbCursor = historySummaryStore.openCursor(keyRangeValue);
+    dbCursor.onsuccess = function(event) {
+      let cursor = event.target.result;
+      if(cursor) {
+        data.push(cursor.value);
+        cursor.continue();
+      } else {
+        return resolve(data);
+      }
+    };
+    dbCursor.onerror = function(error) { reject(error)};
+  });
+}
+
+function getDailyEntries(period, occurrence) {
   let data = [];
-  const keys = getkeyRange(period, occurrence);
+  const keys = getkeyRangeSummary(period, occurrence);
   let keyRangeValue = IDBKeyRange.bound(keys.startKey, keys.endKey);
 
   const db = co2HistoryDB.db;
-  const trans = db.transaction(["history", "historySummary"], "readonly");
-  const historyStore = trans.objectStore("history");
-  const historySummaryStore = trans.objectStore("historySummary");
+  const trans = db.transaction(["history"], "readonly");
+  const historySummaryStore = trans.objectStore("history");
 
-  if (period === 'day') {
-    historyStore.openCursor(keyRangeValue).onsuccess = function(event) {
-      let cursor = event.target.result;
-      if(cursor) {
-        data.push(cursor.value);
-        cursor.continue();
-      } else {
-        return data;
-      }
-    };
-  } else {
-    historySummaryStore.openCursor(keyRangeValue).onsuccess = function(event) {
-      let cursor = event.target.result;
-      if(cursor) {
-        data.push(cursor.value);
-        cursor.continue();
-      } else {
-        return data;
-      }
-    };
-  }
+  historySummaryStore.openCursor(keyRangeValue).onsuccess = function(event) {
+    let cursor = event.target.result;
+    if(cursor) {
+      data.push(cursor.value);
+      cursor.continue();
+    } else {
+      return data;
+    }
+  };
 }
 
 function deleteData(key) {
@@ -299,4 +304,4 @@ function deleteData(key) {
   historySummaryStore.delete(key);
 }
 
-export { getLastStoredTime, updateTodaysData, addnewRecord, getHistory, deleteData }
+export { init, getLastStoredTime, updateTodaysData, addnewRecord, getDailyAggregates, getDailyEntries, deleteData }

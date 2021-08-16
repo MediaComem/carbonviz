@@ -1,5 +1,6 @@
 <script>
 import weekChart from '../composables/weekChart';
+import { layerHeightCo2, layerHeightData } from '../composables/history'
 import { computed, inject, ref, toRefs, watch } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
 
@@ -20,10 +21,19 @@ export default {
     const active_index = inject('active_index');
 
     const fullHeight = 200;
-    const { index, stage } = toRefs(props);
+    const { index, type, amount } = toRefs(props);
     const expanded = ref(false);
     const shouldAnimate = ref(false);
-    const height = computed(() => props.amount); //formula to find ! borne entre min max(200px) (easing linear ?)
+    const height = computed(() => {
+      switch(type.value) {
+        case 'co2':
+          return layerHeightCo2(amount.value);
+        case 'data':
+          return layerHeightData(amount.value);
+        default:
+          throw('Invalid layer type');
+      }
+    });
     const expand = () => {
       const isExpanded = expanded.value;
       active_index.value = isExpanded ? -1 : index.value;
@@ -58,7 +68,7 @@ export default {
       :style="`--height: ${height}px`"
       @click="expand()"
   >
-    <div class="label">{{ label }}</div><img :src="`assets/${type}.svg`" :style="`--amount: ${amount - 10}px;`">
+    <div class="label">{{ label }}</div><img :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
     <apexchart v-if="showGraph" class="graph" type="bar" height="200" width="130" :options="options" :series="series"></apexchart>
   </div>
 </template>
@@ -113,7 +123,7 @@ export default {
 
   img {
     display: inline-block;
-    height: var(--amount);
+    height: var(--height);
     transition: transform 0.5s ease;
     filter: brightness(0) saturate(100%) invert(100%);
   }

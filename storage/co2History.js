@@ -1,11 +1,11 @@
-import { getLastStoredTime, updateTodaysData, addnewRecord, getHistory, deleteData } from "./indexedDB.js";
+import { getLastStoredTime, updateTodaysData, addnewRecord, deleteData } from "./indexedDB.js";
 
 const getUnit = (randamUnit) => {
     var unit = /[A-Za-z]+$/;
     var num = /(^[0-9\.]+)/g;
 
     switch(randamUnit.match(unit)[0]) {
-        case 'g': 
+        case 'g':
         case 'B': return Number(randamUnit.match(num)[0]);
         case 'kg':
         case 'KB': return Number(randamUnit.match(num)[0] * 1000);

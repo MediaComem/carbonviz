@@ -1,4 +1,5 @@
-import { updateCo2Total } from "../co2History/co2History.js";
+import { updateCo2Total } from "../storage/co2History.js";
+import { init as initDB } from "../storage/indexedDB.js";
 
 const usageDevicePerYear = 1917.3;
 const lifetimeLaptopYears = 6.5;
@@ -327,3 +328,5 @@ const addPluginToNewTab = () => {
     chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
   });
 }
+
+initDB();

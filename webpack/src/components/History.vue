@@ -1,5 +1,5 @@
 <script>
-import history from '../composables/history';
+import { setup as setupHistoryLayers } from '../composables/history';
 import Stratum from './HistoryStratum.vue';
 import { computed, provide, watch, toRefs, ref } from 'vue';
 
@@ -19,14 +19,15 @@ export default {
   },
 
   setup(props, context) {
+		const active_index = ref(-1);
+		provide('active_index', active_index);
+
     const { type } = toRefs(props)
-    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = history(type.value);
+    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = setupHistoryLayers(type.value);
     const isCo2 = computed(() => type.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const isData = computed(() => type.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const scrollDataComponent = ref(0);
-		const active_index = ref(-1);
 
-		provide('active_index', active_index);
 
     // for DATA we need "move up" the animation by the height of the stratums
     if (isData.value) {
