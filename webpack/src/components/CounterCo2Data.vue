@@ -1,12 +1,20 @@
 <script>
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {formatSize, formatCo2} from '../utils/format';
-
+import { retrieveTodayCounter } from '../composables/storage'
 export default {
 
   setup(props, context) {
     const data = ref(0);
     const co2 = ref(0);
+
+    onMounted( async () => {
+      const counters = await retrieveTodayCounter();
+      console.log(counters);
+      co2.value = counters.co2;
+      data.value = counters.data;
+    });
+
     return {data, co2, formatSize, formatCo2};
   }
 

@@ -1,7 +1,14 @@
-import { nextTick } from 'vue';
-import { init as initDB, getDailyAggregates } from '../../../storage/indexedDB';
+import { days } from '../utils/format';
+import { init as initDB, getDailyAggregates, getTodayCounter } from '../../../storage/indexedDB';
 
 let database;
+
+export const retrieveTodayCounter = async () => {
+    if (!database) {
+        database = await initDB();
+    }
+    return getTodayCounter();
+}
 
 export const retrieveHistoryLayers = async () => {
     /*
@@ -20,7 +27,7 @@ export const retrieveHistoryLayers = async () => {
         database = await initDB();
     }
 
-    // get data fo the last 4 months
+    // get data (daily summaries) fo the last 4 months
     const dailyData = await getDailyAggregates('month', 4);
     if (!dailyData) {
         return { co2: layersCo2, data: layersData };
@@ -30,16 +37,16 @@ export const retrieveHistoryLayers = async () => {
     const currentWeekYear = today.weekOfYear;
 
     // get today
-    layersCo2.push({ amount: today.co2, label: 'Today', details: today });
-    layersData.push({ amount: today.data, label: 'Today', details: today });
+    layersCo2.push({ amount: today.co2, label: 'Today' });
+    layersData.push({ amount: today.data, label: 'Today' });
 
     // get current week days
     let index = dailyData.length-2; // yesterday
     let entry = dailyData[index]
     let weekNb = entry ? entry.weekOfYear : -1;
     while ( weekNb === currentWeekYear) {
-        layersCo2.push({ amount: entry.co2, label: `${entry.date}-${entry.month}`, details: entry });
-        layersData.push({ amount: entry.data, label: `${entry.date}-${entry.month}`, details: entry });
+        layersCo2.push({ amount: entry.co2, label: `${entry.date}-${entry.month}` });
+        layersData.push({ amount: entry.data, label: `${entry.date}-${entry.month}` });
         index--;
         entry = dailyData[index]
         weekNb = entry ? entry.weekOfYear : -1;
@@ -53,14 +60,16 @@ export const retrieveHistoryLayers = async () => {
         previousWeek--;
     }
     for (const week of previousWeeks) {
-        const weeklyData = dailyData.filter(day => day.weekOfYear === week);
-        if (!weeklyData.length) {
+        const dailyWeekData = dailyData.filter(day => day.weekOfYear === week);
+        if (!dailyWeekData.length) {
             continue;
         }
-        const co2 = weeklyData.reduce((acc, entry) => acc + entry.co2, 0);
-        const data = weeklyData.reduce((acc, entry) => acc + entry.data, 0);
-        layersCo2.push({ amount: co2, label: `Week ${week}`, details: weeklyData });
-        layersData.push({ amount: data, label: `Week ${week}`, details: weeklyData });
+        const co2 = dailyWeekData.reduce((acc, entry) => acc + entry.co2, 0);
+        const data = dailyWeekData.reduce((acc, entry) => acc + entry.data, 0);
+        const detailsCo2 = dailyWeekData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek] } });
+        const detailsData = dailyWeekData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek] } });
+        layersCo2.push({ amount: co2, label: `Week ${week}`, details: detailsCo2 });
+        layersData.push({ amount: data, label: `Week ${week}`, details: detailsData });
     }
     // get previous 3 months
     const previousMonths = [];

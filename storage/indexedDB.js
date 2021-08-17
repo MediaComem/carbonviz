@@ -54,18 +54,24 @@ co2HistoryDB.open = () => {
         });
       }
 
+      const dateInfo = {
+        date: today.getDate(),
+        month: today.getMonth()+1,
+        dayOfWeek: today.getDay(),
+        weekOfYear: getWeekOfYear(today),
+        weekOfMonth: Math.floor((today.getDate() / 7)+1)
+      }
+
       if (!db.objectStoreNames.contains('history')) {
         const storeHistory = db.createObjectStore("history", { keyPath: "index" });
         storeHistory.createIndex("by_index", "index", { unique: true });
         storeHistory.add({
+          ...dateInfo,
           index: dateStringHour(today),
-          month: today.getMonth()+1,
-          date: today.getDate(),
           hour: today.getUTCHours(),
-          weekOfYear: getWeekOfYear(today),
-          weekOfMonth: Math.floor((today.getDate() / 7)+1),
           co2: 0,
-          data: 0
+          data: 0,
+          duration: 0
         });
       }
 
@@ -73,13 +79,11 @@ co2HistoryDB.open = () => {
         const storeHistorySummary = db.createObjectStore("historySummary", { keyPath: "index" });
         storeHistorySummary.createIndex("by_index", "index", { unique: true });
         storeHistorySummary.add({
+          ...dateInfo,
           index: dateString(today),
-          month: today.getMonth()+1,
-          date: today.getDate(),
-          weekOfYear: getWeekOfYear(today),
-          weekOfMonth: Math.floor((today.getDate() / 7)+1),
           co2: 0,
-          data: 0
+          data: 0,
+          duration: 0
         });
       }
 
@@ -109,57 +113,69 @@ function init() {
   return co2HistoryDB.open();
 }
 
-async function updateTodaysData(dayCo2, hourCo2, dayData, hourData, domainTotal, timeStamp) {
-  const db = co2HistoryDB.db;
-  let trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readwrite");
-  let daysStore = trans.objectStore("dataTimeStamp");
-  let historyStore = trans.objectStore("history");
-  let historySummaryStore = trans.objectStore("historySummary");
-  let domainStore = trans.objectStore("domains");
+async function updateData(date, hourlyData, dailyData, domainData = undefined) {
+  return new Promise(function (resolve) {
+    const db = co2HistoryDB.db;
+    let trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readwrite");
+    let daysStore = trans.objectStore("dataTimeStamp");
+    let historyStore = trans.objectStore("history");
+    let historySummaryStore = trans.objectStore("historySummary");
+    let domainStore = trans.objectStore("domains");
 
-  const storedData  = {
-    index: 0,
-    lastStoredDate: timeStamp,
-    weekStartDate: getMonday(timeStamp)
-  }
-  const history = {
-    index: dateStringHour(timeStamp),
-    month: timeStamp.getMonth()+1,
-    date: timeStamp.getDate(),
-    hour: timeStamp.getUTCHours(),
-    weekOfYear: getWeekOfYear(timeStamp),
-    weekOfMonth: Math.floor((timeStamp.getDate() / 7)+1),
-    co2: hourCo2,
-    data: hourData
-  }
-  const historySummary = {
-    index: dateString(timeStamp),
-    month: timeStamp.getMonth()+1,
-    date: timeStamp.getDate(),
-    weekOfYear: getWeekOfYear(timeStamp),
-    weekOfMonth: Math.floor((timeStamp.getDate() / 7)+1),
-    co2: dayCo2,
-    data: dayData
-  }
+    const storedData  = {
+      index: 0,
+      lastStoredDate: date,
+      weekStartDate: getMonday(date)
+    }
 
-  daysStore.put(storedData );
-  historyStore.put(history);
-  historySummaryStore.put(historySummary);
-  domainStore.put(domainTotal);
+    const dateInfo = {
+      date: date.getDate(),
+      month: date.getMonth()+1,
+      dayOfWeek: date.getDay(),
+      weekOfYear: getWeekOfYear(date),
+      weekOfMonth: Math.floor((date.getDate() / 7)+1)
+    }
+
+    const history = {
+      ...dateInfo,
+      index: dateStringHour(date),
+      hour: date.getUTCHours(),
+      co2: hourlyData.co2,
+      data: hourlyData.data,
+      duration: hourlyData.duration
+    }
+    const historySummary = {
+      ...dateInfo,
+      index: dateString(date),
+      co2: dailyData.co2,
+      data: dailyData.data,
+      duration: dailyData.duration
+    }
+
+    daysStore.put(storedData );
+    historyStore.put(history);
+    historySummaryStore.put(historySummary);
+    if (domainData) {
+      domainStore.put(domainData);
+    }
+    trans.oncomplete = function() {
+      return resolve();
+    }
+
+  });
 };
 
-
-function getLastStoredTime(today, domainName) {
-  const historyIndex = dateStringHour(today);
-  const historySummaryIndex = dateString(today);
-  const data = {
-    dataTimeStamp: {},
-    history: {},
-    historySummary: {},
-    domain: {},
-    storedDates: {}
-  };
+async function getLastStoredEntries(today, domainName = undefined) {
   return new Promise(function (resolve) {
+    const historyIndex = dateStringHour(today);
+    const historySummaryIndex = dateString(today);
+    const data = {
+      dataTimeStamp: {},
+      history: {},
+      historySummary: {},
+      domain: {},
+      storedDates: {}
+    };
     const db = co2HistoryDB.db;
     const trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readonly");
     const DayStore = trans.objectStore("dataTimeStamp");
@@ -176,8 +192,10 @@ function getLastStoredTime(today, domainName) {
     historySummaryStore.get(historySummaryIndex).onsuccess = function (event) {
       data.historySummary = event.target.result;
     }
-    domainStore.get(domainName).onsuccess = function (event) {
-      data.domain = event.target.result;
+    if (domainName) {
+      domainStore.get(domainName).onsuccess = function (event) {
+        data.domain = event.target.result;
+      }
     }
     historySummaryStore.getAllKeys().onsuccess = function (event) {
       data.storedDates = event.target.result;
@@ -188,46 +206,6 @@ function getLastStoredTime(today, domainName) {
     }
 
   });
-}
-
-function addnewRecord(co2Size, sizeData, domainTotal, timeStamp) {
-  const db = co2HistoryDB.db;
-  let trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readwrite");
-  let daysStore = trans.objectStore("dataTimeStamp");
-  let historyStore = trans.objectStore("history");
-  let historySummaryStore = trans.objectStore("historySummary");
-  let domainStore = trans.objectStore("domains");
-
-  const storedData  = {
-    index: 0,
-    lastStoredDate: timeStamp,
-    weekStartDate: getMonday(timeStamp)
-  }
-  const history = {
-    index: dateStringHour(timeStamp),
-    month: timeStamp.getMonth()+1,
-    date: timeStamp.getDate(),
-    hour: timeStamp.getUTCHours(),
-    weekOfYear: getWeekOfYear(timeStamp),
-    weekOfMonth: Math.floor((timeStamp.getDate() / 7)+1),
-    co2: co2Size,
-    data: sizeData
-  }
-  const historySummary = {
-    index: dateString(timeStamp),
-    month: timeStamp.getMonth()+1,
-    date: timeStamp.getDate(),
-    weekOfYear: getWeekOfYear(timeStamp),
-    weekOfMonth: Math.floor((timeStamp.getDate() / 7)+1),
-    co2: co2Size,
-    data: sizeData
-  }
-
-  daysStore.put(storedData );
-  historyStore.put(history);
-  historySummaryStore.put(historySummary);
-  domainStore.put(domainTotal);
-
 }
 
 function getkeyRangeSummary(period, occurrence) {
@@ -250,7 +228,7 @@ function getkeyRangeSummary(period, occurrence) {
   return {startKey, endKey};
 }
 
-function getDailyAggregates(period, occurrence) {
+async function getDailyAggregates(period, occurrence) {
   return new Promise(function (resolve, reject) {
     let data = [];
     const keys = getkeyRangeSummary(period, occurrence);
@@ -267,31 +245,68 @@ function getDailyAggregates(period, occurrence) {
         data.push(cursor.value);
         cursor.continue();
       } else {
-        return resolve(data);
+        // add computer co2
+        const dailyAggregates = data.map( entry => {
+          const computerCo2 = entry.duration * 6.57e-6; // constant value: ~6.57 [mg/sec]
+          return {
+            ...entry,
+            co2: entry.co2 + computerCo2
+          }
+        });
+        return resolve(dailyAggregates);
       }
     };
     dbCursor.onerror = function(error) { reject(error)};
   });
 }
 
-function getDailyEntries(period, occurrence) {
-  let data = [];
-  const keys = getkeyRangeSummary(period, occurrence);
-  let keyRangeValue = IDBKeyRange.bound(keys.startKey, keys.endKey);
+async function getDailyEntries(period, occurrence) {
+  return new Promise(function (resolve, reject) {
 
-  const db = co2HistoryDB.db;
-  const trans = db.transaction(["history"], "readonly");
-  const historySummaryStore = trans.objectStore("history");
+    let data = [];
+    const keys = getkeyRangeSummary(period, occurrence);
+    let keyRangeValue = IDBKeyRange.bound(keys.startKey, keys.endKey);
 
-  historySummaryStore.openCursor(keyRangeValue).onsuccess = function(event) {
-    let cursor = event.target.result;
-    if(cursor) {
-      data.push(cursor.value);
-      cursor.continue();
-    } else {
-      return data;
+    const db = co2HistoryDB.db;
+    const trans = db.transaction(["history"], "readonly");
+    const historySummaryStore = trans.objectStore("history");
+
+    historySummaryStore.openCursor(keyRangeValue).onsuccess = function(event) {
+      let cursor = event.target.result;
+      if(cursor) {
+        data.push(cursor.value);
+        cursor.continue();
+      } else {
+        // add computer co2
+        const dailyEntrie =  data.map( entry => {
+          const computerCo2 = entry.duration * 6.57e-6; // constant value: ~6.57 [mg/sec]
+          return {
+            ...entry,
+            co2: entry.co2 + computerCo2
+          }
+        });
+        return resolve(dailyEntrie);
+      }
+    };
+    dbCursor.onerror = function(error) { reject(error)};
+  });
+}
+
+async function getTodayCounter() {
+  const today = new Date();
+  const index = dateString(today);
+  return new Promise(function (resolve) {
+    const db = co2HistoryDB.db;
+    const trans = db.transaction(["historySummary"], "readonly");
+    const historySummaryStore = trans.objectStore("historySummary");
+
+    historySummaryStore.get(index).onsuccess = function (event) {
+      const summary = event.target.result;
+      const computerCo2 = summary.duration * 6.57e-6;// constant value: ~6.57 [mg/sec]
+      const counter = { co2: summary.co2 + computerCo2, data: summary.data };
+      return resolve(counter);
     }
-  };
+  });
 }
 
 function deleteData(key) {
@@ -304,4 +319,4 @@ function deleteData(key) {
   historySummaryStore.delete(key);
 }
 
-export { init, getLastStoredTime, updateTodaysData, addnewRecord, getDailyAggregates, getDailyEntries, deleteData }
+export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData }

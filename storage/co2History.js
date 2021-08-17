@@ -1,4 +1,4 @@
-import { getLastStoredTime, updateTodaysData, addnewRecord, deleteData } from "./indexedDB.js";
+import { getLastStoredEntries, updateData, deleteData } from "./indexedDB.js";
 
 const getUnit = (randamUnit) => {
     var unit = /[A-Za-z]+$/;
@@ -25,57 +25,79 @@ const co2Size = (value) => {
     }
 }
 
+export function updateRunningDurationSec(duration) {
+    return new Promise(async function(resolve) {
+        const now = new Date();
+        const lastStoredDBEntry = await getLastStoredEntries(now);
+        const history = lastStoredDBEntry.history;
+        const historySummary = lastStoredDBEntry.historySummary;
+
+        const hourlyData = { ...history }
+        const dailyData = { ...historySummary };
+
+        // same hour
+        if (history === undefined) {
+            hourlyData.duration = duration;
+        } else {
+            hourlyData.duration += duration
+        }
+        // same day
+        if (historySummary === undefined) {
+            dailyData.duration = duration;
+        } else {
+            dailyData.duration += duration;
+        }
+
+        await updateData(now, hourlyData, dailyData);
+
+        resolve();
+    });
+}
+
 export function updateCo2Total(packet) {
     return new Promise(async function(resolve) {
         const domain = packet.domainName;
         const sizeCo2 = packet.co2Size;
         const dataBytes = packet.packetSize ;
         const timestamp = packet.timeStamp;
-        const today = new Date(timestamp);
-        let dayTotalCo2 = 0;
-        let dayTotalData = 0;
-        let hourTotalCo2 = 0;
-        let hourTotalData = 0;
-        const lastStoredDBEntry = await getLastStoredTime(today, domain);
-        //const dataBytes = getUnit(sizeData);
-        let storedDates = lastStoredDBEntry.storedDates;
-        let history = lastStoredDBEntry.history;
-        let historySummry = lastStoredDBEntry.historySummary;
-        const domainTotal = lastStoredDBEntry.domain;
+        const date = new Date(timestamp);
+        const lastStoredDBEntry = await getLastStoredEntries(date, domain);
+        const storedDates = lastStoredDBEntry.storedDates;
+        const history = lastStoredDBEntry.history;
+        const historySummary = lastStoredDBEntry.historySummary;
+        const historyDomain = lastStoredDBEntry.domain;
 
-        let newDomainTotal = {};
-        if(domainTotal != undefined) {
-            newDomainTotal = {
-                name: domain,
-                co2: domainTotal.co2 + sizeCo2,
-                data: domainTotal.data + dataBytes
-            }
-        } else {
-            newDomainTotal = {
-                name: domain,
-                co2: sizeCo2,
-                data: dataBytes
-            }
+        const hourlyData = { co2: sizeCo2, data: dataBytes, duration: history?.duration ?? 0}
+        const dailyData = { co2: sizeCo2, data: dataBytes, duration: historySummary?.duration ?? 0};
+
+        const domainData = {
+            name: domain,
+            co2: sizeCo2,
+            data: dataBytes
+        };
+        if(historyDomain != undefined) {
+            domainData.co2 += historyDomain.co2;
+            domainData.data += historyDomain.data;
         }
 
         // Clean obsolete data storage (older than four months)
         let oldestDate = new Date(storedDates[0]);
-        if (oldestDate.getFullYear != today.getFullYear || oldestDate.getMonth() < today.getMonth() - 4) {
+        if (oldestDate.getFullYear != date.getFullYear || oldestDate.getMonth() < date.getMonth() - 4) {
             deleteData(storedDates[0]);
         }
         // same hour
         if (history != undefined) {
-            hourTotalCo2 = sizeCo2 + history.co2;
-            hourTotalData = dataBytes + history.data;
+            hourlyData.co2 += history.co2;
+            hourlyData.data += history.data;
         }
         // same day
-        if (historySummry != undefined) {
-            dayTotalCo2 = sizeCo2 + historySummry.co2;
-            dayTotalData = dataBytes + historySummry.data;
-            updateTodaysData(dayTotalCo2, hourTotalCo2, dayTotalData, hourTotalData, newDomainTotal, today);
-        } else {
-            addnewRecord(sizeCo2, dataBytes, newDomainTotal, today);
+        if (historySummary != undefined) {
+            dailyData.co2 += historySummary.co2;
+            dailyData.data += historySummary.data;
         }
+
+        await updateData(date, hourlyData, dailyData, domainData);
+
         resolve();
     });
 }

@@ -1,5 +1,5 @@
 <script>
-import weekChart from '../composables/weekChart';
+import layerChart from '../composables/layerChart';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
 import { computed, inject, ref, toRefs, watch } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
@@ -12,6 +12,7 @@ export default {
     index: {type: Number},
     amount: {type: Number},
     type: {type: String},
+    details: {type: Array},
     label: {type: String},
     stage: {type: Number}
   },
@@ -52,9 +53,14 @@ export default {
       expanded.value = active;
     });
 
-    // TODO: replace with some real DATA from the indexedDB
-    const showGraph = props.type == 'co2' ? props.index < 4 : props.index > 3;
-    const {options, series} = weekChart(props.type, [30, 36.34, 70, 23, 34, 23, 46]);
+    let showGraph = false;
+    let options, series;
+    if (props.details) {
+      showGraph = props.details;
+      const chart = layerChart(props.type, props.details);
+      options = chart.options;
+      series = chart.series;
+    }
 
     return {active_index, height, expanded, expand, shouldAnimate, showGraph, options, series};
 }

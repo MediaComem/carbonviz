@@ -6,8 +6,10 @@ import { computed, provide, watch, toRefs, ref } from 'vue';
 /*
 interface HistoryLayerData {
   amount: number,
-  visibility?: boolean,
-  label: string
+  label: string,
+}
+interface HistoryLayer extends HistoryLayerData{
+  details?: HistoryLayerData[]
 }
 */
 
@@ -78,7 +80,8 @@ export default {
 <template>
   <div v-if="show" :style="`--top: ${isCo2 ? -scroll : 0}px`" class="history-wrapper">
     <stratum v-for="(layer, index) in layers" :key="index"
-      :index="index" :amount="layer.amount" :label="layer.label" :type="type" :stage="stage"
+      :type="type" :index="index" :stage="stage"
+      :amount="layer.amount" :label="layer.label" :details="layer.details"
       @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>
   </div>
 </template>

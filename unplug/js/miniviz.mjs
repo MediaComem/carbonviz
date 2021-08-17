@@ -108,7 +108,7 @@ function disapearEntity(entity) {
 function initComputerConsumption() {
   // doesn't need to calculate, it's a constant value: ~6.57 [mg/sec]
   generateCO2(6); //all radius are divided by 2 in the miniviz animation, 6 here beacause every 2 sec
-  CarbonVue.co2DataCounter.co2 += 6.57e-3 * 2;
+  CarbonVue.co2DataCounter.co2 += 6.57e-6 * 2;
   mainLoop.setTimeout(2000 + genVariation(1000), () => initComputerConsumption());
 }
 
