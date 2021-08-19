@@ -109,7 +109,7 @@ function initComputerConsumption() {
   // doesn't need to calculate, it's a constant value: ~6.57 [mg/sec]
   generateCO2(7); //all radius are divided by 2 in the miniviz animation, 6 here because every ~4 sec = 26.28 [mg] => radius of
   CarbonVue.co2DataCounter.co2 += 6.57e-6 * 2;
-  mainLoop.setTimeout(4000 + genVariation(2000), () => initComputerConsumption());
+  mainLoop.setTimeout(2000 + genVariation(1000), () => initComputerConsumption());
 }
 
 function chunkifyCo2(input) {
