@@ -331,6 +331,7 @@ mainLoop.setInterval(1000, () => {
     energyRE: 3.34e-5,
     extraInfo: { timeStamp: new Date() }
   });
+  // TODO: CO2 may be out of sync in page tab anim (when animation paused)
   CarbonVue.co2DataCounter.co2 += 6.57e-6;
 });
 

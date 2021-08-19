@@ -1,4 +1,4 @@
-import {days, formatSize, formatCo2} from '../utils/format';
+import { formatSize, formatCo2} from '../utils/format';
 
 const colorLabel = '#fff';
 const colorDataLabel = '#8B7B52';
@@ -6,18 +6,19 @@ const colorBars = '#fff';
 const fontFamily = 'Roboto, sans-serif';
 const fontWeight = 900;
 
-export default function (type, weekData) {
+export default function (type, periods) {
+  const length = periods.length;
   const options =  {
     fill: {opacity: 1},
     tooltip: {enabled: false},
-    colors: Array(7).fill(colorBars),
+    colors: Array(length).fill(colorBars),
     dataLabels: {
       enabled: true,
       textAnchor: 'start', offsetY: 7, offsetX: 3,
       style: {
         fontSize: '9px',
         fontFamily, fontWeight,
-        colors: Array(7).fill(colorDataLabel)
+        colors: Array(length).fill(colorDataLabel)
       },
       formatter: val =>  {
         return type === 'co2' ? formatCo2(val) : formatSize(val)
@@ -26,16 +27,15 @@ export default function (type, weekData) {
     xaxis: {
       axisTicks: {show: false},
       axisBorder: {show: true},
-      categories: [0, 1, 2, 3, 4, 5, 6],
+      categories: periods.map((period) => period.label)
     },
     yaxis: {
       labels:{
         show:true, align: 'left', offsetX: -7, offsetY: 2,
         style: {
           fontFamily, fontWeight,
-          colors: Array(7).fill(colorLabel),
-        },
-        formatter: ind => days[ind]
+          colors: Array(length).fill(colorLabel),
+        }
       },
       axisTicks: {show: false},
       axisBorder: {show: false}
@@ -50,7 +50,6 @@ export default function (type, weekData) {
       dataLabels: {position: 'bottom'}
     }}
   };
-  const series = [{data: weekData}];
-
+  const series = [{data: periods.map( period => period.amount)}];
   return {options, series};
 }

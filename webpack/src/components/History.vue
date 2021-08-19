@@ -1,13 +1,15 @@
 <script>
-import history from '../composables/history';
+import { setup as setupHistoryLayers } from '../composables/history';
 import Stratum from './HistoryStratum.vue';
 import { computed, provide, watch, toRefs, ref } from 'vue';
 
 /*
 interface HistoryLayerData {
   amount: number,
-  visibility?: boolean,
-  label: string
+  label: string,
+}
+interface HistoryLayer extends HistoryLayerData{
+  details?: HistoryLayerData[]
 }
 */
 
@@ -19,14 +21,15 @@ export default {
   },
 
   setup(props, context) {
+		const active_index = ref(-1);
+		provide('active_index', active_index);
+
     const { type } = toRefs(props)
-    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = history(type.value);
+    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = setupHistoryLayers(type.value);
     const isCo2 = computed(() => type.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const isData = computed(() => type.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const scrollDataComponent = ref(0);
-		const active_index = ref(-1);
 
-		provide('active_index', active_index);
 
     // for DATA we need "move up" the animation by the height of the stratums
     if (isData.value) {
@@ -77,7 +80,8 @@ export default {
 <template>
   <div v-if="show" :style="`--top: ${isCo2 ? -scroll : 0}px`" class="history-wrapper">
     <stratum v-for="(layer, index) in layers" :key="index"
-      :index="index" :amount="layer.amount" :label="layer.label" :type="type" :stage="stage"
+      :type="type" :index="index" :stage="stage"
+      :amount="layer.amount" :label="layer.label" :details="layer.details" :level="layer.level"
       @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>
   </div>
 </template>

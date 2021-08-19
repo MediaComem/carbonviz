@@ -1,4 +1,5 @@
-import { updateCo2Total } from "../co2History/co2History.js";
+import { updateCo2Total, updateRunningDurationSec } from "../storage/co2History.js";
+import { init as initDB } from "../storage/indexedDB.js";
 
 const usageDevicePerYear = 1917.3;
 const lifetimeLaptopYears = 6.5;
@@ -19,7 +20,8 @@ const minivizOptions = {
 };
 
 let dump = [];
-let addFiveMinuteInterval;
+let writeDataInterval;
+const writingIntervalMs = 60000;
 
 const domain = (packet) => {
   if (!packet.extraInfo.tabUrl) {
@@ -38,11 +40,11 @@ const domain = (packet) => {
 
 const saveToDump = (data) => {
   let match = false;
-  for(let entry in dump) {
-    if (dump[entry].domainName === data.domainName) {
-      dump[entry].co2Size += data.co2Size;
-      dump[entry].packetSize += data.packetSize;
-      dump[entry].timeStamp = data.timeStamp;
+  for(let entry of dump) {
+    if (entry.domainName === data.domainName) {
+      entry.co2Size += data.co2Size;
+      entry.packetSize += data.packetSize;
+      entry.timeStamp = data.timeStamp;
       match = true;
       break;
     }
@@ -209,8 +211,8 @@ const completedListener = (responseDetails) => {
       // send data to animation
       chrome.runtime.sendMessage({ data: info });
 
-      if (!addFiveMinuteInterval) {
-        addFiveMinuteInterval = setInterval(addFiveMinute, 300000);
+      if (!writeDataInterval) {
+        writeDataInterval = setInterval(writeData, writingIntervalMs);
       }
       // (domain, sizeCo2, sizeData, timestamp)
       let domainName = domain(info);
@@ -293,10 +295,12 @@ const handleMessage = async (request, _sender, sendResponse) => {
   return true;
 }
 
-const addFiveMinute = () => {
-  for(let store in dump) {
-    updateCo2Total(dump[store]);
+const writeData = async () => {
+  for(let packet of dump) {
+    await updateCo2Total(packet);
   }
+  updateRunningDurationSec(writingIntervalMs / 1000);
+
   dump = [];
 };
 
@@ -327,3 +331,5 @@ const addPluginToNewTab = () => {
     chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
   });
 }
+
+initDB();
