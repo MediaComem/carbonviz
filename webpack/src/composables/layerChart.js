@@ -51,6 +51,5 @@ export default function (type, periods) {
     }}
   };
   const series = [{data: periods.map( period => period.amount)}];
-  console.log(series);
   return {options, series};
 }

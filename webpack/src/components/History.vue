@@ -81,7 +81,7 @@ export default {
   <div v-if="show" :style="`--top: ${isCo2 ? -scroll : 0}px`" class="history-wrapper">
     <stratum v-for="(layer, index) in layers" :key="index"
       :type="type" :index="index" :stage="stage"
-      :amount="layer.amount" :label="layer.label" :details="layer.details"
+      :amount="layer.amount" :label="layer.label" :details="layer.details" :level="layer.level"
       @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>
   </div>
 </template>

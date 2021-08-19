@@ -302,9 +302,12 @@ async function getTodayCounter() {
 
     historySummaryStore.get(index).onsuccess = function (event) {
       const summary = event.target.result;
-      const computerCo2 = summary.duration * 6.57e-6;// constant value: ~6.57 [mg/sec]
-      const counter = { co2: summary.co2 + computerCo2, data: summary.data };
-      return resolve(counter);
+      if (summary) {
+        const computerCo2 = summary.duration * 6.57e-6;// constant value: ~6.57 [mg/sec]
+        const counter = { co2: summary.co2 + computerCo2, data: summary.data };
+        return resolve(counter);
+      }
+      return { co2:0, data: 0};
     }
   });
 }

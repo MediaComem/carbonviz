@@ -11,15 +11,6 @@ export const retrieveTodayCounter = async () => {
 }
 
 export const retrieveHistoryLayers = async () => {
-    /*
-    [
-        { amount: 120, label: 'week 21' }, { amount: 75, label: 'week 22' },
-        { amount: 120, label: 'week 23' },{ amount: 150, label: 'last week' },
-        { amount: 120, label: 'Monday' },{ amount: 75, label: 'Tuesday' },
-        { amount: 100, label: 'Yesterday' }, { amount: 50, label: 'Today' }
-    ]
-    */
-
     const layersCo2 = [];
     const layersData = [];
 
@@ -37,16 +28,16 @@ export const retrieveHistoryLayers = async () => {
     const currentWeekYear = today.weekOfYear;
 
     // get today
-    layersCo2.push({ amount: today.co2, label: 'Today' });
-    layersData.push({ amount: today.data, label: 'Today' });
+    layersCo2.push({ amount: today.co2, label: 'Today', level: 'today' });
+    layersData.push({ amount: today.data, label: 'Today', level: 'today'  });
 
     // get current week days
     let index = dailyData.length-2; // yesterday
     let entry = dailyData[index]
     let weekNb = entry ? entry.weekOfYear : -1;
     while ( weekNb === currentWeekYear) {
-        layersCo2.push({ amount: entry.co2, label: `${entry.date}-${entry.month}` });
-        layersData.push({ amount: entry.data, label: `${entry.date}-${entry.month}` });
+        layersCo2.push({ amount: entry.co2, label: `${entry.date}-${entry.month}`, level: 'day' });
+        layersData.push({ amount: entry.data, label: `${entry.date}-${entry.month}`, level: 'day' });
         index--;
         entry = dailyData[index]
         weekNb = entry ? entry.weekOfYear : -1;
@@ -68,8 +59,8 @@ export const retrieveHistoryLayers = async () => {
         const data = dailyWeekData.reduce((acc, entry) => acc + entry.data, 0);
         const detailsCo2 = dailyWeekData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek] } });
         const detailsData = dailyWeekData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek] } });
-        layersCo2.push({ amount: co2, label: `Week ${week}`, details: detailsCo2 });
-        layersData.push({ amount: data, label: `Week ${week}`, details: detailsData });
+        layersCo2.push({ amount: co2, label: `Week ${week}`, details: detailsCo2, level: 'week' });
+        layersData.push({ amount: data, label: `Week ${week}`, details: detailsData, level: 'week' });
     }
     // get previous 3 months
     const previousMonths = [];
@@ -86,8 +77,8 @@ export const retrieveHistoryLayers = async () => {
         }
         const co2 = monthlyData.reduce((acc, entry) => acc + entry.co2, 0);
         const data = monthlyData.reduce((acc, entry) => acc + entry.data, 0);
-        layersCo2.push({ amount: co2, label: `Month ${month}`, details: monthlyData });
-        layersData.push({ amount: data, label: `Month ${month}`, details: monthlyData });
+        layersCo2.push({ amount: co2, label: `Month ${month}`, details: monthlyData, level: 'month' });
+        layersData.push({ amount: data, label: `Month ${month}`, details: monthlyData, level: 'month' });
     }
 
    return { co2: layersCo2, data: layersData };

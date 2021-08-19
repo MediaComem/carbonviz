@@ -10,7 +10,6 @@ export default {
 
     onMounted( async () => {
       const counters = await retrieveTodayCounter();
-      console.log(counters);
       co2.value = counters.co2;
       data.value = counters.data;
     });

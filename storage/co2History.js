@@ -1,30 +1,5 @@
 import { getLastStoredEntries, updateData, deleteData } from "./indexedDB.js";
 
-const getUnit = (randamUnit) => {
-    var unit = /[A-Za-z]+$/;
-    var num = /(^[0-9\.]+)/g;
-
-    switch(randamUnit.match(unit)[0]) {
-        case 'g':
-        case 'B': return Number(randamUnit.match(num)[0]);
-        case 'kg':
-        case 'KB': return Number(randamUnit.match(num)[0] * 1000);
-        case 'Mg':
-        case 'MB': return Number(randamUnit.match(num)[0] * 1000000);
-    }
-}
-
-const co2Size = (value) => {
-    if (value / 1000 < 1) {
-        return `${(value).toFixed(3)} g`;
-    } else if (value / 1000 >= 1000) {
-        return `${(value / 1000000).toFixed(3)} Mg`; // megagram (tonne)
-    }
-    else {
-        return `${(value / 1000).toFixed(3)} kg`;
-    }
-}
-
 export function updateRunningDurationSec(duration) {
     return new Promise(async function(resolve) {
         const now = new Date();
@@ -37,12 +12,16 @@ export function updateRunningDurationSec(duration) {
 
         // same hour
         if (history === undefined) {
+            hourlyData.co2 = 0;
+            hourlyData.data = 0;
             hourlyData.duration = duration;
         } else {
             hourlyData.duration += duration
         }
         // same day
         if (historySummary === undefined) {
+            dailyData.co2 = 0;
+            dailyData.data = 0;
             dailyData.duration = duration;
         } else {
             dailyData.duration += duration;
