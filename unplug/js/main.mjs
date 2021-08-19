@@ -250,14 +250,15 @@ const chunkifyData = (input) => {
       if (spawnChunks >= conf.chunks.maxBySpawn) return;
     }
   }
-  if (input.contentLength <= size) {
-    let entity = generateData(2);
-    metaData.set(entity, {...constMetaData, chunkSizeData: input.contentLength});
-  }
+  // currently ignoring very small chunks (uncomment the following show them)
+  // if (input.contentLength <= size) {
+  //   let entity = generateData(2);
+  //   metaData.set(entity, {...constMetaData, chunkSizeData: input.contentLength});
+  // }
 }
 
 const chunkifyCo2 = (input) => {
-  let co2 = input.co2 * 1000000; // co2 emission in [kg]
+  let co2 = input.co2 * 1000000; // co2 emission [kg] => to [mg]
   let spawnChunks = 0;
   const constMetaData = {
     initiator: input.initiator,
@@ -281,10 +282,11 @@ const chunkifyCo2 = (input) => {
       if (spawnChunks >= conf.chunks.maxBySpawn) return;
     }
   }
-  if (input.co2 * 1000000 <= co2) {
-    let entity = generateCO2(1);
-    metaData.set(entity, {...constMetaData, chunkSizeCo2: input.co2});
-  }
+  // currently ignoring very small chunks (uncomment the following show them)
+  // if (input.co2 * 1000000 <= co2) {
+  //   let entity = generateCO2(1);
+  //   metaData.set(entity, {...constMetaData, chunkSizeCo2: input.co2});
+  // }
 }
 
 pubSub.subscribe('input-data', input => {
@@ -320,7 +322,7 @@ mainLoop.setInterval(1000, () => {
   // const energgyNREHomeDefaultPerHour = 0.5285774234423879;
   // const energyREHomeDefaultPerHour = 0.12011280706531807;
   // doesnt need to calculate, it's a constant value: ~6.57 [mg/sec]
-  let co2 = generateCO2(6);
+  let co2 = generateCO2(7);
   metaData.set(co2, {
     initiator: 'computer',
     contentLength: 0,
