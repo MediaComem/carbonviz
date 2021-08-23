@@ -28,7 +28,7 @@ export const retrieveHistoryLayers = async () => {
     const currentWeekYear = today.weekOfYear;
 
     // get today
-    layersCo2.push({ amount: today.co2, label: 'Today', level: 'today' });
+    layersCo2.push({ amount: today.co2, energy: today.energy, label: 'Today', level: 'today' });
     layersData.push({ amount: today.data, label: 'Today', level: 'today'  });
 
     // get current week days
@@ -36,7 +36,7 @@ export const retrieveHistoryLayers = async () => {
     let entry = dailyData[index]
     let weekNb = entry ? entry.weekOfYear : -1;
     while ( weekNb === currentWeekYear) {
-        layersCo2.push({ amount: entry.co2, label: `${entry.date}-${entry.month}`, level: 'day' });
+        layersCo2.push({ amount: entry.co2, energy: entry.energy, label: `${entry.date}-${entry.month}`, level: 'day' });
         layersData.push({ amount: entry.data, label: `${entry.date}-${entry.month}`, level: 'day' });
         index--;
         entry = dailyData[index]
@@ -56,10 +56,11 @@ export const retrieveHistoryLayers = async () => {
             continue;
         }
         const co2 = dailyWeekData.reduce((acc, entry) => acc + entry.co2, 0);
+        const energy = dailyWeekData.reduce((acc, entry) => acc + entry.energy, 0);
         const data = dailyWeekData.reduce((acc, entry) => acc + entry.data, 0);
         const detailsCo2 = dailyWeekData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek] } });
         const detailsData = dailyWeekData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek] } });
-        layersCo2.push({ amount: co2, label: `Week ${week}`, details: detailsCo2, level: 'week' });
+        layersCo2.push({ amount: co2, energy: energy, label: `Week ${week}`, details: detailsCo2, level: 'week' });
         layersData.push({ amount: data, label: `Week ${week}`, details: detailsData, level: 'week' });
     }
     // get previous 3 months
@@ -76,8 +77,9 @@ export const retrieveHistoryLayers = async () => {
             continue;
         }
         const co2 = monthlyData.reduce((acc, entry) => acc + entry.co2, 0);
+        const energy = monthlyData.reduce((acc, entry) => acc + entry.energy, 0);
         const data = monthlyData.reduce((acc, entry) => acc + entry.data, 0);
-        layersCo2.push({ amount: co2, label: `Month ${month}`, details: monthlyData, level: 'month' });
+        layersCo2.push({ amount: co2, energy: energy, label: `Month ${month}`, details: monthlyData, level: 'month' });
         layersData.push({ amount: data, label: `Month ${month}`, details: monthlyData, level: 'month' });
     }
 

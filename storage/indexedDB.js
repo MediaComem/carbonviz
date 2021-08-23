@@ -71,6 +71,7 @@ co2HistoryDB.open = () => {
           hour: today.getUTCHours(),
           co2: 0,
           data: 0,
+          energy: 0,
           duration: 0
         });
       }
@@ -83,6 +84,7 @@ co2HistoryDB.open = () => {
           index: dateString(today),
           co2: 0,
           data: 0,
+          energy: 0,
           duration: 0
         });
       }
@@ -93,7 +95,8 @@ co2HistoryDB.open = () => {
         storeDomains.add({
           name: "0.0",
           co2: 0,
-          data: 0
+          data: 0,
+          energy: 0
         });
       }
     };
@@ -142,6 +145,7 @@ async function updateData(date, hourlyData, dailyData, domainData = undefined) {
       hour: date.getUTCHours(),
       co2: hourlyData.co2,
       data: hourlyData.data,
+      energy: hourlyData.energy,
       duration: hourlyData.duration
     }
     const historySummary = {
@@ -149,6 +153,7 @@ async function updateData(date, hourlyData, dailyData, domainData = undefined) {
       index: dateString(date),
       co2: dailyData.co2,
       data: dailyData.data,
+      energy: dailyData.energy,
       duration: dailyData.duration
     }
 
@@ -248,9 +253,11 @@ async function getDailyAggregates(period, occurrence) {
         // add computer co2
         const dailyAggregates = data.map( entry => {
           const computerCo2 = entry.duration * 6.57e-6; // constant value: ~6.57 [mg/sec]
+          const computerEnergy = entry.duration * 180e-6;// constant value: ~180 [J/sec]
           return {
             ...entry,
-            co2: entry.co2 + computerCo2
+            co2: entry.co2 + computerCo2,
+            energy: entry.energy + computerEnergy
           }
         });
         return resolve(dailyAggregates);
@@ -277,12 +284,14 @@ async function getDailyEntries(period, occurrence) {
         data.push(cursor.value);
         cursor.continue();
       } else {
-        // add computer co2
+        // add computer co2 + computer energy
         const dailyEntrie =  data.map( entry => {
           const computerCo2 = entry.duration * 6.57e-6; // constant value: ~6.57 [mg/sec]
+          const computerEnergy = entry.duration * 180e-6;// constant value: ~180 [J/sec]
           return {
             ...entry,
-            co2: entry.co2 + computerCo2
+            co2: entry.co2 + computerCo2,
+            energy: entry.energy + computerEnergy
           }
         });
         return resolve(dailyEntrie);
@@ -304,10 +313,11 @@ async function getTodayCounter() {
       const summary = event.target.result;
       if (summary) {
         const computerCo2 = summary.duration * 6.57e-6;// constant value: ~6.57 [mg/sec]
-        const counter = { co2: summary.co2 + computerCo2, data: summary.data };
+        const computerEnergy = summary.duration * 180e-6;// constant value: ~180 [J/sec]
+        const counter = { co2: summary.co2 + computerCo2, energy: summary.energy + computerEnergy, data: summary.data };
         return resolve(counter);
       }
-      return { co2:0, data: 0};
+      return { co2:0, data: 0, energy: 0};
     }
   });
 }
