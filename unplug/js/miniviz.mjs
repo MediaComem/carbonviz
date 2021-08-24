@@ -18,9 +18,9 @@ const conf = {
   // chunks radius are the same as the popup ones divided by 2
   chunks: {
     co2   : [500, 300, 100, 50, 10, 5, 1, 0.5, 0.3, 0.1],  // CO2 chunk in [mg]
-    radius: [10 , 9 , 8 , 7, 5, 4, 3, 2  , 1  , 1  ],  // Chunk radius in pixels
+    radius: [10 ,   9,   8,  7,  5, 4, 2,   2,   1,   1],  // Chunk radius in pixels
     maxBySpawn: 6, // max nb of chunks for an entry
-    maxTotal: 3000 // max nb of chunks allowed in all the animation
+    maxTotal: 300 // max nb of chunks allowed in all the animation
   }
 };
 
@@ -107,13 +107,13 @@ function disapearEntity(entity) {
 
 function initComputerConsumption() {
   // doesn't need to calculate, it's a constant value: ~6.57 [mg/sec]
-  generateCO2(6); //all radius are divided by 2 in the miniviz animation, 6 here beacause every 2 sec
+  generateCO2(7); //all radius are divided by 2 in the miniviz animation, 6 here because every ~4 sec = 26.28 [mg] => radius of
   CarbonVue.co2DataCounter.co2 += 6.57e-6 * 2;
   mainLoop.setTimeout(2000 + genVariation(1000), () => initComputerConsumption());
 }
 
 function chunkifyCo2(input) {
-  let co2 = input.co2 * 1000000; // co2 emission in [kg]
+  let co2 = input.co2 * 1000000; // co2 emission: [kg]  to [mg]
   let spawnChunks = 0;
   for (let i=0; i < conf.chunks.co2.length; i++) {
     let chunkSize = conf.chunks.co2[i];
@@ -128,5 +128,6 @@ function chunkifyCo2(input) {
       if (spawnChunks >= conf.chunks.maxBySpawn) return;
     }
   }
-  if (input.co2 * 1000000 <= co2) generateCO2(1);
+  // currently ignoring very small chunks (uncomment the following show them)
+  // if (input.co2 * 1000000 <= co2) generateCO2(1);
 }

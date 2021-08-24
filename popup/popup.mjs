@@ -69,7 +69,7 @@ const type = (packet) => {
   return capitalized;
 }
 const co2 = (packet) => {
-  return `${CarbonVue.co2DataCounter.formatCo2(1000*packet.chunkSizeCo2)}`;
+  return `${CarbonVue.co2DataCounter.formatCo2(packet.chunkSizeCo2)}`;
 }
 
 // User interface
