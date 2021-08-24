@@ -127,7 +127,7 @@ export default {
       </div>
     </div>
     <el-carousel v-if="expanded" arrow="never" class="analogies">
-      <el-carousel-item v-for="item in [0, 1, 2]" :key="item" class="analogy">
+      <el-carousel-item v-for="(item, index) in [0, 1, 2, 0, 1, 2]" :key="index" label="." class="analogy">
         <analogy :type="type" :layer="layer" :index="item"></analogy>
       </el-carousel-item>
     </el-carousel>
@@ -176,13 +176,27 @@ export default {
     display: block;
   }
   .expanded .analogies {
+    :deep(.el-carousel__indicators--labels .el-carousel__indicator) {
+      width: 5px;
+    }
+  }
+  .expanded .analogies {
+    :deep(.el-carousel__button) {
+      color: white;
+      background-color: initial;
+      font-size: 24px;
+    }
+  }
+  .expanded .analogies {
     :deep(.el-carousel__container) {
       height: 150px;
     }
+  }
+  .expanded .analogies {
     position: absolute;
     top: 20px;
-    left: 175px;
-    width: 240px;
+    left: 200px;
+    width: 180px;
     display: block;
   }
   .expanded .info {

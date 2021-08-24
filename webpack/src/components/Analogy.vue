@@ -12,7 +12,7 @@ const analogiesCo2 = [
             }
             return `Running ${number} marathons`;
         },
-        asset: 'running.png'
+        asset: 'analogy_running.png'
     },
     {
         text: (value) => {
@@ -23,7 +23,7 @@ const analogiesCo2 = [
             }
             return `Swimming ${Math.ceil(number/1000)}km in the sea`;
         },
-        asset: 'swimming.png'
+        asset: 'analogy_swimming.png'
     },
     {
         amountPerKwh: 0.25,
@@ -31,7 +31,7 @@ const analogiesCo2 = [
             const amountPerKwh = 0.25;
             return `Cooking ${Math.ceil(value/amountPerKwh)} frozen pizzas`;
         },
-        asset: 'pizza.png'
+        asset: 'analogy_frozenpizza.png'
     }
 ]
 

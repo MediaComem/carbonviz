@@ -17,8 +17,8 @@ const conf = {
   },
   // chunks radius are the same as the popup ones divided by 2
   chunks: {
-    co2   : [500, 300, 100, 50, 10, 5, 1, 0.5, 0.3, 0.1],  // CO2 chunk in [mg]
-    radius: [10 ,   9,   8,  7,  5, 4, 2,   2,   1,   1],  // Chunk radius in pixels
+    co2   : [500, 300, 100, 50, 13.12, 5, 1, 0.5, 0.3, 0.1],  // CO2 chunk in [mg] (13.12 is 2s computer co2)
+    radius: [ 10,   9,   8,  7,     6, 4, 3,   2,   1,   1],  // Chunk radius in pixels
     maxBySpawn: 6, // max nb of chunks for an entry
     maxTotal: 300 // max nb of chunks allowed in all the animation
   }
@@ -35,7 +35,6 @@ pubSub.subscribe('input-data', input => chunkifyCo2(input));
 export default function () {
   initMatter();
   initMainLoop();
-  initComputerConsumption();
 }
 
 function initMatter() {
@@ -103,13 +102,6 @@ function generateCO2(radius = 10) {
 function disapearEntity(entity) {
   entity.collisionFilter.mask = conf.maskNoCollision;
   mainLoop.setTimeout(2000, () => Matter.World.remove(engine.world, entity));
-}
-
-function initComputerConsumption() {
-  // doesn't need to calculate, it's a constant value: ~6.57 [mg/sec]
-  generateCO2(7); //all radius are divided by 2 in the miniviz animation, 6 here because every ~4 sec = 26.28 [mg] => radius of
-  CarbonVue.co2DataCounter.co2 += 6.57e-6 * 2;
-  mainLoop.setTimeout(2000 + genVariation(1000), () => initComputerConsumption());
 }
 
 function chunkifyCo2(input) {

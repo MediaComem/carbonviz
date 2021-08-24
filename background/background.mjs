@@ -20,6 +20,8 @@ const minivizOptions = {
 };
 
 let dump = [];
+let co2ComputerInterval;
+const co2ComputerIntervalMs = 2000;
 let writeDataInterval;
 const writingIntervalMs = 60000;
 
@@ -290,6 +292,33 @@ const handleMessage = async (request, _sender, sendResponse) => {
   return true;
 }
 
+// computer CO2 default usage
+const computerCo2 =  () => {
+  // const co2 =  0.023651219231638508 * 10000000 / 3600;
+  // const energgyNREHomeDefaultPerHour = 0.5285774234423879;
+  // const energyREHomeDefaultPerHour = 0.12011280706531807;
+  // doesnt need to calculate, it's a constant value: ~6.57 [mg/sec]
+  const seconds = co2ComputerIntervalMs / 1000;
+  const computer1sec =  {
+    initiator: 'computer',
+    contentLength: 0,
+    co2: 6.57e-6 * seconds,
+    energyNRE: 1.47e-4 * seconds,
+    energyRE: 3.34e-5 * seconds,
+    extraInfo: { timeStamp: new Date() }
+  };
+  // send data to animation
+  chrome.runtime.sendMessage({ data: computer1sec });
+  // send message to miniViz
+  chrome.tabs.query({active: true}, function(tabs) {
+    if (tabs && tabs[0]) {
+      for (const tab of tabs) {
+        chrome.tabs.sendMessage(tab.id, { data: computer1sec });
+      }
+    }
+  });
+};
+
 const writeData = async () => {
   for(let packet of dump) {
     await updateHistoryDb(packet);
@@ -328,3 +357,7 @@ const addPluginToNewTab = () => {
 }
 
 initDB();
+
+if (!co2ComputerInterval) {
+  co2ComputerInterval = setInterval(computerCo2, co2ComputerIntervalMs);
+}
