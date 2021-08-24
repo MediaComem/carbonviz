@@ -31,9 +31,9 @@ let conf = {
     }
   },
   chunks: {
-    co2   : [500    , 300    , 100    , 50    , 10    , 5    , 1    , 0.5 , 0.3 , 0.1 ],  // CO2 chunk in [mg]
+    co2   : [500    , 300    , 100    , 50    , 13.12    , 5    , 1    , 0.5 , 0.3 , 0.1 ],  // CO2 chunk in [mg]
     data  : [5000000, 3000000, 1000000, 500000, 100000, 50000, 10000, 5000, 3000, 1000],  // Data chunk in bytes
-    radius: [20     , 18     , 17     , 13.12    , 10    , 7    , 4    , 3   , 2   , 1   ],  // Chunk radius in pixels
+    radius: [20     , 18     , 17     , 15    , 10    , 7    , 4    , 3   , 2   , 1   ],  // Chunk radius in pixels
     edge  : [40     , 36     , 33     , 30    , 20    , 14   , 8    , 6   , 4   , 2   ], // Chunk edge in pixels
     maxBySpawn: 6, // max nb of chunks for an entry
     maxTotal: 3000 // max nb of chunks allowed in all the animation
