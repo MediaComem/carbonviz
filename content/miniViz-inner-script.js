@@ -36,6 +36,15 @@ function createMiniVizContainer() {
 const handleMessage = (request) => {
   if (request.data) {
     const packet = request.data;
+    if (packet.initiator === 'computer') {
+      // directly publish co2 computer info
+      setTimeout(() => {
+        pubSub.publish('input-data', packet);
+        CarbonVue.co2DataCounter.data += packet.contentLength - 0;
+        CarbonVue.co2DataCounter.co2 += packet.co2 - 0;
+      }, genVariation(1000));
+      return;
+    }
     if(packet.contentLength < 1 || !packet.extraInfo.tabIcon ||packet.extraInfo.tabIcon.startsWith('chrome-extension:')) return true;
     debounce(packet, 1500 + genVariation(500));
     return true;

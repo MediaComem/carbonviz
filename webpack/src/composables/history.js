@@ -63,11 +63,13 @@ const setup = (type) => {
 
     if (isCo2) {
       layers.value = co2.reverse();
-      totalHeight.value = layers.value.reduce((acc, layer) => acc + layerHeightCo2(layer.amount), 0);
+      // layer height (+1px border)
+      totalHeight.value = layers.value.reduce((acc, layer) => acc + layerHeightCo2(layer.amount) + 1, 0);
     }
     if(isData) {
       layers.value = data;
-      totalHeight.value = layers.value.reduce((acc, layer) => acc + layerHeightData(layer.amount), 0);
+      // layer height (+1px border)
+      totalHeight.value = layers.value.reduce((acc, layer) => acc + layerHeightData(layer.amount) + 1, 0);
     }
 
     maxStage.value = layers.value.length === 1 ? 0 : Math.ceil(totalHeight.value / maxHeight);

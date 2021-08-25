@@ -227,6 +227,9 @@ document.onvisibilitychange = () => {
 
 const chunkifyData = (input) => {
   let size = input.contentLength; // data size in [byte]
+  if (!size) {
+    return;
+  }
   let spawnChunks = 0;
   const constMetaData = {
     initiator: input.initiator,
@@ -315,27 +318,6 @@ if (DATA && DATA.length > 0) {
     );
   }
 }
-
-// computer CO2 default usage
-mainLoop.setInterval(1000, () => {
-  // const co2 =  0.023651219231638508 * 10000000 / 3600;
-  // const energgyNREHomeDefaultPerHour = 0.5285774234423879;
-  // const energyREHomeDefaultPerHour = 0.12011280706531807;
-  // doesnt need to calculate, it's a constant value: ~6.57 [mg/sec]
-  let co2 = generateCO2(7);
-  metaData.set(co2, {
-    initiator: 'computer',
-    contentLength: 0,
-    chunkSizeData: 0,
-    chunkSizeCo2: 6.57e-6,
-    co2: 6.57e-6,
-    energyNRE: 1.47e-4,
-    energyRE: 3.34e-5,
-    extraInfo: { timeStamp: new Date() }
-  });
-  // TODO: CO2 may be out of sync in page tab anim (when animation paused)
-  CarbonVue.co2DataCounter.co2 += 6.57e-6;
-});
 
 // Mouse management
 const mouse = Matter.Mouse.create(render.canvas);

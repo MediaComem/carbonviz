@@ -1,4 +1,4 @@
-import { updateCo2Total, updateRunningDurationSec } from "../storage/co2History.js";
+import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
 import { init as initDB } from "../storage/indexedDB.js";
 
 const usageDevicePerYear = 1917.3;
@@ -20,6 +20,8 @@ const minivizOptions = {
 };
 
 let dump = [];
+let co2ComputerInterval;
+const co2ComputerIntervalMs = 2000;
 let writeDataInterval;
 const writingIntervalMs = 60000;
 
@@ -44,6 +46,7 @@ const saveToDump = (data) => {
     if (entry.domainName === data.domainName) {
       entry.co2Size += data.co2Size;
       entry.packetSize += data.packetSize;
+      entry.energySize += data.energySize;
       entry.timeStamp = data.timeStamp;
       match = true;
       break;
@@ -91,7 +94,6 @@ const energyImpactHome = (timeElapsed) => {
 
   const energyNRE = energyNREHomePerHour * timeHour;
   const energyRE = energyREHomePerHour * timeHour;
-
   return { energyNRE, energyRE };
 }
 
@@ -138,7 +140,6 @@ const co2ImpactHome = (timeElapsed) => {
   const co2HomePerHour = co2LaptopPerHour + co2InternetEquipementPerHour + co2RouterPerHour + co2HomeElectricityPerHour;
   return co2HomePerHour * timeHour;
 }
-
 
 // get co2 emissions
 const co2ImpactInternet = (bytes) => {
@@ -188,6 +189,7 @@ const completedListener = (responseDetails) => {
   info.co2 = co2Internet;
   info.energyNRE = energyInternet.energyNRE;
   info.energyRE = energyInternet.energyRE;
+  info.energy = energyInternet.energyNRE + energyInternet.energyRE;
   info.extraInfo = { timeStamp, type };
 
   // retrieve tab name
@@ -217,16 +219,12 @@ const completedListener = (responseDetails) => {
       // (domain, sizeCo2, sizeData, timestamp)
       let domainName = domain(info);
       let co2Size = info.co2;
-      saveToDump({domainName, co2Size, packetSize, timeStamp});
+      let energySize = info.energy;
+      saveToDump({domainName, co2Size, packetSize, energySize, timeStamp});
     });
   }
 
-  // send message to inner animation
-  // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  //   if (tabs && tabs[0]) {
-  //     chrome.tabs.sendMessage(tabs[0].id, { data: info });
-  //   }
-  // });
+  // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
       for (const tab of tabs) {
@@ -269,7 +267,6 @@ const handleMessage = async (request, _sender, sendResponse) => {
         break;
       case 'openExtension':
         addPluginToNewTab();
-        //window.open("../popup/popup.html", "_blank", "width=600,height=600,status=no,scrollbars=yes");
         break;
       case 'startMiniviz':
         if(!minivizOptions.show) {
@@ -295,9 +292,36 @@ const handleMessage = async (request, _sender, sendResponse) => {
   return true;
 }
 
+// computer CO2 default usage
+const computerCo2 =  () => {
+  // const co2 =  0.023651219231638508 * 10000000 / 3600;
+  // const energgyNREHomeDefaultPerHour = 0.5285774234423879;
+  // const energyREHomeDefaultPerHour = 0.12011280706531807;
+  // doesnt need to calculate, it's a constant value: ~6.57 [mg/sec]
+  const seconds = co2ComputerIntervalMs / 1000;
+  const computerCo2 =  {
+    initiator: 'computer',
+    contentLength: 0,
+    co2: 6.57e-6 * seconds,
+    energyNRE: 1.47e-4 * seconds,
+    energyRE: 3.34e-5 * seconds,
+    extraInfo: { timeStamp: new Date() }
+  };
+  // send data to animation
+  chrome.runtime.sendMessage({ data: computerCo2 });
+  // send message to miniViz
+  chrome.tabs.query({active: true}, function(tabs) {
+    if (tabs && tabs[0]) {
+      for (const tab of tabs) {
+        chrome.tabs.sendMessage(tab.id, { data: computerCo2 });
+      }
+    }
+  });
+};
+
 const writeData = async () => {
   for(let packet of dump) {
-    await updateCo2Total(packet);
+    await updateHistoryDb(packet);
   }
   updateRunningDurationSec(writingIntervalMs / 1000);
 
@@ -333,3 +357,7 @@ const addPluginToNewTab = () => {
 }
 
 initDB();
+
+if (!co2ComputerInterval) {
+  co2ComputerInterval = setInterval(computerCo2, co2ComputerIntervalMs);
+}

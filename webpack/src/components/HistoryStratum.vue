@@ -3,23 +3,22 @@ import { computed, inject, ref, toRefs, watch } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
 import { ElCarousel,ElCarouselItem } from 'element-plus';
 import 'element-plus/lib/theme-chalk/index.css';
+import Analogy from './Analogy.vue'
 import layerChart from '../composables/layerChart';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
 import { formatSize, formatCo2 } from '../utils/format'
 
 export default {
   components: {
+    Analogy,
     apexchart: VueApexCharts,
     ElCarousel,
     ElCarouselItem
   },
   props: {
     index: {type: Number},
-    amount: {type: Number},
+    layer: {type: Object},
     type: {type: String},
-    level: {type: String},
-    details: {type: Array},
-    label: {type: String},
     stage: {type: Number}
   },
   emits: ['willExpand', 'willCollapse'],
@@ -28,25 +27,27 @@ export default {
     const active_index = inject('active_index');
 
     const fullHeight = 200;
-    const { index, type, amount } = toRefs(props);
+    const { index, type, layer } = toRefs(props);
     const expanded = ref(false);
     const shouldAnimate = ref(false);
+    const layerInfo = layer.value;
+
     const height = computed(() => {
       switch(type.value) {
         case 'co2':
-          return layerHeightCo2(amount.value);
+          return layerHeightCo2(layerInfo.amount);
         case 'data':
-          return layerHeightData(amount.value);
+          return layerHeightData(layerInfo.amount);
         default:
           throw('Invalid layer type');
       }
     });
-    const value = computed(() => {
+    const amount = computed(() => {
       switch(type.value) {
         case 'co2':
-          return formatCo2(amount.value);
+          return formatCo2(layerInfo.amount, 0);
         case 'data':
-          return formatData(amount.value);
+          return formatSize(layerInfo.amount, 0);
         default:
           throw('Invalid layer type');
       }
@@ -81,16 +82,16 @@ export default {
 
     let showGraph = false;
     let options, series;
-    if (props.details) {
-      showGraph = props.details;
-      const chart = layerChart(props.type, props.details);
+    if (layerInfo.details) {
+      showGraph = layerInfo.details;
+      const chart = layerChart(type.value, layerInfo.details);
       options = chart.options;
       series = chart.series;
     }
 
     return {
       active_index, height,
-      value, legend,
+      amount, legend,
       expanded, expand, shouldAnimate,
       showGraph, options, series
     };
@@ -105,26 +106,26 @@ export default {
         animate: shouldAnimate,
         co2: type === 'co2',
         data: type === 'data',
-        today: level === 'today',
-        daily: level === 'day',
-        weekly: level === 'week',
-        monthly: level === 'month',
+        today: layer.level === 'today',
+        daily: layer.level === 'day',
+        weekly: layer.level === 'week',
+        monthly: layer.level === 'month',
       }"
       :style="`--height: ${height}px`"
       @click="expand()"
   >
-    <div class="label">{{ label }}</div><img :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
+    <div class="label">{{ layer.label }}</div><img :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
     <div v-if="expanded" class="info">
       <div class="amount">
-        {{ value }}
+        {{ amount }}
       </div>
       <div class="legend">
         {{ legend }}
       </div>
     </div>
-    <el-carousel v-if="expanded" arrow="never" height="200px" class="analogies">
-      <el-carousel-item v-for="item in 3" :key="item" class="analogy">
-        <h3>{{ item }}</h3>
+    <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click">
+      <el-carousel-item v-for="(item, index) in [0, 1, 2, 3, 4, 5]" :key="index" label="." class="analogy">
+        <analogy :type="type" :layer="layer" :index="item"></analogy>
       </el-carousel-item>
     </el-carousel>
     <apexchart v-if="showGraph" class="graph" type="bar" height="200" width="130" :options="options" :series="series"></apexchart>
@@ -172,16 +173,35 @@ export default {
     display: block;
   }
   .expanded .analogies {
+    :deep(.el-carousel__indicators--labels .el-carousel__indicator) {
+      width: 5px;
+    }
+  }
+  .expanded .analogies {
+    :deep(.el-carousel__button) {
+      color: white;
+      background-color: initial;
+      font-size: 24px;
+    }
+  }
+  .expanded .analogies {
+    :deep(.el-carousel__container) {
+      height: 150px;
+    }
+  }
+  .expanded .analogies {
     position: absolute;
-    top: 0;
-    left: 175px;
-    width: 240px;
+    top: 20px;
+    left: 200px;
+    width: 180px;
     display: block;
   }
   .expanded .info {
+    display: block;
+    text-align: left;
     position: absolute;
     top: 0;
-    left: 60px;
+    left: 80px;
     width: 120px;
     margin-top: 40px;
     display: block;
@@ -206,27 +226,35 @@ export default {
       }
     }
 
-  }
+    &.daily{
+      background-color: #A59366;
+      &:hover{
+        background-color: darken(#A59366, 5);
+      }
+      &.expanded{
+        background-color: darken(#A59366, 10);
+      }
+    }
 
-  .co2.daily{
-    background-color: #A59366;
-  }
-  .co2.daily.expanded{
-    background-color: #A59366;
-  }
+    &.weekly{
+      background-color: #958A70;
+      &:hover{
+        background-color: darken(#958A70, 5);
+      }
+      &.expanded{
+        background-color: darken(#958A70, 10);
+      }
+    }
 
-  .co2.weekly{
-    background-color: #958A70;
-  }
-  .co2.weekly.expanded{
-    background-color: #958A70;
-  }
-
-  .co2.monthly{
-    background-color: #827E76;
-  }
-  .co2.monthly.expanded{
-    background-color: #827E76;
+    &.monthly{
+      background-color: #827E76;
+      &:hover{
+        background-color: darken(#827E76, 5);
+      }
+      &.expanded{
+        background-color: darken(#827E76, 10);
+      }
+    }
   }
 
   .data {
