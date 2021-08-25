@@ -14,6 +14,7 @@ export function updateRunningDurationSec(duration) {
         if (history === undefined) {
             hourlyData.co2 = 0;
             hourlyData.data = 0;
+            hourlyData.energy = 0;
             hourlyData.duration = duration;
         } else {
             hourlyData.duration += duration
@@ -22,6 +23,7 @@ export function updateRunningDurationSec(duration) {
         if (historySummary === undefined) {
             dailyData.co2 = 0;
             dailyData.data = 0;
+            dailyData.energy = 0;
             dailyData.duration = duration;
         } else {
             dailyData.duration += duration;

@@ -82,7 +82,6 @@ export default {
     <stratum v-for="(layer, index) in layers" :key="index"
       :type="type" :index="index" :stage="stage"
       :layer="layer"
-      :amount="layer.amount" :label="layer.label" :details="layer.details" :level="layer.level"
       @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>
   </div>
 </template>

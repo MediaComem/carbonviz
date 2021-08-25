@@ -435,8 +435,10 @@ const handleMessage = (request) => {
     if (packet.initiator === 'computer') {
       // directly publish co2 computer info
       pubSub.publish('input-data', packet);
-      CarbonVue.co2DataCounter.data += packet.contentLength - 0;
-      CarbonVue.co2DataCounter.co2 += packet.co2 - 0;
+      if (CarbonVue) {
+        CarbonVue.co2DataCounter.data += packet.contentLength - 0;
+        CarbonVue.co2DataCounter.co2 += packet.co2 - 0;
+      }
       return;
     }
     // skip too small packets or extension packets

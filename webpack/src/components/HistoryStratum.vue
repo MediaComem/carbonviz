@@ -18,11 +18,7 @@ export default {
   props: {
     index: {type: Number},
     layer: {type: Object},
-    amount: {type: Number},
     type: {type: String},
-    level: {type: String},
-    details: {type: Array},
-    label: {type: String},
     stage: {type: Number}
   },
   emits: ['willExpand', 'willCollapse'],
@@ -34,23 +30,24 @@ export default {
     const { index, type, layer } = toRefs(props);
     const expanded = ref(false);
     const shouldAnimate = ref(false);
+    const layerInfo = layer.value;
+
     const height = computed(() => {
       switch(type.value) {
         case 'co2':
-          return layerHeightCo2(amount.value);
+          return layerHeightCo2(layerInfo.amount);
         case 'data':
-          return layerHeightData(amount.value);
+          return layerHeightData(layerInfo.amount);
         default:
           throw('Invalid layer type');
       }
     });
     const amount = computed(() => {
-      let data = layer.value;
       switch(type.value) {
         case 'co2':
-          return formatCo2(data.amount, 0);
+          return formatCo2(layerInfo.amount, 0);
         case 'data':
-          return formatSize(data.amount, 0);
+          return formatSize(layerInfo.amount, 0);
         default:
           throw('Invalid layer type');
       }
@@ -85,9 +82,9 @@ export default {
 
     let showGraph = false;
     let options, series;
-    if (props.details) {
-      showGraph = props.layer.details;
-      const chart = layerChart(props.type, props.layer.details);
+    if (layerInfo.details) {
+      showGraph = layerInfo.details;
+      const chart = layerChart(type.value, layerInfo.details);
       options = chart.options;
       series = chart.series;
     }
@@ -109,15 +106,15 @@ export default {
         animate: shouldAnimate,
         co2: type === 'co2',
         data: type === 'data',
-        today: level === 'today',
-        daily: level === 'day',
-        weekly: level === 'week',
-        monthly: level === 'month',
+        today: layer.level === 'today',
+        daily: layer.level === 'day',
+        weekly: layer.level === 'week',
+        monthly: layer.level === 'month',
       }"
       :style="`--height: ${height}px`"
       @click="expand()"
   >
-    <div class="label">{{ label }}</div><img :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
+    <div class="label">{{ layer.label }}</div><img :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
     <div v-if="expanded" class="info">
       <div class="amount">
         {{ amount }}
@@ -126,8 +123,8 @@ export default {
         {{ legend }}
       </div>
     </div>
-    <el-carousel v-if="expanded" arrow="never" class="analogies">
-      <el-carousel-item v-for="(item, index) in [0, 1, 2, 0, 1, 2]" :key="index" label="." class="analogy">
+    <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click">
+      <el-carousel-item v-for="(item, index) in [0, 1, 2, 3, 4, 5]" :key="index" label="." class="analogy">
         <analogy :type="type" :layer="layer" :index="item"></analogy>
       </el-carousel-item>
     </el-carousel>

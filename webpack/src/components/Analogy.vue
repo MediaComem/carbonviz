@@ -1,5 +1,6 @@
 <script>
 import { computed, toRefs } from 'vue';
+import { roundToPrecision } from '../utils/format.js'
 
 const analogiesCo2 = [
     {
@@ -7,7 +8,7 @@ const analogiesCo2 = [
             const amountPerKwh = 2.790697674;
             let number = Math.floor(value / amountPerKwh);
             if (number < 1) {
-                const percent = Math.ceil(value / amountPerKwh);
+                const percent = Math.ceil(100* value / amountPerKwh);
                 return `Running ${percent}% of a marathon`;
             }
             return `Running ${number} marathons`;
@@ -26,16 +27,52 @@ const analogiesCo2 = [
         asset: 'analogy_swimming.png'
     },
     {
-        amountPerKwh: 0.25,
+        text: (value) => {
+            const amountPerKwh = 0.02543604651;
+            let number = Math.floor(value / amountPerKwh);
+            return `Biking ${number}km`;
+        },
+        asset: 'analogy_bicycle.png'
+    },
+    {
         text: (value) => {
             const amountPerKwh = 0.25;
-            return `Cooking ${Math.ceil(value/amountPerKwh)} frozen pizzas`;
+            return `Cooking ${roundToPrecision(value/amountPerKwh, 1)} frozen pizzas`;
         },
         asset: 'analogy_frozenpizza.png'
+    },
+    {
+        text: (value) => {
+            const amountPerKwh = 0.116;
+            return `Boiling ${roundToPrecision(value/amountPerKwh, 1)}L water`;
+        },
+        asset: 'analogy_boilingwater.png'
+    },
+    {
+        text: (value) => {
+            const amountPerKwh = 0.116;
+            return `Boiling ${roundToPrecision(value/amountPerKwh, 1)}L water`;
+        },
+        asset: 'analogy_boilingwater.png'
     }
 ]
 
 const analogiesData = [
+    {
+        amountPerKwh: 0,
+        text: (value) => value,
+        asset: 'data.png'
+    },
+    {
+        amountPerKwh: 0,
+        text: (value) => value,
+        asset: 'data.png'
+    },
+    {
+        amountPerKwh: 0,
+        text: (value) => value,
+        asset: 'data.png'
+    },
     {
         amountPerKwh: 0,
         text: (value) => value,
