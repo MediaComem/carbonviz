@@ -299,7 +299,7 @@ const computerCo2 =  () => {
   // const energyREHomeDefaultPerHour = 0.12011280706531807;
   // doesnt need to calculate, it's a constant value: ~6.57 [mg/sec]
   const seconds = co2ComputerIntervalMs / 1000;
-  const computer1sec =  {
+  const computerCo2 =  {
     initiator: 'computer',
     contentLength: 0,
     co2: 6.57e-6 * seconds,
@@ -308,12 +308,12 @@ const computerCo2 =  () => {
     extraInfo: { timeStamp: new Date() }
   };
   // send data to animation
-  chrome.runtime.sendMessage({ data: computer1sec });
+  chrome.runtime.sendMessage({ data: computerCo2 });
   // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
       for (const tab of tabs) {
-        chrome.tabs.sendMessage(tab.id, { data: computer1sec });
+        chrome.tabs.sendMessage(tab.id, { data: computerCo2 });
       }
     }
   });
