@@ -12,9 +12,10 @@
     container.appendChild(consumptionDiv);
     //header
     const header = document.createElement("div");
-    header.innerHTML = "Consumption";
+    header.innerHTML = 'consumption <svg id="close" width="20" height="20" style="float:right; margin:5px; cursor:pointer;" data-prefix="far" data-icon="times-circle" class="svg-inline--fa fa-times-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm101.8-262.2L295.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L256 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17z"></path></svg>';
     header.style.cssText = 'font-size: 20px; font-weight: bold; text-align:center; margin-top: 10px;';
     consumptionDiv.appendChild(header);
+    
     //co2 and data totals
     const data = document.createElement("div");
     data.id = "vue-co2-data-counter";
@@ -103,26 +104,33 @@
     let positionTop = true;
     document.getElementById('positionLeftRight').addEventListener('click', function() {
       const minivizContainer = document.getElementById('miniViz_container');
+      const minivizPopup = document.getElementById('miniViz_popup_container');
+      
       if(!positionRight) {
-        //minivizContainer.style.cssText='position: fixed; top: 300px; right: 0px; width: 50px; height: 300px; border-radius: 25px; background-color: tomato; z-index: 10000;';
         minivizContainer.style.right='0px';
         minivizContainer.style.left='auto';
+        minivizPopup.style.right='55px';
+        minivizPopup.style.left='auto';
         positionRight = true;
       } else {
-        //minivizContainer.style.cssText='position: fixed; top: 300px; left: 0px; width: 50px; height: 300px; border-radius: 25px; background-color: tomato; z-index: 10000;';
         minivizContainer.style.left='0px';
         minivizContainer.style.right='auto';
+        minivizPopup.style.left='55px';
+        minivizPopup.style.right='auto';
         positionRight = false;
       }
     });
 
     document.getElementById('positionUpDown').addEventListener('click', function() {
       const minivizContainer = document.getElementById('miniViz_container');
+      const minivizPopup = document.getElementById('miniViz_popup_container');
       if(!positionTop) {
         minivizContainer.style.top='300px';
+        minivizPopup.style.top='250px';
         positionTop = true;
       } else {
         minivizContainer.style.top='600px';
+        minivizPopup.style.top='550px';
         positionTop = false;
       }
     });
@@ -171,6 +179,11 @@
     });
     document.getElementById('cancel').addEventListener('mouseout', function( event ) {
       event.target.style.fontWeight="normal";
+    });
+    // close miniviz popup
+    document.getElementById('close').addEventListener('click', function( event ) {
+      let minivizPopup = document.getElementById('miniViz_popup_container');
+      minivizPopup.style.display = 'none';
     });
 
 
