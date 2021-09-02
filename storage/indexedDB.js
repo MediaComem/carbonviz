@@ -345,14 +345,13 @@ async function getWebsites(mode = 'co2', limit = 10) {
     let count = 0;
     dbCursor.onsuccess = event => {
       const cursor = event.target.result;
-      if (!cursor) return resolve(data);
-      data.push(cursor.value);
-      count++;
-      if (count < limit) {
-        cursor.continue();
-      } else {
-        return resolve(data);
+      if (cursor) {
+        data.push(cursor.value);
+        count++;
+        if (count < limit) { cursor.continue(); return; }
       }
+      // the filter is to remove 0 co2 (or 0 data) domain in the list
+      return resolve(data.filter(domain => domain[mode]));
     };
     dbCursor.onerror = error => reject(error);
   });

@@ -4,16 +4,12 @@ import { init as initDB, getDailyAggregates, getTodayCounter, getWebsites } from
 let database;
 
 export const retrieveTodayCounter = async () => {
-    if (!database) {
-        database = await initDB();
-    }
+    database ??= await initDB();
     return getTodayCounter();
 }
 
 export const getTopWebsites = async (mode = 'co2', limit = 10) => {
-    if (!database) {
-        database = await initDB();
-    }
+    database ??= await initDB();
     return getWebsites(mode, limit);
 }
 
@@ -21,9 +17,7 @@ export const retrieveHistoryLayers = async () => {
     const layersCo2 = [];
     const layersData = [];
 
-    if (!database) {
-        database = await initDB();
-    }
+    database ??= await initDB();
 
     // get data (daily summaries) fo the last 4 months
     const dailyData = await getDailyAggregates('month', 4);
