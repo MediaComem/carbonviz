@@ -1,12 +1,12 @@
 <script>
 import { inject, onMounted, ref, computed } from 'vue';
-import { retrieveTodayCounter } from '../composables/storage';
+import { retrieveTodayCounter, getTopWebsites } from '../composables/storage';
 import {formatSize, formatCo2} from '../utils/format';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
 
 const subNav = {
   'Live': 'Live Digest',
-  'Trends': 'Trends Summary',
+  //'Trends': 'Trends Summary',
   'Co2top': 'CO2 Top Sites',
 };
 
@@ -24,6 +24,7 @@ export default {
       const counters = await retrieveTodayCounter();
       co2.value = counters.co2;
       data.value = counters.data;
+      console.log(await getTopWebsites('co2', 10));
     });
 
     chrome.runtime.onMessage.addListener(request => {
@@ -62,6 +63,10 @@ export default {
           </div>
         </div>
       </div>
+    </article>
+    <article class="live" data-section="Co2top">
+      <h1>CO<sub>2</sub> Top Sites</h1>
+
     </article>
   </div>
 </template>

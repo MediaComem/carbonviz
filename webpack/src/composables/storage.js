@@ -1,5 +1,5 @@
 import { days } from '../utils/format';
-import { init as initDB, getDailyAggregates, getTodayCounter } from '../../../storage/indexedDB';
+import { init as initDB, getDailyAggregates, getTodayCounter, getWebsites } from '../../../storage/indexedDB';
 
 let database;
 
@@ -8,6 +8,13 @@ export const retrieveTodayCounter = async () => {
         database = await initDB();
     }
     return getTodayCounter();
+}
+
+export const getTopWebsites = async (mode = 'co2', limit = 10) => {
+    if (!database) {
+        database = await initDB();
+    }
+    return getWebsites(mode, limit);
 }
 
 export const retrieveHistoryLayers = async () => {

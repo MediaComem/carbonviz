@@ -92,6 +92,8 @@ co2HistoryDB.open = () => {
       if (!db.objectStoreNames.contains('domains')) {
         const storeDomains = db.createObjectStore("domains", { keyPath: "name" });
         storeDomains.createIndex("by_name", "name", { unique: true });
+        storeDomains.createIndex("by_co2", "co2");
+        storeDomains.createIndex("by_data", "data");
         storeDomains.add({
           name: "0.0",
           co2: 0,
@@ -332,4 +334,30 @@ function deleteData(key) {
   historySummaryStore.delete(key);
 }
 
-export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData }
+async function getWebsites(mode = 'co2', limit = 10) {
+  return new Promise(function (resolve) {
+    const db = co2HistoryDB.db;
+    const trans = db.transaction(["domains"], "readonly");
+    const store = trans.objectStore("domains");
+    const index = store.index(mode == 'co2' ? 'by_co2' : 'by_data');
+    const dbCursor = index.openCursor(null, "prev");
+    const data = [];
+    let count = 0;
+    dbCursor.onsuccess = event => {
+      const cursor = event.target.result;
+      if (!cursor) return resolve(data);
+      data.push(cursor.value);
+      count++;
+      if (count < limit) {
+        console.log('conti');
+        cursor.continue();
+      } else {
+        return resolve(data);
+      }
+    };
+    dbCursor.onerror = error => reject(error);
+  });
+}
+
+
+export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData, getWebsites }
