@@ -140,7 +140,6 @@ export default {
   }
   .top-sites .site-name {
     font-weight: bold;
-    font-size: 14pt;
   }
   @media (prefers-color-scheme: dark) {
     .live .co2, .live .live-co2 {
