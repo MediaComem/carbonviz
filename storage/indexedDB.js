@@ -349,7 +349,6 @@ async function getWebsites(mode = 'co2', limit = 10) {
       data.push(cursor.value);
       count++;
       if (count < limit) {
-        console.log('conti');
         cursor.continue();
       } else {
         return resolve(data);
