@@ -5,6 +5,7 @@ const subNav = {
   'Observations': 'Observations',
   'Model': 'CarbonViz Model',
   'Modelshow': 'What the model shows',
+  'Analogies': 'Analogies',
   'Sources': 'Sources'
 };
 

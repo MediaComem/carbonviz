@@ -44,7 +44,7 @@ export default {
       </ul>
     </nav>
     <main data-area="body">
-      <Live v-show="currentHash === '#Live'"></Live>
+      <live v-show="currentHash === '#Live'"></live>
       <transition name="fade" mode="out-in">
           <component :is="currentPage" v-if="currentHash !== '#Live'"></component>
       </transition>
@@ -74,7 +74,7 @@ export default {
     content: '';
     border-bottom: solid #BFBFBF 2px;
   }
-  [data-area="body"] h2, [data-area="body"] h3, [data-area="body"] ul, [data-area="body"] p {
+  [data-area="body"] h2, [data-area="body"] h3, [data-area="body"] ul, [data-area="body"] p, [data-area="body"] article > div {
     margin-left: 122px;
   }
   [data-area="body"] h2 {
@@ -88,12 +88,7 @@ export default {
     margin-top: 0;
     padding: 0;
   }
-  [data-area="body"] p {
-    max-width: 600px;
-    font-weight: 400;
-    font-size: 16px;
-  }
-  [data-area="body"] ul li {
+  [data-area="body"] p, [data-area="body"] article > div, [data-area="body"] ul li {
     max-width: 600px;
     font-weight: 400;
     font-size: 16px;
