@@ -17,9 +17,18 @@ export default {
 
   setup(props, context) {
     const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
+
     const subNav = ref([]);
     provide('setSubNav', nav => subNav.value = nav);
-    return {subNav, hashRoutes, currentHash, currentPage};
+
+    const onSubnavClick = evt => {
+      const data = evt.currentTarget.dataset;
+      const scrollTo = document.querySelector(`[data-section="${data.scrollto}"]`);
+      const topPos = scrollTo?.offsetTop ?? 200;
+      document.querySelector('[data-area="body"]').scrollTop = topPos - 200;
+    }
+
+    return {subNav, hashRoutes, currentHash, currentPage, onSubnavClick};
   }
 
 }
@@ -39,7 +48,7 @@ export default {
     <nav data-area="subnav">
       <ul v-show="currentHash !== '#Live'">
         <li v-for="(label, id) in subNav" :key="id">
-          <a :data-section="id" @click.prevent="">{{ label }}</a>
+          <a :data-scrollto="id" @click.prevent="onSubnavClick">{{ label }}</a>
         </li>
       </ul>
     </nav>
@@ -96,10 +105,10 @@ export default {
 </style>
 
 <style scoped>
-  [data-area="logo"] {grid-area: logo}
-  [data-area="title"] {grid-area: title}
-  [data-area="nav"] {grid-area: nav}
-  [data-area="subnav"] {grid-area: subnav}
+  [data-area="logo"] {grid-area: logo;}
+  [data-area="title"] {grid-area: title;}
+  [data-area="nav"] {grid-area: nav;}
+  [data-area="subnav"] {grid-area: subnav;}
   [data-area="body"] {grid-area: body}
   .wrapper {
     font-family: Roboto;
@@ -206,7 +215,8 @@ export default {
   [data-area="body"] {
     background-color: #F8F8F8;
     width: 1000px;
-    min-height: 800px;
+    height: 800px;
+    overflow: auto;
   }
   /* Vue3 transition */
   .fade-enter-active, .fade-leave-active {

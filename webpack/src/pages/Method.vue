@@ -22,7 +22,7 @@ export default {
 
 <template>
   <div>
-    <article>
+    <article data-section="Observations">
       <h1>Observations</h1>
       <p>
         According to the International Telecommunication Union, there were around 4 billions internet users in 2019 [1]. It is 4 times the number of 2015's users. This user growth imply that the data traffic also drastically increased to reach around 20.6 zettabyte (ZB), which represent 2e13 gigabyte (GB), and is 12 times the 2010's consumption [2] [3]. Accordingly, the electricity consumption of internet significantly raised to reach around 5% of world's consumption in 2012, and could reach 20% by 2025 [4] [5].
@@ -34,7 +34,7 @@ export default {
         This model was developed as part of the CarbonViz project supported by Innosuisse, the scientific teams of the Media Engineering Institute (MEI) and the Institut de Génie Thermique (IGT) of the Haute Ecole d'Ingénierie et de Gestion du canton de Vaud (HEIG-VD).
       </p>
     </article>
-    <article>
+    <article data-section="Model">
       <h1>CarbonViz Model</h1>
       <h2>1. Principle</h2>
       <p>
@@ -118,7 +118,7 @@ export default {
         <b>Disclamer</b>: Video size estimates are based on recommended encoding bitrate and may be smaller depending on actual video and youtube additionnal compression before publication.
       </p>
     </article>
-    <article>
+    <article data-section="Modelshow">
       <h1>What the method shows for 1H of 720p video</h1>
       <h2>1. Global Warming and energy impact</h2>
       <p>
@@ -137,7 +137,7 @@ export default {
         It is already the case in the video streaming scenario where internet services impact is a predominant. That is even more relevant in a more usual scenario where most of the active time of the computer is office work.
       </p>
     </article>
-    <article>
+    <article data-section="Analogies">
       <h1>Analogies</h1>
       <p>
         As explained by the CarbonViz model, data centers, the core network, and your computer need electricity to function to allow you to conduct web activities. But do you really realize how much energy is involved? According to the results of our model, 1 hour of video streaming can represent up to 1KWh of energy. To what this amount of energy can be compared ?
