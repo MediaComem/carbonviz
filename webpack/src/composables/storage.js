@@ -37,7 +37,6 @@ export const retrieveHistoryLayers = async () => {
     let entry = dailyData[index]
     let weekNb = entry ? entry.weekOfYear : -1;
     while ( weekNb === currentWeekYear) {
-        console.log(entry);
         layersCo2.push({ amount: entry.co2, energy: entry.energy, label: `${entry.date}-${entry.month}`, level: 'day' });
         layersData.push({ amount: entry.data, label: `${entry.date}-${entry.month}`, level: 'day' });
         index--;

@@ -1,7 +1,7 @@
 <script>
 import { computed, inject, ref, toRefs, watch } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
-import { ElCarousel,ElCarouselItem } from 'element-plus';
+import { ElCarousel,ElCarouselItem, ElRow, ElCol } from 'element-plus';
 import 'element-plus/lib/theme-chalk/index.css';
 import Analogy from './Analogy.vue'
 import layerChart from '../composables/layerChart';
@@ -13,7 +13,8 @@ export default {
     Analogy,
     apexchart: VueApexCharts,
     ElCarousel,
-    ElCarouselItem
+    ElCarouselItem,
+    ElRow, ElCol
   },
   props: {
     index: {type: Number},
@@ -114,22 +115,40 @@ export default {
       :style="`--height: ${height}px`"
       @click="expand()"
   >
-    <div class="label">{{ layer.label }}</div><img :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
-    <div v-if="expanded" class="info">
-      <div class="amount">
-        {{ amount }}
-      </div>
-      <div class="legend">
-        {{ legend }}
-      </div>
-    </div>
-    <div v-if="expanded && type === 'co2'" class="carousel-title">As much energy as</div>
-    <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click">
-      <el-carousel-item v-for="(item, index) in [0, 1, 2, 3, 4, 5]" :key="index" label="." class="analogy">
-        <analogy :type="type" :layer="layer" :index="item"></analogy>
-      </el-carousel-item>
-    </el-carousel>
-    <apexchart v-if="showGraph" class="graph" type="bar" height="200" width="130" :options="options" :series="series"></apexchart>
+    <el-row justify="center" align="center" class="summary">
+      <el-col :span="12">
+        <div class="label bold">{{ layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
+      </el-col>
+    </el-row>
+    <el-row class="details">
+      <el-col :span="4">
+        <div class="title bold">{{ layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
+      </el-col>
+      <el-col :span="4" class="section info">
+        <div class="amount">
+          {{ amount }}
+        </div>
+        <div class="legend">
+          {{ legend }}
+        </div>
+      </el-col>
+      <el-col :span="showGraph ? 8 : 16" class="section">
+        <div v-if="type === 'co2'" class="section-title bold">As much energy as</div>
+        <div v-if="type === 'data'" class="section-title bold">As much as</div>
+        <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click">
+          <el-carousel-item v-for="(item, index) in [0, 1, 2, 3, 4, 5]" :key="index" label="." class="analogy">
+            <analogy :type="type" :layer="layer" :index="item"></analogy>
+          </el-carousel-item>
+        </el-carousel>
+      </el-col>
+      <el-col :span="8" class="section graph">
+        <div v-if="showGraph">
+          <div v-if="layer.level === 'week'" class="section-title bold">Weekly consumption</div>
+          <div v-if="layer.level === 'month'" class="section-title bold">Monthly consumption</div>
+          <apexchart class="apexchart" type="bar" height="180" width="160" :options="options" :series="series"></apexchart>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -138,11 +157,7 @@ export default {
     height: var(--height);
     caret-color: transparent;
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
-    margin-left: -100px;
   }
   .wrapper.animate {
     transition: height 0.5s ease;
@@ -152,34 +167,66 @@ export default {
     margin-left: 0px;
   }
 
-  .carousel-title {
-    position: absolute;
-    top: 10px;
+  .bold {
+      font-weight: 700;
+  }
+
+  .summary {
+    opacity: 1;
+    height: 0px;
+    .el-col {
+      position: relative;
+    }
+    .label {
+      position: absolute;
+      top: 50%;
+      margin-top: -8px;
+      text-align: left;
+    }
+  }
+  .details {
+    opacity: 0;
+  }
+  .expanded {
+    .details {
+      opacity: 1;
+      transition: opacity 0.1s ease 0.4s;
+    }
+    .summary {
+      opacity: 0;
+      transition: opacity 0.1s ease 0.4s;
+      .label{
+        transform: translate(-117px, calc(19px - var(--height)/2));
+        transition: transform 0.5s ease;
+      }
+      img{
+        transform: translate(-250px, calc((200px - var(--height))/2));
+        transition: transform 0.5s ease;
+      }
+    }
+  }
+
+  .title {
+    margin-top: 10px;
     margin-left: 10px;
     text-align: left;
   }
 
-  .label {
-    font-weight: 700;
-    margin-right: 10px;
-    width: 100px;
-    text-align: right;
+  .icon {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2px;
   }
 
-  .expanded .label {
-    position: absolute;
-    top: 10px;
-    left: 10px;
+  .section {
+    margin-top: 33px;
   }
-  .graph {
-    display: none;
+  .section-title {
+    margin-left: 10px;
+    text-align: left;
   }
-  .expanded .graph {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: block;
-  }
+
   .expanded .analogies {
     :deep(.el-carousel__indicators--labels .el-carousel__indicator) {
       width: 5px;
@@ -197,22 +244,14 @@ export default {
       height: 150px;
     }
   }
-  .expanded .analogies {
-    position: absolute;
-    top: 20px;
-    left: 200px;
-    width: 180px;
-    display: block;
+
+  .expanded .graph {
+    border-left: solid 1px white;
+    padding-left: 6px;
   }
+
   .expanded .info {
-    display: block;
     text-align: left;
-    position: absolute;
-    top: 0;
-    left: 80px;
-    width: 120px;
-    margin-top: 40px;
-    display: block;
     border-right: solid 1px white;
     .amount {
       margin-top: 40px;
@@ -270,6 +309,12 @@ export default {
     border-bottom: solid 1px white;
   }
 
+ .details .icon{
+    position: absolute;
+    top: calc((200px - var(--height))/2);
+    margin-left: var(--margin-icon);
+  }
+
   img {
     display: inline-block;
     height: var(--height);
@@ -277,13 +322,15 @@ export default {
     filter: brightness(0) saturate(100%) invert(100%);
   }
 
-  .expanded img{
-    transform: translateX(-250px);
-    transition: transform 0.5s ease;
-  }
-
   .analogy {
     text-align:center;
+  }
+
+  .apexchart {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
   }
 
   @media (prefers-color-scheme: dark) {
