@@ -123,6 +123,7 @@ export default {
         {{ legend }}
       </div>
     </div>
+    <div v-if="expanded && type === 'co2'" class="carousel-title">As much energy as</div>
     <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click">
       <el-carousel-item v-for="(item, index) in [0, 1, 2, 3, 4, 5]" :key="index" label="." class="analogy">
         <analogy :type="type" :layer="layer" :index="item"></analogy>
@@ -149,6 +150,13 @@ export default {
   .wrapper.expanded {
     height: 200px;
     margin-left: 0px;
+  }
+
+  .carousel-title {
+    position: absolute;
+    top: 10px;
+    margin-left: 10px;
+    text-align: left;
   }
 
   .label {

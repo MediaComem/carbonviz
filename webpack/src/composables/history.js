@@ -4,12 +4,12 @@ import { retrieveHistoryLayers } from './storage';
 const MAX_HEIGHT = 150;
 
 const layerHeightCo2 = (amount) => {
-  const height = 11 + (amount / 0.3) * MAX_HEIGHT; // min 11px, max 150 px for 400g CO2eq (twice 8h laptop consumption no activities)
+  const height = 11 + (amount / 0.6) * MAX_HEIGHT; // min 11px, max 150 px for 600g CO2eq ( 8h laptop consumption no activities ~ 200g)
   return Math.min(height, MAX_HEIGHT);
 }
 
 const layerHeightData = (amount) => {
-  const height = 11 + (amount / (1*1000000000)) * MAX_HEIGHT; // min 11px, max 150 px for 1GB
+  const height = 11 + (amount / (1*750000000)) * MAX_HEIGHT; // min 11px, max 150 px for 750MB
   return Math.min(height, MAX_HEIGHT);
 }
 

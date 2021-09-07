@@ -430,15 +430,18 @@ const debounce = (packet, waitMs, maxWaitMs) => {
 }
 
 const handleMessage = (request) => {
+  if (request.statistics) {
+    const stats = request.statistics;
+    if (CarbonVue) {
+      CarbonVue.co2DataCounter.data = stats.data - 0;
+      CarbonVue.co2DataCounter.co2 = stats.co2 - 0;
+    }
+  }
   if (request.data) {
     const packet = request.data;
     if (packet.initiator === 'computer') {
       // directly publish co2 computer info
       pubSub.publish('input-data', packet);
-      if (CarbonVue) {
-        CarbonVue.co2DataCounter.data += packet.contentLength - 0;
-        CarbonVue.co2DataCounter.co2 += packet.co2 - 0;
-      }
       return;
     }
     // skip too small packets or extension packets
@@ -455,8 +458,6 @@ const handleMessage = (request) => {
     } else {
       // directly publish data for animation
       pubSub.publish('input-data', packet);
-      CarbonVue.co2DataCounter.data += packet.contentLength - 0;
-      CarbonVue.co2DataCounter.co2 += packet.co2 - 0;
     }
     // update history
     shiftHistory();
