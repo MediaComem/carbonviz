@@ -125,6 +125,41 @@ button {
   cursor: pointer;
 }
 
+.top-bar {
+  background-color: #f8f8f8;
+  height: 37px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 200;
+  box-shadow: 0px 3px 11px rgba(0, 0, 0, 0.25);
+}
+
+.bottom-bar {
+  background-color: #f8f8f8;
+  height: 37px;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 200;
+  box-shadow: 0px 3px 11px rgba(0, 0, 0, 0.25);
+}
+
+.top-bar .icon, .bottom-bar .icon {
+  padding-top: 7px;
+  padding-left: 19px;
+}
+
+.top-bar .label, .bottom-bar .label {
+  position: absolute;
+  left: 60px;
+  top: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .navigation {
   background-color: transparent;
 }
@@ -493,7 +528,7 @@ button {
     fill: none;
   }
 
-  .navigation-boxes {
+  .top-bar, .navigation-boxes {
     background-color: #070707;
   }
 

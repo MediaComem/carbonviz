@@ -79,6 +79,8 @@ const openTabButtons = window.document.querySelectorAll("[data-goto-page]");
 const tabConfirmationCheckbox = window.document.getElementById("disableNewTabConfirmation");
 const debounceCheckbox = window.document.getElementById("debounce");
 // Navigation
+const topBar = window.document.getElementById("topBar");
+const bottomBar = window.document.getElementById("bottomBar");
 const navUp = window.document.getElementById("navUp");
 const navCo2 = window.document.getElementById("navCo2");
 const navFlux = window.document.getElementById("navFlux");
@@ -197,6 +199,7 @@ const goToCo2 = () => {
   CarbonVue.historyCO2.show = true;
   CarbonVue.historyData.show = false;
   if (CarbonVue.historyCO2.maxStage > 0) {
+    topBar.classList.remove("hidden");
     co2Older.classList.remove("hidden");
   }
 }
@@ -207,6 +210,8 @@ const goToFlux = () => {
   navData.classList.remove("selected");
   navUp.classList.remove("hidden");
   navDown.classList.remove("hidden");
+  topBar.classList.add("hidden");
+  bottomBar.classList.add("hidden");
   co2Newer.classList.add("hidden");
   co2Older.classList.add("hidden");
   dataNewer.classList.add("hidden");
@@ -218,6 +223,7 @@ const goToFlux = () => {
 const goToData = () => {
   resetSelection();
   navDown.classList.add("hidden");
+  topBar.classList.add("hidden");
   co2Newer.classList.add("hidden");
   co2Older.classList.add("hidden");
   navData.classList.add("selected");
@@ -228,6 +234,7 @@ const goToData = () => {
   CarbonVue.historyCO2.show = false;
   CarbonVue.historyData.show = true;
   if (CarbonVue.historyData.maxStage > 0) {
+    bottomBar.classList.remove("hidden");
     dataOlder.classList.remove("hidden");
   }
 }
@@ -235,8 +242,10 @@ const goToData = () => {
 const nextStageCo2 = () => {
   CarbonVue.historyCO2.nextStage();
   navDown.classList.add("hidden");
+  bottomBar.classList.remove("hidden");
   co2Newer.classList.remove("hidden");
   if (CarbonVue.historyCO2.stage === CarbonVue.historyCO2.maxStage) {
+    topBar.classList.add("hidden");
     co2Older.classList.add("hidden");
   }
 }
@@ -245,9 +254,11 @@ const previousStageCo2 = () => {
   CarbonVue.historyCO2.previousStage();
   if (CarbonVue.historyCO2.stage === 0) {
     navDown.classList.remove("hidden");
+    bottomBar.classList.add("hidden");
     co2Newer.classList.add("hidden");
   }
   if (CarbonVue.historyCO2.stage < CarbonVue.historyCO2.maxStage) {
+    topBar.classList.remove("hidden");
     co2Older.classList.remove("hidden");
   }
 }
@@ -255,8 +266,10 @@ const previousStageCo2 = () => {
 const nextStageData = () => {
   CarbonVue.historyData.nextStage();
   navUp.classList.add("hidden");
+  topBar.classList.remove("hidden");
   dataNewer.classList.remove("hidden");
   if (CarbonVue.historyData.stage === CarbonVue.historyData.maxStage) {
+    bottomBar.classList.add("hidden");
     dataOlder.classList.add("hidden");
   }
 }
@@ -265,9 +278,11 @@ const previousStageData = () => {
   CarbonVue.historyData.previousStage();
   if (CarbonVue.historyData.stage === 0) {
     navUp.classList.remove("hidden");
+    topBar.classList.add("hidden");
     dataNewer.classList.add("hidden");
   }
   if (CarbonVue.historyCO2.stage < CarbonVue.historyData.maxStage) {
+    bottomBar.classList.remove("hidden");
     dataOlder.classList.remove("hidden");
   }
 }

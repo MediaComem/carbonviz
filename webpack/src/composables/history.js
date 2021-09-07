@@ -36,7 +36,7 @@ const setup = (type) => {
           scroll.value = totalHeight.value;
         } else {
           layer.visible = true;
-          scroll.value = totalHeight.value - layerHeightCo2(layer.amount);
+          scroll.value = totalHeight.value - layerHeightCo2(layer.amount) - 37 /* top bar*/;
         }
       } else {
         scroll.value = Math.max(totalHeight.value - stage.value*maxHeight, 0);
@@ -49,7 +49,7 @@ const setup = (type) => {
           scroll.value = 0;
         } else {
           layer.visible = true;
-          scroll.value = layerHeightData(layer.amount);
+          scroll.value = layerHeightData(layer.amount) + 37 /* top bar*/;
         }
       } else {
         scroll.value = Math.min(stage.value*maxHeight, totalHeight.value);
