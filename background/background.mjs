@@ -1,5 +1,5 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
-import { init as initDB } from "../storage/indexedDB.js";
+import { init as initDB, getTodayCounter } from "../storage/indexedDB.js";
 
 const usageDevicePerYear = 1917.3;
 const lifetimeLaptopYears = 6.5;
@@ -24,6 +24,8 @@ let co2ComputerInterval;
 const co2ComputerIntervalMs = 2000;
 let writeDataInterval;
 const writingIntervalMs = 60000;
+
+let statistics = { co2: 0, data: 0};
 
 const domain = (packet) => {
   if (!packet.extraInfo.tabUrl) {
@@ -192,6 +194,9 @@ const completedListener = (responseDetails) => {
   info.energy = energyInternet.energyNRE + energyInternet.energyRE;
   info.extraInfo = { timeStamp, type };
 
+  statistics.co2 += info.co2 - 0;
+  statistics.data += info.contentLength - 0;
+
   // retrieve tab name
   if (responseDetails.tabId > 0 ) {
     chrome.tabs.get(responseDetails.tabId, tab => {
@@ -210,8 +215,9 @@ const completedListener = (responseDetails) => {
         info.extraInfo.tabTitle = tab.title;
         info.extraInfo.tabUrl = tab.url;
       }
-      // send data to animation
+      // send data to popup
       chrome.runtime.sendMessage({ data: info });
+      chrome.runtime.sendMessage({ statistics });
 
       if (!writeDataInterval) {
         writeDataInterval = setInterval(writeData, writingIntervalMs);
@@ -229,6 +235,7 @@ const completedListener = (responseDetails) => {
     if (tabs && tabs[0]) {
       for (const tab of tabs) {
         chrome.tabs.sendMessage(tab.id, { data: info });
+        chrome.tabs.sendMessage(tab.id, { statistics });
       }
     }
   });
@@ -307,13 +314,18 @@ const computerCo2 =  () => {
     energyRE: 3.34e-5 * seconds,
     extraInfo: { timeStamp: new Date() }
   };
+
+  statistics.co2 += computerCo2.co2 - 0;
+
   // send data to animation
   chrome.runtime.sendMessage({ data: computerCo2 });
+  chrome.runtime.sendMessage({ statistics });
   // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
       for (const tab of tabs) {
         chrome.tabs.sendMessage(tab.id, { data: computerCo2 });
+        chrome.tabs.sendMessage(tab.id, { statistics });
       }
     }
   });
@@ -356,7 +368,8 @@ const addPluginToNewTab = () => {
   });
 }
 
-initDB();
+await initDB();
+statistics = await getTodayCounter();
 
 if (!co2ComputerInterval) {
   co2ComputerInterval = setInterval(computerCo2, co2ComputerIntervalMs);

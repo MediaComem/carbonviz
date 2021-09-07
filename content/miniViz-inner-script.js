@@ -6,24 +6,12 @@ import {genVariation} from '../unplug/js/modules/utils.mjs';
 const pubSub = new PubSub();
 
 
-function createMiniVizContainer() {
-  // document.body.insertAdjacentHTML('beforeend',`<style>
-  //   #miniViz_container {
-  //     all: initial
-  //     position: fixed;
-  //     top: 300px;
-  //     right: 0;
-  //     width: 50px;
-  //     height: 300px;
-  //     borderRadius: 25px;
-  //     z-index: 10000;
-  //   }
-  // </style>`);
-  // document.body.insertAdjacentHTML('beforeend',`<div id="miniViz_container"></div>`);
+function createminivizAnimation() {
   const container = document.createElement('div');
   container.style.all = 'initial';
   container.style.position = 'fixed';
-  container.style.top = '300px';
+  container.style.top = '50%';
+  container.style['margin-top'] = '-150px';
   container.style.right = '0px';
   container.style.width = '50px';
   container.style.height = '300px';
@@ -31,17 +19,25 @@ function createMiniVizContainer() {
   container.style['z-index'] = '10000';
   container.id = 'miniViz_container';
   document.body.appendChild(container);
+  if (CarbonVue) {
+    CarbonVue.co2DataCounter.large = true;
+  }
 }
 
 const handleMessage = (request) => {
+  if (request.statistics) {
+    const stats = request.statistics;
+    if (CarbonVue) {
+      CarbonVue.co2DataCounter.data = stats.data - 0;
+      CarbonVue.co2DataCounter.co2 = stats.co2 - 0;
+    }
+  }
   if (request.data) {
     const packet = request.data;
     if (packet.initiator === 'computer') {
       // directly publish co2 computer info
       setTimeout(() => {
         pubSub.publish('input-data', packet);
-        CarbonVue.co2DataCounter.data += packet.contentLength - 0;
-        CarbonVue.co2DataCounter.co2 += packet.co2 - 0;
       }, genVariation(1000));
       return;
     }
@@ -88,7 +84,7 @@ export function main() {
 }
 
 export function configure() {
-  createMiniVizContainer();
+  createminivizAnimation();
   chrome.runtime.onMessage.addListener(handleMessage);
 }
 

@@ -25,21 +25,25 @@
       </form>
     </dialog>
     <div class="container">
+      <div class="top-bar hidden" id="topBar" >
+        <div class="icon up hidden" id="co2Older">
+          <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+            <path class="arrow" d="M16.1 11.5l-4.2-4.2c-.4-.4-1-.4-1.4 0l-4.2 4.2c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.5-3.5 3.5 3.5c.2.2.4.3.7.3.3 0 .5-.1.7-.3.4-.4.4-1 0-1.4z"/>
+            <circle cx="11" cy="11" r="10" stroke-width="2"/>
+          </svg>
+          <div class="label">Older</div>
+        </div>
+        <div class="icon up hidden" id="dataNewer">
+          <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+            <path class="arrow" d="M16.1 11.5l-4.2-4.2c-.4-.4-1-.4-1.4 0l-4.2 4.2c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.5-3.5 3.5 3.5c.2.2.4.3.7.3.3 0 .5-.1.7-.3.4-.4.4-1 0-1.4z"/>
+            <circle cx="11" cy="11" r="10" stroke-width="2"/>
+          </svg>
+          <div class="label">Newer</div>
+        </div>
+      </div>
       <div class="navigation">
         <div class="navigation-up">
           <div class="icon up" id="navUp">
-            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
-              <path class="arrow" d="M16.1 11.5l-4.2-4.2c-.4-.4-1-.4-1.4 0l-4.2 4.2c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.5-3.5 3.5 3.5c.2.2.4.3.7.3.3 0 .5-.1.7-.3.4-.4.4-1 0-1.4z"/>
-              <circle cx="11" cy="11" r="10" stroke-width="2"/>
-            </svg>
-          </div>
-          <div class="icon up hidden" id="co2Older">
-            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
-              <path class="arrow" d="M16.1 11.5l-4.2-4.2c-.4-.4-1-.4-1.4 0l-4.2 4.2c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.5-3.5 3.5 3.5c.2.2.4.3.7.3.3 0 .5-.1.7-.3.4-.4.4-1 0-1.4z"/>
-              <circle cx="11" cy="11" r="10" stroke-width="2"/>
-            </svg>
-          </div>
-          <div class="icon up hidden" id="dataNewer">
             <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
               <path class="arrow" d="M16.1 11.5l-4.2-4.2c-.4-.4-1-.4-1.4 0l-4.2 4.2c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.5-3.5 3.5 3.5c.2.2.4.3.7.3.3 0 .5-.1.7-.3.4-.4.4-1 0-1.4z"/>
               <circle cx="11" cy="11" r="10" stroke-width="2"/>
@@ -72,18 +76,22 @@
               <circle cx="11" cy="11" r="10" transform="rotate(-180 11 11)" stroke-width="2"/>
             </svg>
           </div>
-          <div class="icon down hidden" id="co2Newer">
-            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
-              <path class="arrow" d="M5.9 10.5l4.2 4.2c.4.4 1 .4 1.4 0l4.2-4.2c.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0l-3.5 3.5-3.5-3.5c-.2-.2-.4-.3-.7-.3-.3 0-.5.1-.7.3-.4.4-.4 1 0 1.4z"/>
-              <circle cx="11" cy="11" r="10" transform="rotate(-180 11 11)" stroke-width="2"/>
-            </svg>
-          </div>
-          <div class="icon down hidden" id="dataOlder">
-            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
-              <path class="arrow" d="M5.9 10.5l4.2 4.2c.4.4 1 .4 1.4 0l4.2-4.2c.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0l-3.5 3.5-3.5-3.5c-.2-.2-.4-.3-.7-.3-.3 0-.5.1-.7.3-.4.4-.4 1 0 1.4z"/>
-              <circle cx="11" cy="11" r="10" transform="rotate(-180 11 11)" stroke-width="2"/>
-            </svg>
-          </div>
+        </div>
+      </div>
+      <div class="bottom-bar hidden" id="bottomBar" >
+        <div class="icon down hidden" id="co2Newer">
+          <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+            <path class="arrow" d="M5.9 10.5l4.2 4.2c.4.4 1 .4 1.4 0l4.2-4.2c.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0l-3.5 3.5-3.5-3.5c-.2-.2-.4-.3-.7-.3-.3 0-.5.1-.7.3-.4.4-.4 1 0 1.4z"/>
+            <circle cx="11" cy="11" r="10" transform="rotate(-180 11 11)" stroke-width="2"/>
+          </svg>
+          <div class="label">Newer</div>
+        </div>
+        <div class="icon down hidden" id="dataOlder">
+          <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+            <path class="arrow" d="M5.9 10.5l4.2 4.2c.4.4 1 .4 1.4 0l4.2-4.2c.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0l-3.5 3.5-3.5-3.5c-.2-.2-.4-.3-.7-.3-.3 0-.5.1-.7.3-.4.4-.4 1 0 1.4z"/>
+            <circle cx="11" cy="11" r="10" transform="rotate(-180 11 11)" stroke-width="2"/>
+          </svg>
+          <div class="label">Older</div>
         </div>
       </div>
       <div id="main" class="animation">
