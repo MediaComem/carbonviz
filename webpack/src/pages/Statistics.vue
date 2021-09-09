@@ -58,7 +58,7 @@ export default {
         </div>
         <div>
           <div class="data" :style="`--size: ${layerHeightData(data)}px`">
-            <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.467 7a4.533 4.533 0 109.066 0 4.533 4.533 0 00-9.066 0z" stroke-width="3.5"></path></svg>
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 13.212L13.212 8 8 2.788 2.788 8 8 13.212z" stroke-width="3"></path></svg>
           </div>
           <div class="live-data">
             Data {{ formatSize(data) }}
@@ -85,7 +85,7 @@ export default {
       <div class="top-site-grid">
         <div v-for="(site, index) in topSitesCo2" :key="index">
           <div class="data" :style="`--size: ${layerHeightData(site.data)}px`">
-            <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.467 7a4.533 4.533 0 109.066 0 4.533 4.533 0 00-9.066 0z" stroke-width="3.5"></path></svg>
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 13.212L13.212 8 8 2.788 2.788 8 8 13.212z" stroke-width="3"></path></svg>
           </div>
           <div class="live-data">
             <div class="site-name">{{site.name}}</div>
