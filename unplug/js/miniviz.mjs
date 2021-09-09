@@ -10,6 +10,7 @@ const conf = {
   gravity: 0.00003,
   lifetime: 12000,
   variation: 3000,
+  bgDeleteAfter: 2500,
   maskNoCollision: '0x0010',
   asset: {
     url: 'unplug/assets/co2.png',
@@ -20,7 +21,7 @@ const conf = {
     co2   : [500, 300, 100, 50, 13.12, 5, 1, 0.5, 0.3, 0.1],  // CO2 chunk in [mg] (13.12 is 2s computer co2)
     radius: [ 10,   9,   8,  7,     6, 4, 3,   2,   1,   1],  // Chunk radius in pixels
     maxBySpawn: 6, // max nb of chunks for an entry
-    maxTotal: 300 // max nb of chunks allowed in all the animation
+    maxTotal: 200 // max nb of chunks allowed in all the animation
   }
 };
 
@@ -55,11 +56,9 @@ function initMatter() {
   render.canvas.style.all = 'initial';
   render.canvas.style.borderRadius = conf.borderRadius;
   // build walls around the canvas
-  // let upperWall = Matter.Bodies.rectangle(0, -1, render.options.width * 2, 1, {isStatic: true, label: 'wall'});
   let leftWall = Matter.Bodies.rectangle(-1, -1, 1, render.options.height * 2, {isStatic: true, label: 'wall'});
   let rightWall = Matter.Bodies.rectangle(render.options.width + 1, -1, 1, render.options.height * 2, {isStatic: true, label: 'wall'});
   Matter.World.add(engine.world, [leftWall, rightWall]);
-  //Matter.World.add(engine.world, [upperWall, leftWall, rightWall]);
 }
 
 function initMainLoop() {
@@ -97,6 +96,13 @@ function generateCO2(radius = 10) {
   Matter.World.add(engine.world, co2);
   let disapearT = conf.lifetime + genVariation(conf.variation);
   mainLoop.setTimeout(disapearT, () => disapearEntity(co2));
+  // backgroud deletion of old entities if the mainloop is not running
+  if (!mainLoop.isRunning()) {
+    setTimeout(() => {
+      if (mainLoop.isRunning()) return;
+      Matter.World.remove(engine.world, co2)
+    }, conf.bgDeleteAfter);
+  }
 }
 
 function disapearEntity(entity) {
