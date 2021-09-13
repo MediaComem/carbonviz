@@ -17,6 +17,8 @@ function createminivizAnimation() {
   container.style.height = '300px';
   container.style.borderRadius = '25px';
   container.style['z-index'] = '10000';
+  container.style['font-family'] = 'Roboto, Arial, sans-serif' ;
+
   container.id = 'miniViz_container';
   document.body.appendChild(container);
   if (CarbonVue) {

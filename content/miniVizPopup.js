@@ -13,6 +13,7 @@
     container.style['background-color'] = 'white';
     container.style['box-shadow'] = '2px 2px 2px 2px #888888';
     container.style['z-index'] = '10000';
+    container.style['font-family'] = 'Roboto, Arial, sans-serif' ;
     container.style['font-weight'] = 'bold';
     container.style['font-size'] = '10px';
     container.id = 'miniViz_popup_container';
