@@ -55,6 +55,7 @@ function initMatter() {
   // restet css cascading for the canvas
   render.canvas.style.all = 'initial';
   render.canvas.style.borderRadius = conf.borderRadius;
+  render.canvas.style.cursor = 'pointer';
   // build walls around the canvas
   let leftWall = Matter.Bodies.rectangle(-1, -1, 1, render.options.height * 2, {isStatic: true, label: 'wall'});
   let rightWall = Matter.Bodies.rectangle(render.options.width + 1, -1, 1, render.options.height * 2, {isStatic: true, label: 'wall'});
