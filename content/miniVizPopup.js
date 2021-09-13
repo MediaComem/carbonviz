@@ -62,12 +62,12 @@
     positionIcons.style.display = 'flex';
     const positionIcon1 = document.createElement("div");
     positionIcon1.id='positionLeftRight';
-    positionIcon1.innerHTML='<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect opacity="0.3" x="25" y="8" width="4" height="4" rx="2" fill="#906C0D"/><rect x="3" y="8" width="4" height="4" rx="2" fill="#906C0D"/></svg>'
+    positionIcon1.innerHTML='<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="25" y="8" width="4" height="4" rx="2" fill="#906C0D"/><rect opacity="0.3" x="3" y="8" width="4" height="4" rx="2" fill="#906C0D"/></svg>'
     positionIcon1.style.cssText='float: left; cursor: pointer;'
     positionIcons.appendChild(positionIcon1);
     const positionIcon2 = document.createElement("div");
     positionIcon2.id='positionUpDown';
-    positionIcon2.innerHTML='<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect opacity="0.3" x="25" y="7" width="4" height="4" rx="2" fill="#906C0D"/><rect x="25" y="13" width="4" height="4" rx="2" fill="#906C0D"/></svg>'
+    positionIcon2.innerHTML='<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="25" y="7" width="4" height="4" rx="2" fill="#906C0D"/><rect opacity="0.3" x="25" y="13" width="4" height="4" rx="2" fill="#906C0D"/></svg>'
     positionIcon2.style.cssText='cursor: pointer; padding-left: 6px';
     positionIcons.appendChild(positionIcon2);
     positionContainer.appendChild(positionIcons);
@@ -117,7 +117,7 @@
         minivizPopup.style.right='55px';
         minivizPopup.style.left='auto';
         positionRight = true;
-        positionIcon1.innerHTML='<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect  opacity="0.3"  x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="25" y="8" width="4" height="4" rx="2" fill="#906C0D"/><rect x="3" y="8" width="4" height="4" rx="2" fill="#906C0D"/></svg>'
+        positionIcon1.innerHTML='<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="25" y="8" width="4" height="4" rx="2" fill="#906C0D"/><rect opacity="0.3" x="3" y="8" width="4" height="4" rx="2" fill="#906C0D"/></svg>'
       } else {
         minivizAnimation.style.left='0px';
         minivizAnimation.style.right='auto';
@@ -139,7 +139,7 @@
         minivizPopup.style['margin-top'] = `${-containerHeight/2}px`;
         minivizPopup.style.bottom='initial';
         positionTop = true;
-        positionIcon2.innerHTML='<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect opacity="0.3" x="25" y="7" width="4" height="4" rx="2" fill="#906C0D"/><rect x="25" y="13" width="4" height="4" rx="2" fill="#906C0D"/></svg>'
+        positionIcon2.innerHTML='<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="25" y="7" width="4" height="4" rx="2" fill="#906C0D"/><rect opacity="0.3" x="25" y="13" width="4" height="4" rx="2" fill="#906C0D"/></svg>'
       } else {
         minivizAnimation.style.top='initial';
         minivizAnimation.style['margin-top'] = '0px';
