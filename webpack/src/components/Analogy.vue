@@ -50,10 +50,11 @@ const analogiesCo2 = [
     },
     {
         text: (value) => {
-            const amountPerKwh = 0.116;
-            return `Boiling ${roundToPrecision(value/amountPerKwh, 1)}L water`;
+            const amountPerKwh = 0.0203488372093023;
+            let number = Math.floor(value / amountPerKwh);
+            return `Sawing ${number} wood boards`;
         },
-        asset: 'analogy_boilingwater.png'
+        asset: 'analogy_sawing.png'
     }
 ]
 

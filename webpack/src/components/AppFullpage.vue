@@ -111,7 +111,7 @@ export default {
   [data-area="subnav"] {grid-area: subnav;}
   [data-area="body"] {grid-area: body}
   .wrapper {
-    font-family: Roboto;
+    font-family: Roboto, Arial, sans-serif ;
     display: grid;
     /* width: 1000px;
     margin: 0 auto; */
@@ -215,7 +215,8 @@ export default {
   [data-area="body"] {
     background-color: #F8F8F8;
     width: 1000px;
-    height: 800px;
+    height: calc(100vh - 240px);
+    padding-bottom: 20px;
     overflow: auto;
   }
   /* Vue3 transition */

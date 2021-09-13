@@ -1,5 +1,5 @@
 <script>
-import { inject, onMounted, ref, computed } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 import { retrieveTodayCounter, getTopWebsites } from '../composables/storage';
 import {formatSize, formatCo2} from '../utils/format';
 import { layerHeightCo2, layerHeightData } from '../composables/history'

@@ -4,7 +4,7 @@ const colorLabel = '#fff';
 const colorDataLabelCo2 = '#8B7B52';
 const colorDataLabelData = '#384E50';
 const colorBars = '#fff';
-const fontFamily = 'Roboto, sans-serif';
+const fontFamily = 'Roboto, Arial, sans-serif ';
 const fontWeight = 900;
 
 export default function (type, periods) {

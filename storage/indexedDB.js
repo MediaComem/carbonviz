@@ -37,13 +37,20 @@ function dateString(dataObject) {
 co2HistoryDB.open = () => {
 
   return new Promise(function(resolve) {
-    let version = 1;
+    let version = 2;
+    /*
+      version 1: basic
+      version 2: add by_co2 / by_data indexes for domains
+    */
     const request = indexedDB.open("co2HistoryDB", version);
     // For any changes to an existing DB structure, the version number needs to be incremented.
     // Only then will the onupgradeneeded function run.
-    request.onupgradeneeded = function () {
+    request.onupgradeneeded = function (event) {
       let db = request.result;
-
+      // This is the implied IDBTransaction instance available when
+      // upgrading, it is type versionchange, and is similar to
+      // readwrite.
+      var tx = request.transaction;
       if (!db.objectStoreNames.contains('dataTimeStamp')) {
         const storeDays = db.createObjectStore("dataTimeStamp", { keyPath: "index" });
         storeDays.createIndex("by_index", "index", { unique: true });
@@ -100,6 +107,14 @@ co2HistoryDB.open = () => {
           data: 0,
           energy: 0
         });
+      } else {
+        var domains = tx.objectStore('domains');
+        if(!domains.indexNames.contains('by_co2')) {
+          domains.createIndex("by_co2", "co2");
+        }
+        if(!domains.indexNames.contains('by_data')) {
+          domains.createIndex("by_data", "data");
+        }
       }
     };
 
