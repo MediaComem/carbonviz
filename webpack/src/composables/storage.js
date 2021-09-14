@@ -3,6 +3,8 @@ import { init as initDB, getDailyAggregates, getTodayCounter, getWebsites } from
 
 let database;
 
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 export const retrieveTodayCounter = async () => {
     database ??= await initDB();
     return getTodayCounter();
@@ -14,6 +16,7 @@ export const getTopWebsites = async (mode = 'co2', limit = 10) => {
 }
 
 export const retrieveHistoryLayers = async () => {
+    const year = new Date().getFullYear();
     const layersCo2 = [];
     const layersData = [];
 
@@ -37,8 +40,8 @@ export const retrieveHistoryLayers = async () => {
     let entry = dailyData[index]
     let weekNb = entry ? entry.weekOfYear : -1;
     while ( weekNb === currentWeekYear) {
-        layersCo2.push({ amount: entry.co2, energy: entry.energy, label: `${entry.date}-${entry.month}`, level: 'day' });
-        layersData.push({ amount: entry.data, label: `${entry.date}-${entry.month}`, level: 'day' });
+        layersCo2.push({ amount: entry.co2, energy: entry.energy, label: `${entry.date} ${months[entry.month - 1]} ${year}`, level: 'day' });
+        layersData.push({ amount: entry.data, label: `${entry.date} ${months[entry.month - 1]} ${year}`, level: 'day' });
         index--;
         entry = dailyData[index]
         weekNb = entry ? entry.weekOfYear : -1;
