@@ -295,7 +295,7 @@ async function getDailyEntries(period, occurrence) {
     const trans = db.transaction(["history"], "readonly");
     const historySummaryStore = trans.objectStore("history");
 
-    historySummaryStore.openCursor(keyRangeValue).onsuccess = function(event) {
+    const dbCursor = historySummaryStore.openCursor(keyRangeValue).onsuccess = function(event) {
       let cursor = event.target.result;
       if(cursor) {
         data.push(cursor.value);
@@ -372,5 +372,35 @@ async function getWebsites(mode = 'co2', limit = 10) {
   });
 }
 
+async function getCurWeekHistory() {
+  const date = new Date();
+  // One week ago
+  date.setDate(date.getDate() - 6);
+  const startTime = date.toISOString().substring(0, 13);
 
-export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData, getWebsites }
+  return new Promise(function (resolve) {
+    const db = co2HistoryDB.db;
+    const trans = db.transaction(["history"], "readonly");
+    const store = trans.objectStore("history");
+    const index = store.index('by_index');
+    const dbCursor = index.openCursor(null, "prev");
+    const data = [];
+    const computerCo2 = 3600 * 6.57e-6; // constant value: ~6.57 [mg/sec] * 3600 seconds
+    dbCursor.onsuccess = event => {
+      const cursor = event.target.result;
+      if (cursor) {
+        if (cursor.value.index > startTime) {
+          let obj = {...cursor.value};
+          obj.co2 += computerCo2;
+          data.push(obj);
+        }
+        if (cursor.value.index > startTime) { cursor.continue(); return; }
+      }
+      return resolve(data);
+    };
+    dbCursor.onerror = error => reject(error);
+  });
+}
+
+
+export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData, getWebsites, getCurWeekHistory }

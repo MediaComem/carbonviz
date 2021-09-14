@@ -1,17 +1,21 @@
 <script>
+import VueApexCharts from "vue3-apexcharts";
 import { inject, onMounted, ref } from 'vue';
-import { retrieveTodayCounter, getTopWebsites } from '../composables/storage';
+import { retrieveTodayCounter, getTopWebsites, getCurWeek } from '../composables/storage';
 import {formatSize, formatCo2} from '../utils/format';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
+import heatmapChart from '../composables/heatmapChart';
+
 
 const subNav = {
   'Live': 'Live Digest',
-  //'Trends': 'Trends Summary',
   'Co2top': 'CO2 Top Sites',
   'Datatop': 'Data Top Sites',
+  'Daily': 'Daily consumption',
 };
 
 export default {
+  components: { apexchart: VueApexCharts },
 
   setup() {
     const setSubNav = inject('setSubNav');
@@ -19,6 +23,8 @@ export default {
     const co2 = ref(0);
     const topSitesData = ref([]);
     const topSitesCo2 = ref([]);
+    const dailyData = ref([]);
+    const dailyCo2 = ref([]);
 
     onMounted(async () => {
       setSubNav(subNav);
@@ -27,17 +33,22 @@ export default {
       data.value = counters.data;
       topSitesCo2.value = await getTopWebsites('co2', 15);
       topSitesData.value = await getTopWebsites('data', 15);
+      dailyData.value = await getCurWeek('data');
+      dailyCo2.value = await getCurWeek('co2');
     });
 
     chrome.runtime.onMessage.addListener(request => {
       if (!request?.data) return;
       const packet = request.data;
-      if (packet.contentLength < 1 || !packet.extraInfo.tabIcon || packet.extraInfo.tabIcon.startsWith('chrome-extension:')) return;
+      if (packet?.extraInfo?.tabIcon?.startsWith('chrome-extension:')) return;
       data.value += parseInt(packet.contentLength);
       co2.value += packet.co2;
     });
 
-    return {data, co2, topSitesData, topSitesCo2, formatSize, formatCo2, layerHeightCo2, layerHeightData};
+    const {options: optionsData, series: seriesData} = heatmapChart(dailyData, 'data');
+    const {options: optionsCo2, series: seriesCo2} = heatmapChart(dailyCo2, 'co2');
+
+    return {data, co2, topSitesData, topSitesCo2, formatSize, formatCo2, layerHeightCo2, layerHeightData, optionsData, seriesData, optionsCo2, seriesCo2};
   }
 
 }
@@ -93,6 +104,13 @@ export default {
           </div>
         </div>
       </div>
+    </article>
+    <article class="live top-sites" data-section="Daily">
+      <h1>Daily consumption</h1>
+      <h2>CO<sub>2</sub></h2>
+      <apexchart class="apexchart" type="heatmap" height="550" width="450" :options="optionsCo2" :series="seriesCo2"></apexchart>
+      <h2>Data</h2>
+      <apexchart class="apexchart" type="heatmap" height="550" width="450" :options="optionsData" :series="seriesData"></apexchart>
     </article>
   </div>
 </template>
