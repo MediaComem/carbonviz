@@ -79,6 +79,8 @@ const openTabButtons = window.document.querySelectorAll("[data-goto-page]");
 const tabConfirmationCheckbox = window.document.getElementById("disableNewTabConfirmation");
 const debounceCheckbox = window.document.getElementById("debounce");
 // Navigation
+const navigation = window.document.querySelector('.navigation-boxes');
+const menu = window.document.querySelector('.menu');
 const topBar = window.document.getElementById("topBar");
 const bottomBar = window.document.getElementById("bottomBar");
 const navUp = window.document.getElementById("navUp");
@@ -205,6 +207,8 @@ const goToCo2 = () => {
 }
 const goToFlux = () => {
   resetSelection();
+  navigation.classList.remove('outside');
+  menu.classList.remove('outside');
   navFlux.classList.add("selected");
   navCo2.classList.remove("selected");
   navData.classList.remove("selected");
@@ -240,6 +244,7 @@ const goToData = () => {
 }
 
 const nextStageCo2 = () => {
+  resetSelection();
   CarbonVue.historyCO2.nextStage();
   navDown.classList.add("hidden");
   bottomBar.classList.remove("hidden");
@@ -251,6 +256,7 @@ const nextStageCo2 = () => {
 }
 
 const previousStageCo2 = () => {
+  resetSelection();
   CarbonVue.historyCO2.previousStage();
   if (CarbonVue.historyCO2.stage === 0) {
     navDown.classList.remove("hidden");
@@ -264,6 +270,7 @@ const previousStageCo2 = () => {
 }
 
 const nextStageData = () => {
+  resetSelection();
   CarbonVue.historyData.nextStage();
   navUp.classList.add("hidden");
   topBar.classList.remove("hidden");
@@ -275,6 +282,7 @@ const nextStageData = () => {
 }
 
 const previousStageData = () => {
+  resetSelection();
   CarbonVue.historyData.previousStage();
   if (CarbonVue.historyData.stage === 0) {
     navUp.classList.remove("hidden");

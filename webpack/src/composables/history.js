@@ -4,7 +4,7 @@ import { retrieveHistoryLayers } from './storage';
 const MAX_HEIGHT = 150;
 
 const layerHeightCo2 = (amount) => {
-  const height = 11 + (amount / 0.6) * MAX_HEIGHT; // min 11px, max 150 px for 600g CO2eq ( 8h laptop consumption no activities ~ 200g)
+  const height = 11 + (amount / 0.9) * MAX_HEIGHT; // min 11px, max 150 px for 900g CO2eq ( 8h laptop consumption no activities ~ 200g)
   return Math.min(height, MAX_HEIGHT);
 }
 

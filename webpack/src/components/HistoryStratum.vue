@@ -186,9 +186,11 @@ export default {
   }
   .details {
     opacity: 0;
+    z-index: -1;
   }
   .expanded {
     .details {
+      z-index: 1;
       opacity: 1;
       transition: opacity 0.1s ease 0.4s;
     }
@@ -307,6 +309,46 @@ export default {
   .data {
     background-color: #384E50;
     border-bottom: solid 1px white;
+
+    &.today{
+      background-color: #384E50;
+      &:hover{
+        background-color: darken(#384E50, 5);
+      }
+      &.expanded{
+        background-color: darken(#384E50, 10);
+      }
+    }
+
+    &.daily{
+      background-color: #719598;
+      &:hover{
+        background-color: darken(#719598, 5);
+      }
+      &.expanded{
+        background-color: darken(#719598, 10);
+      }
+    }
+
+    &.weekly{
+      background-color: #213C3F;
+      &:hover{
+        background-color: darken(#213C3F, 5);
+      }
+      &.expanded{
+        background-color: darken(#213C3F, 10);
+      }
+    }
+
+    &.monthly{
+      background-color: #0F2D30;
+      &:hover{
+        background-color: darken(#0F2D30, 5);
+      }
+      &.expanded{
+        background-color: darken(#0F2D30, 10);
+      }
+    }
   }
 
  .details .icon{
