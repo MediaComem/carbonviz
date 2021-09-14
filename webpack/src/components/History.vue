@@ -2,6 +2,7 @@
 import { setup as setupHistoryLayers } from '../composables/history';
 import Stratum from './HistoryStratum.vue';
 import { computed, provide, watch, toRefs, ref } from 'vue';
+import { layerHeightCo2, layerHeightData } from '../composables/history'
 
 /*
 interface HistoryLayerData {
@@ -71,7 +72,10 @@ export default {
       }
     }
 
-    return {isCo2, isData, layers, scroll, scrollDataComponent, show, stage, maxStage, nextStage, previousStage, layerExpanded, layerCollapsed};
+    return {isCo2, isData, layers, layerHeightCo2, layerHeightData,
+            scroll, scrollDataComponent, show,
+            stage, maxStage, nextStage, previousStage,
+            layerExpanded, layerCollapsed };
   }
 
 }

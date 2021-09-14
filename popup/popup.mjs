@@ -240,6 +240,7 @@ const goToData = () => {
 }
 
 const nextStageCo2 = () => {
+  resetSelection();
   CarbonVue.historyCO2.nextStage();
   navDown.classList.add("hidden");
   bottomBar.classList.remove("hidden");
@@ -251,6 +252,7 @@ const nextStageCo2 = () => {
 }
 
 const previousStageCo2 = () => {
+  resetSelection();
   CarbonVue.historyCO2.previousStage();
   if (CarbonVue.historyCO2.stage === 0) {
     navDown.classList.remove("hidden");
@@ -264,6 +266,7 @@ const previousStageCo2 = () => {
 }
 
 const nextStageData = () => {
+  resetSelection();
   CarbonVue.historyData.nextStage();
   navUp.classList.add("hidden");
   topBar.classList.remove("hidden");
@@ -275,6 +278,7 @@ const nextStageData = () => {
 }
 
 const previousStageData = () => {
+  resetSelection();
   CarbonVue.historyData.previousStage();
   if (CarbonVue.historyData.stage === 0) {
     navUp.classList.remove("hidden");
