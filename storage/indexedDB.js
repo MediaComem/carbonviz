@@ -19,10 +19,10 @@ function getMonday(date) {
 }
 
 function getWeekOfYear(date){
-  let d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  let dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  let yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  let d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  let dayNum = d.getDay() || 7;
+  d.setDate(d.getDate() + 4 - dayNum);
+  let yearStart = new Date(d.getFullYear(),0,1);
   return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
 };
 
@@ -75,7 +75,7 @@ co2HistoryDB.open = () => {
         storeHistory.add({
           ...dateInfo,
           index: dateStringHour(today),
-          hour: today.getUTCHours(),
+          hour: today.getHours(),
           co2: 0,
           data: 0,
           energy: 0,
@@ -159,7 +159,7 @@ async function updateData(date, hourlyData, dailyData, domainData = undefined) {
     const history = {
       ...dateInfo,
       index: dateStringHour(date),
-      hour: date.getUTCHours(),
+      hour: date.getHours(),
       co2: hourlyData.co2,
       data: hourlyData.data,
       energy: hourlyData.energy,
