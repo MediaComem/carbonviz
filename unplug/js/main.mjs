@@ -142,12 +142,18 @@ const drawSelectionLine = (body, ctx) => {
   // remove height of the today histo startum
   const actionBarHeight = 37;
   if (CarbonVue.historyCO2.show) {
+    if (CarbonVue.historyCO2.stage > 0) {
+      return; // do not draw line if older in history
+    }
     let layers = CarbonVue.historyCO2.layers;
     if (layers.length>0) {
       y -= CarbonVue.historyCO2.layerHeightCo2(layers[layers.length-1].amount);
       y -= actionBarHeight;
     }
   } else if (CarbonVue.historyData.show) {
+    if (CarbonVue.historyData.stage > 0) {
+      return; // do not draw line if older in history
+    }
     y += CarbonVue.historyData.scrollDataComponent;
   }
 

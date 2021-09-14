@@ -79,6 +79,8 @@ const openTabButtons = window.document.querySelectorAll("[data-goto-page]");
 const tabConfirmationCheckbox = window.document.getElementById("disableNewTabConfirmation");
 const debounceCheckbox = window.document.getElementById("debounce");
 // Navigation
+const navigation = window.document.querySelector('.navigation-boxes');
+const menu = window.document.querySelector('.menu');
 const topBar = window.document.getElementById("topBar");
 const bottomBar = window.document.getElementById("bottomBar");
 const navUp = window.document.getElementById("navUp");
@@ -205,6 +207,8 @@ const goToCo2 = () => {
 }
 const goToFlux = () => {
   resetSelection();
+  navigation.classList.remove('outside');
+  menu.classList.remove('outside');
   navFlux.classList.add("selected");
   navCo2.classList.remove("selected");
   navData.classList.remove("selected");
