@@ -140,8 +140,11 @@ export default {
         if(type.value === 'co2') {
             // analogies based on energy (switch energy MJ to kWh)
             amount = 0.278 * data.energy;
+        } else if(type.value === 'data') {
+            // analogies based on energy (switch energy MJ to kWh)
+            amount = data.amount / 1000000;
         }
-        return analogy.value.text(amount / 1000000); // data in MB for analogies
+        return analogy.value.text(amount); // data in MB for analogies
     });
 
     return {asset, legend};
