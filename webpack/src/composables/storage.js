@@ -29,7 +29,8 @@ export const getCurWeek = async (mode = 'co2') => {
         // Put the history data to the right hour's index in the right day's index
         const d = new Date(entry.index + ':00:00');
         const diffInTime = d.getTime() - date.getTime();
-        const indDay = Math.round(diffInTime / 86400000);
+        const indDay = Math.ceil(diffInTime / 86400000) - 1 ;
+        console.log(indDay);
         byHours[entry.hour][indDay] = mode == 'co2' ? entry.co2 : entry.data;
     }
     return byHours;

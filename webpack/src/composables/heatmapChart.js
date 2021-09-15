@@ -48,7 +48,7 @@ export default function (data, mode) {
     },
     xaxis: {
       type: 'category',
-      labels: { show: false },
+      labels: { show: true },
       categories
     }
   };
