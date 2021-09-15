@@ -314,4 +314,11 @@ span.ref {
 .el-carousel__indicators.el-carousel__indicators--horizontal {
   margin-left: 0px;
 }
+a {
+  color: black;
+  font-style: italic;
+}
+a:visited {
+  color: black;
+}
 </style>

@@ -24,15 +24,15 @@ export default {
     </p>
     </article>
     <el-row justify="center" align="center" class="logos">
-      <el-col :span="6"><img src="assets/innosuisse.png"></el-col>
-      <el-col :span="6"><img src="assets/mei.png"></el-col>
-      <el-col :span="6"><img src="assets/igt.png"></el-col>
+      <el-col :span="6"><img src="assets/innosuisse.svg"></el-col>
+      <el-col :span="6"><img src="assets/mei.svg"></el-col>
+      <el-col :span="6"><img src="assets/igt.svg"></el-col>
     </el-row>
   </div>
 </template>
 
 <style scoped lang="scss">
-a { 
+a {
   color: black;
   font-style: italic;
 }
