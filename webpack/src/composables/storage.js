@@ -18,25 +18,21 @@ export const getTopWebsites = async (mode = 'co2', limit = 10) => {
 export const getCurWeek = async (mode = 'co2') => {
     database ??= await initDB();
     let history = await getCurWeekHistory(mode);
-    console.log(history);
     // build 24h history for 7 days filled with 0 if no data
     const byHours = [];
-    for (let h = 0; h < 24; h++) {
-        //let hour = h < 10 ? `0${h}` : `${h}`;
-        byHours.push(Array(7).fill(0));
-    }
-    // One week ago
+    for (let h = 0; h < 24; h++) byHours.push(Array(7).fill(0));
+    // Ceate a date one week ago at the begening of the day
     const date = new Date();
+    date.setHours(0,0,0,0);
     date.setDate(date.getDate() - 6);
     for (const entry of history) {
+        // Put the history data to the right hour's index in the right day's index
         const indHour = entry.index.substring(11);
-        // TODO convert time to local
-        const d = new Date(entry.index + ':00:00.000Z');
+        const d = new Date(entry.index + ':00:00');
         const diffInTime = d.getTime() - date.getTime();
-        const diffInDays = Math.round(diffInTime / 86400000);
-        byHours[entry.hour][diffInDays] = mode == 'co2' ? entry.co2 : entry.data;
+        const indDay = Math.round(diffInTime / 86400000);
+        byHours[indHour][indDay] = mode == 'co2' ? entry.co2 : entry.data;
     }
-    console.log(byHours);
     return byHours;
 }
 

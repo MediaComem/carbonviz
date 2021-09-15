@@ -18,20 +18,27 @@ function getMonday(date) {
   return new Date(date.setDate(diff));
 }
 
+function dateToISOLocal(date) {
+  const offset = date.getTimezoneOffset() * 60000;
+  const timeLocal =  date.getTime() - offset;
+  const dateLocal = new Date(timeLocal);
+  return dateLocal.toISOString().substring(0, 19);
+}
+
 function getWeekOfYear(date){
   let d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   let dayNum = d.getDay() || 7;
   d.setDate(d.getDate() + 4 - dayNum);
   let yearStart = new Date(d.getFullYear(),0,1);
-  return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
+  return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
 };
 
 function dateStringHour(dataObject) {
-  return dataObject.toISOString().slice(0,13)
+  return dateToISOLocal(dataObject).slice(0,13);
 }
 
 function dateString(dataObject) {
-  return dataObject.toISOString().slice(0,10)
+  return dateToISOLocal(dataObject).slice(0,10);
 }
 
 co2HistoryDB.open = () => {
@@ -373,10 +380,11 @@ async function getWebsites(mode = 'co2', limit = 10) {
 }
 
 async function getCurWeekHistory() {
+  // Ceate a date one week ago at the begening of the day
   const date = new Date();
-  // One week ago
+  date.setHours(0,0,0,0);
   date.setDate(date.getDate() - 6);
-  const startTime = date.toISOString().substring(0, 13);
+  const startTime = dateToISOLocal(date).substring(0, 13);
 
   return new Promise(function (resolve) {
     const db = co2HistoryDB.db;
@@ -389,7 +397,7 @@ async function getCurWeekHistory() {
     dbCursor.onsuccess = event => {
       const cursor = event.target.result;
       if (cursor) {
-        if (cursor.value.index > startTime) {
+        if (cursor.value.index >= startTime) {
           let obj = {...cursor.value};
           obj.co2 += computerCo2;
           data.push(obj);

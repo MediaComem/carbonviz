@@ -1,4 +1,4 @@
-import {formatSize, formatCo2} from '../utils/format';
+import {formatSize, formatCo2, days} from '../utils/format';
 import {computed, watch} from 'vue';
 
 const colorEmptyHeat = '#FFFFFF';
@@ -11,6 +11,15 @@ const colorDataHeat = '#384E50';
 // const fontWeight = 900;
 
 export default function (data, mode) {
+  // Ceate categories (7 categ day from today)
+  const categories = [];
+  const date = new Date();
+  for (let i=0; i < 7; i++) {
+    categories.push(days[date.getDay()]);
+    date.setDate(date.getDate() - 1);
+  }
+  categories.reverse();
+
   const options =  {
     chart: {
       type: 'heatmap',
@@ -24,7 +33,7 @@ export default function (data, mode) {
       y: {
         show: true,
         formatter: val => mode == 'co2' ? formatCo2(val) : formatSize(val),
-      },
+      }
     },
     plotOptions: {
       heatmap: {
@@ -33,23 +42,16 @@ export default function (data, mode) {
             { from: 0, to: 0, color: colorEmptyHeat },
             { from: 0.02, to: 0.025, color: mode == 'co2' ? colorCo2HeatLow : colorDataHeatLow},
             { from: 0.025, to: 0.0305, color: mode == 'co2' ? colorCo2Heat : colorDataHeat},
-          ],
+          ]
         }
       }
     },
     xaxis: {
       type: 'category',
-      labels: {
-        show: false,
-      },
-      categories: ['Mon','Tue','Wed', 'Thu', 'Fri', 'Sat', 'Sun', '']
-    },
-    grid: {
-      padding: {
-        right: 20
-      }
+      labels: { show: false },
+      categories
     }
-  }
+  };
 
   const series = computed(() => Array.from({length: 24}, (v, i) => {
     let hStart = 23 - i;
@@ -58,7 +60,7 @@ export default function (data, mode) {
     if (hEnd < 10) hEnd = '0' + hEnd;
     if (!data.value.length) return {
       name: `${hStart}h - ${hEnd}h`,
-      data: [0,0,0,0,0,0,0]
+      data: Array(7).fill(0)
     };
     return {
       name: `${hStart}h - ${hEnd}h`,
