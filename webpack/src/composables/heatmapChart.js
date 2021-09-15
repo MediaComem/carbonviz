@@ -1,13 +1,11 @@
 import {formatSize, formatCo2, days} from '../utils/format';
 import {computed, watch} from 'vue';
 
+
+// TODO: dark mode colors
 const colorEmptyHeat = '#FFFFFF';
-const colorCo2HeatLow = '#D1AD75';
 const colorCo2Heat = '#906C0D';
-const colorDataHeatLow = '#92A09F';
 const colorDataHeat = '#384E50';
-// const fontFamily = 'Roboto, Arial, sans-serif ';
-// const fontWeight = 900;
 
 export default function (data, mode) {
   // Ceate categories (7 categ day from today)
@@ -37,7 +35,6 @@ export default function (data, mode) {
       dataLabels: { enabled: false },
       legend: { show: false },
       tooltip: {
-        x: { show: true },
         y: {
           show: true,
           formatter: val => mode == 'co2' ? formatCo2(val) : formatSize(val),
@@ -51,9 +48,7 @@ export default function (data, mode) {
           colorScale: {
             ranges: [
               { from: 0, to: 0, color: colorEmptyHeat },
-              { from: 0.001, to: max ? max/2 : 1, color: mode == 'co2' ? colorCo2HeatLow : colorDataHeatLow },
-              { from: max ? max/2 : 1, to: max ? max : 2, color: mode == 'co2' ? colorCo2Heat : colorDataHeat },
-              // { from: 0.001, to: max ? max : 2, color: mode == 'co2' ? colorCo2Heat : colorDataHeat},
+              { from: 0.001, to: max ? max : 2, color: mode == 'co2' ? colorCo2Heat : colorDataHeat},
             ]
           }
         }
