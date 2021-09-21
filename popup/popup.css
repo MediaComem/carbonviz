@@ -529,8 +529,12 @@ button {
     fill: none;
   }
 
-  .top-bar, .navigation-boxes {
+  .top-bar, .navigation-boxes, .bottom-bar {
     background-color: #070707;
+  }
+
+  .top-bar .label, .bottom-bar .label {
+    color: white;
   }
 
   .navigation-box {
@@ -601,10 +605,6 @@ button {
 
   .info .packet {
     color: #3e3e3e;
-  }
-
-  .legend {
-    background-color: black;
   }
 
   .legend .co2 {
