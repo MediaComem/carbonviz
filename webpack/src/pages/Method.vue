@@ -76,11 +76,11 @@ export default {
     <article data-section="Observations">
       <h1>Observations</h1>
       <p>
-        According to the International Telecommunication Union, there were around 4 billions internet users in 2019 [1]. It is 4 times the number of 2015's users. This user growth imply that the data traffic also drastically increased to reach around 20.6 zettabyte (ZB), which represent 2e13 gigabyte (GB), and is 12 times the 2010's consumption [2] [3]. Accordingly, the electricity consumption of internet significantly raised to reach around 5% of world's consumption in 2012, and could reach 20% by 2025 [4] [5].
+        According to the International Telecommunication Union, there were around 4 billion internet users in 2019 [1]. It is 4 times the number of 2015's users. This user growth implies that the data traffic also drastically increased to reach around 20.6 zettabyte (ZB), which represent 2e13 gigabyte (GB), and is 12 times the 2010's consumption [2] [3]. Accordingly, the electricity consumption of the internet significantly increased to reach around 5% of the world's consumption in 2012, and could reach 20% by 2025 [4] [5].
       </p><p>
-        The increase of online uses, and the growth of data, raise the question of the environmental footprint of digital technology. What impact our digital activities have on climate change? How much energy do we consume for those activities? How much non-renewable resources are used to build our devices? How much energy was needed to build our devices or servers inside the data centers?
+        The increase in online usage, and the growth of data, raises the question of the environmental footprint of digital technology. What impact our digital activities have on climate change? How much energy do we consume for those activities? How much non-renewable resources are used to build our devices? How much energy was needed to build our devices or servers inside the data centers?
       </p><p>
-        It is at the moment hard to find answers to such questions and many sources are in contradiction [6]. In addition, current models are not always transparent and not suitable for Switzerland, specially regarding the specific swiss energy mix that is constituted in majority of hydro power. That's why we decided to design a new transparent calculation model to understand the environmental impact of digital activities to be used in Switzerland.
+        It is at this moment hard to find answers to such questions and many sources are in contradiction [6]. In addition, current models are not always transparent and not suitable for Switzerland, especially regarding the specific swiss energy mix that is constituted in a majority of hydro power. That's why we decided to design a new transparent calculation model to understand the environmental impact of digital activities to be used in Switzerland.
       </p><p>
         This model was developed as part of the CarbonViz project supported by Innosuisse, the scientific teams of the Media Engineering Institute (MEI) and the Institut de Génie Thermique (IGT) of the Haute Ecole d'Ingénierie et de Gestion du canton de Vaud (HEIG-VD).
       </p>
@@ -154,7 +154,7 @@ export default {
         <li>Data center electricity source: standard EU medium voltage</li>
       </ul>
       <p>
-        Whenever used by a company, these parameters can be modified to suit its specifications. For instance the following parameters could be customize: computer specifications, device lifetime, custom office electricity source in case of known electricity mix.
+        Whenever used by a company, these parameters can be modified to suit its specifications. For instance the following parameters could be customized: computer specifications, device lifetime, custom office electricity source in case of known electricity mix.
       </p>
       <h2>4. Electricity</h2>
       <p>
@@ -193,7 +193,7 @@ export default {
         <img src="assets/standard_vs_renewable.png">
       </el-row>
       <p>
-        The method also shows that the needed energy (primary energy to produce the electricity) to watch the video is much lower with a renewable mix. This is due to the large quantity of Non Renewable Energy (NRE) used in a standard mix compared to the renewable mix that is based more on Renewable Energy (RE). Indeed, the primary energy needed for non-renewable electricity production is higher in case of non renewable sources (in part due to loss in heating energy during electricity production from fossiel fuels for example).
+        The method also shows that the energy needed (primary energy to produce the electricity) to watch the video is much lower with a renewable mix. This is due to the large quantity of Non Renewable Energy (NRE) used in a standard mix compared to the renewable mix that is based more on Renewable Energy (RE). Indeed, the primary energy needed for non-renewable electricity production is higher in case of non renewable sources (in part due to loss in heating energy during electricity production from fossiel fuels for example).
       </p>
       <el-row justify="left">
         <img src="assets/energy.png">
@@ -204,7 +204,7 @@ export default {
       </p><p>
         When watching a 720p video for 1 hour, we observe that the GWP is noticeably lower with a 6.5 year lifespan laptop than a 4 year one. The end user choice of computer lifespan also has an influence on the impact to reduce the GWP.
       </p><p>
-        It is already the case in the video streaming scenario where internet services impact is a predominant. That is even more relevant in a more usual scenario where most of the active time of the computer is office work.
+        It is already the case in the video streaming scenario where internet services impact is predominant. That is even more relevant in a more usual scenario where most of the active time of the computer is office work.
       </p>
       <el-row justify="left">
         <img src="assets/lifespan.png">
@@ -215,7 +215,7 @@ export default {
       <p>
         As explained by the CarbonViz model, data centers, the core network, and your computer need electricity to function to allow you to conduct web activities. But do you really realize how much energy is involved? According to the results of our model, 1 hour of video streaming can represent up to 1KWh of energy. To what this amount of energy can be compared ?
       </p><p>
-        This is the question we asked several people while conducting brainstorming sessions with the goal to understand more what’s their understanding of energy and how can we compare a specific amount of energy to make it more tangible. The brainstorming sessions brought us many possible analogies to talk about a quantity of energy. We chose and implemented multiple and heterogeneous analogies to help bridge the gap between web activities and the real world.
+        This is the question we asked several people while conducting brainstorming sessions with the goal to understand more what’s their understanding of energy and how can we compare a specific amount of energy to make it more tangible. The brainstorming sessions brought us many possible analogies to talk about a quantity of energy. We choose and implemented multiple and heterogeneous analogies to help bridge the gap between web activities and the real world.
       </p><p>
         In addition to energy analogies, we also wanted to find analogies for data consumption with the same goal in mind; help the users realize what represents a certain amount of data.
       </p><p>
