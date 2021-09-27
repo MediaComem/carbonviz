@@ -25,7 +25,7 @@ export default {
       Day after day, we all consume data that passes through the Internet: email, images, videos, documents, music or articles are just the main ones. Instantly accessing this online content became a normality, and losing this access leaves us as helpless as when the electricity goes out.
     </p>
     <p>
-      Yet, "Online" means that data travels through physical equipments and lines, goes from somewhere to our favorite browser. Therefore, this trip is not free. It is only made possible by an extraordinary profusion of resources: thousands of kilometers of submarine cables that connect continents, colossal data centers that are constantly running at full speed to guarantee a flawless availability of content, fleet of satellites roaming from every corner of earth's orbit to keep us connected even while we are asleep, factories that manufacture hundreds of millions of technical devices that we often completely ignore.
+      Yet, "Online" means that data travels through physical equipment and lines, coming from somewhere to our favorite browser. Therefore, this trip is not free. It is only made possible by an extraordinary profusion of resources: thousands of kilometers of submarine cables that connect continents, colossal data centers that are constantly running at full speed to guarantee a flawless availability of content, fleets of satellites roaming from every corner of earth's orbit to keep us connected even while we are asleep, factories that manufacture hundreds of millions of technical devices that we often completely ignore.
     </p>
     <p class="video-container">
       <video autoplay loop width="600">
@@ -77,7 +77,7 @@ export default {
               <span class="bold">Connected devices</span>
               <p>Devices consume energy while powered-on or in sleep mode. <br>
               A lot of energy and resources were also used during their manufacturing. Thus the environmental impact of devices varies a lot depending on the lifetime.
-              The longest a device is used, the smallest is impact will be per hour of usage.
+              The longest a device is used, the smallest its impact will be per hour of usage.
               </p>
             </el-col>
           </el-row>
@@ -101,7 +101,7 @@ export default {
             </el-col>
             <el-col :span="14">
               <span class="bold">Core network</span>
-              <p>The core network is made of cables, relays and switches to carry out your data from and to your device.
+              <p>The core network is made up of cables, relays and switches to carry your data from and to your device.
               </p>
             </el-col>
           </el-row>
@@ -134,7 +134,7 @@ export default {
       </div>
     </p>
     <p>
-      These infrastructures and devices, which transform our landscape and our interiors, need a colossal amount of energy and material to be built, to function and to be eliminated. Greenhouse gas emissions, depletion of rare earths, toxic emissions, including plastics, are all visible, but often overlooked, signs of our digital footprint on our environment. Dematerialization is indeed very expensive. CarbonViz tackles this problem by aiming to improve the perception and understanding of digital energy issues. By placing itself at the heart of our activities, within the browser itself, CarbonViz makes it possible to view the downloaded data and the corresponding quantity of CO2 emitted live.
+      These infrastructures and devices, which transform our landscape and our interiors, need a colossal amount of energy and material to be built, to function and to be replaced when needed. Greenhouse gas emissions, depletion of rare earth metals, toxic emissions, including plastics, are all visible but often overlooked signs of our digital footprint on our environment. Dematerialization is indeed very expensive. CarbonViz tackles this problem by aiming to improve the perception and understanding of digital energy issues. By placing itself at the heart of our activities, within the browser itself, CarbonViz makes it possible to view the downloaded data and the corresponding quantity of CO2 emitted in a live illustration.
     </p>
   </div>
 </template>
