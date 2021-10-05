@@ -102,6 +102,12 @@ export default {
     font-weight: 400;
     font-size: 16px;
   }
+
+  @media (prefers-color-scheme: dark) {
+    #fullpage, [data-area="body"] {
+      background-color: rgb(95 99 104);
+    }
+  }
 </style>
 
 <style scoped>
@@ -225,5 +231,11 @@ export default {
   }
   .fade-enter-from, .fade-leave-to {
     opacity: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [data-area="body"] {
+      background-color: rgb(95 99 104);
+    }
   }
 </style>
