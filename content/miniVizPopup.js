@@ -10,12 +10,31 @@
     container.style.width = "120px";
     container.style.height = `${containerHeight}px`;
     container.style['margin-top'] = `${-containerHeight/2}px`;
-    container.style['background-color'] = 'white';
-    container.style['box-shadow'] = '2px 2px 2px 2px #888888';
+    container.style['box-shadow'] = 'rgba(136, 136, 136, 0.5) 0px 1px 8px -1px';
     container.style['z-index'] = '10000';
     container.style['font-family'] = 'Roboto, Arial, sans-serif' ;
     container.style['font-weight'] = 'bold';
     container.style['font-size'] = '10px';
+    // styles for dark mode
+    if( window.matchMedia('(prefers-color-scheme: dark)').matches ) {
+      container.style['background-color'] = 'rgb(95 99 104)';
+      container.style['color'] = 'rgb(18 18 18)';
+    } else {
+      container.style['background-color'] = 'white';
+    }
+    // Event lsitener to toggle darkMode
+    const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQueryDark.onchange = (e) => {
+      // Check if the media query is true
+      if (e.matches) {
+        // Then apply dark stlyes
+        container.style['background-color'] = 'rgb(95 99 104)';
+        container.style['color'] = 'rgb(18 18 18)';
+      } else {
+        container.style['background-color'] = 'white';
+        container.style['color'] = 'initial';
+      }
+    }
     container.id = 'miniViz_popup_container';
     //*********************** */
     //consumption container
