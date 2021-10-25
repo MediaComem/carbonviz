@@ -58,7 +58,7 @@ export default {
         case 'co2':
           return 'of Co2';
         case 'data':
-          return 'donwloaded';
+          return 'downloaded';
         default:
           throw('Invalid layer type');
       }

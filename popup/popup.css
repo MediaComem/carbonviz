@@ -351,7 +351,7 @@ button {
 .legend {
   height: 95px;
   display: flex;
-  justify-content: center;
+  justify-content: start;
 }
 
 .legend .co2 {

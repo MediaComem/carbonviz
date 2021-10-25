@@ -79,7 +79,7 @@ const analogiesData = [
         text: (value) =>  {
             const mbPerUnit = 2.4;
             let number = Math.floor(value / mbPerUnit);
-            return `${number} minutes of musique streaming`;
+            return `${number} minutes of streaming music`;
         },
         asset: 'analogy_streaming.png'
     },
