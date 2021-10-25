@@ -16,7 +16,8 @@
     "<all_urls>"
   ],
   "background": {
-    "page": "background/background.html"
+    "page": "background/background.html",
+    "persistent": true
   },
   "content_scripts": [
     {

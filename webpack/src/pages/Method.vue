@@ -139,7 +139,7 @@ export default {
         <li>source of electricity for the data center (Swiss standard mix or 100% Swiss renewable, European mix, 100% European renewable mix)</li>
         <li>amount of data transferred</li>
       </ul>
-      <p>The model definition is available here: <a href="https://github.com/MediaComem/carbonviz/tree/master/model">Carbonviz model</a></p>
+      <p>The model definition is available here: <a href="https://github.com/MediaComem/carbonviz/tree/master/method">Carbonviz model</a></p>
       <p>
         In its generic version, CarbonViz does not integrate all these parameters and sets the generic values for some of them. For instance, the following parameters are set by default:
       </p>
