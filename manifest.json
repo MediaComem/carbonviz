@@ -3,7 +3,7 @@
   "name": "CarbonViz",
   "description": "Analyse Internet usage carbon footprint",
   "author": "Media Engineering Institute - HEIG-VD",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

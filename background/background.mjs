@@ -22,6 +22,7 @@ const minivizOptions = {
 let dump = [];
 let co2ComputerInterval;
 const co2ComputerIntervalMs = 2000;
+let lastCo2Tick;
 let writeDataInterval;
 const writingIntervalMs = 60000;
 
@@ -239,6 +240,14 @@ const completedListener = (responseDetails) => {
       }
     }
   });
+
+  // check if co2 computer tick OK
+  // prevent setInterval not working after long computer sleep
+  // allow some margin
+  const now = new Date();
+  if(now - lastCo2Tick > 2 * co2ComputerIntervalMs) {
+    startComputerCo2Interval();
+  }
 }
 
 const loadScripts = () => {
@@ -329,7 +338,16 @@ const computerCo2 =  () => {
       }
     }
   });
+  lastCo2Tick = new Date();
 };
+
+const startComputerCo2Interval = () => {
+  console.log("Starting computer co2 consumption interval");
+  if (!co2ComputerInterval) {
+    clearInterval(co2ComputerInterval);
+  }
+  co2ComputerInterval = setInterval(computerCo2, co2ComputerIntervalMs);
+}
 
 const writeData = async () => {
   for(let packet of dump) {
@@ -371,6 +389,4 @@ const addPluginToNewTab = () => {
 await initDB();
 statistics = await getTodayCounter();
 
-if (!co2ComputerInterval) {
-  co2ComputerInterval = setInterval(computerCo2, co2ComputerIntervalMs);
-}
+startComputerCo2Interval();
