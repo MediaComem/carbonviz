@@ -164,4 +164,7 @@ export default {
     max-width: 100px;
     max-height: 100px;
 }
+.legend {
+  justify-content: center;
+}
 </style>
