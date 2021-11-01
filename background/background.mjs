@@ -207,11 +207,14 @@ const completedListener = (responseDetails) => {
         return;
       }
       if (tab) {
+        if (!tab.url) {
+          return;
+        }
         if (tab.url.startsWith('http://localhost') || tab.url.startsWith('https://localhost') || // skip localhost (since local)
             tab.url.startsWith('chrome-extension:') // skip extension files (since local)
-      ){
-        return;
-      }
+        ){
+          return;
+        }
         info.extraInfo.tabIcon = tab.favIconUrl;
         info.extraInfo.tabTitle = tab.title;
         info.extraInfo.tabUrl = tab.url;
@@ -375,15 +378,23 @@ const createExtensionTab = () => {
   chrome.tabs.create(options, tab => localStorage.setItem('extensionAnimationTabId', tab.id));
 }
 const addPluginToNewTab = () => {
-  const tabId = localStorage.getItem('extensionAnimationTabId');
-  if (!tabId) { createExtensionTab(); return; }
-  chrome.tabs.get(parseInt(tabId), tab => {
-    if (!tab || tab.title !== chrome.runtime.getManifest().name) { createExtensionTab(); return; }
-    let currentTab = tab.url.substring(tab.url.indexOf('#'));
-    let url = tab.url.replace(currentTab, `#Statistics`);
-    chrome.tabs.update(tab.id, {url});
-    chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
-  });
+  createExtensionTab();
+  /*
+    const tabId = localStorage.getItem('extensionAnimationTabId');
+    if (!tabId) { createExtensionTab(); return; }
+    chrome.tabs.get(parseInt(tabId), tab => {
+      if(chrome.runtime.lastError) {
+        // tab probably closed after response received or coming from extension
+        console.log(`Error retrieving tab: ${chrome.runtime.lastError}`);
+        return;
+      }
+      if (!tab || tab.title !== chrome.runtime.getManifest().name) { createExtensionTab(); return; }
+      let currentTab = tab.url.substring(tab.url.indexOf('#'));
+      let url = tab.url.replace(currentTab, `#Statistics`);
+      chrome.tabs.update(tab.id, {url});
+      chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
+    });
+  */
 }
 
 await initDB();
