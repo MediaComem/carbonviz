@@ -4,6 +4,7 @@
   "description": "Your browsing climate impact, made visible.",
   "author": "Media Engineering Institute - HEIG-VD",
   "version": "0.3.0",
+  "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
