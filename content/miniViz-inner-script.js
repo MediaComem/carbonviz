@@ -19,6 +19,15 @@ function createminivizAnimation() {
   container.style['z-index'] = '10000';
   container.style['font-family'] = 'Roboto, Arial, sans-serif' ;
   container.id = 'miniViz_container';
+  const cursorZone = document.createElement('div');
+  cursorZone.style.position = 'absolute';
+  cursorZone.style.bottom = '0px';
+  cursorZone.style.right = '0px';
+  cursorZone.style.width = '50px';
+  cursorZone.style.height = '100px';
+  cursorZone.style.cursor = 'pointer';
+  cursorZone.id = 'miniViz_container_cursor';
+  container.appendChild(cursorZone);
   document.body.appendChild(container);
   if (CarbonVue) {
     CarbonVue.co2DataCounter.large = true;
@@ -67,9 +76,9 @@ const handleMessage = (request) => {
 }
 
 export function main() {
-  const MiniViz = window.document.getElementById("miniViz_container");
-  if (MiniViz) {
-    MiniViz.addEventListener('click', toggleMiniVizPopup)
+  const miniVizInteraction = window.document.getElementById("miniViz_container_cursor");
+  if (miniVizInteraction) {
+    miniVizInteraction.addEventListener('click', toggleMiniVizPopup)
   }
 
   function toggleMiniVizPopup () {
