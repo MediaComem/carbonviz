@@ -94,7 +94,7 @@ export default {
       stroke: #A3AFB1;
     }
     section {
-      color: white;
+      color: #BFBFBF;
     }
   }
 </style>

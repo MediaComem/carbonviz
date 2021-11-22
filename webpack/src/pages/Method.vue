@@ -72,7 +72,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="method">
     <article data-section="Observations">
       <h1>Observations</h1>
       <p>
@@ -314,11 +314,14 @@ span.ref {
 .el-carousel__indicators.el-carousel__indicators--horizontal {
   margin-left: 0px;
 }
-a {
-  color: black;
-  font-style: italic;
+.method {
+  a {
+    color: gray;
+    font-style: italic;
+  }
+  a:visited {
+    color: gray;
+  }
 }
-a:visited {
-  color: black;
-}
+
 </style>

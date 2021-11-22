@@ -9,7 +9,8 @@ const hashRoutes = {
   '#Statistics': 'Statistics',
   '#Journey': "Data's journey",
   '#Method': 'Method & links',
-  '#Partners': 'Partners'
+  '#About': 'About',
+  '#Privacy': 'Data & Privacy'
 };
 
 export default {
@@ -105,7 +106,8 @@ export default {
 
   @media (prefers-color-scheme: dark) {
     #fullpage, [data-area="body"] {
-      background-color: rgb(95 99 104);
+      background-color: #262626;
+      color: #BFBFBF;
     }
   }
 </style>
@@ -235,7 +237,32 @@ export default {
 
   @media (prefers-color-scheme: dark) {
     [data-area="body"] {
-      background-color: rgb(95 99 104);
+      background-color: #262626;
+      color: white;
+    }
+     [data-area="title"] {
+      background-color: #262626;
+      color: white;
+    }
+    [data-area="nav"] a.active, [data-area="nav"] a:hover {
+      color:white;
+      border-bottom-color: white;
+    }
+    [data-area="subnav"] a.active, [data-area="subnav"] a:hover {
+      color: white;
+    }
+    [data-area="subnav"] a.active::after, [data-area="subnav"] a:hover::after {
+      border-color: white;
+      background-color: white;
+    }
+    [data-area="logo"]::before {
+      background: url("../icons/icon48Dark.png") no-repeat;
+    }
+    :deep(.apexcharts-menu) {
+      color: black;
+    }
+    :deep(.apexcharts-text) {
+      fill: white;
     }
   }
 </style>

@@ -2,10 +2,12 @@ import {formatSize, formatCo2, days} from '../utils/format';
 import {computed, watch} from 'vue';
 
 
-// TODO: dark mode colors
-const colorEmptyHeat = '#FFFFFF';
-const colorCo2Heat = '#906C0D';
-const colorDataHeat = '#384E50';
+const colorEmptyHeatLight = '#FFFFFF';
+const colorCo2HeatLight = '#906C0D';
+const colorDataHeatLight = '#384E50';
+const colorEmptyHeatDark = '#333333';
+const colorCo2HeatDark = '#BBAA70';
+const colorDataHeatDark = '#3D4D50';
 
 export default function (data, mode) {
   // Ceate categories (7 categ day from today)
@@ -26,6 +28,18 @@ export default function (data, mode) {
       }
     }
 
+    let colorEmptyHeat = colorEmptyHeatLight;
+    let colorCo2Heat = colorCo2HeatLight;
+    let colorDataHeat = colorDataHeatLight;
+    let theme = 'light';
+
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      colorEmptyHeat = colorEmptyHeatDark;
+      colorCo2Heat = colorCo2HeatDark;
+      colorDataHeat = colorDataHeatDark;
+      theme = 'dark';
+    }
+
     return {
       chart: {
         type: 'heatmap',
@@ -38,7 +52,8 @@ export default function (data, mode) {
         y: {
           show: true,
           formatter: val => mode == 'co2' ? formatCo2(val) : formatSize(val),
-        }
+        },
+        theme: theme
       },
       plotOptions: {
         heatmap: {
