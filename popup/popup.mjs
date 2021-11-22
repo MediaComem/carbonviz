@@ -660,6 +660,20 @@ const init = () => {
 
   initAnimation();
 
+  // Apply for Mac OS only
+  // Fix chromium bug where size may be wrong
+  chrome.runtime.getPlatformInfo(info => {
+
+    if (info.os === 'mac') {
+        setTimeout(() => {
+            // Increasing body size enforces the popup redrawing
+            document.body.style.width = '500px';
+            document.body.style.height = '600px';
+        }, 250); // 250ms is enough to finish popup open animation
+    }
+
+  });
+
   // listen to nee packets
   chrome.runtime.onMessage.addListener(handleMessage);
 
