@@ -22,7 +22,7 @@ const minivizOptions = {
 let dump = [];
 let co2ComputerInterval;
 const co2ComputerIntervalMs = 2000;
-let lastCo2Tick;
+let lastCo2Tick = new Date();
 let writeDataInterval;
 const writingIntervalMs = 60000;
 
@@ -346,7 +346,7 @@ const computerCo2 =  () => {
 
 const startComputerCo2Interval = () => {
   console.log("Starting computer co2 consumption interval");
-  if (!co2ComputerInterval) {
+  if (co2ComputerInterval) {
     clearInterval(co2ComputerInterval);
   }
   co2ComputerInterval = setInterval(computerCo2, co2ComputerIntervalMs);
