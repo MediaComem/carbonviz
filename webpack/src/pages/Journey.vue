@@ -1,13 +1,15 @@
 <script>
 import { inject, onMounted } from 'vue';
-import { ElPopover } from 'element-plus';
+import { ElPopover, ElRow, ElCol } from 'element-plus';
 import 'element-plus/lib/theme-chalk/index.css';
 
 const subNav = {};
 
 export default {
   components: {
-    ElPopover
+    ElPopover,
+    ElRow,
+    ElCol
   },
   setup() {
     const setSubNav = inject('setSubNav');

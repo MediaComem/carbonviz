@@ -1,5 +1,6 @@
 <script>
 import { inject, onMounted, ref } from 'vue';
+import { ElCarousel, ElCarouselItem, ElRow, ElCol } from 'element-plus';
 
 const subNav = {
   'Observations': 'Observations',
@@ -60,7 +61,11 @@ Total: <span class="bold"> 17.5 KWh per board</span>`,
 ]
 
 export default {
-
+components: {
+    ElCarousel,
+    ElCarouselItem,
+    ElRow, ElCol
+  },
   setup() {
     const setSubNav = inject('setSubNav');
     onMounted(() => setSubNav(subNav));
@@ -190,13 +195,13 @@ export default {
         The CarbonViz method clearly shows that the Global Warming Potential (GWP) of watching a 720p video for one hour on a 6.5 years lifespan laptop is significantly lower when renewable energy mix is used compared to a standard energy mix. In the case of video streaming, this is mainly due to the impact of the server electricity and the core network electricity which represents more than 2/3 of the impact in case of a standard mix.As can be seen below, in case of renewable mix, the embodied impact of the laptop (the impact coming from the full manufaturing and transport) becomes  predominant. Both end users and internet services have an impact on the GWP: the impact for internet services being highly dependent on the source of energy (renewable or standard), the end-user impact coming mainly from the device manufacturing.
       </p>
       <el-row justify="left">
-        <img src="assets/standard_vs_renewable.png">
+        <img src="assets/standard_vs_renewable.svg">
       </el-row>
       <p>
         The method also shows that the energy needed (primary energy to produce the electricity) to watch the video is much lower with a renewable mix. This is due to the large quantity of Non Renewable Energy (NRE) used in a standard mix compared to the renewable mix that is based more on Renewable Energy (RE). Indeed, the primary energy needed for non-renewable electricity production is higher in case of non renewable sources (in part due to loss in heating energy during electricity production from fossiel fuels for example).
       </p>
       <el-row justify="left">
-        <img src="assets/energy.png">
+        <img src="assets/energy.svg">
       </el-row>
       <h2>2. Compared impact of a 6.5 and 4 year lifespan laptop</h2>
       <p>
@@ -207,7 +212,7 @@ export default {
         It is already the case in the video streaming scenario where internet services impact is predominant. That is even more relevant in a more usual scenario where most of the active time of the computer is office work.
       </p>
       <el-row justify="left">
-        <img src="assets/lifespan.png">
+        <img src="assets/lifespan.svg">
       </el-row>
     </article>
     <article data-section="Analogies">

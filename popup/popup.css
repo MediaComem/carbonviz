@@ -22,7 +22,7 @@ dialog menu {
   position: relative;
   width: 500px;
   height: 600px;
-  margin: auto;
+  margin: 0px;
   overflow: hidden
 }
 

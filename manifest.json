@@ -3,7 +3,7 @@
   "name": "CarbonViz",
   "description": "Your browsing climate impact, made visible.",
   "author": "Media Engineering Institute - HEIG-VD",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
