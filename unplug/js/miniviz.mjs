@@ -86,7 +86,7 @@ function initMainLoop() {
 function generateCO2(radius = 10) {
   let opt = {
     render: { sprite: {
-      texture: chrome.extension.getURL(conf.asset.url),
+      texture: chrome.runtime.getURL(conf.asset.url),
       xScale: radius / conf.asset.radius,
       yScale: radius / conf.asset.radius,
     }},

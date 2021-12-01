@@ -1,6 +1,8 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
 import { init as initDB, getTodayCounter } from "../storage/indexedDB.js";
 
+const isFirefox = typeof(browser) !== 'undefined';
+
 const usageDevicePerYear = 1917.3;
 const lifetimeLaptopYears = 6.5;
 const lifetimeInternetAccessEquipmentYears = 6;
@@ -157,6 +159,24 @@ const co2ImpactInternet = (bytes) => {
   return co2CoreNetworkElectricity + co2DataCenterElectricity;
 }
 
+const sendMessageToPopup = (data) => {
+  if (isFirefox) {
+    browser.runtime.sendMessage(data)
+    .catch(e => { /* plugin probably not loaded */ });
+  } else {
+    chrome.runtime.sendMessage(data);
+  }
+}
+
+const sendMessageToTab = (tabId, data) => {
+  if (isFirefox) {
+    browser.tabs.sendMessage(tabId, data)
+    .catch(e => { /* miniViz probably not loaded */ });
+  } else {
+    chrome.tabs.sendMessage(tabId, data);
+  }
+}
+
 const completedListener = (responseDetails) => {
   const { frameId, fromCache, initiator, requestId, responseHeaders, statusCode, timeStamp, type, url, ip, event } = responseDetails;
   const info = { frameId, fromCache, initiator, requestId, statusCode, timeStamp, type, url, ip, event };
@@ -220,8 +240,8 @@ const completedListener = (responseDetails) => {
         info.extraInfo.tabUrl = tab.url;
       }
       // send data to popup
-      chrome.runtime.sendMessage({ data: info });
-      chrome.runtime.sendMessage({ statistics });
+      sendMessageToPopup({ data: info });
+      sendMessageToPopup({ statistics });
 
       if (!writeDataInterval) {
         writeDataInterval = setInterval(writeData, writingIntervalMs);
@@ -238,8 +258,8 @@ const completedListener = (responseDetails) => {
   chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
       for (const tab of tabs) {
-        chrome.tabs.sendMessage(tab.id, { data: info });
-        chrome.tabs.sendMessage(tab.id, { statistics });
+        sendMessageToTab(tab.id, { data: info });
+        sendMessageToTab(tab.id, { statistics });
       }
     }
   });
@@ -253,37 +273,9 @@ const completedListener = (responseDetails) => {
   }
 }
 
-const loadScripts = () => {
-  chrome.tabs.executeScript({
-    file: 'content/matter.js'
-  });
-  chrome.tabs.executeScript({
-    file: 'content/content-script.js'
-  });
-}
-
-const embedPlugin = () => {
-  // check if scripts loaded
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    if (tabs && tabs[0]) {
-      chrome.tabs.sendMessage(tabs[0].id, { query: 'isLoaded' }, (response) => {
-        if (response && response.isLoaded === true) {
-          console.log('Script already loaded!');
-        } else {
-          loadScripts();
-        }
-        return true;
-      });
-    }
-  });
-}
-
-const handleMessage = async (request, _sender, sendResponse) => {
+const handleMessage = (request, _sender, sendResponse) => {
   if (request.query) {
     switch (request.query) {
-      case 'embedPlugin':
-        embedPlugin();
-        break;
       case 'openExtension':
         addPluginToNewTab();
         break;
@@ -294,14 +286,13 @@ const handleMessage = async (request, _sender, sendResponse) => {
             minivizOptions.show = true;
           }
         }
-        sendResponse({show: minivizOptions.show});
-        break;
+        return sendResponse({show: minivizOptions.show});
       case 'removeMiniviz':
         minivizOptions.time = Date.now() + request.time;
         minivizOptions.show = false;
         chrome.tabs.query({}, function(tabs) {
           for (var i=0; i<tabs.length; ++i) {
-            chrome.tabs.sendMessage(tabs[i].id, { query: 'removeMiniviz' });
+            sendMessageToTab(tabs[i].id, { query: 'removeMiniviz' });
           }
         });
       default:
@@ -330,14 +321,15 @@ const computerCo2 =  () => {
   statistics.co2 += computerCo2.co2 - 0;
 
   // send data to animation
-  chrome.runtime.sendMessage({ data: computerCo2 });
-  chrome.runtime.sendMessage({ statistics });
+  sendMessageToPopup({ data: computerCo2 });
+  sendMessageToPopup({ statistics });
+
   // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
       for (const tab of tabs) {
-        chrome.tabs.sendMessage(tab.id, { data: computerCo2 });
-        chrome.tabs.sendMessage(tab.id, { statistics });
+        sendMessageToTab(tab.id, { data: computerCo2 });
+        sendMessageToTab(tab.id, { statistics });
       }
     }
   });
@@ -374,7 +366,12 @@ if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 }
 
 const createExtensionTab = () => {
-  const options = {active: true, url: `fullpage/fullpage.html#Statistics`};
+  let url = 'fullpage/fullpage.html#Statistics';
+  if (isFirefox) {
+    url = '../fullpage/fullpage.html#Statistics';
+  }
+  const options = {url, active: true};
+
   chrome.tabs.create(options, tab => localStorage.setItem('extensionAnimationTabId', tab.id));
 }
 const addPluginToNewTab = () => {
