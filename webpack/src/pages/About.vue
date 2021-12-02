@@ -1,11 +1,14 @@
 <script>
 import { inject, onMounted } from 'vue';
+import { ElRow, ElCol } from 'element-plus';
 
 const subNav = {
 };
 
 export default {
-
+  components: {
+    ElRow, ElCol
+  },
   setup() {
     const setSubNav = inject('setSubNav');
     onMounted(() => setSubNav(subNav));

@@ -48,7 +48,7 @@ export const retrieveHistoryLayers = async () => {
         return { co2: layersCo2, data: layersData };
     }
     const today = dailyData[dailyData.length-1];
-    const currentMonth = today.currentMonth;
+    const currentMonth = today.month;
     const currentWeekYear = today.weekOfYear;
 
     // get today
@@ -103,8 +103,24 @@ export const retrieveHistoryLayers = async () => {
         const co2 = monthlyData.reduce((acc, entry) => acc + entry.co2, 0);
         const energy = monthlyData.reduce((acc, entry) => acc + entry.energy, 0);
         const data = monthlyData.reduce((acc, entry) => acc + entry.data, 0);
-        layersCo2.push({ amount: co2, energy: energy, label: `Month ${month}`, details: monthlyData, level: 'month' });
-        layersData.push({ amount: data, label: `Month ${month}`, details: monthlyData, level: 'month' });
+        // Display details per week of month data
+        const detailsCo2 = [];
+        const detailsData = [];
+        for (const weekOfMonth of [1, 2, 3, 4, 5]) {
+            const weeklyData = monthlyData.filter(day => day.weekOfMonth === weekOfMonth);
+            console.log(monthlyData);
+            console.log(weekOfMonth);
+            console.log(weeklyData);
+            if (weeklyData.length) {
+                const co2 = weeklyData.reduce((acc, entry) => acc + entry.co2, 0);
+                const data = weeklyData.reduce((acc, entry) => acc + entry.data, 0);
+                detailsCo2.push({ amount: co2, label: `Week ${weekOfMonth}` });
+                detailsData.push({ amount: data, label: `Week ${weekOfMonth}` });
+            }
+        }
+
+        layersCo2.push({ amount: co2, energy: energy, label: `Month ${month}`, details: detailsCo2, level: 'month' });
+        layersData.push({ amount: data, label: `Month ${month}`, details: detailsData, level: 'month' });
     }
 
    return { co2: layersCo2, data: layersData };

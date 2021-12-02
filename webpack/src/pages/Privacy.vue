@@ -25,7 +25,6 @@ export default {
             <ul>
                 <li>url: used to display usage and impact per site</li>
                 <li>timestamp: used to display history</li>
-                <li>url: used to display usage and impact per site</li>
                 <li>cache: used to consider only relevant packets</li>
                 <li>type: used to display if content corresponds to video, audio, image, etc.</li>
             </ul>

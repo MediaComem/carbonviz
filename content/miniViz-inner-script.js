@@ -49,7 +49,7 @@ const handleMessage = (request) => {
       setTimeout(() => {
         pubSub.publish('input-data', packet);
       }, genVariation(1000));
-      return;
+      return true;
     }
     if(packet.contentLength < 1 || !packet.extraInfo.tabIcon ||packet.extraInfo.tabIcon.startsWith('chrome-extension:')) return true;
     debounce(packet, 1500 + genVariation(500));

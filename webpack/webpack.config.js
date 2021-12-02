@@ -2,13 +2,15 @@ const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
+const Components = require('unplugin-vue-components/webpack')
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 
 const config = {
   mode: 'production',
   entry: {
     'popup': './src/popup.js',
     'fullpage': './src/fullpage.js',
-    'miniviz': './src/miniviz.js',
+    'miniviz': './src/miniviz.js'
   },
   output: {
     filename: '[name].js',
@@ -67,6 +69,9 @@ const config = {
     new webpack.DefinePlugin({
       __VUE_OPTIONS_API__: false,
       __VUE_PROD_DEVTOOLS__: false
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
     })
   ]
 };
@@ -74,6 +79,8 @@ const config = {
 module.exports = (env, argv) => {
   if (argv.mode === 'development') {
     config.devtool = 'inline-source-map';
+  } else {
+    config.mode = 'production';
   }
   return config;
 };

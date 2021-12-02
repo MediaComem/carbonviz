@@ -2,6 +2,8 @@ import PubSub from '../unplug/js/modules/pubsub.mjs';
 import conf from '../unplug/js/conf.mjs';
 import { render } from '../unplug/js/main.mjs';
 
+const isFirefox = typeof(browser) !== 'undefined';
+
 const pubSub = new PubSub();
 const defaultOptions = { debounce: true, showTabConfirmation: true, showOnBoarding: true };
 let userOptions = defaultOptions;
@@ -136,7 +138,8 @@ const openNewTabDialog = () => {
   if (typeof openTabDialog.showModal === "function") {
     openTabDialog.showModal();
   } else {
-    alert("The <dialog> API is not supported by this browser");
+    // The <dialog> API is not supported by this browser
+    addPluginToNewTab();
   }
 
 }
@@ -174,9 +177,13 @@ const createExtensionTab = () => {
     }
   });
   let page = currentGotoPageBtn?.dataset.gotoPage;
+  let url = `fullpage/fullpage.html#${page}`;
+  if (isFirefox) {
+    url = `../fullpage/fullpage.html#${page}`;
+  }
   const options = {
-    active: true,
-    url: `fullpage/fullpage.html#${page}`
+    url,
+    active: true
   };
   chrome.tabs.create( options, (tab) => {
     localStorage.setItem('extensionAnimationTabId', tab.id);
@@ -662,18 +669,21 @@ const init = () => {
 
   // Apply for Mac OS only
   // Fix chromium bug where size may be wrong
+  /*
   chrome.runtime.getPlatformInfo(info => {
 
+    function fixWindowHeight(){
+      var windowHeight = window.innerHeight;
+      if (windowHeight < 600) {
+          document.getElementById('carbonViz').style.height = "600px";
+      }
+    }
     if (info.os === 'mac') {
-        setTimeout(() => {
-            // Increasing body size enforces the popup redrawing
-            document.body.style.width = '500px';
-            document.body.style.height = '600px';
-        }, 250); // 250ms is enough to finish popup open animation
+        setTimeout(() => fixWindowHeight(), 2500); // 250ms is enough to finish popup open animation
     }
 
   });
-
+*/
   // listen to nee packets
   chrome.runtime.onMessage.addListener(handleMessage);
 

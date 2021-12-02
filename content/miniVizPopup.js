@@ -119,12 +119,6 @@
     deactivateDiv.appendChild(deactivateOptions);
     container.appendChild(deactivateDiv);
 
-    const cssUrl = chrome.extension.getURL('../bundle/miniviz.css');
-    const cssVue = document.createElement('link');
-    cssVue.setAttribute('rel', 'stylesheet');
-    cssVue.setAttribute('href', cssUrl);
-
-    document.head.appendChild(cssVue);
     document.body.appendChild(container);
 
     let positionRight = true;
