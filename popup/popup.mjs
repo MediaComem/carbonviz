@@ -667,23 +667,16 @@ const init = () => {
 
   initAnimation();
 
-  // Apply for Mac OS only
-  // Fix chromium bug where size may be wrong
-  /*
-  chrome.runtime.getPlatformInfo(info => {
-
-    function fixWindowHeight(){
-      var windowHeight = window.innerHeight;
-      if (windowHeight < 600) {
-          document.getElementById('carbonViz').style.height = "600px";
-      }
+  // Adapt size if zooming set in appearance settings
+  function fixWindowHeight(){
+    const windowHeight = window.innerHeight;
+    console.log(windowHeight);
+    if (windowHeight < 600) {
+        document.getElementById('carbonViz').style.height = `${windowHeight}px`;
     }
-    if (info.os === 'mac') {
-        setTimeout(() => fixWindowHeight(), 2500); // 250ms is enough to finish popup open animation
-    }
+  }
+  setTimeout(() => fixWindowHeight(), 250); // 250ms is enough to finish popup open animation
 
-  });
-*/
   // listen to nee packets
   chrome.runtime.onMessage.addListener(handleMessage);
 
