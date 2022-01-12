@@ -670,7 +670,6 @@ const init = () => {
   // Adapt size if zooming set in appearance settings
   function fixWindowHeight(){
     const windowHeight = window.innerHeight;
-    console.log(windowHeight);
     if (windowHeight < 600) {
         document.getElementById('carbonViz').style.height = `${windowHeight}px`;
     }

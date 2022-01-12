@@ -91,7 +91,7 @@ export const retrieveHistoryLayers = async () => {
     const previousMonths = [];
     let previousMonth = currentMonth - 1;
     while (previousMonths.length < 3) {
-        const month = previousMonth > 0 ? previousMonth : 12;
+        const month = previousMonth > 0 ? previousMonth : previousMonth + 12;
         previousMonths.push(month);
         previousMonth--;
     }
@@ -108,9 +108,6 @@ export const retrieveHistoryLayers = async () => {
         const detailsData = [];
         for (const weekOfMonth of [1, 2, 3, 4, 5]) {
             const weeklyData = monthlyData.filter(day => day.weekOfMonth === weekOfMonth);
-            console.log(monthlyData);
-            console.log(weekOfMonth);
-            console.log(weeklyData);
             if (weeklyData.length) {
                 const co2 = weeklyData.reduce((acc, entry) => acc + entry.co2, 0);
                 const data = weeklyData.reduce((acc, entry) => acc + entry.data, 0);
