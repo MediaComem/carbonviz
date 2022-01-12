@@ -27,7 +27,11 @@ export default {
 
     const active_index = inject('active_index');
 
+    const stratum = ref(null);
+
     const fullHeight = 200;
+    const barHeight = 37;
+    const historyHeight = 600 - barHeight /* container - bottom bar*/;
     const { index, type, layer } = toRefs(props);
     const expanded = ref(false);
     const shouldAnimate = ref(false);
@@ -64,13 +68,42 @@ export default {
       }
     });
     const expand = () => {
+      // When expanded, we may need to move up or down the outer container
+      // to avoid hiding par tof the expanded layer
       const isExpanded = expanded.value;
       active_index.value = isExpanded ? -1 : index.value;
       shouldAnimate.value = true;
+      // check offset
+      const layerPosition = stratum.value.getBoundingClientRect();
+      let outerOffsetNeeded = 0;
+      switch(type.value) {
+        case 'co2': {
+          // co2 history stratum are on top
+          const availableHeight = historyHeight - layerPosition.top;
+          if (layerPosition.top + fullHeight > historyHeight) { // layer will be hidden at bottom when expanding
+            outerOffsetNeeded = fullHeight - availableHeight;
+          } else if (layerPosition.top < barHeight){ // top of the layer is already partially outside
+            outerOffsetNeeded = layerPosition.top - barHeight;
+          }
+        }
+        break;
+        case 'data': {
+          // data layer are at bottom and the animation container is offseted while navigating them
+          const availableHeight = historyHeight - layerPosition.top;
+          if (layerPosition.top + fullHeight > historyHeight) { // layer will be hidden at bottom when expanding
+            outerOffsetNeeded = fullHeight - availableHeight;
+          } else if (layerPosition.top < barHeight){ // top of the layer is already partially outside
+            outerOffsetNeeded = layerPosition.top - barHeight;
+          }
+          break;
+        }
+        default:
+          throw('Invalid layer type');
+      }
       if (!isExpanded) {
-        emit('willExpand', fullHeight-height.value);
+        emit('willExpand', outerOffsetNeeded);
       } else {
-        emit('willCollapse', fullHeight-height.value);
+        emit('willCollapse', outerOffsetNeeded);
       }
     };
     watch(active_index, () => {
@@ -91,6 +124,7 @@ export default {
     }
 
     return {
+      stratum,
       active_index, height,
       amount, legend,
       expanded, expand, shouldAnimate,
@@ -101,7 +135,8 @@ export default {
 </script>
 
 <template>
-  <div class="wrapper"
+  <div ref="stratum"
+      class="wrapper"
       :class="{
         expanded: expanded,
         animate: shouldAnimate,

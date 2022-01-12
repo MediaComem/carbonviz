@@ -105,9 +105,6 @@ const packetSizeSubheader = window.document.getElementById("packet-size-subheade
 const packetCo2 = window.document.getElementById("packet-co2");
 const packetCo2Subheader = window.document.getElementById("packet-co2-subheader");
 
-// Legend
-//const legend = window.document.getElementById("legend");
-
 // History
 const historyContainer = window.document.getElementById("history");
 
@@ -364,12 +361,10 @@ window.document.onwheel = (e) => {
 
 // Packet info display
 const showLegend = () => {
-  //show(legend);
   hide(info);
 }
 
 const displayCo2Info = (data) => {
-  //hide([ legend, packetSize, packetSizeSubheader ]);
   hide([ packetSize, packetSizeSubheader ]);
   show([info, packetTime, packetType, packetCo2, packetCo2Subheader ]);
   info.classList.add("co2-highlight");
@@ -386,7 +381,6 @@ const displayCo2Info = (data) => {
 }
 
 const displayDataInfo = (data) => {
-  //hide([ legend, packetCo2, packetCo2Subheader ]);
   hide([ packetCo2, packetCo2Subheader ]);
   show([info, packetType, packetTime, packetSize, packetSizeSubheader ]);
 

@@ -349,7 +349,6 @@ button {
 }
 
 .legend {
-  height: 95px;
   display: flex;
   justify-content: start;
 }
