@@ -15,6 +15,8 @@ const layerHeightData = (amount) => {
 
 const setup = (type) => {
   const maxHeight = 600;
+  const barHeight = 37;
+
   const layers = ref([]);
   const scroll = ref(0);
   const show = ref(false);
@@ -39,7 +41,7 @@ const setup = (type) => {
           scroll.value = totalHeight.value - layerHeightCo2(layer.amount) - 37 /* top bar*/;
         }
       } else {
-        scroll.value = Math.max(totalHeight.value - stage.value*maxHeight, 0);
+        scroll.value = Math.max(totalHeight.value - stage.value*maxHeight, -37 /* top bar*/);
       };
     }
     if (isData) {
@@ -52,7 +54,7 @@ const setup = (type) => {
           scroll.value = layerHeightData(layer.amount) + 37 /* top bar*/;
         }
       } else {
-        scroll.value = Math.min(stage.value*maxHeight, totalHeight.value);
+        scroll.value = Math.min(stage.value*maxHeight, totalHeight.value + 37 /* top bar*/);
       };
     }
   }
@@ -89,10 +91,16 @@ const setup = (type) => {
   });
 
   const nextStage = () => {
+    if (stage.value === maxStage.value) {
+      return;
+    }
     stage.value++;
   }
 
   const previousStage = () => {
+    if (stage.value === 0) {
+      return;
+    }
     stage.value--;
   }
 

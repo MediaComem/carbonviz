@@ -207,6 +207,8 @@ const goToCo2 = () => {
   if (CarbonVue.historyCO2.maxStage > 0) {
     topBar.classList.remove("hidden");
     co2Older.classList.remove("hidden");
+    topBar.classList.remove("disabled");
+    co2Older.classList.remove("disabled");
   }
 }
 const goToFlux = () => {
@@ -244,6 +246,8 @@ const goToData = () => {
   if (CarbonVue.historyData.maxStage > 0) {
     bottomBar.classList.remove("hidden");
     dataOlder.classList.remove("hidden");
+    bottomBar.classList.remove("disabled");
+    dataOlder.classList.remove("disabled");
   }
 }
 
@@ -254,8 +258,8 @@ const nextStageCo2 = () => {
   bottomBar.classList.remove("hidden");
   co2Newer.classList.remove("hidden");
   if (CarbonVue.historyCO2.stage === CarbonVue.historyCO2.maxStage) {
-    topBar.classList.add("hidden");
-    co2Older.classList.add("hidden");
+    topBar.classList.add("disabled");
+    co2Older.classList.add("disabled");
   }
 }
 
@@ -268,8 +272,8 @@ const previousStageCo2 = () => {
     co2Newer.classList.add("hidden");
   }
   if (CarbonVue.historyCO2.stage < CarbonVue.historyCO2.maxStage) {
-    topBar.classList.remove("hidden");
-    co2Older.classList.remove("hidden");
+    topBar.classList.remove("disabled");
+    co2Older.classList.remove("disabled");
   }
 }
 
@@ -280,8 +284,8 @@ const nextStageData = () => {
   topBar.classList.remove("hidden");
   dataNewer.classList.remove("hidden");
   if (CarbonVue.historyData.stage === CarbonVue.historyData.maxStage) {
-    bottomBar.classList.add("hidden");
-    dataOlder.classList.add("hidden");
+    bottomBar.classList.add("disabled");
+    dataOlder.classList.add("disabled");
   }
 }
 
@@ -294,8 +298,8 @@ const previousStageData = () => {
     dataNewer.classList.add("hidden");
   }
   if (CarbonVue.historyCO2.stage < CarbonVue.historyData.maxStage) {
-    bottomBar.classList.remove("hidden");
-    dataOlder.classList.remove("hidden");
+    bottomBar.classList.remove("disabled");
+    dataOlder.classList.remove("disabled");
   }
 }
 
