@@ -69,6 +69,17 @@ button {
   stroke: #888
 }
 
+.icon.up.disabled svg,
+.icon.down.disabled svg {
+  fill: none;
+  stroke: #bfbfbf;
+}
+
+.icon.up.disabled svg .arrow,
+.icon.down.disabled svg .arrow{
+  fill: #bfbfbf;
+  stroke: #bfbfbf;
+}
 
 .icon.flux svg {
   fill: #bfbfbf;
@@ -135,6 +146,17 @@ button {
   right: 0px;
   z-index: 200;
   box-shadow: 0px 3px 11px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.top-bar.disabled {
+  color: #bfbfbf;
+  cursor: initial;
+}
+
+.top-bar.disabled .icon {
+  color: #bfbfbf;
+  cursor: initial;
 }
 
 .bottom-bar {
@@ -146,6 +168,17 @@ button {
   right: 0px;
   z-index: 200;
   box-shadow: 0px 3px 11px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.bottom-bar.disabled {
+  color: #bfbfbf;
+  cursor: initial;
+}
+
+.bottom-bar.disabled .icon {
+  color: #bfbfbf;
+  cursor: initial;
 }
 
 .top-bar .icon, .bottom-bar .icon {
@@ -349,7 +382,6 @@ button {
 }
 
 .legend {
-  height: 95px;
   display: flex;
   justify-content: start;
 }

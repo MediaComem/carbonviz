@@ -105,9 +105,6 @@ const packetSizeSubheader = window.document.getElementById("packet-size-subheade
 const packetCo2 = window.document.getElementById("packet-co2");
 const packetCo2Subheader = window.document.getElementById("packet-co2-subheader");
 
-// Legend
-//const legend = window.document.getElementById("legend");
-
 // History
 const historyContainer = window.document.getElementById("history");
 
@@ -210,6 +207,8 @@ const goToCo2 = () => {
   if (CarbonVue.historyCO2.maxStage > 0) {
     topBar.classList.remove("hidden");
     co2Older.classList.remove("hidden");
+    topBar.classList.remove("disabled");
+    co2Older.classList.remove("disabled");
   }
 }
 const goToFlux = () => {
@@ -247,6 +246,8 @@ const goToData = () => {
   if (CarbonVue.historyData.maxStage > 0) {
     bottomBar.classList.remove("hidden");
     dataOlder.classList.remove("hidden");
+    bottomBar.classList.remove("disabled");
+    dataOlder.classList.remove("disabled");
   }
 }
 
@@ -257,8 +258,8 @@ const nextStageCo2 = () => {
   bottomBar.classList.remove("hidden");
   co2Newer.classList.remove("hidden");
   if (CarbonVue.historyCO2.stage === CarbonVue.historyCO2.maxStage) {
-    topBar.classList.add("hidden");
-    co2Older.classList.add("hidden");
+    topBar.classList.add("disabled");
+    co2Older.classList.add("disabled");
   }
 }
 
@@ -271,8 +272,8 @@ const previousStageCo2 = () => {
     co2Newer.classList.add("hidden");
   }
   if (CarbonVue.historyCO2.stage < CarbonVue.historyCO2.maxStage) {
-    topBar.classList.remove("hidden");
-    co2Older.classList.remove("hidden");
+    topBar.classList.remove("disabled");
+    co2Older.classList.remove("disabled");
   }
 }
 
@@ -283,8 +284,8 @@ const nextStageData = () => {
   topBar.classList.remove("hidden");
   dataNewer.classList.remove("hidden");
   if (CarbonVue.historyData.stage === CarbonVue.historyData.maxStage) {
-    bottomBar.classList.add("hidden");
-    dataOlder.classList.add("hidden");
+    bottomBar.classList.add("disabled");
+    dataOlder.classList.add("disabled");
   }
 }
 
@@ -297,8 +298,8 @@ const previousStageData = () => {
     dataNewer.classList.add("hidden");
   }
   if (CarbonVue.historyCO2.stage < CarbonVue.historyData.maxStage) {
-    bottomBar.classList.remove("hidden");
-    dataOlder.classList.remove("hidden");
+    bottomBar.classList.remove("disabled");
+    dataOlder.classList.remove("disabled");
   }
 }
 
@@ -364,12 +365,10 @@ window.document.onwheel = (e) => {
 
 // Packet info display
 const showLegend = () => {
-  //show(legend);
   hide(info);
 }
 
 const displayCo2Info = (data) => {
-  //hide([ legend, packetSize, packetSizeSubheader ]);
   hide([ packetSize, packetSizeSubheader ]);
   show([info, packetTime, packetType, packetCo2, packetCo2Subheader ]);
   info.classList.add("co2-highlight");
@@ -386,7 +385,6 @@ const displayCo2Info = (data) => {
 }
 
 const displayDataInfo = (data) => {
-  //hide([ legend, packetCo2, packetCo2Subheader ]);
   hide([ packetCo2, packetCo2Subheader ]);
   show([info, packetType, packetTime, packetSize, packetSizeSubheader ]);
 
@@ -667,23 +665,15 @@ const init = () => {
 
   initAnimation();
 
-  // Apply for Mac OS only
-  // Fix chromium bug where size may be wrong
-  /*
-  chrome.runtime.getPlatformInfo(info => {
-
-    function fixWindowHeight(){
-      var windowHeight = window.innerHeight;
-      if (windowHeight < 600) {
-          document.getElementById('carbonViz').style.height = "600px";
-      }
+  // Adapt size if zooming set in appearance settings
+  function fixWindowHeight(){
+    const windowHeight = window.innerHeight;
+    if (windowHeight < 600) {
+        document.getElementById('carbonViz').style.height = `${windowHeight}px`;
     }
-    if (info.os === 'mac') {
-        setTimeout(() => fixWindowHeight(), 2500); // 250ms is enough to finish popup open animation
-    }
+  }
+  setTimeout(() => fixWindowHeight(), 250); // 250ms is enough to finish popup open animation
 
-  });
-*/
   // listen to nee packets
   chrome.runtime.onMessage.addListener(handleMessage);
 

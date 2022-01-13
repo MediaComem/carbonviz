@@ -16,10 +16,16 @@ const routerEnergyConsumptionKWh = 0.0076;
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
 
-const minivizOptions = {
+// Miniviz inner page animation option
+let minivizOptions = {
   time: undefined,
   show: true
 };
+
+const minivizPreviousState = localStorage.getItem('minivizOptions');
+if (minivizPreviousState !== null) {
+  minivizOptions = JSON.parse(minivizPreviousState);
+}
 
 let dump = [];
 let co2ComputerInterval;
@@ -284,12 +290,14 @@ const handleMessage = (request, _sender, sendResponse) => {
           let timeNow = Date.now();
           if(timeNow > minivizOptions.time) {
             minivizOptions.show = true;
+            localStorage.setItem('minivizOptions', JSON.stringify(minivizOptions));
           }
         }
         return sendResponse({show: minivizOptions.show});
       case 'removeMiniviz':
         minivizOptions.time = Date.now() + request.time;
         minivizOptions.show = false;
+        localStorage.setItem('minivizOptions', JSON.stringify(minivizOptions));
         chrome.tabs.query({}, function(tabs) {
           for (var i=0; i<tabs.length; ++i) {
             sendMessageToTab(tabs[i].id, { query: 'removeMiniviz' });
