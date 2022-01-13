@@ -30,14 +30,40 @@ export default {
     const isCo2 = computed(() => type.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const isData = computed(() => type.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const scrollDataComponent = ref(0);
+    const scrollCo2Component = ref(0);
 
+    // Check expansion / collapse of layers
+    const layerExpanded = (offset) => {
+      if (isCo2.value) {
+        scrollCo2Component.value = scroll.value + offset;
+      }
+      if (isData.value) {
+        scrollDataComponent.value = scroll.value + offset;
+      }
+    }
+
+    const layerCollapsed = (_offset) => {
+      if (isCo2.value) {
+        scrollCo2Component.value = scroll.value;
+      }
+      if (isData.value) {
+        scrollDataComponent.value = scroll.value;
+      }
+    }
+
+    // for Co2 we need to manage expansion / collapse of layers
+    // in case close to the top or bottom of screen to avoid layer partially hidden
+    if (isCo2.value) {
+      watch(scroll, _val => scrollCo2Component.value = _val);
+    }
 
     // for DATA we need "move up" the animation by the height of the stratums
+    // in addition to manage expansion / collapse of layers
     if (isData.value) {
       const anim = window.document.querySelector('.animation');
       anim.style.transition = 'top 0.5s ease';
-      watch(show, val => anim.style.top = val ? `${-scroll.value}px` : '0px');
-      watch(scroll, val => scrollDataComponent.value = scroll.value);
+      watch(show, isShown => anim.style.top = isShown ? `${-scroll.value}px` : '0px');
+      watch(scroll, _val => scrollDataComponent.value = _val);
       watch(scrollDataComponent, val => anim.style.top = show.value ? `${-val}px` : '0px');
       anim.style.top = 0;
     }
@@ -60,20 +86,8 @@ export default {
       }
     });
 
-    const layerExpanded = (height) => {
-      if (isData.value) {
-        scrollDataComponent.value = scroll.value + height;
-      }
-    }
-
-    const layerCollapsed = (height) => {
-      if (isData.value) {
-        scrollDataComponent.value = scroll.value;
-      }
-    }
-
     return {isCo2, isData, layers, layerHeightCo2, layerHeightData,
-            scroll, scrollDataComponent, show,
+            scroll, scrollCo2Component, scrollDataComponent, show,
             stage, maxStage, nextStage, previousStage,
             layerExpanded, layerCollapsed };
   }
@@ -82,7 +96,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="show" :style="`--top: ${isCo2 ? -scroll : 0}px`" class="history-wrapper">
+  <div v-if="show" :style="`--top: ${isCo2 ? -scrollCo2Component : 0}px`" class="history-wrapper">
     <stratum v-for="(layer, index) in layers" :key="index"
       :type="type" :index="index" :stage="stage"
       :layer="layer"

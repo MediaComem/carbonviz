@@ -3,7 +3,7 @@
   "name": "CarbonViz",
   "description": "Your browsing climate impact, made visible.",
   "author": "Media Engineering Institute - HEIG-VD",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
   "icons": {
     "16": "icons/icon16.png",
@@ -28,6 +28,7 @@
     "browser_style": true,
     "default_popup": "popup/popup.html",
     "default_icon": {
+      "48": "icons/icon48.png"
     }
   },
   "web_accessible_resources": [
