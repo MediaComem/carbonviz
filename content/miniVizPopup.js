@@ -3,6 +3,7 @@
     let svgColor = '#333333';
     // Create popup container
     const container = document.createElement("div");
+    container.id = 'miniViz_popup_container';
     container.style.all = 'initial';
     container.style.display = 'none';
     container.style.position = 'fixed';
@@ -24,7 +25,7 @@
     } else {
       container.style['background-color'] = 'white';
     }
-    // Event lsitener to toggle darkMode
+    // Event listener to toggle darkMode
     const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQueryDark.onchange = (e) => {
       // Check if the media query is true
@@ -38,7 +39,6 @@
         container.style['color'] = 'initial';
       }
     }
-    container.id = 'miniViz_popup_container';
     //*********************** */
     //consumption container
     //*********************** */
@@ -167,6 +167,17 @@
         positionIcon2.innerHTML='<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect x="0.5" y="0.5" width="31" height="19" rx="1.5" fill="#F8F8F8" stroke="black"/><rect opacity="0.3" x="25" y="7" width="4" height="4" rx="2" fill="#906C0D"/><rect x="25" y="13" width="4" height="4" rx="2" fill="#906C0D"/></svg>'
       }
     });
+
+
+    // Hide for print
+    window.onbeforeprint = () => {
+      const minivizAnimation = document.getElementById('miniViz_container');
+      minivizAnimation.style.display = 'none';
+    };
+    window.onafterprint = () => {
+      const minivizAnimation = document.getElementById('miniViz_container');
+      minivizAnimation.style.display = 'block';
+    };
 
     const oneHour = 1000 * 60 * 60;
     const twoHour = oneHour * 2;
