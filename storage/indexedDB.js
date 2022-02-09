@@ -410,5 +410,24 @@ async function getCurWeekHistory() {
   });
 }
 
+async function downloadData(dbStore) {
+  return new Promise(function (resolve, reject) {
+    let data = [];
+    const db = co2HistoryDB.db;
+    if(db) {
+      const trans = db.transaction([dbStore], "readonly");
+      const requestedStore = trans.objectStore(dbStore);
 
-export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData, getWebsites, getCurWeekHistory }
+      const dataRequest = requestedStore.getAll();
+      dataRequest.onerror = event => reject(event.target.error);
+      dataRequest.onsuccess = event => {
+        data = event.target.result;
+        resolve(data);
+      };
+    } else {
+      console.log("Unable to connect to CarbonViz database");
+    }
+  });
+}
+
+export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData, getWebsites, getCurWeekHistory, downloadData }
