@@ -1,5 +1,6 @@
 <script>
 import { inject, onMounted } from 'vue';
+import { downloadCSV } from '../../../storage/dataDownload.js'
 
 const subNav = {
 };
@@ -9,7 +10,11 @@ export default {
   setup() {
     const setSubNav = inject('setSubNav');
     onMounted(() => setSubNav(subNav));
-    return {};
+    function triggerDownloadCSV(dbStore) {
+      downloadCSV(dbStore);
+    };
+
+    return { triggerDownloadCSV };
   }
 
 }
@@ -36,6 +41,11 @@ export default {
         <p>
             CarbonViz stores data only locally inside your broswer. No data is automatically synchronised with external servers.
         </p>
+        <div>
+          <button style="margin: 10px; cursor: pointer;"  @click='triggerDownloadCSV("history")'>Download history</button>
+          <button style="margin: 10px; cursor: pointer;"  @click='triggerDownloadCSV("historySummary")'>Download history Summary</button>
+          <button style="margin: 10px; cursor: pointer;"  @click='triggerDownloadCSV("domains")'>Download domains</button>
+        </div>
         <h2>Data history</h2>
         <p>
             Historical data is saved so you can check your usage history. The following data are saved:
