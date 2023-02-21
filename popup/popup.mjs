@@ -110,23 +110,6 @@ const historyContainer = window.document.getElementById("history");
 
 // Define UI Actions
 const openNewTabDialog = () => {
-  // Open tab dialog (if tab not yet opened), else show tab
-  const tabId = localStorage.getItem('extensionAnimationTabId');
-  if (tabId) {
-    chrome.tabs.get(parseInt(tabId), tab => {
-      if(chrome.runtime.lastError) {
-        // tab probably closed
-      }
-      if (tab && tab.title === manifest.name) {
-        let page = currentGotoPageBtn?.dataset.gotoPage;
-        let currentTab = tab.url.substring(tab.url.indexOf('#'));
-        let url = tab.url.replace(currentTab, `#${page}`);
-        chrome.tabs.update(tab.id, {url});
-        chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
-        return;
-      }
-    });
-  }
 
   if (!userOptions.showTabConfirmation) {
     return addPluginToNewTab();
@@ -142,37 +125,10 @@ const openNewTabDialog = () => {
 }
 
 const addPluginToNewTab = () => {
-  const tabId = localStorage.getItem('extensionAnimationTabId');
-  if (tabId) {
-    chrome.tabs.get(parseInt(tabId), tab => {
-      if(chrome.runtime.lastError) {
-        // tab probably closed
-      }
-      if (tab && tab.title === manifest.name) {
-        let page = currentGotoPageBtn?.dataset.gotoPage;
-        let currentTab = tab.url.substring(tab.url.indexOf('#'));
-        let url = tab.url.replace(currentTab, `#${page}`);
-        chrome.tabs.update(tab.id, {url});
-        chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
-        return;
-      } else {
-        createExtensionTab();
-      }
-    });
-  } else {
-    createExtensionTab();
-  }
-
+  createExtensionTab();
 }
 
 const createExtensionTab = () => {
-  // store current tab id to come back to extension pop-up if needed
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    if (tabs && tabs[0]) {
-      const tab = tabs[0];
-      localStorage.setItem('previousTabId', tab.id);
-    }
-  });
   let page = currentGotoPageBtn?.dataset.gotoPage;
   let url = `fullpage/fullpage.html#${page}`;
   if (isFirefox) {
@@ -182,9 +138,7 @@ const createExtensionTab = () => {
     url,
     active: true
   };
-  chrome.tabs.create( options, (tab) => {
-    localStorage.setItem('extensionAnimationTabId', tab.id);
-  });
+  chrome.tabs.create( options );
 }
 
 const resetSelection = () => {
@@ -343,7 +297,7 @@ tabDialog.addEventListener('close', (event) => {
     if (tabConfirmationCheckbox.checked) {
       // do not show again
       userOptions.showTabConfirmation = false;
-      localStorage.setItem('options', JSON.stringify(userOptions));
+      chrome.storage.local.set({'options': JSON.stringify(userOptions)});
     }
     addPluginToNewTab();
   }
@@ -625,45 +579,29 @@ const initAnimation = () => {
     setTimeout(() => {
       body.classList.remove('anim-onboarding');
       userOptions.showOnBoarding = false;
-      localStorage.setItem('options', JSON.stringify(userOptions));
+      chrome.storage.local.set({'options': JSON.stringify(userOptions)});
     }, 10000);
   }
 }
 
 const init = () => {
 
-  const options = localStorage.getItem('options');
-
-  if (options !== null) {
-    try {
-      userOptions = JSON.parse(options);
-    } catch(error) {
-      console.log(`Invalid options stored: ${userOptions}`);
+  chrome.storage.local.get(['options'],  storage => {
+    const options = storage.options;
+    if (options) {
+      try {
+        userOptions = JSON.parse(options);
+      } catch(error) {
+        console.log(`Invalid options stored: ${userOptions}`);
+      }
     }
-  }
-
-  // check if tab extension opened
-  // const tabId = localStorage.getItem('extensionAnimationTabId');
-  // if (tabId) {
-  //   chrome.tabs.get(parseInt(tabId), tab => {
-  //     if(chrome.runtime.lastError) {
-  //       // tab probably closed
-  //     }
-  //     if (tab) {
-  //       // set button stlye as active
-  //       for (const btn of openTabButtons) {
-  //         btn.classList.add('active');
-  //         btn.classList.remove('inactive');
-  //       }
-  //     }
-  //   });
-  // }
+    initAnimation();
+  });
 
   configure();
 
   initHistory();
 
-  initAnimation();
 
   // Adapt size if zooming set in appearance settings
   function fixWindowHeight(){

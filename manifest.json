@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "CarbonViz",
   "description": "Your browsing climate impact, made visible.",
   "author": "Media Engineering Institute - HEIG-VD",
@@ -9,12 +9,15 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png" },
   "permissions": [
-    "webRequest",
-    "<all_urls>"
+      "webRequest",
+      "storage"
+  ],
+  "host_permissions": [
+      "<all_urls>"
   ],
   "background": {
-    "page": "background/background.html",
-    "persistent": true
+    "service_worker": "background/background.mjs",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -23,7 +26,7 @@
       "js": ["content/miniViz-script.js","content/miniVizPopup.js","content/matter.js"]
     }
   ],
-  "browser_action": {
+  "action": {
     "browser_style": true,
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -31,10 +34,15 @@
     }
   },
   "web_accessible_resources": [
-    "content/*",
-    "unplug/js/*",
-    "unplug/assets/*",
-    "bundle/*",
-    "popup/*"
+    {
+      "resources": [
+        "content/*",
+        "unplug/js/*",
+        "unplug/assets/*",
+        "bundle/*",
+        "popup/*"
+      ],
+      "matches": ["<all_urls>"] 
+    }
   ]
 }

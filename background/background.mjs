@@ -1,6 +1,9 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
 import { init as initDB, getTodayCounter } from "../storage/indexedDB.js";
 
+// Note that since the switch to manifest v3, chrome extension API switched to Promises (as Firefox)
+// And Firefox supports chrome.* namespace for API available in chrome and firefox
+// Only the path to the extension web pages is still different
 const isFirefox = typeof(browser) !== 'undefined';
 
 const usageDevicePerYear = 1917.3;
@@ -22,10 +25,12 @@ let minivizOptions = {
   show: true
 };
 
-const minivizPreviousState = localStorage.getItem('minivizOptions');
-if (minivizPreviousState !== null) {
-  minivizOptions = JSON.parse(minivizPreviousState);
-}
+chrome.storage.local.get(['minivizOptions']).then(storage => {
+  const minivizPreviousState = storage.minivizOptions;
+  if (minivizPreviousState) {
+    minivizOptions = JSON.parse(minivizPreviousState);
+  }
+})
 
 let dump = [];
 let co2ComputerInterval;
@@ -166,21 +171,14 @@ const co2ImpactInternet = (bytes) => {
 }
 
 const sendMessageToPopup = (data) => {
-  if (isFirefox) {
-    browser.runtime.sendMessage(data)
-    .catch(e => { /* plugin probably not loaded */ });
-  } else {
-    chrome.runtime.sendMessage(data);
-  }
+  // only send message if pop up opened
+  chrome.runtime.sendMessage(data).then()
+  .catch(e => { /* pop-up probably not opened */ });
 }
 
 const sendMessageToTab = (tabId, data) => {
-  if (isFirefox) {
-    browser.tabs.sendMessage(tabId, data)
-    .catch(e => { /* miniViz probably not loaded */ });
-  } else {
-    chrome.tabs.sendMessage(tabId, data);
-  }
+  chrome.tabs.sendMessage(tabId, data).then()
+  .catch(e => { /* miniViz probably not loaded */ });
 }
 
 const completedListener = (responseDetails) => {
@@ -279,7 +277,7 @@ const completedListener = (responseDetails) => {
   }
 }
 
-const handleMessage = (request, _sender, sendResponse) => {
+const handleMessage = async (request, _sender, sendResponse) => {
   if (request.query) {
     switch (request.query) {
       case 'openExtension':
@@ -290,19 +288,16 @@ const handleMessage = (request, _sender, sendResponse) => {
           let timeNow = Date.now();
           if(timeNow > minivizOptions.time) {
             minivizOptions.show = true;
-            localStorage.setItem('minivizOptions', JSON.stringify(minivizOptions));
+            chrome.storage.local.set({'minivizOptions' : JSON.stringify(minivizOptions)});
           }
         }
         return sendResponse({show: minivizOptions.show});
       case 'removeMiniviz':
         minivizOptions.time = Date.now() + request.time;
         minivizOptions.show = false;
-        localStorage.setItem('minivizOptions', JSON.stringify(minivizOptions));
-        chrome.tabs.query({}, function(tabs) {
-          for (var i=0; i<tabs.length; ++i) {
-            sendMessageToTab(tabs[i].id, { query: 'removeMiniviz' });
-          }
-        });
+        chrome.storage.local.set({'minivizOptions' : JSON.stringify(minivizOptions)});
+        const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+        sendMessageToTab(tab.id, { query: 'removeMiniviz' });
       default:
         break;
     }
@@ -361,6 +356,8 @@ const writeData = async () => {
   dump = [];
 };
 
+startComputerCo2Interval();
+
 chrome.webRequest.onCompleted.addListener(
   completedListener,
   {urls: ['<all_urls>']},
@@ -369,9 +366,12 @@ chrome.webRequest.onCompleted.addListener(
 
 chrome.runtime.onMessage.addListener(handleMessage);
 
+// TODO handle light / dark also with service owrker
+/*
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
   chrome.browserAction.setIcon({path: '../icons/iconDark.png'});
 }
+*/
 
 const createExtensionTab = () => {
   let url = 'fullpage/fullpage.html#Statistics';
@@ -379,30 +379,13 @@ const createExtensionTab = () => {
     url = '../fullpage/fullpage.html#Statistics';
   }
   const options = {url, active: true};
+  chrome.tabs.create(options);
 
-  chrome.tabs.create(options, tab => localStorage.setItem('extensionAnimationTabId', tab.id));
 }
 const addPluginToNewTab = () => {
   createExtensionTab();
-  /*
-    const tabId = localStorage.getItem('extensionAnimationTabId');
-    if (!tabId) { createExtensionTab(); return; }
-    chrome.tabs.get(parseInt(tabId), tab => {
-      if(chrome.runtime.lastError) {
-        // tab probably closed after response received or coming from extension
-        console.log(`Error retrieving tab: ${chrome.runtime.lastError}`);
-        return;
-      }
-      if (!tab || tab.title !== chrome.runtime.getManifest().name) { createExtensionTab(); return; }
-      let currentTab = tab.url.substring(tab.url.indexOf('#'));
-      let url = tab.url.replace(currentTab, `#Statistics`);
-      chrome.tabs.update(tab.id, {url});
-      chrome.tabs.highlight({ tabs: [ tab.index ], windowId: tab.windowId }, () => {});
-    });
-  */
 }
 
-await initDB();
-statistics = await getTodayCounter();
-
-startComputerCo2Interval();
+initDB().then( async () => {
+  statistics = await getTodayCounter();
+})

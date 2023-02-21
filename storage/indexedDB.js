@@ -1,10 +1,10 @@
-//window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-
+// TODO check if still necessary depending on browser
+/*
 if ('webkitIndexedDB' in window) {
   window.IDBTransaction = window.webkitIDBTransaction;
   window.IDBKeyRange = window.webkitIDBKeyRange;
 }
-
+*/
 const co2HistoryDB = {
   db: null
 };
@@ -49,7 +49,7 @@ co2HistoryDB.open = () => {
       version 1: basic
       version 2: add by_co2 / by_data indexes for domains
     */
-    const request = indexedDB.open("co2HistoryDB", version);
+    const request = self.indexedDB.open("co2HistoryDB", version);
     // For any changes to an existing DB structure, the version number needs to be incremented.
     // Only then will the onupgradeneeded function run.
     request.onupgradeneeded = function (event) {
