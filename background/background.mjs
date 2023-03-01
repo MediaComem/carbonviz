@@ -1,7 +1,7 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
 import { init as initDB, getTodayCounter } from "../storage/indexedDB.js";
 
-// Note that since the switch to manifest v3, chrome extension API switched to Promises (as Firefox)
+// Note that since the switch to manifest v3, chrome extension API switched mostly to Promises (as Firefox)
 // And Firefox supports chrome.* namespace for API available in chrome and firefox
 // Only the path to the extension web pages is still different
 const isFirefox = typeof(browser) !== 'undefined';
@@ -277,7 +277,7 @@ const completedListener = (responseDetails) => {
   }
 }
 
-const handleMessage = async (request, _sender, sendResponse) => {
+const handleMessage = (request, _sender, sendResponse) => {
   if (request.query) {
     switch (request.query) {
       case 'openExtension':
@@ -291,18 +291,23 @@ const handleMessage = async (request, _sender, sendResponse) => {
             chrome.storage.local.set({'minivizOptions' : JSON.stringify(minivizOptions)});
           }
         }
-        return sendResponse({show: minivizOptions.show});
+        sendResponse({show: minivizOptions.show});
+        return true;
       case 'removeMiniviz':
         minivizOptions.time = Date.now() + request.time;
         minivizOptions.show = false;
         chrome.storage.local.set({'minivizOptions' : JSON.stringify(minivizOptions)});
-        const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-        sendMessageToTab(tab.id, { query: 'removeMiniviz' });
+        chrome.tabs.query({}).then((tabs) => {
+          for (const tab of tabs) {
+            sendMessageToTab(tab.id, { query: 'removeMiniviz' });
+          }
+        })
+        return;
       default:
         break;
     }
   }
-  return true;
+  return;
 }
 
 // computer CO2 default usage

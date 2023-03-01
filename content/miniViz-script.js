@@ -1,10 +1,12 @@
 (async () => {
+
+
   // send message to background script to check for minviz deactivation deadline if any
-  chrome.runtime.sendMessage({ query: 'startMiniviz' }, async (response) => {
+  chrome.runtime.sendMessage({ query: 'startMiniviz' }).then(async (response) => {
     if (response && response.show === true) {
       const miniVizScript = await import(chrome.runtime.getURL('content/miniViz-inner-script.js'));
       miniVizScript.configure();
       miniVizScript.main();
     }
-  });
+  }).catch(e => { /* service worker not active */ });
 })();
