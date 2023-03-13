@@ -22,8 +22,8 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*"],
-      "css": [],
-      "js": ["content/miniViz-script.js","content/miniVizPopup.js","content/matter.js"]
+      "css": ["bundle/miniviz.css"],
+      "js": ["content/miniViz-script.js","content/miniViz.js","content/matter.js"]
     }
   ],
   "action": {
@@ -42,7 +42,7 @@
         "bundle/*",
         "popup/*"
       ],
-      "matches": ["<all_urls>"] 
+      "matches": ["<all_urls>"]
     }
   ]
 }

@@ -10,7 +10,7 @@ const config = {
   entry: {
     'popup': './src/popup.js',
     'fullpage': './src/fullpage.js',
-    'miniviz': './src/miniviz.js'
+    'miniviz': './src/miniviz.ts'
   },
   output: {
     filename: '[name].js',
@@ -26,7 +26,13 @@ const config = {
       {
         test: /\.vue$/,
         loader: 'vue-loader'
-      }, {
+      },
+      {
+        test: /\.ts$/,
+        loader: "ts-loader",
+        options: { appendTsSuffixTo: [/\.vue$/] }
+      },
+      {
         test:/\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
@@ -61,7 +67,8 @@ const config = {
     modules: [
       path.resolve('./src'),
       path.resolve('./node_modules')
-    ]
+    ],
+    extensions: ['.ts', '.js']
   },
   plugins: [
     new MiniCssExtractPlugin({filename: '[name].css'}),

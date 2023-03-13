@@ -93,6 +93,11 @@ export function main() {
   animationInit();
 }
 
+export function start() {
+  console.log("Starting MiniViz");
+  CarbonVue.miniviz.mount('#miniviz');
+}
+
 export function configure() {
   createminivizAnimation();
   chrome.runtime.onMessage.addListener(handleMessage);
