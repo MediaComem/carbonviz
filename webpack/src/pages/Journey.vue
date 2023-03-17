@@ -1,7 +1,7 @@
 <script>
 import { inject, onMounted } from 'vue';
 import { ElPopover, ElRow, ElCol } from 'element-plus';
-import 'element-plus/lib/theme-chalk/index.css';
+import 'element-plus/theme-chalk/index.css';
 
 const subNav = {};
 

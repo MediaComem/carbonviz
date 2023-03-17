@@ -2,7 +2,7 @@
 import { computed, inject, ref, toRefs, watch } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
 import { ElCarousel, ElCarouselItem, ElRow, ElCol } from 'element-plus';
-import 'element-plus/lib/theme-chalk/index.css';
+import 'element-plus/theme-chalk/index.css';
 import Analogy from './Analogy.vue'
 import layerChart from '../composables/layerChart';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
