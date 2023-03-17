@@ -1,5 +1,6 @@
 <script>
 import {ref, provide} from 'vue';
+import { useI18n } from 'vue-i18n'
 import LocationHashRouter from '../composables/LocationHashRouter';
 import Live from '../pages/Live.vue';
 
@@ -18,6 +19,7 @@ export default {
 
   setup(props, context) {
     const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
+    const { t } = useI18n({})
 
     const subNav = ref([]);
     provide('setSubNav', nav => subNav.value = nav);
@@ -29,7 +31,7 @@ export default {
       document.querySelector('[data-area="body"]').scrollTop = topPos - 200;
     }
 
-    return {subNav, hashRoutes, currentHash, currentPage, onSubnavClick};
+    return {subNav, hashRoutes, currentHash, currentPage, onSubnavClick, t};
   }
 
 }
@@ -38,7 +40,7 @@ export default {
 <template>
   <div class="wrapper">
     <div data-area="logo"></div>
-    <h1 data-area="title">Carbonviz</h1>
+    <h1 data-area="title">{{ t('appTitle') }}</h1>
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">

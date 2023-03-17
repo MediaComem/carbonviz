@@ -10,6 +10,7 @@
   "author": "MEI",
   "license": "ISC",
   "devDependencies": {
+    "@intlify/vue-i18n-loader": "^5.0.0",
     "@types/chrome": "^0.0.220",
     "@types/vue": "^2.0.0",
     "@vue/compiler-sfc": "^3.1.5",
@@ -29,7 +30,8 @@
   "dependencies": {
     "apexcharts": "^3.27.1",
     "element-plus": "^1.0.2-beta.70",
-    "vue": "^3.1.5",
+    "vue": "^3.2.0",
+    "vue-i18n": "^9.2.2",
     "vue3-apexcharts": "^1.4.1"
   }
 }

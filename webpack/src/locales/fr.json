@@ -1,0 +1,18 @@
+{
+  "appTitle": "CarbonViz",
+  "locales": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français"
+  },
+  "components": {
+    "analogies": {},
+    "analogy": {},
+    "AppFullpage": {},
+    "history": {}
+  },
+  "global": {
+    "co2": "CO2",
+    "data": "Data"
+  }
+}

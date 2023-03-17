@@ -41,7 +41,8 @@ const config = {
             options: {url: false}
           }
         ]
-      }, {
+      },
+      {
         test: /\.scss$/,
         use: [
           'vue-style-loader',
@@ -60,6 +61,14 @@ const config = {
             }
           }
         ]
+      },
+      {
+        test: /\.(json5?|ya?ml)$/, // target json, json5, yaml and yml files
+        type: 'javascript/auto',
+        loader: '@intlify/vue-i18n-loader',
+        include: [ // Use `Rule.include` to specify the files of locale messages to be pre-compiled
+          path.resolve(__dirname, 'src/locales')
+        ]
       }
     ]
   },
@@ -75,7 +84,10 @@ const config = {
     new VueLoaderPlugin(),
     new webpack.DefinePlugin({
       __VUE_OPTIONS_API__: false,
-      __VUE_PROD_DEVTOOLS__: false
+      __VUE_PROD_DEVTOOLS__: false,
+      __VUE_I18N_FULL_INSTALL__: true,
+      __VUE_I18N_LEGACY_API__: false,
+      __VUE_I18N_PROD_DEVTOOLS__: false
     }),
     Components({
       resolvers: [ElementPlusResolver()],
