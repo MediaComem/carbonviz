@@ -1,0 +1,15 @@
+/* variables */
+:root {
+    --black: #000000;
+    --white: #ffffff;
+    --grey: #8c8c8c;
+    --light-grey: #f2f2f2;
+    --dark-grey: #5f5e5e;
+    --activeBackground: var(--light-grey);
+    --activeColor: var(--black);
+  }
+
+  .activeButton {
+    --activeBackground: var(--dark-grey);
+    --activeColor: var(--white);
+  }

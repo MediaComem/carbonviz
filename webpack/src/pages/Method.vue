@@ -228,24 +228,24 @@ components: {
       </p>
       <p>
         <span class="bold">1 hour of 1080p Video streaming can represent:</span>
-        <el-row justify="center" align="center">
+        <el-row justify="center" align="middle">
           <el-col :span="22">
             <el-carousel trigger="click" :interval="10000" height="260px" class="analogies">
               <el-carousel-item v-for="(item, index) in analogies" :key="index">
-                <el-row justify="center" align="center">
+                <el-row justify="center" align="middle">
                   <img :src="`assets/${item.image}`">
                 </el-row>
-                <el-row justify="center" align="center" class="title">
+                <el-row justify="center" align="middle" class="title">
                   <el-col :span="20">
                     <span> {{item.title }} </span>
                   </el-col>
                 </el-row>
-                <el-row justify="center" align="center">
+                <el-row justify="center" align="middle">
                   <el-col :span="20">
                     <span v-html="item.explanation"></span>
                   </el-col>
                 </el-row>
-                <el-row justify="center" align="center" class="sources">
+                <el-row justify="center" align="middle" class="sources">
                   <el-col :span="20">
                     <span v-html="item.sources"></span>
                   </el-col>

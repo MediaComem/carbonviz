@@ -1,4 +1,5 @@
 <script>
+import { useI18n } from 'vue-i18n'
 import { setup as setupHistoryLayers } from '../composables/history';
 import Stratum from './HistoryStratum.vue';
 import { computed, provide, watch, toRefs, ref } from 'vue';
@@ -17,20 +18,44 @@ interface HistoryLayer extends HistoryLayerData{
 export default {
   components: { Stratum },
 
-  props: {
-    type: {type: String}
-  },
-
   setup(props, context) {
+    const { t } = useI18n({});
+    let timePeriod = ref("days");
+    let dataType = ref("co2");
 		const active_index = ref(-1);
 		provide('active_index', active_index);
 
-    const { type } = toRefs(props)
-    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = setupHistoryLayers(type.value);
-    const isCo2 = computed(() => type.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
-    const isData = computed(() => type.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
+    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = setupHistoryLayers(dataType.value);
+    const isCo2 = computed(() => dataType.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
+    const isData = computed(() => dataType.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const scrollDataComponent = ref(0);
     const scrollCo2Component = ref(0);
+
+    // Updating history setting, data period and type
+    function periodChange(newPeriod) {
+      let btnList = document.getElementById("time").getElementsByTagName("Button");
+      for (let button of btnList) {
+        if (button.name === newPeriod) {
+          button.classList.add("activeButton");
+        }
+        else {
+          button.classList.remove("activeButton")
+        }
+      };
+      timePeriod.value = newPeriod;
+    };
+    function messureChange (newDataType) {
+      let btnList = document.getElementById("type").getElementsByTagName("Button");
+      for (let button of btnList) {
+        if (button.name === newDataType) {
+          button.classList.add("activeButton");
+        }
+        else {
+          button.classList.remove("activeButton")
+        }
+      };
+      dataType.value = newDataType;
+    };
 
     // Check expansion / collapse of layers
     const layerExpanded = (offset) => {
@@ -86,7 +111,8 @@ export default {
       }
     });
 
-    return {isCo2, isData, layers, layerHeightCo2, layerHeightData,
+    return {t, timePeriod, dataType, periodChange, messureChange,
+            isCo2, isData, layers, layerHeightCo2, layerHeightData,
             scroll, scrollCo2Component, scrollDataComponent, show,
             stage, maxStage, nextStage, previousStage,
             layerExpanded, layerCollapsed };
@@ -96,9 +122,18 @@ export default {
 </script>
 
 <template>
-  <div v-if="show" :style="`--top: ${isCo2 ? -scrollCo2Component : 0}px`" class="history-wrapper">
+  <div id="time">
+    <button type="button" name="days" class="activeButton" @click='periodChange("days")'> {{ t('components.history.days') }}</button>
+    <button type="button" name="weeks" @click='periodChange("weeks")'> {{ t('components.history.weeks') }}</button>
+    <button type="button" name="months" @click='periodChange("months")'> {{ t('components.history.months') }}</button>
+  </div>
+  <div id="type">
+    <button type="button" name="co2" class="activeButton" @click='messureChange("co2")'> {{ t('global.co2') }}</button>
+    <button type="button" name="data" @click='messureChange("data")'> {{ t('global.data') }}</button>
+  </div>
+  <div class="history-wrapper">
     <stratum v-for="(layer, index) in layers" :key="index"
-      :type="type" :index="index" :stage="stage"
+      :type="dataType" :index="index" :stage="stage"
       :layer="layer"
       @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>
   </div>
@@ -108,9 +143,20 @@ export default {
   div {
     cursor: pointer;
   }
+  #time, #type {
+    display: flex;
+    width: 70%;
+  }
+  #time button, #type button {
+    flex-grow: 1;
+    cursor: pointer;
+    background-color: var(--activeBackground);
+    color: var(--activeColor);
+  }
   .history-wrapper {
-    margin-top: var(--top);
+    margin-top: var(20px);
     transition: margin-top 0.5s ease;
+    flex-grow: 1;
   }
   @media (prefers-color-scheme: dark) {
 

@@ -8,11 +8,28 @@
   "components": {
     "analogies": {},
     "analogy": {},
-    "AppFullpage": {},
-    "history": {}
+    "appFullpage": {},
+    "history": {
+      "days": "Days",
+      "weeks": "Weeks",
+      "months": "Months"
+    },
+    "popup": {
+      "messages": {
+        "openTab": "The extension will open in a new tab.",
+        "checkActivity": "You can then check your activity from that tab while browsing the internet.",
+        "accessPopup": "You can still access the extension pop-up window on any page by clicking the extension icon in the browser bar."
+      }
+    }
   },
   "global": {
+    "analogies": "Analogies",
+    "askAgain": "Do not ask again",
+    "cancel": "Cancel",
     "co2": "CO2",
-    "data": "Data"
+    "data": "Data",
+    "history": "History",
+    "newTab": "Open in new tab",
+    "statistics": "Statistics"
   }
 }

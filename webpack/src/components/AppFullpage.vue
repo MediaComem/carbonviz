@@ -19,7 +19,7 @@ export default {
 
   setup(props, context) {
     const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
-    const { t } = useI18n({})
+    const { t } = useI18n({});
 
     const subNav = ref([]);
     provide('setSubNav', nav => subNav.value = nav);

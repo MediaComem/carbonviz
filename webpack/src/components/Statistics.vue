@@ -9,7 +9,7 @@ export default {
 </script>
 
 <template>
-  <h1>Analogies</h1>
+  <h1>Statistics</h1>
 </template>
 
 <style>

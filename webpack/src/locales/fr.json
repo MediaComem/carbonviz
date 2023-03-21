@@ -8,11 +8,28 @@
   "components": {
     "analogies": {},
     "analogy": {},
-    "AppFullpage": {},
-    "history": {}
+    "appFullpage": {},
+    "history": {
+      "days": "Jours",
+      "weeks": "Semaines",
+      "months": "Mois"
+    },
+    "popup": {
+      "messages": {
+        "openTab": "L'extension s'ouvrira dans un nouvel onglet. Images aériennes Direction du cadastre.",
+        "checkActivity": "Vous pouvez ensuite vérifier votre activité à partir de cet onglet lorsque vous naviguez sur l'internet.",
+        "accessPopup": "Vous pouvez toujours accéder à la fenêtre contextuelle de l'extension sur n'importe quelle page en cliquant sur l'icône de l'extension dans la barre du navigateur."
+      }
+    }
   },
   "global": {
+    "analogies": "Analogies",
+    "askAgain": "Ne demandez pas à nouveau",
+    "cancel": "Annuler",
     "co2": "CO2",
-    "data": "Data"
+    "data": "Data",
+    "history": "Histoire",
+    "newTab": "Ouvrir dans un nouvel onglet",
+    "statistics": "statistiques"
   }
 }
