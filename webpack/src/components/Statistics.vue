@@ -1,7 +1,11 @@
 <script>
 import { computed, toRefs } from 'vue';
+import VueApexCharts from "vue3-apexcharts";
 
 export default {
+  components: {
+    apexchart: VueApexCharts
+  },
   setup() {
     return {};
   }
