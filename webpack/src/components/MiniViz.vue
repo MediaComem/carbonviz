@@ -76,7 +76,7 @@ export default {
 
 .actionContainer {
   position: fixed;
-  z-index: 1000;
+  z-index: 10000;
   width: 138px;
   height: 33px;
   line-height: 33px;
