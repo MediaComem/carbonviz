@@ -15,14 +15,17 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div id="liveVue">
     <iframe src="/popup/popup.html" width="500" height="600" frameBorder="0"></iframe>
   </div>
 </template>
 
 <style scoped>
+  #liveVue {
+    display: flex;
+  }
   iframe {
-    margin: 100px 0 0 250px;
+    margin: 5% auto;
     width: 500px;
     height: 600px;
   }

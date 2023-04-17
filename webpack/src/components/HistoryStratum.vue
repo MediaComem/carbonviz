@@ -1,4 +1,5 @@
 <script>
+import { useI18n } from 'vue-i18n'
 import { computed, inject, ref, toRefs, watch } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
 import { ElCarousel, ElCarouselItem, ElRow, ElCol } from 'element-plus';
@@ -24,6 +25,7 @@ export default {
   },
   emits: ['willExpand', 'willCollapse'],
   setup(props, { emit }) {
+    const { t } = useI18n({});
 
     const active_index = inject('active_index');
 
@@ -69,7 +71,7 @@ export default {
     });
     const expand = () => {
       // When expanded, we may need to move up or down the outer container
-      // to avoid hiding par tof the expanded layer
+      // to avoid hiding part of the expanded layer
       const isExpanded = expanded.value;
       active_index.value = isExpanded ? -1 : index.value;
       shouldAnimate.value = true;
@@ -124,6 +126,7 @@ export default {
     }
 
     return {
+      t,
       stratum,
       active_index, height,
       amount, legend,
@@ -178,8 +181,8 @@ export default {
       </el-col>
       <el-col :span="8" class="section graph">
         <div v-if="showGraph">
-          <div v-if="layer.level === 'week'" class="section-title bold">Weekly consumption</div>
-          <div v-if="layer.level === 'month'" class="section-title bold">Monthly consumption</div>
+          <div v-if="layer.level === 'week'" class="section-title bold"> {{ t('components.history.WeeklyConsumption') }}</div>
+          <div v-if="layer.level === 'month'" class="section-title bold"> {{ t('components.history.MonthlyConsumption') }} </div>
           <apexchart class="apexchart" type="bar" height="180" width="160" :options="options" :series="series"></apexchart>
         </div>
       </el-col>

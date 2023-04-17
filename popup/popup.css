@@ -6,7 +6,10 @@ body {
 body::-webkit-scrollbar {
   display: none; /* webkit: disable scrollbar */
 }
-
+#popupPage{
+  height: 600px;
+  width: 500px;
+}
 dialog {
   max-width: 350px;
   border-radius: 10px;

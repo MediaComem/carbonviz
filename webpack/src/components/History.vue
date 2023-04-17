@@ -5,16 +5,6 @@ import Stratum from './HistoryStratum.vue';
 import { computed, provide, watch, toRefs, ref } from 'vue';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
 
-/*
-interface HistoryLayerData {
-  amount: number,
-  label: string,
-}
-interface HistoryLayer extends HistoryLayerData{
-  details?: HistoryLayerData[]
-}
-*/
-
 export default {
   components: { Stratum },
 
@@ -98,19 +88,6 @@ export default {
       active_index.value = -1;
     })
 
-    watch(active_index, index => {
-      const navigation = window.document.querySelector('.navigation-boxes');
-      const menu = window.document.querySelector('.menu');
-      const expanded = index !== -1;
-      if (expanded) {
-        navigation.classList.add('outside');
-        menu.classList.add('outside');
-      } else {
-        navigation.classList.remove('outside');
-        menu.classList.remove('outside');
-      }
-    });
-
     return {t, timePeriod, dataType, periodChange, messureChange,
             isCo2, isData, layers, layerHeightCo2, layerHeightData,
             scroll, scrollCo2Component, scrollDataComponent, show,
@@ -131,11 +108,13 @@ export default {
     <button type="button" name="co2" class="activeButton" @click='messureChange("co2")'> {{ t('global.co2') }}</button>
     <button type="button" name="data" @click='messureChange("data")'> {{ t('global.data') }}</button>
   </div>
-  <div class="history-wrapper">
+  <div class="dataArea">
+    <div class="history-wrapper">
     <stratum v-for="(layer, index) in layers" :key="index"
       :type="dataType" :index="index" :stage="stage"
       :layer="layer"
       @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>
+    </div>
   </div>
 </template>
 
@@ -145,18 +124,52 @@ export default {
   }
   #time, #type {
     display: flex;
-    width: 70%;
+    height: 5%;
+    width: 100%;
   }
   #time button, #type button {
     flex-grow: 1;
     cursor: pointer;
+    border-radius: 5px;
     background-color: var(--activeBackground);
     color: var(--activeColor);
   }
+  .dataArea {
+    display: flex;
+    width: 100%;
+    height: 60%;
+  }
   .history-wrapper {
-    margin-top: var(20px);
+    margin-top: 5px;
     transition: margin-top 0.5s ease;
     flex-grow: 1;
+    width: 90%;
+    overflow-y: scroll;
+    position: relative;
+  }
+  /* Custom scrool */
+  .history-wrapper::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    left: 0;
+    z-index: 100;
+    scrollbar-width: thin;
+  }
+  .history-wrapper::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+  }
+  .history-wrapper::-webkit-scrollbar-thumb {
+    height: 6px;
+    border: 4px solid rgba(0, 0, 0, 0);
+    border-radius: 10px;
+    background-clip: padding-box;
+    -webkit-border-radius: 10px;
+    background: var(--grey);
+  }
+  .history-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-grey);
   }
   @media (prefers-color-scheme: dark) {
 

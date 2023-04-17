@@ -12,7 +12,9 @@
     "history": {
       "days": "Days",
       "weeks": "Weeks",
-      "months": "Months"
+      "months": "Months",
+      "WeeklyConsumption": "Weekly consumption",
+      "MonthlyConsumption": "Monthly consumption"
     },
     "popup": {
       "messages": {
@@ -29,7 +31,7 @@
     "co2": "CO2",
     "data": "Data",
     "history": "History",
-    "newTab": "Open in new tab",
+    "newTab": "Open main page",
     "statistics": "Statistics"
   }
 }
