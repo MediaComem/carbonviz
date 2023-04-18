@@ -35,14 +35,14 @@ export const getCurWeek = async (mode = 'co2') => {
     return byHours;
 }
 
-export const retrieveHistoryLayers = async () => {
+export const retrieveHistoryLayers = async (period) => {
     const year = new Date().getFullYear();
     const layersCo2 = [];
     const layersData = [];
 
     database ??= await initDB();
 
-    // get data (daily summaries) fo the last 4 months
+    // get data (daily summaries) for the last 4 months
     const dailyData = await getDailyAggregates('month', 4);
     if (!dailyData) {
         return { co2: layersCo2, data: layersData };
@@ -51,73 +51,95 @@ export const retrieveHistoryLayers = async () => {
     const currentMonth = today.month;
     const currentWeekYear = today.weekOfYear;
 
-    // get today
-    layersCo2.push({ amount: today.co2, energy: today.energy, label: 'Today', level: 'today' });
-    layersData.push({ amount: today.data, label: 'Today', level: 'today'  });
+    const getDaysList = () => {
+        for(let data of dailyData) {
+            layersCo2.push({ amount: data.co2, energy: data.energy, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day' });
+            layersData.push({ amount: data.data, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day'  });
+        }
+        layersCo2[layersCo2.length-1].label = 'current';
+        layersData[layersCo2.length-1].label = 'current';
+    }
 
-    // get current week days
-    let index = dailyData.length-2; // yesterday
-    let entry = dailyData[index]
-    let weekNb = entry ? entry.weekOfYear : -1;
-    while ( weekNb === currentWeekYear) {
-        layersCo2.push({ amount: entry.co2, energy: entry.energy, label: `${entry.date} ${months[entry.month - 1]} ${year}`, level: 'day' });
-        layersData.push({ amount: entry.data, label: `${entry.date} ${months[entry.month - 1]} ${year}`, level: 'day' });
-        index--;
-        entry = dailyData[index]
-        weekNb = entry ? entry.weekOfYear : -1;
-    }
-    // get last weeks including this week (til month start)
-    const previousWeeks = [];
-    let previousWeek = currentWeekYear;
-    while (previousWeeks.length < 4) {
-        const week = previousWeek > 0 ? previousWeek : 52;
-        previousWeeks.push(week);
-        previousWeek--;
-    }
-    for (const week of previousWeeks) {
-        const dailyWeekData = dailyData.filter(day => day.weekOfYear === week);
-        if (!dailyWeekData.length) {
-            continue;
+    const getWeeksList = () => {
+        // get last weeks including this week (til month start)
+        const endOfWeekRange = dailyData[0].weekOfYear;
+        const previousWeeks = [];
+        let previousWeek = currentWeekYear;
+        while (previousWeek >= endOfWeekRange) {
+            const week = previousWeek > 0 ? previousWeek : 52;
+            previousWeeks.push(week);
+            previousWeek--;
         }
-        const co2 = dailyWeekData.reduce((acc, entry) => acc + entry.co2, 0);
-        const energy = dailyWeekData.reduce((acc, entry) => acc + entry.energy, 0);
-        const data = dailyWeekData.reduce((acc, entry) => acc + entry.data, 0);
-        const detailsCo2 = dailyWeekData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek] } });
-        const detailsData = dailyWeekData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek] } });
-        layersCo2.push({ amount: co2, energy: energy, label: `Week ${week}`, details: detailsCo2, level: 'week' });
-        layersData.push({ amount: data, label: `Week ${week}`, details: detailsData, level: 'week' });
-    }
-    // get previous 3 months
-    const previousMonths = [];
-    let previousMonth = currentMonth - 1;
-    while (previousMonths.length < 3) {
-        const month = previousMonth > 0 ? previousMonth : previousMonth + 12;
-        previousMonths.push(month);
-        previousMonth--;
-    }
-    for (const month of previousMonths) {
-        const monthlyData = dailyData.filter(day => day.month === month);
-        if (!monthlyData.length) {
-            continue;
-        }
-        const co2 = monthlyData.reduce((acc, entry) => acc + entry.co2, 0);
-        const energy = monthlyData.reduce((acc, entry) => acc + entry.energy, 0);
-        const data = monthlyData.reduce((acc, entry) => acc + entry.data, 0);
-        // Display details per week of month data
-        const detailsCo2 = [];
-        const detailsData = [];
-        for (const weekOfMonth of [1, 2, 3, 4, 5]) {
-            const weeklyData = monthlyData.filter(day => day.weekOfMonth === weekOfMonth);
-            if (weeklyData.length) {
-                const co2 = weeklyData.reduce((acc, entry) => acc + entry.co2, 0);
-                const data = weeklyData.reduce((acc, entry) => acc + entry.data, 0);
-                detailsCo2.push({ amount: co2, label: `Week ${weekOfMonth}` });
-                detailsData.push({ amount: data, label: `Week ${weekOfMonth}` });
+        for (const week of previousWeeks) {
+            const dailyWeekData = dailyData.filter(day => day.weekOfYear === week);
+            if (!dailyWeekData.length) {
+                continue;
             }
+            const co2 = dailyWeekData.reduce((acc, entry) => acc + entry.co2, 0);
+            const energy = dailyWeekData.reduce((acc, entry) => acc + entry.energy, 0);
+            const data = dailyWeekData.reduce((acc, entry) => acc + entry.data, 0);
+            const detailsCo2 = dailyWeekData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek] } });
+            const detailsData = dailyWeekData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek] } });
+            layersCo2.unshift({ amount: co2, energy: energy, label: `${week}`, details: detailsCo2, level: 'week' });
+            layersData.unshift({ amount: data, label: `${week}`, details: detailsData, level: 'week' });
         }
 
-        layersCo2.push({ amount: co2, energy: energy, label: `Month ${month}`, details: detailsCo2, level: 'month' });
-        layersData.push({ amount: data, label: `Month ${month}`, details: detailsData, level: 'month' });
+        layersCo2[layersCo2.length-1].label = 'current';
+        layersData[layersCo2.length-1].label = 'current';
+        // reverse order for 
+      
+    }
+
+    const getMonthsList = () => {
+        // get previous 3 months
+        const previousMonths = [];
+        let previousMonth = currentMonth;
+        while (previousMonths.length < 3) {
+            const month = previousMonth > 0 ? previousMonth : previousMonth + 12;
+            previousMonths.push(month);
+            previousMonth--;
+        }
+        for (const month of previousMonths) {
+            const monthlyData = dailyData.filter(day => day.month === month);
+            if (!monthlyData.length) {
+                continue;
+            }
+            const co2 = monthlyData.reduce((acc, entry) => acc + entry.co2, 0);
+            const energy = monthlyData.reduce((acc, entry) => acc + entry.energy, 0);
+            const data = monthlyData.reduce((acc, entry) => acc + entry.data, 0);
+            // Display details per week of month data
+            const detailsCo2 = [];
+            const detailsData = [];
+            for (const weekOfMonth of [1, 2, 3, 4, 5]) {
+                const weeklyData = monthlyData.filter(day => day.weekOfMonth === weekOfMonth);
+                if (weeklyData.length) {
+                    const co2 = weeklyData.reduce((acc, entry) => acc + entry.co2, 0);
+                    const data = weeklyData.reduce((acc, entry) => acc + entry.data, 0);
+                    detailsCo2.push({ amount: co2, label: `${weekOfMonth}` });
+                    detailsData.push({ amount: data, label: `${weekOfMonth}` });
+                }
+            }
+
+            layersCo2.unshift({ amount: co2, energy: energy, label: `${month}`, details: detailsCo2, level: 'month' });
+            layersData.unshift({ amount: data, label: `${month}`, details: detailsData, level: 'month' });
+        }
+
+        layersCo2[layersCo2.length-1].label = 'current';
+        layersData[layersCo2.length-1].label = 'current';
+    }
+
+    switch(period) {
+        case 'days':
+            getDaysList();
+            break;
+        case 'weeks':
+            getWeeksList();
+            break;
+        case 'months':
+            getMonthsList();
+            break;
+        default:
+            getDaysList();
     }
 
    return { co2: layersCo2, data: layersData };

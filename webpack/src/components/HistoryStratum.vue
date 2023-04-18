@@ -114,16 +114,20 @@ export default {
         return;
       }
       expanded.value = active;
+      updateDetailsGraph();
     });
 
     let showGraph = false;
     let options, series;
-    if (layerInfo.details) {
-      showGraph = layerInfo.details;
-      const chart = layerChart(type.value, layerInfo.details);
-      options = chart.options;
-      series = chart.series;
+    function updateDetailsGraph() {
+      if (layerInfo.details) {
+        showGraph = layerInfo.details;
+        const chart = layerChart(type.value, layerInfo.details);
+        options = chart.options;
+        series = chart.series;
+      }
     }
+
 
     return {
       t,
@@ -155,12 +159,14 @@ export default {
   >
     <el-row justify="center" align="middle" class="summary">
       <el-col :span="12">
-        <div class="label bold">{{ layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
+        <div class="label bold"> {{ layer.label === 'current' ? t('global.current.'+layer.level) : 
+         layer.level != 'day' ? t('global.'+layer.level) + ' ' + layer.label : layer.label }} </div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
       </el-col>
     </el-row>
     <el-row class="details">
       <el-col :span="4">
-        <div class="title bold">{{ layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
+        <div class="title bold"> {{ layer.label === 'current' ? t('global.current.'+layer.level) : 
+         layer.level != 'day' ? t('global.'+layer.level) + ' ' + layer.label : layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
       </el-col>
       <el-col :span="4" class="section info">
         <div class="amount">

@@ -14,7 +14,7 @@ export default {
     // Default app settings
     const defaultOptions = { debounce: true, showTabConfirmation: true, showOnBoarding: true };
     let userOptions = defaultOptions;
-    
+
     let fullpageTabIndex = undefined;
     let page = 'Live';
     let url = `fullpage/fullpage.html#${page}`;
@@ -24,9 +24,9 @@ export default {
     }
     const options = {
       url,
-      active: false // initial false value to allow any promise on chrome.tabs.create to run 
+      active: false // initial false value to allow any promise on chrome.tabs.create to run
     };
-    
+
     let currentView = ref("history");
     const { t } = useI18n({});
 
@@ -55,7 +55,7 @@ export default {
       }
       else {
         createNewTab();
-      }      
+      }
     }
     // set new tab index to local storage
     async function createNewTab() {
