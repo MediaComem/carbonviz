@@ -56,8 +56,8 @@ export const retrieveHistoryLayers = async (period) => {
             layersCo2.push({ amount: data.co2, energy: data.energy, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day' });
             layersData.push({ amount: data.data, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day'  });
         }
-        layersCo2[layersCo2.length-1].label = 'current';
-        layersData[layersCo2.length-1].label = 'current';
+        layersCo2[layersCo2.length-1].label = 'current_day';
+        layersData[layersCo2.length-1].label = 'current_day';
     }
 
     const getWeeksList = () => {
@@ -84,8 +84,8 @@ export const retrieveHistoryLayers = async (period) => {
             layersData.unshift({ amount: data, label: `${week}`, details: detailsData, level: 'week' });
         }
 
-        layersCo2[layersCo2.length-1].label = 'current';
-        layersData[layersCo2.length-1].label = 'current';
+        layersCo2[layersCo2.length-1].label = 'current_week';
+        layersData[layersCo2.length-1].label = 'current_week';
         // reverse order for 
       
     }
@@ -124,8 +124,8 @@ export const retrieveHistoryLayers = async (period) => {
             layersData.unshift({ amount: data, label: `${month}`, details: detailsData, level: 'month' });
         }
 
-        layersCo2[layersCo2.length-1].label = 'current';
-        layersData[layersCo2.length-1].label = 'current';
+        layersCo2[layersCo2.length-1].label = 'current_month';
+        layersData[layersCo2.length-1].label = 'current_month';
     }
 
     switch(period) {

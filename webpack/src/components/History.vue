@@ -110,7 +110,7 @@ export default {
   </div>
   <div class="dataArea">
     <div class="history-wrapper">
-    <stratum v-for="(layer, index) in layers" :key="index"
+    <stratum v-for="(layer, index) in layers" :key="layer.label"
       :type="dataType" :index="index" :stage="stage"
       :layer="layer"
       @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>

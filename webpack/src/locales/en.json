@@ -35,10 +35,8 @@
     "statistics": "Statistics",
     "week": "Week",
     "month": "Month",
-    "current": {
-      "day": "Today",
-      "week": "This week",
-      "month": "This month"
-    }
+    "current_day": "Today",
+    "current_week": "This week",
+    "current_month": "This month"
   }
 }
