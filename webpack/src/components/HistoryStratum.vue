@@ -114,18 +114,15 @@ export default {
         return;
       }
       expanded.value = active;
-      updateDetailsGraph();
     });
 
     let showGraph = false;
     let options, series;
-    function updateDetailsGraph() {
-      if (layerInfo.details) {
-        showGraph = layerInfo.details;
-        const chart = layerChart(type.value, layerInfo.details);
-        options = chart.options;
-        series = chart.series;
-      }
+    if (layerInfo.details) {
+      showGraph = layerInfo.details;
+      const chart = layerChart(type.value, layerInfo.details);
+      options = chart.options;
+      series = chart.series;
     }
 
 
