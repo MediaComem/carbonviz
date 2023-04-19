@@ -9,8 +9,10 @@ import "./assets/base.css";
 import en from './locales/en.json'
 import fr from './locales/fr.json'
 
+const userLang = navigator.languages[0].slice(0, 2);
+
 const i18n = createI18n({
-  locale: 'fr',
+  locale: userLang,
   legacy: false,
   messages: {
     en,
