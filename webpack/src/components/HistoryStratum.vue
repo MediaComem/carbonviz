@@ -97,8 +97,8 @@ export default {
           } else if (layerPosition.top < barHeight){ // top of the layer is already partially outside
             outerOffsetNeeded = layerPosition.top - barHeight;
           }
-          break;
         }
+        break;
         default:
           throw('Invalid layer type');
       }
