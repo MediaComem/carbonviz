@@ -73,7 +73,7 @@ export default {
       // When expanded, we may need to move up or down the outer container
       // to avoid hiding part of the expanded layer
       const isExpanded = expanded.value;
-      active_index.value = isExpanded ? -1 : index.value;
+      active_index.value = isExpanded ? -1 : type.value+index.value;
       shouldAnimate.value = true;
       // check offset
       const layerPosition = stratum.value.getBoundingClientRect();
@@ -109,7 +109,7 @@ export default {
       }
     };
     watch(active_index, () => {
-      const active = active_index.value===index.value;
+      const active = active_index.value===(type.value+index.value);
       if(!expanded.value && !active) {
         return;
       }
