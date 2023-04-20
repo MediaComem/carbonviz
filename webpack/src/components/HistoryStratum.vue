@@ -26,11 +26,8 @@ export default {
   emits: ['willExpand', 'willCollapse'],
   setup(props, { emit }) {
     const { t } = useI18n({});
-
     const active_index = inject('active_index');
-
     const stratum = ref(null);
-
     const fullHeight = 200;
     const barHeight = 37;
     const historyHeight = 600 - barHeight /* container - bottom bar*/;
@@ -58,6 +55,10 @@ export default {
         default:
           throw('Invalid layer type');
       }
+    });
+    const layerName = computed(() => {
+      return layerInfo.label.startsWith('current') ? t('global.'+layerInfo.label) : 
+         layerInfo.level != 'day' ? t('global.'+layerInfo.level) + ' ' + layerInfo.label : layerInfo.label
     });
     const legend = computed(() => {
       switch(type.value) {
@@ -125,12 +126,11 @@ export default {
       series = chart.series;
     }
 
-
     return {
       t,
       stratum,
       active_index, height,
-      amount, legend,
+      amount, legend, layerName,
       expanded, expand, shouldAnimate,
       showGraph, options, series
     };
@@ -156,14 +156,12 @@ export default {
   >
     <el-row justify="center" align="middle" class="summary">
       <el-col :span="12">
-        <div class="label bold"> {{ layer.label.startsWith('current') ? t('global.'+layer.label) : 
-         layer.level != 'day' ? t('global.'+layer.level) + ' ' + layer.label : layer.label }} </div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
+        <div class="label bold"> {{ layerName }} </div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
       </el-col>
     </el-row>
     <el-row class="details">
       <el-col :span="4">
-        <div class="title bold"> {{ layer.label.startsWith('current') ? t('global.'+layer.label) : 
-         layer.level != 'day' ? t('global.'+layer.level) + ' ' + layer.label : layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
+        <div class="title bold"> {{ layerName }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
       </el-col>
       <el-col :span="4" class="section info">
         <div class="amount">
