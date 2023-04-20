@@ -14,7 +14,7 @@ export default {
     // Default app settings
     const defaultOptions = { debounce: true, showTabConfirmation: true, showOnBoarding: true };
     let userOptions = defaultOptions;
-    
+
     let fullpageTabIndex = undefined;
     let page = 'Live';
     let url = `fullpage/fullpage.html#${page}`;
@@ -24,11 +24,11 @@ export default {
     }
     const options = {
       url,
-      active: false // initial false value to allow any promise on chrome.tabs.create to run 
+      active: false // initial false value to allow any promise on chrome.tabs.create to run
     };
-    
+
     let currentView = ref("history");
-    const { t } = useI18n({});
+    const { t, locale } = useI18n();
 
     function openNewTabDialog () {
       const openTabDialog = window.document.getElementById("tabDialog");
@@ -38,6 +38,10 @@ export default {
         // The <dialog> API is not supported by this browser
         addPluginToNewTab();
       }
+    }
+
+    function changeLang(lang) {
+      this.locale = lang;
     }
 
     async function addPluginToNewTab() {
@@ -55,7 +59,7 @@ export default {
       }
       else {
         createNewTab();
-      }      
+      }
     }
     // set new tab index to local storage
     async function createNewTab() {
@@ -70,7 +74,7 @@ export default {
       currentView.value = newTab;
     }
 
-    return { t, currentView, openNewTabDialog, viewChange, addPluginToNewTab};
+    return { t, locale, currentView, openNewTabDialog, changeLang, viewChange, addPluginToNewTab};
   }
 }
 
@@ -105,6 +109,7 @@ export default {
         <h2 data-area="title"> {{ t('appTitle') }} </h2>
         <div data-area="logo" id="openTab"></div>
         <button id="openNewTab" @click='openNewTabDialog()'> {{ t('global.newTab') }} </button>
+        <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>
         <div data-area="logo" id="logoEquiwatt"></div>
       </div>
     </div>
@@ -146,6 +151,10 @@ export default {
 }
 #openNewTab {
   color: var(--grey);
+}
+#lang {
+  display: flex;
+  align-items: center;
 }
 /* title */
 [data-area="title"] {

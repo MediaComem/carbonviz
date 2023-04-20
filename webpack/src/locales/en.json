@@ -32,6 +32,11 @@
     "data": "Data",
     "history": "History",
     "newTab": "Open main page",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "week": "Week",
+    "month": "Month",
+    "current_day": "Today",
+    "current_week": "This week",
+    "current_month": "This month"
   }
 }

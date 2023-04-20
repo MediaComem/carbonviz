@@ -1,4 +1,4 @@
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { retrieveHistoryLayers } from './storage';
 
 const MAX_HEIGHT = 150;
@@ -13,7 +13,7 @@ const layerHeightData = (amount) => {
   return Math.min(height, MAX_HEIGHT);
 }
 
-const setup = (type) => {
+const setup = (type, period) => {
   const maxHeight = 600;
   const barHeight = 37;
 
@@ -25,13 +25,12 @@ const setup = (type) => {
   const maxStage = ref(0);
 
   const totalHeight = ref(0);
-  const isData = type === 'data';
-  const isCo2 = type === 'co2';
-
+  const isData = computed(() => type.value === 'data');
+  const isCo2 = computed(() => type.value === 'co2');
 
   const updateScroll = () => {
     let layer;
-    if (isCo2) {
+    if (isCo2.value) {
       if (stage.value === 0) {
         layer = layers.value[layers.value.length-1];
         if (!layer) {
@@ -44,7 +43,7 @@ const setup = (type) => {
         scroll.value = Math.max(totalHeight.value - stage.value*maxHeight, -37 /* top bar*/);
       };
     }
-    if (isData) {
+    if (isData.value) {
       if (stage.value === 0) {
         layer = layers.value[0];
         if (!layer) {
@@ -61,15 +60,15 @@ const setup = (type) => {
 
   const retrieveData = async () => {
     // get layers from history
-    const { co2, data } = await retrieveHistoryLayers();
+    const { co2, data } = await retrieveHistoryLayers(period.value);
 
-    if (isCo2) {
+    if (isCo2.value) {
       layers.value = co2.reverse();
       // layer height (+1px border)
       totalHeight.value = layers.value.reduce((acc, layer) => acc + layerHeightCo2(layer.amount) + 1, 0);
     }
-    if(isData) {
-      layers.value = data;
+    if(isData.value) {
+      layers.value = data.reverse();
       // layer height (+1px border)
       totalHeight.value = layers.value.reduce((acc, layer) => acc + layerHeightData(layer.amount) + 1, 0);
     }
@@ -89,6 +88,8 @@ const setup = (type) => {
       stage.value = 0;
     }
   });
+  watch(period, retrieveData)
+  watch(type, retrieveData)
 
   const nextStage = () => {
     if (stage.value === maxStage.value) {

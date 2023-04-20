@@ -26,11 +26,8 @@ export default {
   emits: ['willExpand', 'willCollapse'],
   setup(props, { emit }) {
     const { t } = useI18n({});
-
     const active_index = inject('active_index');
-
     const stratum = ref(null);
-
     const fullHeight = 200;
     const barHeight = 37;
     const historyHeight = 600 - barHeight /* container - bottom bar*/;
@@ -59,6 +56,10 @@ export default {
           throw('Invalid layer type');
       }
     });
+    const layerName = computed(() => {
+      return layerInfo.label.startsWith('current') ? t('global.'+layerInfo.label) : 
+         layerInfo.level != 'day' ? t('global.'+layerInfo.level) + ' ' + layerInfo.label : layerInfo.label
+    });
     const legend = computed(() => {
       switch(type.value) {
         case 'co2':
@@ -73,7 +74,7 @@ export default {
       // When expanded, we may need to move up or down the outer container
       // to avoid hiding part of the expanded layer
       const isExpanded = expanded.value;
-      active_index.value = isExpanded ? -1 : index.value;
+      active_index.value = isExpanded ? -1 : type.value+layerInfo.level+index.value;
       shouldAnimate.value = true;
       // check offset
       const layerPosition = stratum.value.getBoundingClientRect();
@@ -97,8 +98,8 @@ export default {
           } else if (layerPosition.top < barHeight){ // top of the layer is already partially outside
             outerOffsetNeeded = layerPosition.top - barHeight;
           }
-          break;
         }
+        break;
         default:
           throw('Invalid layer type');
       }
@@ -109,7 +110,7 @@ export default {
       }
     };
     watch(active_index, () => {
-      const active = active_index.value===index.value;
+      const active = active_index.value===(type.value+layerInfo.level+index.value);
       if(!expanded.value && !active) {
         return;
       }
@@ -129,7 +130,7 @@ export default {
       t,
       stratum,
       active_index, height,
-      amount, legend,
+      amount, legend, layerName,
       expanded, expand, shouldAnimate,
       showGraph, options, series
     };
@@ -155,12 +156,12 @@ export default {
   >
     <el-row justify="center" align="middle" class="summary">
       <el-col :span="12">
-        <div class="label bold">{{ layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
+        <div class="label bold"> {{ layerName }} </div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
       </el-col>
     </el-row>
     <el-row class="details">
       <el-col :span="4">
-        <div class="title bold">{{ layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
+        <div class="title bold"> {{ layerName }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
       </el-col>
       <el-col :span="4" class="section info">
         <div class="amount">

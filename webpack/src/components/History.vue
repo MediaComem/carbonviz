@@ -15,7 +15,7 @@ export default {
 		const active_index = ref(-1);
 		provide('active_index', active_index);
 
-    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = setupHistoryLayers(dataType.value);
+    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = setupHistoryLayers(dataType, timePeriod);
     const isCo2 = computed(() => dataType.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const isData = computed(() => dataType.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const scrollDataComponent = ref(0);
@@ -110,7 +110,7 @@ export default {
   </div>
   <div class="dataArea">
     <div class="history-wrapper">
-    <stratum v-for="(layer, index) in layers" :key="index"
+    <stratum v-for="(layer, index) in layers" :key="layer.key"
       :type="dataType" :index="index" :stage="stage"
       :layer="layer"
       @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>

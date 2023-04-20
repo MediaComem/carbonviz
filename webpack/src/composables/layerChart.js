@@ -10,10 +10,15 @@ const fontWeight = 900;
 export default function (type, periods) {
   const length = periods.length;
   const max = periods.reduce((max, period) => Math.max(period.amount, max), 0);
+  let barChartColors = Array(length).fill(colorBars);
+  if(periods.length > 1) {
+    const maxIndex = periods.findIndex(period => period.amount === Math.max(...periods.map(period => period.amount)));
+    barChartColors[maxIndex] = '#e2786b';
+  }
   const options =  {
     fill: {opacity: 1},
     tooltip: {enabled: false},
-    colors: Array(length).fill(colorBars),
+    colors: barChartColors,
     dataLabels: {
       enabled: true,
       textAnchor: type === 'co2' ? 'end' : 'start',
@@ -41,7 +46,7 @@ export default function (type, periods) {
         show:true, align: 'left', offsetX: 6, offsetY: 2,
         style: {
           fontFamily, fontWeight,
-          colors: Array(length).fill(colorLabel),
+          colors: Array(length).fill(colorBars),
         }
       },
       axisTicks: {show: false},
@@ -56,9 +61,12 @@ export default function (type, periods) {
     },
     plotOptions: {
       bar: {
-        horizontal: true,
-        dataLabels: {position: 'bottom'}
+        distributed: true,
+        horizontal: true
       }
+    },
+    legend: {
+      show: false,
     }
   };
   const series = [{data: periods.map( period => period.amount)}];
