@@ -53,8 +53,8 @@ export const retrieveHistoryLayers = async (period) => {
 
     const getDaysList = () => {
         for(let data of dailyData) {
-            layersCo2.push({ amount: data.co2, energy: data.energy, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day', key: `c02${data.date}` });
-            layersData.push({ amount: data.data, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day', key: `data${data.date}`  });
+            layersCo2.push({ amount: data.co2, energy: data.energy, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day', key: `c02Day${data.date}` });
+            layersData.push({ amount: data.data, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day', key: `dataDay${data.date}`  });
         }
         layersCo2[layersCo2.length-1].label = 'current_day';
         layersData[layersCo2.length-1].label = 'current_day';
@@ -78,10 +78,10 @@ export const retrieveHistoryLayers = async (period) => {
             const co2 = dailyWeekData.reduce((acc, entry) => acc + entry.co2, 0);
             const energy = dailyWeekData.reduce((acc, entry) => acc + entry.energy, 0);
             const data = dailyWeekData.reduce((acc, entry) => acc + entry.data, 0);
-            const detailsCo2 = dailyWeekData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek], key: `c02${days[entry.dayOfWeek]}` } });
-            const detailsData = dailyWeekData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek], key: `data${days[entry.dayOfWeek]}` } });
-            layersCo2.unshift({ amount: co2, energy: energy, label: `${week}`, details: detailsCo2, level: 'week', key: `c02${week}` });
-            layersData.unshift({ amount: data, label: `${week}`, details: detailsData, level: 'week', key: `data${week}` });
+            const detailsCo2 = dailyWeekData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek], key: `c02Week${days[entry.dayOfWeek]}` } });
+            const detailsData = dailyWeekData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek], key: `dataWeek${days[entry.dayOfWeek]}` } });
+            layersCo2.unshift({ amount: co2, energy: energy, label: `${week}`, details: detailsCo2, level: 'week', key: `c02Week${week}` });
+            layersData.unshift({ amount: data, label: `${week}`, details: detailsData, level: 'week', key: `dataWeek${week}` });
         }
 
         layersCo2[layersCo2.length-1].label = 'current_week';
@@ -115,13 +115,13 @@ export const retrieveHistoryLayers = async (period) => {
                 if (weeklyData.length) {
                     const co2 = weeklyData.reduce((acc, entry) => acc + entry.co2, 0);
                     const data = weeklyData.reduce((acc, entry) => acc + entry.data, 0);
-                    detailsCo2.push({ amount: co2, label: `${weekOfMonth}`, key: `c02${weekOfMonth}`});
-                    detailsData.push({ amount: data, label: `${weekOfMonth}`, key: `data${weekOfMonth}` });
+                    detailsCo2.push({ amount: co2, label: `${weekOfMonth}`, key: `c02Month${weekOfMonth}`});
+                    detailsData.push({ amount: data, label: `${weekOfMonth}`, key: `dataMonth${weekOfMonth}` });
                 }
             }
 
-            layersCo2.unshift({ amount: co2, energy: energy, label: `${month}`, details: detailsCo2, level: 'month', key: `c02${month}` });
-            layersData.unshift({ amount: data, label: `${month}`, details: detailsData, level: 'month', key: `data${month}` });
+            layersCo2.unshift({ amount: co2, energy: energy, label: `${month}`, details: detailsCo2, level: 'month', key: `c02Month${month}` });
+            layersData.unshift({ amount: data, label: `${month}`, details: detailsData, level: 'month', key: `dataMonth${month}` });
         }
 
         layersCo2[layersCo2.length-1].label = 'current_month';
