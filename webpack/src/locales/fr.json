@@ -6,7 +6,43 @@
     "fr": "Français"
   },
   "components": {
-    "analogies": {},
+    "analogies": {
+      "message": "Vous avez consommé\nautant d'énergie que :",
+      "smartPhone": "recharges de smartphone",
+      "streaming": "minutes de streaming",
+      "marathon": "d'un marathon",
+      "marathons": "marathons",
+      "swimming": "mètres nageant dans la mer",
+      "swimmings": "kilomètres nageant dans la mer",
+      "biking": "kilomètres de cyclisme",
+      "cooking": "pizzas surgelées cuites",
+      "boiling": "litres d'eau bouillie",
+      "sawing": "planches de bois scié",
+      "dictionaries": "dictionnaires illustrés",
+      "instagram": "instagram pictures",
+      "music": "minutes de musique en streaming",
+      "netflix": "épisodes Netflix UHD",
+      "wordFile": "pages d'un fichier word",
+      "wordFileMillion": "millions de pages de fichier word",
+      "usb": "ancienne clé USB (8 MB)",
+      "number": {
+        "marathon": "courir {number}% d'un marathon",
+        "marathons": "courir {number} marathons",
+        "swimming": "nager {number}m dans la mer",
+        "swimmings": "nager {number}km dans la mer",
+        "biking": "cyclisme {number}km",
+        "cooking": "cuisson de {number} pizzas surgelées",
+        "boiling": "faire bouillir {number}L d'eau",
+        "sawing": "scier {number} planches de bois",
+        "dictionaries": "{number} dictionnaires illustrés",
+        "instagram": "{number} instagram pictures",
+        "music": "{number} minutes de musique en streaming",
+        "netflix": "{number} épisodes Netflix UHD",
+        "wordFile": "{number} pages d'un fichier word",
+        "wordFileMillion": "{number} millions de pages de fichier word",
+        "usb": "{number} ancienne clé USB (8 MB)"
+      }
+    },
     "analogy": {},
     "appFullpage": {},
     "history": {
@@ -29,14 +65,15 @@
     "askAgain": "Ne demandez pas à nouveau",
     "cancel": "Annuler",
     "co2": "CO2",
-    "data": "Data",
+    "data": "Données",
     "history": "Histoire",
     "newTab": "Ouvrir page principale",
     "statistics": "statistiques",
     "week": "Semaine",
     "month": "Mois",
-    "current_day": "Aujourd'hui",
+    "current_today": "Aujourd'hui",
     "current_week": "Cette semaine",
-    "current_month": "Ce mois"
+    "current_month": "Ce mois",
+    "current_year": "Depuis Janvier {year}"
   }
 }

@@ -46,7 +46,7 @@ export default function (type, periods) {
         show:true, align: 'left', offsetX: 6, offsetY: 2,
         style: {
           fontFamily, fontWeight,
-          colors: Array(length).fill(colorBars),
+          colors: Array(length).fill(colorLabel),
         }
       },
       axisTicks: {show: false},

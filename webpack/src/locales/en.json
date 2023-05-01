@@ -6,7 +6,43 @@
     "fr": "Français"
   },
   "components": {
-    "analogies": {},
+    "analogies": {
+      "message": "You have consumed\nas much energy as:",
+      "smartPhone": "smartphone recharges",
+      "streaming": "minutes of streaming",
+      "marathon": "of a marathon",
+      "marathons": "marathons",
+      "swimming": "meters swimming in the sea",
+      "swimmings": "kilometers swimming in the sea",
+      "biking": "kilometers biking",
+      "cooking": "frozen pizzas cooked",
+      "boiling": "litres of boiling water",
+      "sawing": "wood boards sawed",
+      "dictionaries": "illustrated dictionaries",
+      "instagram": "instagram pictures",
+      "music": "minutes of streaming music",
+      "netflix": "Netflix UHD episodes",
+      "wordFile": "pages of a word file",
+      "wordFileMillion": "million pages of word file",
+      "usb": "old USB Stick (8 MB)",
+      "number": {
+        "marathon": "running {number}% of a marathon",
+        "marathons": "running {number} marathons",
+        "swimming": "swimming {number}m in the sea",
+        "swimmings": "swimming {number}km in the sea",
+        "biking": "biking {number}km",
+        "cooking": "cooking {number} frozen pizzas",
+        "boiling": "boiling {number}L of water",
+        "sawing": "sawing {number} wood boards",
+        "dictionaries": "{number} illustrated dictionaries",
+        "instagram": "{number} instagram pictures",
+        "music": "{number} minutes of streaming music",
+        "netflix": "{number} Netflix UHD episodes",
+        "wordFile": "{number} pages of a word file",
+        "wordFileMillion": "{number} million pages of word file",
+        "usb": "{number} old USB Stick (8 MB)"
+      }
+    },
     "analogy": {},
     "appFullpage": {},
     "history": {
@@ -35,8 +71,9 @@
     "statistics": "Statistics",
     "week": "Week",
     "month": "Month",
-    "current_day": "Today",
+    "current_today": "Today",
     "current_week": "This week",
-    "current_month": "This month"
+    "current_month": "This month",
+    "current_year": "Since January {year}"
   }
 }
