@@ -43,45 +43,36 @@ export default {
     };
 
     function getAnalogyValue(value) {
-      let amount = 0;
-      let currentAnalogy = '';
       if(dataType.value === 'co2') {
         // analogies based on energy (switch energy MJ to kWh)
-        amount = 0.278 * value.energy;
-        currentAnalogy = this.analogyNamesCo2[this.activeIndex];
+        const amount = 0.278 * value.energy;
+        const currentAnalogy = this.analogyNamesCo2[this.activeIndex];
         const kwPerUnit = kwPerUnitCo2[currentAnalogy];
-        let number = 0;
-        const precisionAnalogys = ['cooking','boiling'];
-        if (precisionAnalogys.includes(currentAnalogy)) {
-          number = roundToPrecision(amount/kwPerUnit, 1);
-        } else {
-          number = Math.floor(amount / kwPerUnit);
+        let number = Math.floor(amount/kwPerUnit);
+        switch(currentAnalogy) {
+          case 'marathon':
+            if(number < 1) {
+              number = Math.ceil(100* amount / kwPerUnit)+'%';
+            }
+            break;
+          case 'swimming':
+            if(number > 1000) {
+              number = Math.ceil(number/1000);
+            }
+            break;
+          case 'cooking':
+          case 'boiling':
+            number = roundToPrecision(amount/kwPerUnit, 1);
+            break;
         }
-        // index 0,1 (running, swimming) have two units
-        if (this.activeIndex === 0) {
-          if(number < 1) {
-            number = Math.ceil(100* amount / kwPerUnit);
-            return number;
-          } else {
-            return number;
-          }
-        } else if (this.activeIndex === 1) {
-          if(number < 1000) {
-            return number;
-          } else {
-            number = Math.ceil(number/1000);
-            return number;
-          }
-        } else {
-          return number;
-        }
+        return number;
       }
       else {
         // data in MB for analogies
-        amount = value.amount / 1000000;
-        currentAnalogy = this.analogyNamesData[this.activeIndex];
+        const amount = value.amount / 1000000;
+        const currentAnalogy = this.analogyNamesData[this.activeIndex];
         const mbPerUnit = mbPerUnitData[currentAnalogy];
-        let number = 0;
+        let number = Math.floor(amount/mbPerUnit);
         switch(currentAnalogy) {
           case "dictionaries":
             number = roundToPrecision(amount/mbPerUnit, 1);
@@ -90,24 +81,57 @@ export default {
             number = roundToPrecision(amount/mbPerUnit, 2);
             break;
           case "wordFile":
-            number = Math.floor(amount / mbPerUnit);
             if (number > 1000000) {
-              number = Math.ceil(number/1000000)+" million";
+              number = Math.ceil(number/1000000);
             }
             break;
-          default:
-            number = Math.floor(amount/mbPerUnit);
         }
-
         return number;
       }
     };
 
-    function getAnalogyText() {
+    function getAnalogyText(data) {
       if (dataType.value === "co2") {
-        return this.t(`components.analogies.${this.analogyNamesCo2[this.activeIndex]}`);
+        const amount = 0.278 * data.energy;
+        const currentAnalogy = this.analogyNamesCo2[this.activeIndex];
+        const kwPerUnit = kwPerUnitCo2[currentAnalogy];
+        let number = Math.floor(amount/kwPerUnit);
+        let largeScale = false;
+        switch(currentAnalogy) {
+          case 'marathon':
+            if(number > 1) {
+              largeScale = true;
+            }
+            break;
+          case 'swimming':
+            if(number > 1000) {
+              largeScale = true;
+            }
+            break;
+        }
+        if(largeScale) {
+          return this.t(`components.analogies.${this.analogyNamesCo2[this.activeIndex]}s`);
+        } else {
+          return this.t(`components.analogies.${this.analogyNamesCo2[this.activeIndex]}`);
+        }
       } else {
-        return this.t(`components.analogies.${this.analogyNamesData[this.activeIndex]}`);
+        const amount = data.amount / 1000000;
+        const currentAnalogy = this.analogyNamesData[this.activeIndex];
+        const mbPerUnit = mbPerUnitData[currentAnalogy];
+        let number = Math.floor(amount/mbPerUnit);
+        let largeScale = false;
+        switch(currentAnalogy) {
+          case 'wordFile':
+            if (number > 1000000) {
+              largeScale = true;
+            }
+            break;
+        }
+        if(largeScale) {
+          return this.t(`components.analogies.${this.analogyNamesData[this.activeIndex]}s`);
+        } else {
+          return this.t(`components.analogies.${this.analogyNamesData[this.activeIndex]}`);
+        }
       }
     };
 
@@ -139,8 +163,8 @@ export default {
   <div class="stats">
     <div v-for="(value, key) in layer">
       <p> {{ getAnalogyValue(value) }} </p>
-      <p> {{ getAnalogyText() }} </p>
-      <p> {{ t(`global.current_${key}`) }} </p>
+      <p> {{ getAnalogyText(value) }} </p>
+      <p> {{ key === 'year' ? t(`global.last.${key}`)+this.currentYear : t(`global.last.${key}`) }} </p>
     </div>
   </div>
 </template>

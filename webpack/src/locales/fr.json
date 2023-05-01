@@ -23,7 +23,7 @@
       "music": "minutes de musique en streaming",
       "netflix": "épisodes Netflix UHD",
       "wordFile": "pages d'un fichier word",
-      "wordFileMillion": "millions de pages de fichier word",
+      "wordFiles": "millions de pages de fichier word",
       "usb": "ancienne clé USB (8 MB)",
       "number": {
         "marathon": "courir {number}% d'un marathon",
@@ -74,6 +74,12 @@
     "current_today": "Aujourd'hui",
     "current_week": "Cette semaine",
     "current_month": "Ce mois",
-    "current_year": "Depuis Janvier {year}"
+    "current_year": "Depuis Janvier {year}",
+    "last": {
+      "today": "Aujourd'hui",
+      "week": "Les 7 derniers jours",
+      "month": "Les 30 derniers jours",
+      "year": "Depuis janvier {year}"
+    }
   }
 }

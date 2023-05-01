@@ -173,7 +173,7 @@ export const retrieveAnalogiesLayer = async (type) => {
     consumedCo2.today = { amount: today.co2, energy: today.energy, level: 'day', key: `co2Day${today.date}` };
     consumedData.today = { amount: today.data, level: 'day', key: `dataDay${today.date}` };
     // Week
-    const dailyWeekData = dailyData.filter(day => day.weekOfYear === currentWeekYear);
+    const dailyWeekData = dailyData.filter(day => day.weekOfYear > (currentWeekYear - 4));
     if (!dailyWeekData.length) {
         consumedCo2.week = { amount: 0, energy: 0, level: 'week', key: `co2Week${currentWeekYear}` };
         consumedData.week = { amount: 0, level: 'week', key: `dataWeek${currentWeekYear}` };
@@ -185,7 +185,7 @@ export const retrieveAnalogiesLayer = async (type) => {
         consumedData.week = { amount: weekData, level: 'week', key: `dataWeek${currentWeekYear}` };
     }
     // month
-    const monthlyData = dailyData.filter(day => day.month === currentMonth);
+    const monthlyData = dailyData.filter(day => day.month > (currentMonth - 4));
     if (!monthlyData.length) {
         consumedCo2.month = { amount: 0, level: 'month', key: `co2Month${currentMonth}` };
         consumedData.month = { amount: 0, level: 'month', key: `dataMonth${currentMonth}` };
