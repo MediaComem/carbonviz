@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+import { ApexOptions } from 'apexcharts';
 import { ref } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
 
@@ -10,7 +11,7 @@ export default {
     const colors = ['#d9d9d9', '#d9d9d9', '#d9d9d9', '#d9d9d9'];
     const activeColorsCo2 = ['#906C0D', '#906C0D', '#A59366', '#958A70'];
     const activeColorsData = ['#384E50', '#719598', '#213C3F', '#0F2D30'];
-    const chartOptions = {
+    const chartOptions: ApexOptions = {
         chart: {
           type: 'bar',
           stacked: true,
@@ -24,6 +25,24 @@ export default {
         },
         xaxis: {
           categories: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+        },
+        annotations: {
+          yaxis: [{
+            y: 2500,
+            borderColor: '#616161',
+            strokeDashArray: 0,
+            opacity: 1,
+            label: {
+              borderWidth: 0,
+              offsetX: 10,
+              offsetY: 8,
+              style: {
+                color: '#616161',
+                fontFamily: 'Roboto, Arial, sans-serif'
+              },
+              text: 'Moy'
+            }
+          }]
         },
         legend: {
           onItemClick: {
@@ -80,7 +99,7 @@ export default {
         {
           name: 'Divers',
           data: [1300, 50, 200, 100, 1500, 0, 0],
-        }   
+        }
       ]);
     const highlightSource = (chartContext, seriesIndex, config) => {
       const id = config.config.chart.id;
