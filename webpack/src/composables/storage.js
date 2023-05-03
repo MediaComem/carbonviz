@@ -61,25 +61,24 @@ export const retrieveHistoryLayers = async (period) => {
     }
 
     const getWeeksList = () => {
-        // get last weeks including this week (til month start)
-        const endOfWeekRange = dailyData[0].weekOfYear;
+        // get previous 3 weeks
         const previousWeeks = [];
         let previousWeek = currentWeekYear;
-        while (previousWeek >= endOfWeekRange) {
-            const week = previousWeek > 0 ? previousWeek : 52;
+        while (previousWeeks.length < 3) {
+            const week = previousWeek > 0 ? previousWeek : previousWeek + 52;
             previousWeeks.push(week);
             previousWeek--;
         }
         for (const week of previousWeeks) {
-            const dailyWeekData = dailyData.filter(day => day.weekOfYear === week);
-            if (!dailyWeekData.length) {
+            const weeklyData = dailyData.filter(day => day.weekOfYear === week);
+            if (!weeklyData.length) {
                 continue;
             }
-            const co2 = dailyWeekData.reduce((acc, entry) => acc + entry.co2, 0);
-            const energy = dailyWeekData.reduce((acc, entry) => acc + entry.energy, 0);
-            const data = dailyWeekData.reduce((acc, entry) => acc + entry.data, 0);
-            const detailsCo2 = dailyWeekData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek], key: `co2Week${days[entry.dayOfWeek]}` } });
-            const detailsData = dailyWeekData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek], key: `dataWeek${days[entry.dayOfWeek]}` } });
+            const co2 = weeklyData.reduce((acc, entry) => acc + entry.co2, 0);
+            const energy = weeklyData.reduce((acc, entry) => acc + entry.energy, 0);
+            const data = weeklyData.reduce((acc, entry) => acc + entry.data, 0);
+            const detailsCo2 = weeklyData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek], key: `co2Week${days[entry.dayOfWeek]}` } });
+            const detailsData = weeklyData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek], key: `dataWeek${days[entry.dayOfWeek]}` } });
             layersCo2.unshift({ amount: co2, energy: energy, label: `${week}`, details: detailsCo2, level: 'week', key: `co2Week${week}` });
             layersData.unshift({ amount: data, label: `${week}`, details: detailsData, level: 'week', key: `dataWeek${week}` });
         }
@@ -160,8 +159,8 @@ export const retrieveAnalogiesLayer = async (type) => {
 
     database ??= await initDB();
 
-    // get data (daily summaries) for the last 4 months
-    const dailyData = await getDailyAggregates('month', 12);
+    // get data (daily summaries) for the last month
+    const dailyData = await getDailyAggregates('month', 1);
     if (!dailyData) {
         return { co2: consumedCo2, data: consumedData };
     }
@@ -169,30 +168,39 @@ export const retrieveAnalogiesLayer = async (type) => {
     const currentWeekYear = today.weekOfYear;
     const currentMonth = today.month;
     const currentYear = new Date().getFullYear();
+    const todayDate = new Date();
+    const lastWeek = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() - 6);
     // today
     consumedCo2.today = { amount: today.co2, energy: today.energy, level: 'day', key: `co2Day${today.date}` };
     consumedData.today = { amount: today.data, level: 'day', key: `dataDay${today.date}` };
-    // Week
-    const dailyWeekData = dailyData.filter(day => day.weekOfYear > (currentWeekYear - 4));
-    if (!dailyWeekData.length) {
+    // last 7 days
+    const lastSevenDaysData = dailyData.filter(day => {
+        const date = new Date(day.index);
+        return date >= lastWeek;
+    });
+    if (!lastSevenDaysData.length) {
         consumedCo2.week = { amount: 0, energy: 0, level: 'week', key: `co2Week${currentWeekYear}` };
         consumedData.week = { amount: 0, level: 'week', key: `dataWeek${currentWeekYear}` };
     } else {
-        const weeekCo2 = dailyWeekData.reduce((acc, entry) => acc + entry.co2, 0);
-        const weekEnergy = dailyWeekData.reduce((acc, entry) => acc + entry.energy, 0);
-        const weekData = dailyWeekData.reduce((acc, entry) => acc + entry.data, 0);
+        const weeekCo2 = lastSevenDaysData.reduce((acc, entry) => acc + entry.co2, 0);
+        const weekEnergy = lastSevenDaysData.reduce((acc, entry) => acc + entry.energy, 0);
+        const weekData = lastSevenDaysData.reduce((acc, entry) => acc + entry.data, 0);
         consumedCo2.week = { amount: weeekCo2, energy: weekEnergy, level: 'week', key: `co2Week${currentWeekYear}` };
         consumedData.week = { amount: weekData, level: 'week', key: `dataWeek${currentWeekYear}` };
     }
-    // month
-    const monthlyData = dailyData.filter(day => day.month > (currentMonth - 4));
-    if (!monthlyData.length) {
+    // last 30 days
+    const thirtyDays = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() - 30);
+    const fourWeeksData = dailyData.filter(day => {
+        const date = new Date(day.index);
+        return date >= thirtyDays;
+    });
+    if (!fourWeeksData.length) {
         consumedCo2.month = { amount: 0, level: 'month', key: `co2Month${currentMonth}` };
         consumedData.month = { amount: 0, level: 'month', key: `dataMonth${currentMonth}` };
     } else {
-        const monthCo2 = monthlyData.reduce((acc, entry) => acc + entry.co2, 0);
-        const monthEnergy = monthlyData.reduce((acc, entry) => acc + entry.energy, 0);
-        const monthData = monthlyData.reduce((acc, entry) => acc + entry.data, 0);
+        const monthCo2 = fourWeeksData.reduce((acc, entry) => acc + entry.co2, 0);
+        const monthEnergy = fourWeeksData.reduce((acc, entry) => acc + entry.energy, 0);
+        const monthData = fourWeeksData.reduce((acc, entry) => acc + entry.data, 0);
         consumedCo2.month = { amount: monthCo2, energy: monthEnergy, level: 'month', key: `co2Month${currentMonth}` };
         consumedData.month = { amount: monthData, level: 'month', key: `dataMonth${currentMonth}` };
     }

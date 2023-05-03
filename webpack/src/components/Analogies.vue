@@ -16,24 +16,16 @@ export default {
     const layer = ref({});
     const currentYear = new Date().getFullYear();
     let activeIndex = ref(0);
-    const analogyNamesCo2 = ["marathon","swimming","biking","cooking","boiling","sawing"];
-    const analogyNamesData = ["dictionaries","instagram","music","netflix","wordFile","usb"];
-
+    const analogyNames = {
+      co2: ["marathon","swimming","biking","cooking","boiling","sawing"],
+      data: ["dictionaries","instagram","music","netflix","wordFile","usb"]
+    };
     const retrieveData = async () => {
       const { data } = await retrieveAnalogiesLayer(dataType);
       layer.value = data;
     }
 
-    function messureChange (newDataType) {
-      let btnList = document.getElementById("type").getElementsByTagName("Button");
-      for (let button of btnList) {
-        if (button.name === newDataType) {
-          button.classList.add("activeButton");
-        }
-        else {
-          button.classList.remove("activeButton")
-        }
-      };
+    function measureChange (newDataType) {
       dataType.value = newDataType;
       retrieveData();
     };
@@ -42,113 +34,80 @@ export default {
       activeIndex.value = newIndex
     };
 
+    function computeAnalogy(currentAnalogy , amount, unitType) {
+      let unit = '';
+      let number = Math.floor(amount/unitType);
+      switch(currentAnalogy) {
+        case 'marathon':
+          if(number < 1) {
+            number = Math.ceil(100* amount / unitType)+'%';
+            unit = '_%';
+          }
+          break;
+        case 'swimming':
+          if(number > 1000) {
+            number = Math.ceil(number/1000);
+            unit = '_km';
+          } else {
+            unit = '_meter';
+          }
+          break;
+        case 'cooking':
+        case 'boiling':
+        case "dictionaries":
+          number = roundToPrecision(amount/unitType, 1);
+          break;
+        case "netflix":
+          number = roundToPrecision(amount/unitType, 2);
+          break;
+        case "wordFile":
+          if (number > 1000000) {
+            number = Math.ceil(number/1000000);
+            unit = '_million'
+          }
+          break;
+      }
+      return { amount: number, unit: unit};
+    }
+
     function getAnalogyValue(value) {
       if(dataType.value === 'co2') {
         // analogies based on energy (switch energy MJ to kWh)
-        const amount = 0.278 * value.energy;
-        const currentAnalogy = this.analogyNamesCo2[this.activeIndex];
+        const amountCo2 = 0.278 * value.energy;
+        const currentAnalogy = analogyNames.co2[activeIndex.value];
         const kwPerUnit = kwPerUnitCo2[currentAnalogy];
-        let number = Math.floor(amount/kwPerUnit);
-        switch(currentAnalogy) {
-          case 'marathon':
-            if(number < 1) {
-              number = Math.ceil(100* amount / kwPerUnit)+'%';
-            }
-            break;
-          case 'swimming':
-            if(number > 1000) {
-              number = Math.ceil(number/1000);
-            }
-            break;
-          case 'cooking':
-          case 'boiling':
-            number = roundToPrecision(amount/kwPerUnit, 1);
-            break;
-        }
-        return number;
+        const { amount, unit } = computeAnalogy(currentAnalogy, amountCo2, kwPerUnit);
+        return { amount, unit }
       }
       else {
         // data in MB for analogies
-        const amount = value.amount / 1000000;
-        const currentAnalogy = this.analogyNamesData[this.activeIndex];
+        const amountData = value.amount / 1000000;
+        const currentAnalogy = analogyNames.data[activeIndex.value];
         const mbPerUnit = mbPerUnitData[currentAnalogy];
-        let number = Math.floor(amount/mbPerUnit);
-        switch(currentAnalogy) {
-          case "dictionaries":
-            number = roundToPrecision(amount/mbPerUnit, 1);
-            break;
-          case "netflix":
-            number = roundToPrecision(amount/mbPerUnit, 2);
-            break;
-          case "wordFile":
-            if (number > 1000000) {
-              number = Math.ceil(number/1000000);
-            }
-            break;
-        }
-        return number;
+        const  { amount, unit } = computeAnalogy(currentAnalogy, amountData, mbPerUnit);
+        return { amount, unit }
       }
     };
 
-    function getAnalogyText(data) {
-      if (dataType.value === "co2") {
-        const amount = 0.278 * data.energy;
-        const currentAnalogy = this.analogyNamesCo2[this.activeIndex];
-        const kwPerUnit = kwPerUnitCo2[currentAnalogy];
-        let number = Math.floor(amount/kwPerUnit);
-        let largeScale = false;
-        switch(currentAnalogy) {
-          case 'marathon':
-            if(number > 1) {
-              largeScale = true;
-            }
-            break;
-          case 'swimming':
-            if(number > 1000) {
-              largeScale = true;
-            }
-            break;
-        }
-        if(largeScale) {
-          return this.t(`components.analogies.${this.analogyNamesCo2[this.activeIndex]}s`);
-        } else {
-          return this.t(`components.analogies.${this.analogyNamesCo2[this.activeIndex]}`);
-        }
-      } else {
-        const amount = data.amount / 1000000;
-        const currentAnalogy = this.analogyNamesData[this.activeIndex];
-        const mbPerUnit = mbPerUnitData[currentAnalogy];
-        let number = Math.floor(amount/mbPerUnit);
-        let largeScale = false;
-        switch(currentAnalogy) {
-          case 'wordFile':
-            if (number > 1000000) {
-              largeScale = true;
-            }
-            break;
-        }
-        if(largeScale) {
-          return this.t(`components.analogies.${this.analogyNamesData[this.activeIndex]}s`);
-        } else {
-          return this.t(`components.analogies.${this.analogyNamesData[this.activeIndex]}`);
-        }
-      }
-    };
-
+    function getAnalogyText(value) {
+      const analogyType = this.analogyNames[dataType.value][activeIndex.value];
+      return this.t(`components.analogies.${analogyType}${getAnalogyValue(value).unit}`)
+    }
+  
     onMounted(async () => {
       await retrieveData();
     });
 
-    return {t, messureChange, roundToPrecision, statsIndex, getAnalogyValue, getAnalogyText,
-      layer, dataType, currentYear, activeIndex, analogyNamesCo2, analogyNamesData};
+    return {t, measureChange, roundToPrecision, statsIndex, getAnalogyValue, getAnalogyText,
+      layer, dataType, currentYear, activeIndex, analogyNames};
   }
 }
 </script>
 
 <template>
   <div id="type">
-    <button type="button" name="co2" class="activeButton" @click='messureChange("co2")'> {{ t('global.co2') }}</button>
-    <button type="button" name="data" @click='messureChange("data")'> {{ t('global.data') }}</button>
+    <button type="button" name="co2" :class="{activeButton: dataType ==='co2'}" @click='measureChange("co2")'> {{ t('global.co2') }}</button>
+    <button type="button" name="data" :class="{activeButton: dataType ==='data'}" @click='measureChange("data")'> {{ t('global.data') }}</button>
   </div>
   <div class="section" :class="dataType === 'co2' ? 'co2' : 'data'">
     <div class="section-title bold"> {{ t('components.analogies.message') }} </div>
@@ -162,7 +121,7 @@ export default {
   </div>
   <div class="stats">
     <div v-for="(value, key) in layer">
-      <p> {{ getAnalogyValue(value) }} </p>
+      <p> {{ getAnalogyValue(value).amount }} </p>
       <p> {{ getAnalogyText(value) }} </p>
       <p> {{ key === 'year' ? t(`global.last.${key}`)+this.currentYear : t(`global.last.${key}`) }} </p>
     </div>
