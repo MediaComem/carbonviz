@@ -46,9 +46,6 @@
     "analogy": {},
     "appFullpage": {},
     "history": {
-      "days": "Days",
-      "weeks": "Weeks",
-      "months": "Months",
       "WeeklyConsumption": "Weekly consumption",
       "MonthlyConsumption": "Monthly consumption"
     },
@@ -69,8 +66,13 @@
     "history": "History",
     "newTab": "Open main page",
     "statistics": "Statistics",
-    "week": "Week",
-    "month": "Month",
+    "period": {
+      "days": "Days",
+      "weeks": "Weeks",
+      "months": "Months",
+      "week": "Week",
+      "month": "Month"
+    },
     "current_today": "Today",
     "current_week": "This week",
     "current_month": "This month",

@@ -12,7 +12,7 @@ export default {
   },
   setup() {
     // Default app settings
-    const defaultOptions = { debounce: true, showTabConfirmation: true, showOnBoarding: true };
+    const defaultOptions = { debounce: true, showTabConfirmation: true };
     let userOptions = defaultOptions;
 
     let fullpageTabIndex = undefined;

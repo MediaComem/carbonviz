@@ -1,5 +1,5 @@
 import { days } from '../utils/format';
-import { init as initDB, getDailyAggregates, getTodayCounter, getWebsites, getCurWeekHistory } from '../../../storage/indexedDB';
+import { init as initDB, getDailyAggregates, getAggregate, getTodayCounter, getWebsites, getCurWeekHistory } from '../../../storage/indexedDB';
 
 let database;
 
@@ -10,11 +10,100 @@ export const retrieveTodayCounter = async () => {
     return getTodayCounter();
 }
 
+// Retrieve top websites for all time
 export const getTopWebsites = async (mode = 'co2', limit = 10) => {
     database ??= await initDB();
-    return getWebsites(mode, limit);
+    return await getWebsites(mode, limit, 'domains');
 }
 
+// Retrieve top websites data series for current week by day or current year by month
+// granularity: 'day' | 'month'
+// format is as expected by ApexChart in Statistics.vue component
+// Data for top 'number' websites + aggregate of others in 'Divers'
+//    [{name: 'Netflix', data: [300, 250, 0, 600, 0, 800, 2000]},
+//    {name: 'YouTube', data: [100, 50, 500, 200, 0, 100, 0]},
+//    {name: 'Divers', data: [1300, 50, 200, 100, 1500, 0, 0]}]
+export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity = 'day') => {
+    database ??= await initDB();
+
+    const consumptionByWebsite = {}; // consumption by website (gggregated for the full period + detail per time entity)
+    const totalPerTimeEntity = []; // total consumption per time entity (1 day or 1 month)
+    let totalPerTimeEntity4TopWebsites; // total consumption from top websites per time entity (1 day or 1 month)
+    let periods; // Periods to retrieve (days 0 to 6 or months 1 to 12)
+    let limit;
+
+    // Retrieve data for given periods
+    switch (granularity) {
+        case 'month': {
+            // Period: full year (last 12 months)
+            // Time entity: 1 month
+            periods = [1,2,3,4,5,6,7,8,9,10,11,12];
+            // Worse case, we have different top website for each month
+            // To get the top "number" for a year, we need to consider the top 12*number websites
+            limit = 12 * number;
+            break;
+        }
+        case 'day': {
+            // Period: last 7 days (1 week)
+            // Time entity: 1 day
+            periods = [1,2,3,4,5,6,0]; // Week Monday to Sunday
+
+            // Worse case, we have different top website for each day
+            // To get the top "number" for a week, we need to consider the top 7*number websites
+            limit = 7 * number;
+            break;
+        }
+        default:
+            throw new Error('Invalid period');
+    }
+
+    // retrieve data from database
+    for (const period of periods) {
+        const table = `domains_${granularity}_${period}`;
+        const dailyData = await getWebsites(mode, limit, table);
+        for (const website of dailyData) {
+            const name = website.name;
+            const amount = website[mode];
+            // aggregate data for the last 7 days
+            if (!consumptionByWebsite[name]) {
+                consumptionByWebsite[name] = {
+                    name: name,
+                    data: new Array(periods.length).fill(0),
+                    aggregate: 0
+                }
+            }
+            const index = period - 1;
+            if (index < 0) {
+                index = periods.length - 1; // special case for sunday (period 0 instead of 7)
+            }
+            consumptionByWebsite[name].data[index] = amount;
+            consumptionByWebsite[name].aggregate += amount;
+        }
+        const co2Total =  await getAggregate(mode, table);
+        totalPerTimeEntity.push(co2Total);
+    }
+    // Keep only top website
+    const websites = Object.values(consumptionByWebsite);
+    websites.sort((a,b) => b.aggregate - a.aggregate);
+    const topWebsites = websites.slice(0,number-1).map(site => site.name);
+
+    // Now prepare data to return
+    const result = [];
+    totalPerTimeEntity4TopWebsites = new Array(periods.length).fill(0)
+    for (const [website, serie] of Object.entries(consumptionByWebsite)) {
+        if (!topWebsites.includes(website)) {
+            continue;
+        }
+        result.push(serie);
+        totalPerTimeEntity4TopWebsites = totalPerTimeEntity4TopWebsites.map((total, idx) => total + serie.data[idx]);
+    }
+    // Add remaing data consumption to 'Divers' category
+    result.push({
+        name: 'Divers',
+        data: totalPerTimeEntity.map((total, idx) => total - totalPerTimeEntity4TopWebsites[idx])
+    });
+    return result;
+}
 export const getCurWeek = async (mode = 'co2') => {
     database ??= await initDB();
     let history = await getCurWeekHistory(mode);

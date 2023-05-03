@@ -100,9 +100,9 @@ export default {
 
 <template>
   <div id="time">
-    <button type="button" name="days" class="activeButton" @click='periodChange("days")'> {{ t('components.history.days') }}</button>
-    <button type="button" name="weeks" @click='periodChange("weeks")'> {{ t('components.history.weeks') }}</button>
-    <button type="button" name="months" @click='periodChange("months")'> {{ t('components.history.months') }}</button>
+    <button type="button" name="days" class="activeButton" @click='periodChange("days")'> {{ t('global.period.days') }}</button>
+    <button type="button" name="weeks" @click='periodChange("weeks")'> {{ t('global.period.weeks') }}</button>
+    <button type="button" name="months" @click='periodChange("months")'> {{ t('global.period.months') }}</button>
   </div>
   <div id="type">
     <button type="button" name="co2" class="activeButton" @click='messureChange("co2")'> {{ t('global.co2') }}</button>

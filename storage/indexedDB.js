@@ -44,10 +44,12 @@ function dateString(dataObject) {
 co2HistoryDB.open = () => {
 
   return new Promise(function(resolve) {
-    let version = 2;
+    let version = 4;
     /*
       version 1: basic
       version 2: add by_co2 / by_data indexes for domains
+      version 3: monthly data by domain
+      version 4: daily data by domain
     */
     const request = self.indexedDB.open("co2HistoryDB", version);
     // For any changes to an existing DB structure, the version number needs to be incremented.
@@ -109,7 +111,7 @@ co2HistoryDB.open = () => {
         storeDomains.createIndex("by_co2", "co2");
         storeDomains.createIndex("by_data", "data");
         storeDomains.add({
-          name: "0.0",
+          name: "_",
           co2: 0,
           data: 0,
           energy: 0
@@ -123,10 +125,73 @@ co2HistoryDB.open = () => {
           domains.createIndex("by_data", "data");
         }
       }
+
+      // Monthly history data (keeping maximum 1 year)
+      // create one table per month
+      for (const month of [1,2,3,4,5,6,7,8,9,10,11,12]) {
+        const table = `domains_month_${month}`;
+        if (!db.objectStoreNames.contains(table)) {
+          const storeDomains = db.createObjectStore(table, { keyPath: "name" });
+          storeDomains.createIndex("by_name", "name", { unique: true });
+          storeDomains.createIndex("by_co2", "co2");
+          storeDomains.createIndex("by_data", "data");
+          storeDomains.add({
+            name: "_",
+            co2: 0,
+            data: 0,
+            energy: 0
+          });
+        }
+      }
+
+      // Daily history data (keeping maximum 1 week)
+      // create one table per day (0 to 6 - sunday is 0)
+      for (const day of [0,1,2,3,4,5,6]) {
+        const table = `domains_day_${day}`;
+        if (!db.objectStoreNames.contains(table)) {
+          const storeDomains = db.createObjectStore(table, { keyPath: "name" });
+          storeDomains.createIndex("by_name", "name", { unique: true });
+          storeDomains.createIndex("by_co2", "co2");
+          storeDomains.createIndex("by_data", "data");
+          storeDomains.add({
+            name: "_",
+            co2: 0,
+            data: 0,
+            energy: 0
+          });
+        }
+      }
     };
 
     request.onsuccess = function (e) {
       co2HistoryDB.db = request.result;
+      // Clean old data
+      // Clear new month if needed [max 1 year monthly domains aggregate retention]
+      // Clear new day if needed [max 1 week daily domains aggregate retention]
+      // Done asynchronously since write every 60 seconds, should be sufficient for cleaning operations
+      const today = new Date();
+      const month = today.getMonth() + 1;
+      const day = today.getDay();
+      let trans = co2HistoryDB.db.transaction(["dataTimeStamp",  `domains_month_${month}`, `domains_day_${day}`], "readwrite");
+      const dates = trans.objectStore("dataTimeStamp");
+      const monthlyDomainStore = trans.objectStore(`domains_month_${month}`);
+      const dailyDomainStore = trans.objectStore(`domains_day_${day}`);
+      // retrieve last running dates
+      dates.get(0).onsuccess = function (event) {
+        const info = event.target.result;
+        if (info) {
+          const lastRunning = new Date(info.lastStoredDate);
+          const lastRunningMonth = lastRunning.getMonth() + 1;
+          const lastRunningDay = lastRunning.getDay();
+          if (month !== lastRunningMonth) {
+            monthlyDomainStore.clear();
+          }
+          if (day !== lastRunningDay) {
+            dailyDomainStore.clear();
+          }
+        }
+      };
+
       return resolve(co2HistoryDB.db);
     };
 
@@ -142,12 +207,16 @@ function init() {
 
 async function updateData(date, hourlyData, dailyData, domainData = undefined) {
   return new Promise(function (resolve) {
+    const month = date.getMonth()+1;
+    const day = date.getDay();
     const db = co2HistoryDB.db;
-    let trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readwrite");
-    let daysStore = trans.objectStore("dataTimeStamp");
-    let historyStore = trans.objectStore("history");
-    let historySummaryStore = trans.objectStore("historySummary");
-    let domainStore = trans.objectStore("domains");
+    const trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains", `domains_month_${month}`, `domains_day_${day}`], "readwrite");
+    const daysStore = trans.objectStore("dataTimeStamp");
+    const historyStore = trans.objectStore("history");
+    const historySummaryStore = trans.objectStore("historySummary");
+    const domainStore = trans.objectStore("domains");
+    const monthlyDomainStore = trans.objectStore(`domains_month_${month}`);
+    const dailyDomainStore = trans.objectStore(`domains_day_${day}`);
 
     const storedData  = {
       index: 0,
@@ -185,7 +254,15 @@ async function updateData(date, hourlyData, dailyData, domainData = undefined) {
     historyStore.put(history);
     historySummaryStore.put(historySummary);
     if (domainData) {
-      domainStore.put(domainData);
+      if (domainData.full?.name) {
+        domainStore.put(domainData.full);
+      }
+      if (domainData.monthly?.name) {
+        monthlyDomainStore.put(domainData.monthly);
+      }
+      if (domainData.daily?.name) {
+        dailyDomainStore.put(domainData.daily);
+      }
     }
     trans.oncomplete = function() {
       return resolve();
@@ -198,19 +275,27 @@ async function getLastStoredEntries(today, domainName = undefined) {
   return new Promise(function (resolve) {
     const historyIndex = dateStringHour(today);
     const historySummaryIndex = dateString(today);
+    const month = today.getMonth()+1;
+    const day = today.getDay();
     const data = {
       dataTimeStamp: {},
       history: {},
       historySummary: {},
       domain: {},
+      monthlyDomain : {},
       storedDates: {}
     };
     const db = co2HistoryDB.db;
-    const trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains"], "readonly");
+    const trans = db.transaction(
+      ["dataTimeStamp", "history", "historySummary", "domains", `domains_month_${month}`, `domains_day_${day}`],
+      "readonly"
+    );
     const DayStore = trans.objectStore("dataTimeStamp");
     const historyStore = trans.objectStore("history");
     const historySummaryStore = trans.objectStore("historySummary");
     const domainStore = trans.objectStore("domains");
+    const monthlyDomainStore = trans.objectStore(`domains_month_${month}`);
+    const dailyDomainStore = trans.objectStore(`domains_day_${day}`);
 
     DayStore.get(0).onsuccess = function (event) {
       data.dataTimeStamp = event.target.result;
@@ -224,6 +309,12 @@ async function getLastStoredEntries(today, domainName = undefined) {
     if (domainName) {
       domainStore.get(domainName).onsuccess = function (event) {
         data.domain = event.target.result;
+      }
+      monthlyDomainStore.get(domainName).onsuccess = function (event) {
+        data.monthlyDomain = event.target.result;
+      }
+      dailyDomainStore.get(domainName).onsuccess = function (event) {
+        data.dailyDomain = event.target.result;
       }
     }
     historySummaryStore.getAllKeys().onsuccess = function (event) {
@@ -356,11 +447,11 @@ function deleteData(key) {
   historySummaryStore.delete(key);
 }
 
-async function getWebsites(mode = 'co2', limit = 10) {
+async function getWebsites(mode = 'co2', limit = 10, table='domains') {
   return new Promise(function (resolve) {
     const db = co2HistoryDB.db;
-    const trans = db.transaction(["domains"], "readonly");
-    const store = trans.objectStore("domains");
+    const trans = db.transaction([table], "readonly");
+    const store = trans.objectStore(table);
     const index = store.index(mode == 'co2' ? 'by_co2' : 'by_data');
     const dbCursor = index.openCursor(null, "prev");
     const data = [];
@@ -374,6 +465,28 @@ async function getWebsites(mode = 'co2', limit = 10) {
       }
       // the filter is to remove 0 co2 (or 0 data) domain in the list
       return resolve(data.filter(domain => domain[mode]));
+    };
+    dbCursor.onerror = error => reject(error);
+  });
+}
+
+async function getAggregate(mode = 'co2', table='domains') {
+  return new Promise(function (resolve) {
+    const db = co2HistoryDB.db;
+    const trans = db.transaction([table], "readonly");
+    const store = trans.objectStore(table);
+    const index = store.index(mode == 'co2' ? 'by_co2' : 'by_data');
+    const dbCursor = index.openCursor();
+    let aggregate = 0;
+    dbCursor.onsuccess = event => {
+      const cursor = event.target.result;
+      if (cursor) {
+        aggregate += mode == 'co2' ? cursor.value.co2 : cursor.value.data;
+        cursor.continue();
+        return;
+      }
+      // the filter is to remove 0 co2 (or 0 data) domain in the list
+      return resolve(aggregate);
     };
     dbCursor.onerror = error => reject(error);
   });
@@ -430,4 +543,4 @@ async function downloadData(dbStore) {
   });
 }
 
-export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData, getWebsites, getCurWeekHistory, downloadData }
+export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData, getWebsites, getAggregate, getCurWeekHistory, downloadData }
