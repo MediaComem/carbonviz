@@ -34,13 +34,15 @@ export default {
       activeIndex.value = newIndex
     };
 
-    function computeAnalogy(currentAnalogy , amount, unitType) {
+    // Compute the necessary data for one analogy based on the raw amount
+    // ex: 1Kw means boiling 8.6 liters of water [currentAnalogy: 'boilingwater', amount: 1, amountPerUnit: 0.116] 0.116kW for 1L
+    function computeAnalogy(currentAnalogy , amount, amountPerUnit) {
       let unit = '';
-      let number = Math.floor(amount/unitType);
+      let number = Math.floor(amount/amountPerUnit);
       switch(currentAnalogy) {
         case 'marathon':
           if(number < 1) {
-            number = Math.ceil(100* amount / unitType)+'%';
+            number = Math.ceil(100* amount / amountPerUnit)+'%';
             unit = '_%';
           }
           break;
@@ -55,10 +57,10 @@ export default {
         case 'cooking':
         case 'boiling':
         case "dictionaries":
-          number = roundToPrecision(amount/unitType, 1);
+          number = roundToPrecision(amount/amountPerUnit, 1);
           break;
         case "netflix":
-          number = roundToPrecision(amount/unitType, 2);
+          number = roundToPrecision(amount/amountPerUnit, 2);
           break;
         case "wordFile":
           if (number > 1000000) {
