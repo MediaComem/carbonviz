@@ -1,16 +1,69 @@
-<script>
-import { ref } from 'vue';
+<script lang="ts">
+import { ApexOptions } from 'apexcharts';
+import { ref, computed, watchEffect } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
+import { getTopWebsitesSeries } from '../composables/storage';
+import { useI18n } from 'vue-i18n'
 
 export default {
   components: {
     apexchart: VueApexCharts
   },
   setup() {
+    const { t } = useI18n({});
+    const period = ref('day');
     const colors = ['#d9d9d9', '#d9d9d9', '#d9d9d9', '#d9d9d9'];
+    const colorsCo2 = ref(colors);
+    const colorsData = ref(colors);
     const activeColorsCo2 = ['#906C0D', '#906C0D', '#A59366', '#958A70'];
     const activeColorsData = ['#384E50', '#719598', '#213C3F', '#0F2D30'];
-    const chartOptions = {
+    const seriesCo2 = ref([]);
+    const seriesData = ref([]);
+    const annotation = {
+      y: 0,
+      borderColor: '#616161',
+      strokeDashArray: 0,
+      opacity: 1,
+      label: {
+        borderWidth: 0,
+        offsetX: 10,
+        offsetY: 8,
+        style: {
+          color: '#616161',
+          fontFamily: 'Roboto, Arial, sans-serif'
+        },
+        text: 'Moy'
+      }
+    };
+    const annotationCo2 = ref(annotation);
+    const annotationData = ref(annotation);
+    const categories = computed(() => {
+      switch(period.value) {
+        case 'day':
+          return ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+        case 'month':
+          return ['Jan.', 'Fev.', 'Mar.', 'Avr.', 'Mai', 'Jun.', 'Jul.', 'Aou.', 'Sep', 'Oct.', 'Nov.', 'Dec.'];
+      }
+    });
+
+    // Should it be dynamic depending on value range?
+    const yAxisCo2 = {
+      labels: {
+            maxWidth: 20,
+            formatter: (value) => {
+                return (1000 * value).toFixed().toString();
+            }
+          }
+    };
+    const yAxisData = {
+      labels: {
+            maxWidth: 20,
+            formatter: (value) => {
+              return (value / 1000000).toFixed().toString();
+            }
+          }
+    };
+    const chartOptions: ApexOptions = {
         chart: {
           type: 'bar',
           stacked: true,
@@ -21,9 +74,6 @@ export default {
         },
         dataLabels: {
           enabled: false
-        },
-        xaxis: {
-          categories: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
         },
         legend: {
           onItemClick: {
@@ -48,76 +98,117 @@ export default {
           }
         }
       };
-      const chartOptionsCo2 = ref ({
-        ...chartOptions,
-        chart: {
-          ...chartOptions.chart,
-          id: 'co2'
-        },
-        colors: [...colors]
+      const chartOptionsCo2 = computed(() => {
+        console.log({
+          ...chartOptions,
+          chart: {
+            ...chartOptions.chart,
+            id: 'co2'
+          },
+          xaxis: {
+            categories: categories.value,
+          },
+          yaxis: yAxisCo2,
+          annotations: {
+            yaxis: [annotationCo2.value]
+          },
+          colors: colorsCo2.value
+        });
+        return {
+          ...chartOptions,
+          chart: {
+            ...chartOptions.chart,
+            id: 'co2'
+          },
+          xaxis: {
+            categories: categories.value,
+          },
+          yaxis: yAxisCo2,
+          annotations: {
+            yaxis: [annotationCo2.value]
+          },
+          colors: colorsCo2.value
+        }
       });
-      const chartOptionsData = ref ({
-        ...chartOptions,
-        chart: {
-          ...chartOptions.chart,
-          id: 'data'
-        },
-        colors: [...colors]
+      const chartOptionsData = computed(() => {
+        return {
+          ...chartOptions,
+          chart: {
+            ...chartOptions.chart,
+            id: 'data'
+          },
+          xaxis: {
+            categories: categories.value,
+          },
+          yaxis: yAxisData,
+          annotations: {
+            yaxis: [annotationData.value]
+          },
+          colors: colorsData.value
+        }
       });
-      const series = ref([
-        {
-          name: 'Netflix',
-          data: [300, 250, 0, 600, 0, 800, 2000],
-        },
-        {
-          name: 'YouTube',
-          data: [100, 50, 500, 200, 0, 100, 0],
-        },
-        {
-          name: 'Drive',
-          data: [1300, 50, 200, 100, 1500, 0, 0],
-        },    
-        {
-          name: 'Divers',
-          data: [1300, 50, 200, 100, 1500, 0, 0],
-        }   
-      ]);
+
     const highlightSource = (chartContext, seriesIndex, config) => {
       const id = config.config.chart.id;
-      const chartOptions = id === 'co2' ? chartOptionsCo2 : chartOptionsData;
+      const colors = id === 'co2' ? colorsCo2 : colorsData;
       const activeColors = id === 'co2' ? activeColorsCo2 : activeColorsData;
-      const colors = config.config.colors;
-      const isActive = colors[seriesIndex] === activeColors[seriesIndex];
-      colors[seriesIndex] = isActive ? '#d9d9d9' : activeColors[seriesIndex];
-      chartOptions.value = {
-        ...chartOptions.value,
-        colors: colors
-      }
+      const chartColors = [...config.config.colors];
+      const isActive = chartColors[seriesIndex] === activeColors[seriesIndex];
+      chartColors[seriesIndex] = isActive ? '#d9d9d9' : activeColors[seriesIndex];
+      colors.value = chartColors;
     }
-    return { chartOptionsCo2, chartOptionsData, series, highlightSource };
+
+    const switchPeriod = (newPeriod : 'day' | 'month') => {
+      period.value = newPeriod;
+    }
+
+    watchEffect(async () => {
+      getTopWebsitesSeries('co2', 4, period.value).then((series: [{name: String, data: [number]}]) => {
+        seriesCo2.value = series;
+        // update annotation with mean value
+        const total = series.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
+        annotationCo2.value = {
+          ...annotation,
+          y: total / series[0].data.length
+        };
+      });
+      getTopWebsitesSeries('data', 4, period.value).then((series: [{name: String, data: [number]}]) => {
+        seriesData.value = series;
+        // update annotation with mean value
+        const total = series.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
+        annotationData.value = {
+          ...annotation,
+          y: total / series[0].data.length
+        };
+      });
+    })
+    return { chartOptionsCo2, chartOptionsData, seriesCo2, seriesData, highlightSource, switchPeriod, t };
   }
 }
 </script>
 
 <template>
-  <h1>Statistics</h1>
+  <div id="type">
+    <button type="button" class="activeButton" @click='switchPeriod("day")'> {{ t('global.period.days') }}</button>
+    <button type="button"  @click='switchPeriod("month")'> {{ t('global.period.months') }}</button>
+  </div>
   <div>
-    Co2
+    Co2 (g)
     <apexchart
       width="450"
       height="175"
       id="co2"
       :options="chartOptionsCo2"
-      :series="series"
+      :series="seriesCo2"
       @legendClick="highlightSource"
     ></apexchart>
-    Data  
+    Data (Mo)
     <apexchart
       width="450"
       height="175"
       id="data"
       :options="chartOptionsData"
-      :series="series"
+      :series="seriesData"
       @legendClick="highlightSource"
     ></apexchart>
   </div>

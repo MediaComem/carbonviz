@@ -5,7 +5,7 @@ import { render } from '../unplug/js/main.mjs';
 const isFirefox = typeof(browser) !== 'undefined';
 
 const pubSub = new PubSub();
-const defaultOptions = { debounce: true, showTabConfirmation: true, showOnBoarding: true };
+const defaultOptions = { debounce: true, showTabConfirmation: true };
 let userOptions = defaultOptions;
 let currentGotoPageBtn = null;
 
@@ -306,7 +306,6 @@ tabDialog.addEventListener('close', (event) => {
 let scrolling = false;
 
 window.document.onwheel = (e) => {
-  if (body.classList.contains('anim-onboarding')) return; // disabled at onboarding
   if (scrolling) return;
   scrolling = true;
   if (e.deltaY < 0) {
@@ -572,18 +571,6 @@ const configure = () => {
   configureDarkMode(window.matchMedia('(prefers-color-scheme: dark)'));
 }
 
-const initAnimation = () => {
-  // Onboarding (do it only once)
-  if (userOptions.showOnBoarding) {
-    body.classList.add('anim-onboarding');
-    setTimeout(() => {
-      body.classList.remove('anim-onboarding');
-      userOptions.showOnBoarding = false;
-      chrome.storage.local.set({'options': JSON.stringify(userOptions)});
-    }, 10000);
-  }
-}
-
 const init = () => {
 
   chrome.storage.local.get(['options'],  storage => {
@@ -595,7 +582,6 @@ const init = () => {
         console.log(`Invalid options stored: ${userOptions}`);
       }
     }
-    initAnimation();
   });
 
   configure();
