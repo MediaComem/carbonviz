@@ -172,8 +172,6 @@ export default {
         </div>
       </el-col>
       <el-col :span="showGraph ? 8 : 16" class="section">
-        <div v-if="type === 'co2'" class="section-title bold">The same energy as</div>
-        <div v-if="type === 'data'" class="section-title bold">The same as</div>
         <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click" indicator-position="none">
           <el-carousel-item v-for="(item, index) in [0, 1, 2, 3, 4, 5]" :key="index" label="." class="analogy">
             <analogy :type="type" :layer="layer" :index="item"></analogy>

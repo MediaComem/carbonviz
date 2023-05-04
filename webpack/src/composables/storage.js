@@ -53,41 +53,38 @@ export const retrieveHistoryLayers = async (period) => {
 
     const getDaysList = () => {
         for(let data of dailyData) {
-            layersCo2.push({ amount: data.co2, energy: data.energy, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day', key: `c02Day${data.date}` });
+            layersCo2.push({ amount: data.co2, energy: data.energy, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day', key: `co2Day${data.date}` });
             layersData.push({ amount: data.data, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day', key: `dataDay${data.date}`  });
         }
-        layersCo2[layersCo2.length-1].label = 'current_day';
-        layersData[layersCo2.length-1].label = 'current_day';
+        layersCo2[layersCo2.length-1].label = 'current_today';
+        layersData[layersCo2.length-1].label = 'current_today';
     }
 
     const getWeeksList = () => {
-        // get last weeks including this week (til month start)
-        const endOfWeekRange = dailyData[0].weekOfYear;
+        // get previous 3 weeks
         const previousWeeks = [];
         let previousWeek = currentWeekYear;
-        while (previousWeek >= endOfWeekRange) {
-            const week = previousWeek > 0 ? previousWeek : 52;
+        while (previousWeeks.length < 3) {
+            const week = previousWeek > 0 ? previousWeek : previousWeek + 52;
             previousWeeks.push(week);
             previousWeek--;
         }
         for (const week of previousWeeks) {
-            const dailyWeekData = dailyData.filter(day => day.weekOfYear === week);
-            if (!dailyWeekData.length) {
+            const weeklyData = dailyData.filter(day => day.weekOfYear === week);
+            if (!weeklyData.length) {
                 continue;
             }
-            const co2 = dailyWeekData.reduce((acc, entry) => acc + entry.co2, 0);
-            const energy = dailyWeekData.reduce((acc, entry) => acc + entry.energy, 0);
-            const data = dailyWeekData.reduce((acc, entry) => acc + entry.data, 0);
-            const detailsCo2 = dailyWeekData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek], key: `c02Week${days[entry.dayOfWeek]}` } });
-            const detailsData = dailyWeekData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek], key: `dataWeek${days[entry.dayOfWeek]}` } });
-            layersCo2.unshift({ amount: co2, energy: energy, label: `${week}`, details: detailsCo2, level: 'week', key: `c02Week${week}` });
+            const co2 = weeklyData.reduce((acc, entry) => acc + entry.co2, 0);
+            const energy = weeklyData.reduce((acc, entry) => acc + entry.energy, 0);
+            const data = weeklyData.reduce((acc, entry) => acc + entry.data, 0);
+            const detailsCo2 = weeklyData.map( entry => { return { amount: entry.co2, label: days[entry.dayOfWeek], key: `co2Week${days[entry.dayOfWeek]}` } });
+            const detailsData = weeklyData.map( entry => { return { amount: entry.data, label: days[entry.dayOfWeek], key: `dataWeek${days[entry.dayOfWeek]}` } });
+            layersCo2.unshift({ amount: co2, energy: energy, label: `${week}`, details: detailsCo2, level: 'week', key: `co2Week${week}` });
             layersData.unshift({ amount: data, label: `${week}`, details: detailsData, level: 'week', key: `dataWeek${week}` });
         }
 
         layersCo2[layersCo2.length-1].label = 'current_week';
         layersData[layersCo2.length-1].label = 'current_week';
-        // reverse order for 
-      
     }
 
     const getMonthsList = () => {
@@ -115,12 +112,12 @@ export const retrieveHistoryLayers = async (period) => {
                 if (weeklyData.length) {
                     const co2 = weeklyData.reduce((acc, entry) => acc + entry.co2, 0);
                     const data = weeklyData.reduce((acc, entry) => acc + entry.data, 0);
-                    detailsCo2.push({ amount: co2, label: `${weekOfMonth}`, key: `c02Month${weekOfMonth}`});
+                    detailsCo2.push({ amount: co2, label: `${weekOfMonth}`, key: `co2Month${weekOfMonth}`});
                     detailsData.push({ amount: data, label: `${weekOfMonth}`, key: `dataMonth${weekOfMonth}` });
                 }
             }
 
-            layersCo2.unshift({ amount: co2, energy: energy, label: `${month}`, details: detailsCo2, level: 'month', key: `c02Month${month}` });
+            layersCo2.unshift({ amount: co2, energy: energy, label: `${month}`, details: detailsCo2, level: 'month', key: `co2Month${month}` });
             layersData.unshift({ amount: data, label: `${month}`, details: detailsData, level: 'month', key: `dataMonth${month}` });
         }
 
@@ -144,4 +141,85 @@ export const retrieveHistoryLayers = async (period) => {
 
    return { co2: layersCo2, data: layersData };
 
+}
+
+export const retrieveAnalogiesLayer = async (type) => {
+    const consumedCo2 = {
+        today: '',
+        week: '',
+        month: '',
+        year: ''
+    };
+    const consumedData = {
+        today: '',
+        week: '',
+        month: '',
+        year: ''
+    };
+
+    database ??= await initDB();
+
+    // get data (daily summaries) for the last month
+    const dailyData = await getDailyAggregates('month', 1);
+    if (!dailyData) {
+        return { co2: consumedCo2, data: consumedData };
+    }
+    const today = dailyData[dailyData.length-1];
+    const currentWeekYear = today.weekOfYear;
+    const currentMonth = today.month;
+    const currentYear = new Date().getFullYear();
+    const todayDate = new Date();
+    const lastWeek = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() - 6);
+    // today
+    consumedCo2.today = { amount: today.co2, energy: today.energy, level: 'day', key: `co2Day${today.date}` };
+    consumedData.today = { amount: today.data, level: 'day', key: `dataDay${today.date}` };
+    // last 7 days
+    const lastSevenDaysData = dailyData.filter(day => {
+        const date = new Date(day.index);
+        return date >= lastWeek;
+    });
+    if (!lastSevenDaysData.length) {
+        consumedCo2.week = { amount: 0, energy: 0, level: 'week', key: `co2Week${currentWeekYear}` };
+        consumedData.week = { amount: 0, level: 'week', key: `dataWeek${currentWeekYear}` };
+    } else {
+        const weeekCo2 = lastSevenDaysData.reduce((acc, entry) => acc + entry.co2, 0);
+        const weekEnergy = lastSevenDaysData.reduce((acc, entry) => acc + entry.energy, 0);
+        const weekData = lastSevenDaysData.reduce((acc, entry) => acc + entry.data, 0);
+        consumedCo2.week = { amount: weeekCo2, energy: weekEnergy, level: 'week', key: `co2Week${currentWeekYear}` };
+        consumedData.week = { amount: weekData, level: 'week', key: `dataWeek${currentWeekYear}` };
+    }
+    // last 30 days
+    const thirtyDays = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() - 30);
+    const fourWeeksData = dailyData.filter(day => {
+        const date = new Date(day.index);
+        return date >= thirtyDays;
+    });
+    if (!fourWeeksData.length) {
+        consumedCo2.month = { amount: 0, level: 'month', key: `co2Month${currentMonth}` };
+        consumedData.month = { amount: 0, level: 'month', key: `dataMonth${currentMonth}` };
+    } else {
+        const monthCo2 = fourWeeksData.reduce((acc, entry) => acc + entry.co2, 0);
+        const monthEnergy = fourWeeksData.reduce((acc, entry) => acc + entry.energy, 0);
+        const monthData = fourWeeksData.reduce((acc, entry) => acc + entry.data, 0);
+        consumedCo2.month = { amount: monthCo2, energy: monthEnergy, level: 'month', key: `co2Month${currentMonth}` };
+        consumedData.month = { amount: monthData, level: 'month', key: `dataMonth${currentMonth}` };
+    }
+    // From January
+    const yearlyData = dailyData.filter(day => day.index.slice(0,4) === currentYear.toString());
+    if (!yearlyData.length) {
+        consumedCo2.year = { amount: 0, level: 'month', key: `co2Month${currentYear}` };
+        consumedData.year = { amount: 0, level: 'month', key: `dataMonth${currentYear}` };
+    } else {
+        const yearCo2 = yearlyData.reduce((acc, entry) => acc + entry.co2, 0)
+        const yearEnergy = yearlyData.reduce((acc, entry) => acc + entry.energy, 0);
+        const yearData = yearlyData.reduce((acc, entry) => acc + entry.data, 0);
+        consumedCo2.year = { amount: yearCo2, energy: yearEnergy, level: 'year', key: `co2year${currentYear}` };
+        consumedData.year = { amount: yearData, level: 'year', key: `datayear${currentYear}` };
+    }
+
+    if(type.value === 'co2') {
+        return { data: consumedCo2 };
+    } else {
+        return { data: consumedData };
+    }
 }

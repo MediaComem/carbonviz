@@ -1,58 +1,63 @@
 <script>
 import { computed, toRefs } from 'vue';
+import { useI18n } from 'vue-i18n'
 import { roundToPrecision } from '../utils/format.js'
+import { kwPerUnitCo2, mbPerUnitData } from '../utils/analogies'
 
 const analogiesCo2 = [
     {
-        text: (value) => {
-            const kwPerUnit = 2.790697674;
+        text: (value, t) => {
+            const kwPerUnit = kwPerUnitCo2.marathon;
             let number = Math.floor(value / kwPerUnit);
             if (number < 1) {
-                const percent = Math.ceil(100* value / kwPerUnit);
-                return `Running ${percent}% of a marathon`;
+                number = Math.ceil(100* value / kwPerUnit);
+                return t('components.analogies.number.marathon', {number});
             }
-            return `Running ${number} marathons`;
+            return t('components.analogies.number.marathons', {number});
         },
         asset: 'analogy_running.png'
     },
     {
-        text: (value) => {
-            const kwPerUnit = 0.0001813953488;
+        text: (value, t) => {
+            const kwPerUnit = kwPerUnitCo2.swimming;
             let number = Math.floor(value / kwPerUnit);
             if (number < 1000) {
-                return `Swimming ${number}m in the sea`;
+                return t('components.analogies.number.swimming',{number});
             }
-            return `Swimming ${Math.ceil(number/1000)}km in the sea`;
+            number = Math.ceil(number/1000);
+            return t('components.analogies.number.swimmings',{number});
         },
         asset: 'analogy_swimming.png'
     },
     {
-        text: (value) => {
-            const kwPerUnit = 0.02543604651;
+        text: (value, t) => {
+            const kwPerUnit = kwPerUnitCo2.biking;
             let number = Math.floor(value / kwPerUnit);
-            return `Biking ${number}km`;
+            return t('components.analogies.number.biking', {number});
         },
         asset: 'analogy_bicycle.png'
     },
     {
-        text: (value) => {
-            const kwPerUnit = 0.25;
-            return `Cooking ${roundToPrecision(value/kwPerUnit, 1)} frozen pizzas`;
+        text: (value, t) => {
+            const kwPerUnit = kwPerUnitCo2.cooking;
+            let number = roundToPrecision(value/kwPerUnit, 1);
+            return t('components.analogies.number.cooking', {number});
         },
         asset: 'analogy_frozenpizza.png'
     },
     {
-        text: (value) => {
-            const kwPerUnit = 0.116;
-            return `Boiling ${roundToPrecision(value/kwPerUnit, 1)}L water`;
+        text: (value, t) => {
+            const kwPerUnit = kwPerUnitCo2.boiling;
+            let number = roundToPrecision(value/kwPerUnit, 1);
+            return t('components.analogies.number.boiling', {number});
         },
         asset: 'analogy_boilingwater.png'
     },
     {
-        text: (value) => {
-            const kwPerUnit = 0.0203488372093023;
+        text: (value, t) => {
+            const kwPerUnit = kwPerUnitCo2.sawing;
             let number = Math.floor(value / kwPerUnit);
-            return `Sawing ${number} wood boards`;
+            return t('components.analogies.number.sawing', {number});
         },
         asset: 'analogy_sawing.png'
     }
@@ -60,53 +65,54 @@ const analogiesCo2 = [
 
 const analogiesData = [
     {
-        text: (value) =>  {
-            const mbPerUnit = 20;
+        text: (value, t) =>  {
+            const mbPerUnit = mbPerUnitData.dictionaries;
             let number = roundToPrecision(value/mbPerUnit, 1);
-            return `${number} illustrated dictionaries`;
+            return t('components.analogies.number.dictionaries', {number});
         },
         asset: 'analogy_dictionary.png'
     },
     {
-        text: (value) =>  {
-            const mbPerUnit = 0.078;
+        text: (value, t) =>  {
+            const mbPerUnit = mbPerUnitData.instagram;
             let number = Math.floor(value / mbPerUnit);
-            return `${number} instagram pictures`;
+            return t('components.analogies.number.instagram', {number});
         },
         asset: 'analogy_insta.png'
     },
     {
-        text: (value) =>  {
-            const mbPerUnit = 2.4;
+        text: (value, t) =>  {
+            const mbPerUnit = mbPerUnitData.music;
             let number = Math.floor(value / mbPerUnit);
-            return `${number} minutes of streaming music`;
+            return t('components.analogies.number.music', {number});
         },
         asset: 'analogy_streaming.png'
     },
     {
-        text: (value) =>  {
-            const mbPerUnit = 5376;
+        text: (value, t) =>  {
+            const mbPerUnit = mbPerUnitData.netflix;
             let number = roundToPrecision(value/mbPerUnit, 2);
-            return `${number} Netflix UHD episodes`;
+            return t('components.analogies.number.netflix', {number});
         },
         asset: 'analogy_tvzomby.png'
     },
     {
-        text: (value) =>  {
-            const mbPerUnit = 0.000011444;
+        text: (value, t) =>  {
+            const mbPerUnit = mbPerUnitData.wordFile;
             let number = Math.floor(value / mbPerUnit);
             if (number < 1000000) {
-                return `${number} pages of word file`;
+                return t('components.analogies.number.wordFile', {number});
             }
-            return `${Math.ceil(number/1000000)} million pages of word file`;
+            number = Math.ceil(number/1000000);
+            return t('components.analogies.number.wordFileMillion', {number});
         },
         asset: 'analogy_wordfile.png'
     },
     {
-        text: (value) =>  {
-            const mbPerUnit = 8;
+        text: (value, t) =>  {
+            const mbPerUnit = mbPerUnitData.usb;
             let number = Math.floor(value / mbPerUnit);
-            return `${number} old USB Stick (8 MB)`;
+            return t('components.analogies.number.usb', {number});
         },
         asset: 'analogy_usbdrive.png'
     }
@@ -119,6 +125,7 @@ export default {
     index: {type: Number},
   },
   setup(props) {
+    const { t } = useI18n({});
     const { index, type, layer } = toRefs(props);
 
     const analogy = computed(() => {
@@ -144,10 +151,10 @@ export default {
             // analogies based on energy (switch energy MJ to kWh)
             amount = data.amount / 1000000;
         }
-        return analogy.value.text(amount); // data in MB for analogies
+        return analogy.value.text(amount, t); // data in MB for analogies
     });
 
-    return {asset, legend};
+    return {t, asset, legend};
   }
 }
 </script>
