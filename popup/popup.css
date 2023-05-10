@@ -24,7 +24,7 @@ dialog menu {
   background-color: white;
   position: relative;
   width: 500px;
-  height: 600px;
+  height: 100vh;
   margin: 0px;
   overflow: hidden
 }

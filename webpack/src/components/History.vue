@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { setup as setupHistoryLayers } from '../composables/history';
 import Stratum from './HistoryStratum.vue';
-import { computed, provide, watch, toRefs, ref } from 'vue';
+import { computed, provide, watch, ref } from 'vue';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
 
 export default {
@@ -12,40 +12,41 @@ export default {
     const { t } = useI18n({});
     let timePeriod = ref("days");
     let dataType = ref("co2");
+    let scrollCount = ref(0);
+    let scrollMore = ref(true);
+    let initialHistoryCount = 0;
 		const active_index = ref(-1);
 		provide('active_index', active_index);
 
-    const { layers, scroll, show, stage, maxStage, nextStage, previousStage } = setupHistoryLayers(dataType, timePeriod);
+    const { layers, historyCount, scroll, show, stage, maxStage, nextStage, previousStage } = setupHistoryLayers(dataType, timePeriod, scrollCount);
     const isCo2 = computed(() => dataType.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const isData = computed(() => dataType.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
     const scrollDataComponent = ref(0);
     const scrollCo2Component = ref(0);
 
+    function resetDefaults() {
+      window.scrollTo(0,0);
+      const historyDiv = document.getElementById('history');
+      historyDiv.scrollTop = 0;
+      scrollCount.value = 0;
+      initialHistoryCount = 0;
+      scrollMore.value = true;
+    }
+
     // Updating history setting, data period and type
     function periodChange(newPeriod) {
-      let btnList = document.getElementById("time").getElementsByTagName("Button");
-      for (let button of btnList) {
-        if (button.name === newPeriod) {
-          button.classList.add("activeButton");
-        }
-        else {
-          button.classList.remove("activeButton")
-        }
-      };
       timePeriod.value = newPeriod;
+      resetDefaults();
     };
     function messureChange (newDataType) {
-      let btnList = document.getElementById("type").getElementsByTagName("Button");
-      for (let button of btnList) {
-        if (button.name === newDataType) {
-          button.classList.add("activeButton");
-        }
-        else {
-          button.classList.remove("activeButton")
-        }
-      };
       dataType.value = newDataType;
+      resetDefaults();
     };
+
+    function historyChange () {
+      scrollMore.value = (initialHistoryCount != historyCount.value);
+      initialHistoryCount = historyCount.value;
+    }
 
     // Check expansion / collapse of layers
     const layerExpanded = (offset) => {
@@ -88,11 +89,22 @@ export default {
       active_index.value = -1;
     })
 
-    return {t, timePeriod, dataType, periodChange, messureChange,
-            isCo2, isData, layers, layerHeightCo2, layerHeightData,
-            scroll, scrollCo2Component, scrollDataComponent, show,
-            stage, maxStage, nextStage, previousStage,
-            layerExpanded, layerCollapsed };
+    watch(scrollCount, historyChange)
+
+    // scroll event to load more history
+    function handleScroll(e) {
+      const { scrollTop, offsetHeight, scrollHeight } = e.target
+      if ((scrollTop + offsetHeight + 5) >= scrollHeight) {
+        if(scrollMore.value) {
+          scrollCount.value += 1;
+        }
+      }
+    }
+
+    return {
+      timePeriod, dataType, isCo2, isData, layers, stage, maxStage, scrollMore, historyCount,
+      t, periodChange, messureChange, layerExpanded, layerCollapsed, handleScroll
+    };
   }
 
 }
@@ -100,20 +112,31 @@ export default {
 
 <template>
   <div id="time">
-    <button type="button" name="days" class="activeButton" @click='periodChange("days")'> {{ t('global.period.days') }}</button>
-    <button type="button" name="weeks" @click='periodChange("weeks")'> {{ t('global.period.weeks') }}</button>
-    <button type="button" name="months" @click='periodChange("months")'> {{ t('global.period.months') }}</button>
+    <button type="button" name="days" :class="{activeButton: timePeriod ==='days'}" @click='periodChange("days")'> {{ t('global.period.days') }}</button>
+    <button type="button" name="weeks" :class="{activeButton: timePeriod ==='weeks'}" @click='periodChange("weeks")'> {{ t('global.period.weeks') }}</button>
+    <button type="button" name="months" :class="{activeButton: timePeriod ==='months'}" @click='periodChange("months")'> {{ t('global.period.months') }}</button>
   </div>
   <div id="type">
-    <button type="button" name="co2" class="activeButton" @click='messureChange("co2")'> {{ t('global.co2') }}</button>
-    <button type="button" name="data" @click='messureChange("data")'> {{ t('global.data') }}</button>
+    <button type="button" name="co2" :class="{activeButton: isCo2}" @click='messureChange("co2")'> {{ t('global.co2') }}</button>
+    <button type="button" name="data" :class="{activeButton: isData}" @click='messureChange("data")'> {{ t('global.data') }}</button>
   </div>
   <div class="dataArea">
-    <div class="history-wrapper">
-    <stratum v-for="(layer, index) in layers" :key="layer.key"
-      :type="dataType" :index="index" :stage="stage"
-      :layer="layer"
-      @willExpand="layerExpanded" @willCollapse="layerCollapsed"></stratum>
+    <div id="history" class="history-wrapper" @scroll="handleScroll">
+      <stratum v-for="(layer, index) in layers" :key="layer.key"
+        :type="dataType" :index="index" :stage="stage"
+        :layer="layer"
+        @willExpand="layerExpanded" @willCollapse="layerCollapsed">
+      </stratum>
+      <!-- infinite scroll check if more items to load -->
+      <div class="scroll">
+        <div v-if="scrollMore">
+          <img src="../../../icons/loading.gif" alt="" width="50" height="50">
+        </div>
+        <div v-else class="noLoading">
+          <img src="../../../icons/fullScroll.svg" alt="" width="50" height="50">
+          <p>{{ t('components.history.scrollEnd') }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -130,22 +153,51 @@ export default {
   #time button, #type button {
     flex-grow: 1;
     cursor: pointer;
-    border-radius: 5px;
     background-color: var(--activeBackground);
     color: var(--activeColor);
+    margin: 0.5px;
+  }
+  #time button:first-child, #type button:first-child {
+    border-radius: 5px 0px 0px 5px;
+  }
+  #time button:last-child, #type button:last-child {
+    border-radius: 0px 5px 5px 0px;
   }
   .dataArea {
     display: flex;
     width: 100%;
-    height: 60%;
+    height: 70%;
   }
   .history-wrapper {
-    margin-top: 5px;
+    margin-top: 20px;
     transition: margin-top 0.5s ease;
     flex-grow: 1;
     width: 90%;
     overflow-y: scroll;
     position: relative;
+  }
+  .history-wrapper:first-child:before {
+    content:'';
+    position:absolute;
+    width:100%;
+    height:5px;
+    z-index: 1;
+    background:linear-gradient(var(--white), #0000);
+  }
+  .scroll>div {
+    padding-top: 40px;
+  }
+  .scroll:before {
+    content:'';
+    left: 0;
+    position:absolute;
+    width:100%;
+    height:5px;
+    margin-top: -5px;
+    background:linear-gradient(#0000, var(--white));
+  }
+  .history-wrapper div:first-child {
+    border-top: none;
   }
   /* Custom scrool */
   .history-wrapper::-webkit-scrollbar {
@@ -170,6 +222,12 @@ export default {
   }
   .history-wrapper::-webkit-scrollbar-thumb:hover {
     background: var(--dark-grey);
+  }
+  .scroll {
+    text-align: center;
+  }
+  .noLoading p{
+    margin: auto;
   }
   @media (prefers-color-scheme: dark) {
 

@@ -25,8 +25,8 @@ export default {
     display: flex;
   }
   iframe {
-    margin: 5% auto;
+    margin: 2% auto;
     width: 500px;
-    height: 600px;
+    height: 60vh;
   }
 </style>

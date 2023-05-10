@@ -58,7 +58,7 @@ export default {
     });
     const layerName = computed(() => {
       return layerInfo.label.startsWith('current') ? t('global.'+layerInfo.label) : 
-         layerInfo.level != 'day' ? t('global.'+layerInfo.level) + ' ' + layerInfo.label : layerInfo.label
+         layerInfo.level != 'day' ? t('global.period.'+layerInfo.level) + ' ' + layerInfo.label : layerInfo.label
     });
     const legend = computed(() => {
       switch(type.value) {
@@ -203,11 +203,9 @@ export default {
     height: 200px;
     margin-left: 0px;
   }
-
   .bold {
       font-weight: 700;
   }
-
   .summary {
     opacity: 1;
     height: 0px;
@@ -244,20 +242,17 @@ export default {
       }
     }
   }
-
   .title {
     margin-top: 10px;
     margin-left: 10px;
     text-align: left;
   }
-
   .icon {
     display: block;
     margin-left: auto;
     margin-right: auto;
     margin-top: 2px;
   }
-
   .section {
     margin-top: 33px;
   }
@@ -265,7 +260,6 @@ export default {
     margin-left: 10px;
     text-align: left;
   }
-
   .expanded .analogies {
     :deep(.el-carousel__indicators--labels .el-carousel__indicator) {
       width: 5px;
@@ -283,12 +277,10 @@ export default {
       height: 150px;
     }
   }
-
   .expanded .graph {
     border-left: solid 1px white;
     padding-left: 6px;
   }
-
   .expanded .info {
     text-align: left;
     border-right: solid 1px white;
@@ -311,7 +303,6 @@ export default {
         background-color: darken(#906C0D, 10);
       }
     }
-
     &.daily{
       background-color: #A59366;
       &:hover{
@@ -321,7 +312,6 @@ export default {
         background-color: darken(#A59366, 10);
       }
     }
-
     &.weekly{
       background-color: #958A70;
       &:hover{
@@ -331,7 +321,6 @@ export default {
         background-color: darken(#958A70, 10);
       }
     }
-
     &.monthly{
       background-color: #827E76;
       &:hover{
@@ -342,11 +331,9 @@ export default {
       }
     }
   }
-
   .data {
     background-color: #384E50;
     border-bottom: solid 1px white;
-
     &.today{
       background-color: #384E50;
       &:hover{
@@ -356,7 +343,6 @@ export default {
         background-color: darken(#384E50, 10);
       }
     }
-
     &.daily{
       background-color: #719598;
       &:hover{
@@ -366,7 +352,6 @@ export default {
         background-color: darken(#719598, 10);
       }
     }
-
     &.weekly{
       background-color: #213C3F;
       &:hover{
@@ -376,7 +361,6 @@ export default {
         background-color: darken(#213C3F, 10);
       }
     }
-
     &.monthly{
       background-color: #0F2D30;
       &:hover{
@@ -387,31 +371,26 @@ export default {
       }
     }
   }
-
  .details .icon{
     position: absolute;
     top: calc((200px - var(--height))/2);
     margin-left: var(--margin-icon);
   }
-
   img {
     display: inline-block;
     height: var(--height);
     transition: transform 0.5s ease;
     filter: brightness(0) saturate(100%) invert(100%);
   }
-
   .analogy {
     text-align:center;
   }
-
   .apexchart {
     position: absolute;
     top: 0;
     right: 0;
     display: block;
   }
-
   @media (prefers-color-scheme: dark) {
 
   }

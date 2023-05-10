@@ -1,7 +1,7 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { retrieveHistoryLayers } from './storage';
 
-const MAX_HEIGHT = 150;
+const MAX_HEIGHT = 120;
 
 const layerHeightCo2 = (amount) => {
   const height = 11 + (amount / 0.9) * MAX_HEIGHT; // min 11px, max 150 px for 900g CO2eq ( 8h laptop consumption no activities ~ 200g)
@@ -13,20 +13,19 @@ const layerHeightData = (amount) => {
   return Math.min(height, MAX_HEIGHT);
 }
 
-const setup = (type, period) => {
-  const maxHeight = 600;
-  const barHeight = 37;
-
+const setup = (type, period, scrollCount) => {
   const layers = ref([]);
+  const historyCount = ref(0);
   const scroll = ref(0);
   const show = ref(false);
+  const isData = computed(() => type.value === 'data');
+  const isCo2 = computed(() => type.value === 'co2');
 
   const stage = ref(0);
   const maxStage = ref(0);
 
   const totalHeight = ref(0);
-  const isData = computed(() => type.value === 'data');
-  const isCo2 = computed(() => type.value === 'co2');
+  const maxHeight = 600;
 
   const updateScroll = () => {
     let layer;
@@ -60,7 +59,9 @@ const setup = (type, period) => {
 
   const retrieveData = async () => {
     // get layers from history
-    const { co2, data } = await retrieveHistoryLayers(period.value);
+    const { co2, data, count } = await retrieveHistoryLayers(period.value, scrollCount.value);
+
+    historyCount.value = count;
 
     if (isCo2.value) {
       layers.value = co2.reverse();
@@ -90,6 +91,7 @@ const setup = (type, period) => {
   });
   watch(period, retrieveData)
   watch(type, retrieveData)
+  watch(scrollCount, retrieveData)
 
   const nextStage = () => {
     if (stage.value === maxStage.value) {
@@ -105,7 +107,7 @@ const setup = (type, period) => {
     stage.value--;
   }
 
-  return {layers, scroll, totalHeight, show, stage, maxStage, nextStage, previousStage};
+  return {layers, historyCount, scroll, totalHeight, show, stage, maxStage, nextStage, previousStage};
 }
 
 export { setup, layerHeightCo2, layerHeightData };
