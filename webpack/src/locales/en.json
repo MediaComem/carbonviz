@@ -47,7 +47,8 @@
     "appFullpage": {},
     "history": {
       "WeeklyConsumption": "Weekly consumption",
-      "MonthlyConsumption": "Monthly consumption"
+      "MonthlyConsumption": "Monthly consumption",
+      "scrollEnd": "No more data to load"
     },
     "popup": {
       "messages": {

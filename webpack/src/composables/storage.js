@@ -124,21 +124,24 @@ export const getCurWeek = async (mode = 'co2') => {
     return byHours;
 }
 
-export const retrieveHistoryLayers = async (period) => {
+export const retrieveHistoryLayers = async (period, scrollCount) => {
     const year = new Date().getFullYear();
     const layersCo2 = [];
     const layersData = [];
+    // min 3 months / max is one year
+    const historyLimit = (3 + scrollCount) < 12 ? (3 + scrollCount) : 12;
 
     database ??= await initDB();
 
     // get data (daily summaries) for the last 4 months
-    const dailyData = await getDailyAggregates('month', 4);
+    const dailyData = await getDailyAggregates('month', historyLimit);
     if (!dailyData) {
         return { co2: layersCo2, data: layersData };
     }
     const today = dailyData[dailyData.length-1];
     const currentMonth = today.month;
     const currentWeekYear = today.weekOfYear;
+    const itemsCount = 0;
 
     const getDaysList = () => {
         for(let data of dailyData) {
@@ -150,10 +153,10 @@ export const retrieveHistoryLayers = async (period) => {
     }
 
     const getWeeksList = () => {
-        // get previous 3 weeks
         const previousWeeks = [];
         let previousWeek = currentWeekYear;
-        while (previousWeeks.length < 3) {
+        const weeksHistory = (5 * historyLimit) < 53 ? (5 * historyLimit) : 52;
+        while (previousWeeks.length < weeksHistory) {
             const week = previousWeek > 0 ? previousWeek : previousWeek + 52;
             previousWeeks.push(week);
             previousWeek--;
@@ -177,10 +180,9 @@ export const retrieveHistoryLayers = async (period) => {
     }
 
     const getMonthsList = () => {
-        // get previous 3 months
         const previousMonths = [];
         let previousMonth = currentMonth;
-        while (previousMonths.length < 3) {
+        while (previousMonths.length < historyLimit) {
             const month = previousMonth > 0 ? previousMonth : previousMonth + 12;
             previousMonths.push(month);
             previousMonth--;
@@ -228,7 +230,7 @@ export const retrieveHistoryLayers = async (period) => {
             getDaysList();
     }
 
-   return { co2: layersCo2, data: layersData };
+   return { co2: layersCo2, data: layersData, count: layersCo2.length };
 
 }
 

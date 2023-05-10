@@ -124,23 +124,19 @@ export default {
   align-items: center;
   padding: 20px;
   width: auto;
-  height: 96%;
-  padding: 2%;
+  padding: 0% 2%;
 }
 #tabs {
   display: flex;
   width: 100%;
   height: 10%;
-  margin-bottom: 20px;
 }
 #tabs button {
   flex-grow: 1;
-  background-color: var(--light-grey);
-  color: var(--dark-grey);
+  color: var(--light-grey);
   font-size: 22px;
 }
 #tabs button.activeTab {
-  background-color: var(--white);
   color: var(--black);
 }
 #footer {

@@ -225,8 +225,7 @@ export default {
   [data-area="body"] {
     background-color: #F8F8F8;
     width: 1000px;
-    height: calc(100vh - 240px);
-    padding-bottom: 20px;
+    height: calc(100vh - 250px);
     overflow: auto;
   }
   /* Vue3 transition */
