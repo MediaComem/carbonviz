@@ -24,7 +24,7 @@ export default {
       }
     });
     const asset = computed(() => {
-        return `assets/${analogy.value.asset}`
+        return `../icons/analogies/${analogy.value.asset}`
     });
     const legend = computed(() => {
         const data = layer.value;

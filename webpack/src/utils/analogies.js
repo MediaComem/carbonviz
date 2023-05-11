@@ -1,4 +1,8 @@
 import { roundToPrecision } from '../utils/format.js'
+/*
+*   When updating analogies please be aware of the *analogiesData* object in webpack\src\pages\Method.vue 
+*/
+
 // kwPerUnit
 export const kwPerUnitCo2 = {
     marathon: 2.790697674,

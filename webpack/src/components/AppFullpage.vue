@@ -160,7 +160,7 @@ export default {
   #logoEquiwatt::before {
     display: inline-block;
     content: ' ';
-    background: url("../icons/logoEquiwattHeader.svg") no-repeat;
+    background: url("../icons/logos/logoEquiwattHeader.svg") no-repeat;
     width: 150px;
     height: 41px;
   }
