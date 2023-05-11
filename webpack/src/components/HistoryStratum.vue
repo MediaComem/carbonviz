@@ -8,6 +8,7 @@ import Analogy from './Analogy.vue'
 import layerChart from '../composables/layerChart';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
 import { formatSize, formatCo2 } from '../utils/format'
+import { analogyNames } from '../utils/analogies'
 
 export default {
   components: {
@@ -132,7 +133,7 @@ export default {
       active_index, height,
       amount, legend, layerName,
       expanded, expand, shouldAnimate,
-      showGraph, options, series
+      showGraph, options, series, analogyNames
     };
   }
 }
@@ -173,7 +174,7 @@ export default {
       </el-col>
       <el-col :span="showGraph ? 8 : 16" class="section">
         <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click" indicator-position="none">
-          <el-carousel-item v-for="(item, index) in [0, 1, 2, 3, 4, 5]" :key="index" label="." class="analogy">
+          <el-carousel-item v-for="(item, index) in analogyNames[type]" :key="index" label="." class="analogy">
             <analogy :type="type" :layer="layer" :index="item"></analogy>
           </el-carousel-item>
         </el-carousel>

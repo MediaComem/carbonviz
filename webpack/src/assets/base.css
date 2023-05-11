@@ -3,10 +3,10 @@
   --black: #000000;
   --white: #ffffff;
   --grey: #8c8c8c;
-  --light-grey: #f2f2f2;
-  --dark-grey: #5f5e5e;
+  --light-grey: #F6F6F6;
+  --dark-grey: #616161;
   --co2: #906C0D;
-  --data: #384E50;
+  --data: #4F6D70;
   --activeBackground: var(--light-grey);
   --activeColor: var(--black);
 }

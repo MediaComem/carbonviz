@@ -16,7 +16,7 @@ export default {
     let userOptions = defaultOptions;
 
     let fullpageTabIndex = undefined;
-    let page = 'Live';
+    let page = 'Historical';
     let url = `fullpage/fullpage.html#${page}`;
     const isFirefox = typeof(browser) !== 'undefined';
     if (isFirefox) {
