@@ -111,9 +111,9 @@ export default {
   <div class="section" :class="dataType === 'co2' ? 'co2' : 'data'">
     <div class="section-title bold"> {{ t('components.analogies.message') }} </div>
     <el-carousel arrow="always" class="analogies" trigger="click" indicator-position="none" @change="statsIndex">
-      <el-carousel-item v-for="(item, index) in analogyNames[dataType]" :key="index" label="." class="analogy">
+      <el-carousel-item v-for="(item, index) in analogyNames[dataType]" :key="item" label="." class="analogy">
         <div v-if="layer.year">
-          <analogy :type="dataType" :layer="layer.year" :index="item"></analogy>
+          <analogy :type="dataType" :layer="layer.year" :name="item"></analogy>
         </div>
       </el-carousel-item>
     </el-carousel>

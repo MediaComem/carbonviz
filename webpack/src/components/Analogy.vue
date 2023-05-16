@@ -7,18 +7,18 @@ export default {
   props: {
     layer: {type: Object},
     type: {type: String},
-    index: {type: String},
+    name: {type: String}
   },
   setup(props) {
     const { t } = useI18n({});
-    const { index, type, layer } = toRefs(props);
+    const { name, type, layer } = toRefs(props);
 
     const analogy = computed(() => {
       switch(type.value) {
         case 'co2':
-          return analogiesCo2[index.value]
+          return analogiesCo2[name.value]
         case 'data':
-            return analogiesData[index.value]
+            return analogiesData[name.value]
         default:
             throw('Invalid type');
       }

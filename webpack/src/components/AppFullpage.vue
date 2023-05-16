@@ -41,7 +41,7 @@ export default {
   <div class="wrapper">
     <div data-area="logo"></div>
     <h1 data-area="title">{{ t('appTitle') }}</h1>
-    <div data-area="title" id="logoEquiwatt"></div>
+    <img src="../../../icons/logos/logo-equiwatt-large.png" width="200" height="60" data-area="title" id="logoEquiwatt">
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">
@@ -156,13 +156,6 @@ export default {
   }
   #logoEquiwatt {
     margin: auto;
-  }
-  #logoEquiwatt::before {
-    display: inline-block;
-    content: ' ';
-    background: url("../icons/logos/logoEquiwattHeader.svg") no-repeat;
-    width: 150px;
-    height: 41px;
   }
   /* nav */
   [data-area="nav"] {
