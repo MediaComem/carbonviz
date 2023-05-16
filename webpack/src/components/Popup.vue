@@ -21,10 +21,9 @@ export default {
     function viewChange (newTab) {
       currentView.value = newTab;
     }
+    const { checkbox, openNewTabDialog, addPluginToNewTab } = setupExtensionTab();
 
-    const { openNewTabDialog, addPluginToNewTab } = setupExtensionTab();
-
-    return { t, locale, currentView, changeLang, viewChange, openNewTabDialog, addPluginToNewTab};
+    return { t, locale, currentView, changeLang, viewChange, checkbox, openNewTabDialog, addPluginToNewTab};
   }
 }
 
@@ -37,7 +36,7 @@ export default {
           {{ t('components.popup.messages.checkActivity') }}<br>
           {{ t('components.popup.messages.accessPopup') }}
         </p>
-        <input type="checkbox" id="disableNewTabConfirmation" name="tabConfirmation">
+        <input type="checkbox" ref="checkbox" name="tabConfirmation">
         <label for="tabConfirmation">{{ t('global.askAgain') }}</label>
         <menu>
           <button value="cancel">{{ t('global.cancel') }}</button>

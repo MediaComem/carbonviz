@@ -1,9 +1,29 @@
+import { ref } from "vue";
+
 const setup = () => {
   // Default app settings
   const defaultOptions = { showTabConfirmation: true };
   let userOptions = defaultOptions;
+  // Ref to checkbox
+  const checkbox = ref(null);
+
+  chrome.storage.local.get(['options'],  storage => {
+    const options = storage.options;
+    if (options) {
+      try {
+        userOptions = JSON.parse(options);
+      } catch(error) {
+        console.log(`Invalid options stored: ${userOptions}`);
+      }
+    }
+  });
 
   const openNewTabDialog = () => {
+
+    if (!userOptions.showTabConfirmation) {
+      return addPluginToNewTab();
+    }
+
     const openTabDialog = window.document.getElementById("tabDialog") as HTMLDialogElement;
     if (typeof openTabDialog.showModal === "function") {
       openTabDialog.showModal();
@@ -19,6 +39,11 @@ const setup = () => {
     await chrome.storage.local.get(['fullpageTabIndex']).then(storage => {
       fullpageTabIndex = storage.fullpageTabIndex;
     });
+
+    if (checkbox?.value?.checked) {
+      userOptions.showTabConfirmation = false;
+      chrome.storage.local.set({'options': JSON.stringify(userOptions)});
+    }
 
     if(fullpageTabIndex) {
       chrome.tabs.update(fullpageTabIndex,{active: true}, function() {
@@ -51,7 +76,7 @@ const setup = () => {
       });
   }
 
-  return { openNewTabDialog, addPluginToNewTab } ;
+  return { checkbox, openNewTabDialog, addPluginToNewTab } ;
 }
 
 export { setup };
