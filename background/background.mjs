@@ -387,8 +387,24 @@ const createExtensionTab = () => {
   chrome.tabs.create(options);
 
 }
-const addPluginToNewTab = () => {
-  createExtensionTab();
+const addPluginToNewTab = async () => {
+  let fullpageTabIndex = undefined;
+
+  await chrome.storage.local.get(['fullpageTabIndex']).then(storage => {
+    fullpageTabIndex = storage.fullpageTabIndex;
+  });
+
+  if(fullpageTabIndex) {
+    chrome.tabs.update(fullpageTabIndex,{active: true}, function() {
+      // if tab was closed and no longer exists
+      if (chrome.runtime.lastError) {
+        createExtensionTab();
+      }
+    });
+  }
+  else {
+    createExtensionTab();
+  }
 }
 
 initDB().then( async () => {
