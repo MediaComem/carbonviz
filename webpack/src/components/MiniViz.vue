@@ -42,7 +42,7 @@ export default {
     const hideAnimation = () => {
       showInteraction.value = true;
       interactive.value = true;
-      setTimeout( () => showInteraction.value = false, HIDE_MINIVIZ_DELAY);
+      setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY);
     };
     const openTabExtension = () => {
       chrome.runtime.sendMessage({ query: 'openExtension' });
