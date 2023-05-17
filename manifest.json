@@ -22,7 +22,7 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*"],
-      "css": ["bundle/miniviz.css"],
+      "css": [],
       "js": ["content/miniViz-script.js","content/miniViz.js","content/matter.js"]
     }
   ],

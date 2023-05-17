@@ -2,12 +2,12 @@
 import { useI18n } from 'vue-i18n'
 import { setup as setupHistoryLayers } from '../composables/history';
 import Stratum from './HistoryStratum.vue';
-import { computed, provide, watch, ref } from 'vue';
+import { computed, provide, watch, ref, toRefs } from 'vue';
 
 export default {
   components: { Stratum },
   props: {
-    dafaultDataType: {
+    defaultDataType: {
       type: String,
       default: "co2"
     },
@@ -20,8 +20,8 @@ export default {
   setup(props, context) {
     const { t } = useI18n({});
     let timePeriod = ref("days");
-    const dataType = ref(props.dafaultDataType);
-    const hideTypeChange = ref(props.hideTypeChange);
+    const { defaultDataType , hideTypeChange } = toRefs(props);
+    const dataType = ref(defaultDataType.value);
     let scrollCount = ref(0);
     let scrollMore = ref(true);
     let initialHistoryCount = 0;

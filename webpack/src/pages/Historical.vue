@@ -17,11 +17,11 @@ export default {
   <div id="historical" class="flexContainer">
     <div>
       <h3>{{ t('global.co2') }}</h3>
-      <History :hideTypeChange="true" dafaultDataType="co2"></History>
+      <History :hideTypeChange="true" defaultDataType="co2"></History>
     </div>
     <div>
       <h3>{{ t('global.data') }}</h3>
-      <History :hideTypeChange="true" dafaultDataType="data"></History>
+      <History :hideTypeChange="true" defaultDataType="data"></History>
     </div>
   </div>
 </template>
