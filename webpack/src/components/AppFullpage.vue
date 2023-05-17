@@ -7,6 +7,7 @@ import Historical from '../pages/Historical.vue';
 // Hash's name must mach the Page's name in the pages folder
 const hashRoutes = {
   '#Historical': 'Historical',
+  '#Analogies': 'Analogies',
   '#Statistics': 'Statistics',
   '#Journey': "Data's journey",
   '#Method': 'Method & links',

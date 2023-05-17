@@ -7,15 +7,42 @@ import { retrieveAnalogiesLayer } from '../composables/storage';
 import Analogy from './Analogy.vue'
 
 export default {
-  components: {
-    Analogy
+  components: { Analogy },
+  props: {
+    dafaultDataType: {
+      type: String,
+      default: "co2"
+    },
+    hideTypeChange: {
+      type: Boolean,
+      default: false
+    },
+    analogy: {
+      type: String,
+      default: ""
+    }
   },
-  setup() {
+  setup(props) {
     const { t } = useI18n({});
-    let dataType = ref('co2');
+    const dataType = ref(props.dafaultDataType);
+    const hideTypeChange = ref(props.hideTypeChange);
+    const analogy = ref(props.analogy);
     const layer = ref({});
     const currentYear = new Date().getFullYear();
     let activeIndex = ref(0);
+    let isOneAnalogy = false;
+    let customAnalogyNames = {
+      co2: [],
+      data: []
+    };
+
+    // for Analogies page we have one analogy per section
+    if (analogy.value) {
+      customAnalogyNames[dataType.value].push(analogy.value);
+      isOneAnalogy = true;
+    } else {
+      customAnalogyNames = analogyNames;
+    }
 
     const retrieveData = async () => {
       const { data } = await retrieveAnalogiesLayer(dataType);
@@ -73,7 +100,7 @@ export default {
       if(dataType.value === 'co2') {
         // analogies based on energy (switch energy MJ to kWh)
         const amountCo2 = 0.278 * value.energy;
-        const currentAnalogy = analogyNames.co2[activeIndex.value];
+        const currentAnalogy = customAnalogyNames.co2[activeIndex.value];
         const kwPerUnit = kwPerUnitCo2[currentAnalogy];
         const { amount, unit } = computeAnalogy(currentAnalogy, amountCo2, kwPerUnit);
         return { amount, unit }
@@ -81,7 +108,7 @@ export default {
       else {
         // data in MB for analogies
         const amountData = value.amount / 1000000;
-        const currentAnalogy = analogyNames.data[activeIndex.value];
+        const currentAnalogy = customAnalogyNames.data[activeIndex.value];
         const mbPerUnit = mbPerUnitData[currentAnalogy];
         const  { amount, unit } = computeAnalogy(currentAnalogy, amountData, mbPerUnit);
         return { amount, unit }
@@ -89,7 +116,7 @@ export default {
     };
 
     function getAnalogyText(value) {
-      const analogyType = this.analogyNames[dataType.value][activeIndex.value];
+      const analogyType = this.customAnalogyNames[dataType.value][activeIndex.value];
       return this.t(`components.analogies.${analogyType}${getAnalogyValue(value).unit}`)
     }
   
@@ -98,20 +125,20 @@ export default {
     });
 
     return {t, measureChange, roundToPrecision, statsIndex, getAnalogyValue, getAnalogyText,
-      layer, dataType, currentYear, activeIndex, analogyNames};
+      layer, dataType, currentYear, activeIndex, customAnalogyNames, hideTypeChange, isOneAnalogy};
   }
 }
 </script>
 
 <template>
-  <div id="type">
+  <div v-if="!hideTypeChange" id="type">
     <button type="button" name="co2" :class="{activeButton: dataType ==='co2'}" @click='measureChange("co2")'> {{ t('global.co2') }}</button>
     <button type="button" name="data" :class="{activeButton: dataType ==='data'}" @click='measureChange("data")'> {{ t('global.data') }}</button>
   </div>
   <div class="section" :class="dataType === 'co2' ? 'co2' : 'data'">
     <div class="section-title bold"> {{ t('components.analogies.message') }} </div>
-    <el-carousel arrow="always" class="analogies" trigger="click" indicator-position="none" @change="statsIndex">
-      <el-carousel-item v-for="(item, index) in analogyNames[dataType]" :key="item" label="." class="analogy">
+    <el-carousel arrow="always" class="analogies" :class="{hideButtons: isOneAnalogy}" trigger="click" indicator-position="none" @change="statsIndex">
+      <el-carousel-item v-for="(item, index) in customAnalogyNames[dataType]" :key="item" label="." class="analogy">
         <div v-if="layer.year">
           <analogy :type="dataType" :layer="layer.year" :name="item"></analogy>
         </div>
@@ -182,5 +209,8 @@ export default {
 <style>
 .el-carousel__container {
   height: 130px;
+}
+.analogies.hideButtons .el-carousel__container button{
+  display: none;
 }
 </style>
