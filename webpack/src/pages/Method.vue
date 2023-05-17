@@ -108,8 +108,8 @@ components: {
         <li>an internet network (optical fiber, service provider equipment, etc.)</li>
         <li>a data center</li>
       </ul>
-      <el-row justify="left">
-        <img src="assets/model_scope.png">
+      <el-row justify="start">
+        <img src="../../../icons/model_scope.png">
       </el-row>
       <h2>2. Data sources</h2>
       <p>
@@ -173,14 +173,14 @@ components: {
         The grey energy encapsulated in 1kWh of electricity also depends a lot on the source of energy, electricity from fossil fuels will depend on much more primary energy, in particular due to the low efficiency while converting fossil energy to electricity and loss of energy through heat.
       </p>
       <h2>5. Example result for theoretical online activities in a browser</h2>
-      <el-row justify="left">
-        <img src="assets/web.png">
+      <el-row justify="start">
+        <img src="../../../icons/web.png">
       </el-row>
-      <el-row justify="left">
-        <img src="assets/720p.png">
+      <el-row justify="start">
+        <img src="../../../icons/720p.png">
       </el-row>
-      <el-row justify="left">
-        <img src="assets/4K.png">
+      <el-row justify="start">
+        <img src="../../../icons/4K.png">
       </el-row>
       <p>
         <b>Disclamer</b>: Video size estimates are based on recommended encoding bitrate and may be smaller depending on actual video and youtube additionnal compression before publication.
@@ -194,14 +194,14 @@ components: {
       </p><p>
         The CarbonViz method clearly shows that the Global Warming Potential (GWP) of watching a 720p video for one hour on a 6.5 years lifespan laptop is significantly lower when renewable energy mix is used compared to a standard energy mix. In the case of video streaming, this is mainly due to the impact of the server electricity and the core network electricity which represents more than 2/3 of the impact in case of a standard mix.As can be seen below, in case of renewable mix, the embodied impact of the laptop (the impact coming from the full manufaturing and transport) becomes  predominant. Both end users and internet services have an impact on the GWP: the impact for internet services being highly dependent on the source of energy (renewable or standard), the end-user impact coming mainly from the device manufacturing.
       </p>
-      <el-row justify="left">
-        <img src="assets/standard_vs_renewable.svg">
+      <el-row justify="start">
+        <img src="../../../icons/standard_vs_renewable.svg">
       </el-row>
       <p>
         The method also shows that the energy needed (primary energy to produce the electricity) to watch the video is much lower with a renewable mix. This is due to the large quantity of Non Renewable Energy (NRE) used in a standard mix compared to the renewable mix that is based more on Renewable Energy (RE). Indeed, the primary energy needed for non-renewable electricity production is higher in case of non renewable sources (in part due to loss in heating energy during electricity production from fossiel fuels for example).
       </p>
-      <el-row justify="left">
-        <img src="assets/energy.svg">
+      <el-row justify="start">
+        <img src="../../../icons/energy.svg">
       </el-row>
       <h2>2. Compared impact of a 6.5 and 4 year lifespan laptop</h2>
       <p>
@@ -211,8 +211,8 @@ components: {
       </p><p>
         It is already the case in the video streaming scenario where internet services impact is predominant. That is even more relevant in a more usual scenario where most of the active time of the computer is office work.
       </p>
-      <el-row justify="left">
-        <img src="assets/lifespan.svg">
+      <el-row justify="start">
+        <img src="../../../icons/lifespan.svg">
       </el-row>
     </article>
     <article data-section="Analogies">
@@ -233,7 +233,7 @@ components: {
             <el-carousel trigger="click" :interval="10000" height="260px" class="analogies">
               <el-carousel-item v-for="(item, index) in analogies" :key="index">
                 <el-row justify="center" align="middle">
-                  <img :src="`assets/${item.image}`">
+                  <img :src="`../../../icons/analogies/${item.image}`">
                 </el-row>
                 <el-row justify="center" align="middle" class="title">
                   <el-col :span="20">

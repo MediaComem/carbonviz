@@ -16,7 +16,7 @@ export default {
     let userOptions = defaultOptions;
 
     let fullpageTabIndex = undefined;
-    let page = 'Live';
+    let page = 'Historical';
     let url = `fullpage/fullpage.html#${page}`;
     const isFirefox = typeof(browser) !== 'undefined';
     if (isFirefox) {
@@ -178,7 +178,7 @@ export default {
 [data-area="logo"]#logoEquiwatt::before {
   display: inline-block;
   content: ' ';
-  background: url("../icons/logoEquiwatt.svg") no-repeat;
+  background: url("../icons/logos/logoEquiwatt.svg") no-repeat;
   width: 80px;
   height: 20px;
 }

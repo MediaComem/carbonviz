@@ -3,15 +3,25 @@ import { useI18n } from 'vue-i18n'
 import { setup as setupHistoryLayers } from '../composables/history';
 import Stratum from './HistoryStratum.vue';
 import { computed, provide, watch, ref } from 'vue';
-import { layerHeightCo2, layerHeightData } from '../composables/history'
 
 export default {
   components: { Stratum },
+  props: {
+    dafaultDataType: {
+      type: String,
+      default: "co2"
+    },
+    hideTypeChange: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   setup(props, context) {
     const { t } = useI18n({});
     let timePeriod = ref("days");
-    let dataType = ref("co2");
+    const dataType = ref(props.dafaultDataType);
+    const hideTypeChange = ref(props.hideTypeChange);
     let scrollCount = ref(0);
     let scrollMore = ref(true);
     let initialHistoryCount = 0;
@@ -77,11 +87,13 @@ export default {
     // in addition to manage expansion / collapse of layers
     if (isData.value) {
       const anim = window.document.querySelector('.animation');
-      anim.style.transition = 'top 0.5s ease';
-      watch(show, isShown => anim.style.top = isShown ? `${-scroll.value}px` : '0px');
-      watch(scroll, _val => scrollDataComponent.value = _val);
-      watch(scrollDataComponent, val => anim.style.top = show.value ? `${-val}px` : '0px');
-      anim.style.top = 0;
+      if (anim) {
+        anim.style.transition = 'top 0.5s ease';
+        watch(show, isShown => anim.style.top = isShown ? `${-scroll.value}px` : '0px');
+        watch(scroll, _val => scrollDataComponent.value = _val);
+        watch(scrollDataComponent, val => anim.style.top = show.value ? `${-val}px` : '0px');
+        anim.style.top = 0;
+      }
     }
 
     watch(stage, () => {
@@ -102,7 +114,7 @@ export default {
     }
 
     return {
-      timePeriod, dataType, isCo2, isData, layers, stage, maxStage, scrollMore, historyCount,
+      timePeriod, dataType, isCo2, isData, layers, stage, maxStage, scrollMore, historyCount, hideTypeChange,
       t, periodChange, messureChange, layerExpanded, layerCollapsed, handleScroll
     };
   }
@@ -116,7 +128,7 @@ export default {
     <button type="button" name="weeks" :class="{activeButton: timePeriod ==='weeks'}" @click='periodChange("weeks")'> {{ t('global.period.weeks') }}</button>
     <button type="button" name="months" :class="{activeButton: timePeriod ==='months'}" @click='periodChange("months")'> {{ t('global.period.months') }}</button>
   </div>
-  <div id="type">
+  <div v-if="!hideTypeChange" id="type">
     <button type="button" name="co2" :class="{activeButton: isCo2}" @click='messureChange("co2")'> {{ t('global.co2') }}</button>
     <button type="button" name="data" :class="{activeButton: isData}" @click='messureChange("data")'> {{ t('global.data') }}</button>
   </div>
@@ -226,10 +238,21 @@ export default {
   .scroll {
     text-align: center;
   }
-  .noLoading p{
+  .noLoading p {
     margin: auto;
   }
   @media (prefers-color-scheme: dark) {
 
+  }
+</style>
+
+<style>
+  /* element plus overrides  */
+  .history-wrapper .wrapper .el-col.el-col-12 {
+    max-width: 60%;
+    flex: 0 0 60%;
+  }
+  .history-wrapper .wrapper .label.bold {
+    max-width: 70px;
   }
 </style>

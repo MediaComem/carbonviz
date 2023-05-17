@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n'
 import { roundToPrecision } from '../utils/format.js'
-import { kwPerUnitCo2, mbPerUnitData } from '../utils/analogies'
+import { kwPerUnitCo2, mbPerUnitData, analogyNames } from '../utils/analogies'
 import { retrieveAnalogiesLayer } from '../composables/storage';
 import Analogy from './Analogy.vue'
 
@@ -16,10 +16,7 @@ export default {
     const layer = ref({});
     const currentYear = new Date().getFullYear();
     let activeIndex = ref(0);
-    const analogyNames = {
-      co2: ["marathon","swimming","biking","cooking","boiling","sawing"],
-      data: ["dictionaries","instagram","music","netflix","wordFile","usb"]
-    };
+
     const retrieveData = async () => {
       const { data } = await retrieveAnalogiesLayer(dataType);
       layer.value = data;
@@ -114,9 +111,9 @@ export default {
   <div class="section" :class="dataType === 'co2' ? 'co2' : 'data'">
     <div class="section-title bold"> {{ t('components.analogies.message') }} </div>
     <el-carousel arrow="always" class="analogies" trigger="click" indicator-position="none" @change="statsIndex">
-      <el-carousel-item v-for="(item, index) in [0,1,2,3,4,5]" :key="index" label="." class="analogy">
+      <el-carousel-item v-for="(item, index) in analogyNames[dataType]" :key="item" label="." class="analogy">
         <div v-if="layer.year">
-          <analogy :type="dataType" :layer="layer.year" :index="item"></analogy>
+          <analogy :type="dataType" :layer="layer.year" :name="item"></analogy>
         </div>
       </el-carousel-item>
     </el-carousel>

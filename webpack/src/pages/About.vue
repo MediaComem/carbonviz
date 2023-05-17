@@ -27,9 +27,9 @@ export default {
     </p>
     </article>
     <el-row justify="center" align="middle" class="logos">
-      <el-col :span="6"><img src="assets/innosuisse.svg"></el-col>
-      <el-col :span="6"><img src="assets/mei.svg"></el-col>
-      <el-col :span="6"><img src="assets/igt.svg"></el-col>
+      <el-col :span="6"><img src="../../../icons/logos/innosuisse.svg"></el-col>
+      <el-col :span="6"><img src="../../../icons/logos/mei.svg"></el-col>
+      <el-col :span="6"><img src="../../../icons/logos/igt.svg"></el-col>
     </el-row>
     <article>
       <h1>Project team</h1>

@@ -2,11 +2,11 @@
 import {ref, provide} from 'vue';
 import { useI18n } from 'vue-i18n'
 import LocationHashRouter from '../composables/LocationHashRouter';
-import Live from '../pages/Live.vue';
+import Historical from '../pages/Historical.vue';
 
 // Hash's name must mach the Page's name in the pages folder
 const hashRoutes = {
-  '#Live': 'Live consumption',
+  '#Historical': 'Historical',
   '#Statistics': 'Statistics',
   '#Journey': "Data's journey",
   '#Method': 'Method & links',
@@ -15,7 +15,7 @@ const hashRoutes = {
 };
 
 export default {
-  components: { Live },
+  components: { Historical },
 
   setup(props, context) {
     const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
@@ -41,6 +41,7 @@ export default {
   <div class="wrapper">
     <div data-area="logo"></div>
     <h1 data-area="title">{{ t('appTitle') }}</h1>
+    <img src="../../../icons/logos/logo-equiwatt-large.png" width="200" height="60" data-area="title" id="logoEquiwatt">
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">
@@ -49,16 +50,16 @@ export default {
       </ul>
     </nav>
     <nav data-area="subnav">
-      <ul v-show="currentHash !== '#Live'">
+      <ul v-show="currentHash !== '#Historical'">
         <li v-for="(label, id) in subNav" :key="id">
           <a :data-scrollto="id" @click.prevent="onSubnavClick">{{ label }}</a>
         </li>
       </ul>
     </nav>
     <main data-area="body">
-      <live v-show="currentHash === '#Live'"></live>
+      <Historical v-show="currentHash === '#Historical'"></Historical>
       <transition name="fade" mode="out-in">
-          <component :is="currentPage" v-if="currentHash !== '#Live'"></component>
+          <component :is="currentPage" v-if="currentHash !== '#Historical'"></component>
       </transition>
     </main>
   </div>
@@ -153,6 +154,9 @@ export default {
     width: 42px;
     height: 48px;
   }
+  #logoEquiwatt {
+    margin: auto;
+  }
   /* nav */
   [data-area="nav"] {
     font-size: 18px;
@@ -223,10 +227,10 @@ export default {
   }
   /* body */
   [data-area="body"] {
-    background-color: #F8F8F8;
     width: 1000px;
     height: calc(100vh - 250px);
     overflow: auto;
+    padding-left: 70px;
   }
   /* Vue3 transition */
   .fade-enter-active, .fade-leave-active {

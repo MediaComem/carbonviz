@@ -8,6 +8,7 @@ import Analogy from './Analogy.vue'
 import layerChart from '../composables/layerChart';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
 import { formatSize, formatCo2 } from '../utils/format'
+import { analogyNames } from '../utils/analogies'
 
 export default {
   components: {
@@ -132,7 +133,7 @@ export default {
       active_index, height,
       amount, legend, layerName,
       expanded, expand, shouldAnimate,
-      showGraph, options, series
+      showGraph, options, series, analogyNames
     };
   }
 }
@@ -156,12 +157,12 @@ export default {
   >
     <el-row justify="center" align="middle" class="summary">
       <el-col :span="12">
-        <div class="label bold"> {{ layerName }} </div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
+        <div class="label bold"> {{ layerName }} </div><img class="icon" :src="`../icons/${type}.svg`" :style="`--height: ${height - 4}px;`">
       </el-col>
     </el-row>
     <el-row class="details">
       <el-col :span="4">
-        <div class="title bold"> {{ layerName }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
+        <div class="title bold"> {{ layerName }}</div><img class="icon" :src="`../icons/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
       </el-col>
       <el-col :span="4" class="section info">
         <div class="amount">
@@ -173,8 +174,8 @@ export default {
       </el-col>
       <el-col :span="showGraph ? 8 : 16" class="section">
         <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click" indicator-position="none">
-          <el-carousel-item v-for="(item, index) in [0, 1, 2, 3, 4, 5]" :key="index" label="." class="analogy">
-            <analogy :type="type" :layer="layer" :index="item"></analogy>
+          <el-carousel-item v-for="(item, index) in analogyNames[type]" :key="item" label="." class="analogy">
+            <analogy :type="type" :layer="layer" :name="item"></analogy>
           </el-carousel-item>
         </el-carousel>
       </el-col>
