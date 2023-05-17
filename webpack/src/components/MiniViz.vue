@@ -9,11 +9,11 @@
       <div class="actionPanel" :class="{ 'show': showInteraction, 'hide': !showInteraction }">
         <Logo class="icon"></Logo>
         CarbonViz
-        <svg class="icon" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg"> 
+        <svg class="icon cvz-interactive" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openTabExtension">
           <path :fill="color" fill-rule="evenodd" clip-rule="evenodd" d="M5.56068 3.51027H3.51027V11.4897H11.4854V9.43932H12.9957V11.8139C12.9957 12.468 12.4637 13 11.8096 13H3.18609C2.53202 13 2 12.468 2 11.8139V3.18609C2 2.53202 2.53202 2 3.18609 2H5.56068V3.51027ZM7.93124 2.04474C7.41618 2.04474 6.99685 2.46406 6.99685 2.97912V7.07324C6.99685 7.5883 7.41618 8.00762 7.93124 8.00762H12.0254C12.5404 8.00762 12.9597 7.5883 12.9597 7.07324V2.97912C12.9597 2.46406 12.5404 2.04474 12.0254 2.04474H7.93124Z"/>
         </svg>
         <span class="vl"></span>
-        <svg class="closeIcon" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="closeIcon cvz-interactive" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M1 12.2065L12.2065 1.00003M12.2065 12.2065L1 1.00003" stroke="#333333" stroke-width="2"/>
         </svg>
       </div>
@@ -42,9 +42,12 @@ export default {
     const hideAnimation = () => {
       showInteraction.value = true;
       interactive.value = true;
-      setTimeout( () => showInteraction.value = false, HIDE_MINIVIZ_DELAY);
+      setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY);
     };
-    return { color, ...animSetup, interactive, hideAnimation, showInteraction }
+    const openTabExtension = () => {
+      chrome.runtime.sendMessage({ query: 'openExtension' });
+    }
+    return { color, ...animSetup, openTabExtension, interactive, hideAnimation, showInteraction }
   }
 }
 </script>
@@ -110,6 +113,9 @@ export default {
   vertical-align: -0.25em;
   margin-left: 4px;
   margin-right: 4px;
+  &.cvz-interactive {
+    cursor: pointer;
+  }
 }
 
 .closeIcon {

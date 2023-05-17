@@ -12,6 +12,7 @@
   "devDependencies": {
     "@intlify/vue-i18n-loader": "^5.0.0",
     "@types/chrome": "^0.0.220",
+    "@types/firefox-webext-browser": "^111.0.1",
     "@types/vue": "^2.0.0",
     "@vue/compiler-sfc": "^3.1.5",
     "css-loader": "^5.2.6",
