@@ -25,13 +25,13 @@ export default {
     <div class="AnalogiesCol">
         <h3>{{ t('global.co2') }}</h3>
         <div class="AnalogyItem" v-for="(item, index) in analogyNames['co2']" :key="index">
-            <Analogies :hideTypeChange="true" dafaultDataType="co2" :analogy="item"></Analogies>
+            <Analogies :hideTypeChange="true" defaultDataType="co2" :analogy="item"></Analogies>
         </div>
     </div>
     <div class="AnalogiesCol">
         <h3>{{ t('global.data') }}</h3>
         <div class="AnalogyItem" v-for="(item, index) in analogyNames['data']" :key="index">
-            <Analogies :hideTypeChange="true" dafaultDataType="data" :analogy="item"></Analogies>
+            <Analogies :hideTypeChange="true" defaultDataType="data" :analogy="item"></Analogies>
         </div>
     </div>
   </div>

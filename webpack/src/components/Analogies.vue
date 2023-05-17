@@ -1,5 +1,5 @@
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, toRefs, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n'
 import { roundToPrecision } from '../utils/format.js'
 import { kwPerUnitCo2, mbPerUnitData, analogyNames } from '../utils/analogies'
@@ -9,7 +9,7 @@ import Analogy from './Analogy.vue'
 export default {
   components: { Analogy },
   props: {
-    dafaultDataType: {
+    defaultDataType: {
       type: String,
       default: "co2"
     },
@@ -24,9 +24,8 @@ export default {
   },
   setup(props) {
     const { t } = useI18n({});
-    const dataType = ref(props.dafaultDataType);
-    const hideTypeChange = ref(props.hideTypeChange);
-    const analogy = ref(props.analogy);
+    const { defaultDataType , hideTypeChange , analogy } = toRefs(props);
+    const dataType = ref(defaultDataType.value);
     const layer = ref({});
     const currentYear = new Date().getFullYear();
     let activeIndex = ref(0);
