@@ -173,7 +173,7 @@ export default {
         </div>
       </el-col>
       <el-col :span="showGraph ? 8 : 16" class="section">
-        <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click" indicator-position="none">
+        <el-carousel v-if="expanded" arrow="always" class="analogies" trigger="click" indicator-position="none">
           <el-carousel-item v-for="(item, index) in analogyNames[type]" :key="item" label="." class="analogy">
             <analogy :type="type" :layer="layer" :name="item"></analogy>
           </el-carousel-item>

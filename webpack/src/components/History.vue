@@ -123,14 +123,16 @@ export default {
 </script>
 
 <template>
-  <div id="time">
-    <button type="button" name="days" :class="{activeButton: timePeriod ==='days'}" @click='periodChange("days")'> {{ t('global.period.days') }}</button>
-    <button type="button" name="weeks" :class="{activeButton: timePeriod ==='weeks'}" @click='periodChange("weeks")'> {{ t('global.period.weeks') }}</button>
-    <button type="button" name="months" :class="{activeButton: timePeriod ==='months'}" @click='periodChange("months")'> {{ t('global.period.months') }}</button>
-  </div>
-  <div v-if="!hideTypeChange" id="type">
-    <button type="button" name="co2" :class="{activeButton: isCo2}" @click='messureChange("co2")'> {{ t('global.co2') }}</button>
-    <button type="button" name="data" :class="{activeButton: isData}" @click='messureChange("data")'> {{ t('global.data') }}</button>
+  <div class="buttons">
+    <div id="time">
+      <button type="button" name="days" :class="{activeButton: timePeriod ==='days'}" @click='periodChange("days")'> {{ t('global.period.days') }}</button>
+      <button type="button" name="weeks" :class="{activeButton: timePeriod ==='weeks'}" @click='periodChange("weeks")'> {{ t('global.period.weeks') }}</button>
+      <button type="button" name="months" :class="{activeButton: timePeriod ==='months'}" @click='periodChange("months")'> {{ t('global.period.months') }}</button>
+    </div>
+    <div v-if="!hideTypeChange" id="type">
+      <button type="button" name="co2" :class="{activeButton: isCo2}" @click='messureChange("co2")'> {{ t('global.co2') }}</button>
+      <button type="button" name="data" :class="{activeButton: isData}" @click='messureChange("data")'> {{ t('global.data') }}</button>
+    </div>
   </div>
   <div class="dataArea">
     <div id="history" class="history-wrapper" @scroll="handleScroll">
@@ -157,16 +159,25 @@ export default {
   div {
     cursor: pointer;
   }
+  .buttons {
+    height: 5%;
+    display: flex;
+    width: 100%;
+  }
   #time, #type {
     display: flex;
-    height: 5%;
     width: 100%;
+  }
+  #type {
+    margin-left: 20px;
   }
   #time button, #type button {
     flex-grow: 1;
     cursor: pointer;
+    border: 2px solid var(--grey);
     background-color: var(--activeBackground);
     color: var(--activeColor);
+    font-weight: var(--activeWeight);
     margin: 0.5px;
   }
   #time button:first-child, #type button:first-child {
