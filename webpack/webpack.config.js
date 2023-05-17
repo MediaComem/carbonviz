@@ -45,7 +45,7 @@ const config = {
       {
         test: /\.scss$/,
         use: [
-          'vue-style-loader',
+          MiniCssExtractPlugin.loader,
           'css-loader',
           'sass-loader'
         ]
