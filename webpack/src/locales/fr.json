@@ -1,10 +1,5 @@
 {
   "appTitle": "CarbonViz",
-  "locales": {
-    "de": "Deutsch",
-    "en": "English",
-    "fr": "Français"
-  },
   "components": {
     "analogies": {
       "message": "Vous avez consommé\nautant d'énergie que :",
@@ -63,10 +58,19 @@
     "askAgain": "Ne demandez pas à nouveau",
     "cancel": "Annuler",
     "co2": "CO2",
+    "current_today": "Aujourd'hui",
+    "current_week": "Cette semaine",
+    "current_month": "Ce mois",
+    "current_year": "Depuis Janvier {year}",
     "data": "Données",
     "history": "Histoire",
+    "last": {
+      "today": "Aujourd'hui",
+      "week": "Les 7 derniers jours",
+      "month": "Les 30 derniers jours",
+      "year": "Depuis janvier {year}"
+    },
     "newTab": "Ouvrir page principale",
-    "statistics": "statistiques",
     "period": {
       "days": "Jours",
       "weeks": "Semaines",
@@ -74,15 +78,12 @@
       "week": "Semaine",
       "month": "Mois"
     },
-    "current_today": "Aujourd'hui",
-    "current_week": "Cette semaine",
-    "current_month": "Ce mois",
-    "current_year": "Depuis Janvier {year}",
-    "last": {
-      "today": "Aujourd'hui",
-      "week": "Les 7 derniers jours",
-      "month": "Les 30 derniers jours",
-      "year": "Depuis janvier {year}"
-    }
+    "settings": "Paramètres",
+    "trends": "Tendances"
+  },
+  "locales": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français"
   }
 }

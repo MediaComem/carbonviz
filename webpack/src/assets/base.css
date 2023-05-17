@@ -2,16 +2,20 @@
 :root {
   --black: #000000;
   --white: #ffffff;
-  --grey: #8c8c8c;
-  --light-grey: #F6F6F6;
+  --grey: #E6E6E6;
+  --light-grey: #F8F8F8;
   --dark-grey: #616161;
   --co2: #906C0D;
   --data: #4F6D70;
+  --normal: 500;
+  --heavy: 700;
   --activeBackground: var(--light-grey);
-  --activeColor: var(--black);
+  --activeColor: var(--dark-grey);
+  --activeWeight: var(--normal);
 }
 
 .activeButton {
-  --activeBackground: var(--dark-grey);
-  --activeColor: var(--white);
+  --activeBackground: var(--white);
+  --activeColor: var(--black);
+  --activeWeight: var(--heavy);
 }

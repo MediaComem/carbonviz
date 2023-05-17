@@ -48,7 +48,8 @@ export default {
       <div id="tabs">
         <button :class="currentView === 'analogies' ? 'activeTab' : '' " @click='viewChange("analogies")'>{{ t('global.analogies') }}</button>
         <button :class="currentView === 'history' ? 'activeTab' : '' " @click='viewChange("history")'>{{ t('global.history') }}</button>
-        <button :class="currentView === 'statistics' ? 'activeTab' : '' " @click='viewChange("statistics")'>{{ t('global.statistics') }}</button>
+        <button :class="currentView === 'statistics' ? 'activeTab' : '' " @click='viewChange("statistics")'>{{ t('global.trends') }}</button>
+        <button :class="currentView === 'Settings' ? 'activeTab' : '' " @click='viewChange("Settings")'>{{ t('global.settings') }}</button>
       </div>
       <History v-if="currentView === 'history'"></History>
       <Analogies v-if="currentView === 'analogies'"></Analogies>

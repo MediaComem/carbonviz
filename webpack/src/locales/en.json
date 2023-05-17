@@ -1,10 +1,5 @@
 {
   "appTitle": "CarbonViz",
-  "locales": {
-    "de": "Deutsch",
-    "en": "English",
-    "fr": "Français"
-  },
   "components": {
     "analogies": {
       "message": "You have consumed\nas much energy as:",
@@ -63,10 +58,19 @@
     "askAgain": "Do not ask again",
     "cancel": "Cancel",
     "co2": "CO2",
+    "current_today": "Today",
+    "current_week": "This week",
+    "current_month": "This month",
+    "current_year": "Since January {year}",
     "data": "Data",
     "history": "History",
+    "last": {
+      "today": "Today",
+      "week": "The 7 last days",
+      "month": "The 30 last days",
+      "year": "Since January {year}"
+    },
     "newTab": "Open main page",
-    "statistics": "Statistics",
     "period": {
       "days": "Days",
       "weeks": "Weeks",
@@ -74,15 +78,12 @@
       "week": "Week",
       "month": "Month"
     },
-    "current_today": "Today",
-    "current_week": "This week",
-    "current_month": "This month",
-    "current_year": "Since January {year}",
-    "last": {
-      "today": "Today",
-      "week": "The 7 last days",
-      "month": "The 30 last days",
-      "year": "Since January {year}"
-    }
+    "settings": "Settings",
+    "trends": "Trends"
+  },
+  "locales": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français"
   }
 }
