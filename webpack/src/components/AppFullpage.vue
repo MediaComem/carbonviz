@@ -39,7 +39,7 @@ export default {
 </script>
 
 <template>
-  <div class="wrapper">
+  <div id="carbonViz" class="wrapper">
     <div data-area="logo"></div>
     <h1 data-area="title">{{ t('appTitle') }}</h1>
     <img src="../../../icons/logos/logo-equiwatt-large.png" width="200" height="60" data-area="title" id="logoEquiwatt">

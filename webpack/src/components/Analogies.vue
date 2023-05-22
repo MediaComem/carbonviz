@@ -136,7 +136,7 @@ export default {
   </div>
   <div class="section" :class="dataType === 'co2' ? 'co2' : 'data'">
     <div class="section-title bold"> {{ t('components.analogies.message') }} </div>
-    <el-carousel arrow="always" :class="{hideButtons: isOneAnalogy}" trigger="click" indicator-position="none" @change="statsIndex">
+    <el-carousel arrow="always" class="analogies" :class="{hideButtons: isOneAnalogy}" trigger="click" :indicator-position="isOneAnalogy ? 'none':''" @change="statsIndex">
       <el-carousel-item v-for="(item, index) in customAnalogyNames[dataType]" :key="item" label="." class="analogy">
         <div v-if="layer.year">
           <analogy :type="dataType" :layer="layer.year" :name="item"></analogy>
@@ -168,7 +168,7 @@ export default {
 }
 .section {
   width: 100%;
-  padding-top: 10%;
+  padding-top: 5%;
   white-space: pre-line;
   text-align: center;
   color: var(--white);
@@ -205,11 +205,28 @@ export default {
 }
 </style>
 
-<style>
+<style lang="scss">
 .el-carousel__container {
   height: 130px;
+  & button {
+    background-color: inherit;
+  }
+  & button:hover {
+    background-color: inherit;
+  }
+  & button .el-icon, button .el-icon svg {
+    height: 2em;
+    width: 2em;
+  }
 }
 .hideButtons .el-carousel__container button{
   display: none;
 }
+.el-carousel ul.el-carousel__indicators {
+  margin-left: 0px;
+  & li button {
+    padding: 0;
+  }
+}
+
 </style>

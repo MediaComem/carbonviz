@@ -3,7 +3,7 @@ import { init as initDB, getDailyAggregates, getAggregate, getTodayCounter, getW
 
 let database;
 
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 
 export const retrieveTodayCounter = async () => {
     database ??= await initDB();
@@ -145,8 +145,8 @@ export const retrieveHistoryLayers = async (period, scrollCount) => {
 
     const getDaysList = () => {
         for(let data of dailyData) {
-            layersCo2.push({ amount: data.co2, energy: data.energy, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day', key: `co2Day${data.date}` });
-            layersData.push({ amount: data.data, label: `${data.date} ${months[data.month - 1]} ${year}`, level: 'day', key: `dataDay${data.date}`  });
+            layersCo2.push({ amount: data.co2, energy: data.energy, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `co2Day${data.date}` });
+            layersData.push({ amount: data.data, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `dataDay${data.date}`  });
         }
         layersCo2[layersCo2.length-1].label = 'current_today';
         layersData[layersCo2.length-1].label = 'current_today';

@@ -157,12 +157,23 @@ export default {
   >
     <el-row justify="center" align="middle" class="summary">
       <el-col :span="12">
-        <div class="label bold"> {{ layerName }} </div><img class="icon" :src="`../icons/${type}.svg`" :style="`--height: ${height - 4}px;`">
+        <div class="label bold"> {{ layerName }} </div>
+          <img
+            :class="index === 0 ? '': 'filter'"
+            class="icon"
+            :src="`../icons/${index === 0 ? 'loading'+type+'.gif': type+'.svg'}`"
+            :style="`--height: ${height - 4}px;`"
+          >
       </el-col>
     </el-row>
     <el-row class="details">
       <el-col :span="4">
-        <div class="title bold"> {{ layerName }}</div><img class="icon" :src="`../icons/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
+        <div class="title bold"> {{ layerName }}</div>
+          <img
+            class="icon"
+            :src="`../icons/${type}.svg`"
+            :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`"
+          >
       </el-col>
       <el-col :span="4" class="section info">
         <div class="amount">
@@ -173,9 +184,9 @@ export default {
         </div>
       </el-col>
       <el-col :span="showGraph ? 8 : 16" class="section">
-        <el-carousel v-if="expanded" arrow="always" class="analogies" trigger="click" indicator-position="none">
+        <el-carousel v-if="expanded" arrow="always" class="analogies" trigger="click">
           <el-carousel-item v-for="(item, index) in analogyNames[type]" :key="item" label="." class="analogy">
-            <analogy :type="type" :layer="layer" :name="item"></analogy>
+            <analogy :label="true" :type="type" :layer="layer" :name="item"></analogy>
           </el-carousel-item>
         </el-carousel>
       </el-col>
@@ -260,18 +271,6 @@ export default {
   .section-title {
     margin-left: 10px;
     text-align: left;
-  }
-  .expanded .analogies {
-    :deep(.el-carousel__indicators--labels .el-carousel__indicator) {
-      width: 5px;
-    }
-  }
-  .expanded .analogies {
-    :deep(.el-carousel__button) {
-      color: white;
-      background-color: initial;
-      font-size: 24px;
-    }
   }
   .expanded .analogies {
     :deep(.el-carousel__container) {
@@ -381,6 +380,8 @@ export default {
     display: inline-block;
     height: var(--height);
     transition: transform 0.5s ease;
+  }
+  img.filter {
     filter: brightness(0) saturate(100%) invert(100%);
   }
   .analogy {

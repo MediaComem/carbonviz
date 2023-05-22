@@ -43,7 +43,8 @@
     "history": {
       "WeeklyConsumption": "Consommation hebdomadaire",
       "MonthlyConsumption": "Consommation mensuelle",
-      "scrollEnd": "Plus de données à charger"
+      "scrolling": "Chargement des données",
+      "scrollEnd": "Pas d’autres données à charger"
     },
     "popup": {
       "messages": {
