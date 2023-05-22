@@ -136,7 +136,7 @@ export default {
   </div>
   <div class="section" :class="dataType === 'co2' ? 'co2' : 'data'">
     <div class="section-title bold"> {{ t('components.analogies.message') }} </div>
-    <el-carousel arrow="always" class="analogies" :class="{hideButtons: isOneAnalogy}" trigger="click" indicator-position="none" @change="statsIndex">
+    <el-carousel arrow="always" :class="{hideButtons: isOneAnalogy}" trigger="click" indicator-position="none" @change="statsIndex">
       <el-carousel-item v-for="(item, index) in customAnalogyNames[dataType]" :key="item" label="." class="analogy">
         <div v-if="layer.year">
           <analogy :type="dataType" :layer="layer.year" :name="item"></analogy>
@@ -209,7 +209,7 @@ export default {
 .el-carousel__container {
   height: 130px;
 }
-.analogies.hideButtons .el-carousel__container button{
+.hideButtons .el-carousel__container button{
   display: none;
 }
 </style>
