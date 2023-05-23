@@ -272,3 +272,10 @@ export default {
     }
   }
 </style>
+
+<style>
+  /* Analogies spacing when no dataType buttons*/
+  .AnalogyItem .section {
+    margin-top: -60px;
+  }
+</style>
