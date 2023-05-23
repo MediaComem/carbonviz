@@ -55,7 +55,7 @@ export default {
   margin-bottom: 10px;
 }
 .AnalogyItem {
-    height: 400px;
+    height: 500px;
 }
 </style>
 
@@ -67,7 +67,11 @@ export default {
   font-size: 1.5em;
 }
 .AnalogyItem .el-carousel__container {
-  height: 130px;
+  height: 170px;
+}
+.AnalogyItem .el-carousel__container .el-carousel__item img {
+  max-height: 180px;
+  max-width: 180px;
 }
 </style>
 

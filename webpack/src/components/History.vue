@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { setup as setupHistoryLayers } from '../composables/history';
 import Stratum from './HistoryStratum.vue';
-import { computed, provide, watch, ref, toRefs } from 'vue';
+import { onMounted, computed, provide, watch, ref, toRefs } from 'vue';
 
 export default {
   components: { Stratum },
@@ -34,13 +34,15 @@ export default {
     const scrollDataComponent = ref(0);
     const scrollCo2Component = ref(0);
 
+    onMounted(() => resetDefaults());
+
     function resetDefaults() {
       window.scrollTo(0,0);
       const historyDiv = document.getElementById('history');
       historyDiv.scrollTop = 0;
       scrollCount.value = 0;
       initialHistoryCount = 0;
-      scrollMore.value = true;
+      scrollMore.value = historyDiv.scrollHeight > historyDiv.clientHeight;
     }
 
     // Updating history setting, data period and type
@@ -144,10 +146,11 @@ export default {
       <!-- infinite scroll check if more items to load -->
       <div class="scroll">
         <div v-if="scrollMore">
-          <img src="../../../icons/loading.gif" alt="" width="50" height="50">
+          <img :src="`../../../icons/scroll${dataType}.gif`" alt="" width="50" height="50">
+          <p>{{ t('components.history.scrolling') }}</p>
         </div>
-        <div v-else class="noLoading">
-          <img src="../../../icons/fullScroll.svg" alt="" width="50" height="50">
+        <div v-else>
+          <img src="../../../icons/scrollEnd.svg" alt="" width="50" height="50">
           <p>{{ t('components.history.scrollEnd') }}</p>
         </div>
       </div>
@@ -249,7 +252,7 @@ export default {
   .scroll {
     text-align: center;
   }
-  .noLoading p {
+  .scroll div p {
     margin: auto;
   }
   @media (prefers-color-scheme: dark) {

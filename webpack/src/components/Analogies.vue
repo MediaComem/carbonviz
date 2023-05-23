@@ -130,71 +130,112 @@ export default {
 </script>
 
 <template>
-  <div v-if="!hideTypeChange" id="type">
-    <button type="button" name="co2" :class="{activeButton: dataType ==='co2'}" @click='measureChange("co2")'> {{ t('global.co2') }}</button>
-    <button type="button" name="data" :class="{activeButton: dataType ==='data'}" @click='measureChange("data")'> {{ t('global.data') }}</button>
-  </div>
-  <div class="section" :class="dataType === 'co2' ? 'co2' : 'data'">
-    <div class="section-title bold"> {{ t('components.analogies.message') }} </div>
-    <el-carousel arrow="always" :class="{hideButtons: isOneAnalogy}" trigger="click" indicator-position="none" @change="statsIndex">
-      <el-carousel-item v-for="(item, index) in customAnalogyNames[dataType]" :key="item" label="." class="analogy">
-        <div v-if="layer.year">
-          <analogy :type="dataType" :layer="layer.year" :name="item"></analogy>
+  <div class="analogiesWrapper">
+    <div v-if="!hideTypeChange" id="type">
+      <button type="button" name="co2" :class="{activeButton: dataType ==='co2'}" @click='measureChange("co2")'> {{ t('global.co2') }}</button>
+      <button type="button" name="data" :class="{activeButton: dataType ==='data'}" @click='measureChange("data")'> {{ t('global.data') }}</button>
+    </div>
+    <div class="section" :class="dataType === 'co2' ? 'co2' : 'data'">
+      <div class="section-title bold"> {{ t('components.analogies.message') }} </div>
+      <el-carousel arrow="always" class="analogies" :class="{hideButtons: isOneAnalogy}" trigger="click" :indicator-position="isOneAnalogy ? 'none':''" @change="statsIndex">
+        <el-carousel-item v-for="(item, index) in customAnalogyNames[dataType]" :key="item" label="." class="analogy">
+          <div v-if="layer.year">
+            <analogy :type="dataType" :layer="layer.year" :name="item"></analogy>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
+    </div>
+    <div class="stats">
+      <div v-for="(value, key) in layer">
+        <div class="statsData">
+          <p> {{ getAnalogyValue(value).amount }} </p>
+          <p> {{ getAnalogyText(value) }} </p>
+          <p> {{ key === 'year' ? t(`global.last.${key}`)+this.currentYear : t(`global.last.${key}`) }} </p>
         </div>
-      </el-carousel-item>
-    </el-carousel>
-  </div>
-  <div class="stats">
-    <div v-for="(value, key) in layer">
-      <p> {{ getAnalogyValue(value).amount }} </p>
-      <p> {{ getAnalogyText(value) }} </p>
-      <p> {{ key === 'year' ? t(`global.last.${key}`)+this.currentYear : t(`global.last.${key}`) }} </p>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.analogiesWrapper {
+  /*  height: 490px;
+      width: 480px; */
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 60px 200px 220px;
+  grid-template-areas:
+    "header"
+    "analogies"
+    "stats"
+}
 #type {
+  grid-area: header;
   display: flex;
-  height: 5%;
   width: 100%;
+  justify-content: center;
 }
 #type button {
-  flex-grow: 1;
   cursor: pointer;
-  border-radius: 5px;
   background-color: var(--activeBackground);
   color: var(--activeColor);
+  border: 2px solid var(--grey);
+  font-weight: var(--activeWeight);
+  height: 30px;
+  width: 150px;
+  margin: auto;
+}
+#type button[name=co2] {
+  margin-right: 0px;
+  border-radius: 5px 0px 0px 5px;
+}
+#type button[name=data] {
+  margin-left: 0px;
+  border-radius: 0px 5px 5px 0px;
 }
 .section {
+  grid-area: analogies;
+  border-radius: 5px 5px 0 0;
   width: 100%;
-  padding-top: 10%;
+  padding-top: 5%;
   white-space: pre-line;
   text-align: center;
   color: var(--white);
 }
 .stats {
-  width: 100%;
-  height: 40%;
+  grid-area: stats;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-}
-.stats > div {
-  flex: 1 1 45%;
-  text-align: center;
-  padding: 10px;
-  margin: 0.5px;
+  border-radius: 0 0 10px 10px;
+  box-shadow: inset 0 -5px 5px -5px var(--dark-grey),
+    inset -5px 0 5px -5px var(--dark-grey),
+    inset 5px 0 5px -5px var(--dark-grey);
   background-color: var(--activeBackground);
 }
-.stats > div > p {
+.stats > div {
+  flex: 45%;
+  text-align: center;
+  padding-top: 20px;
+}
+.stats > div:first-child {
+  border-right: 1px solid var(--grey);
+}
+.stats > div:nth-last-child(2) {
+  border-top: 1px solid var(--grey);
+  border-right: 1px solid var(--grey);
+}
+.stats > div:last-child {
+  border-top: 1px solid var(--grey);
+}
+.stats .statsData > p {
   margin: 0;
   padding-top: 0;
 }
-.stats > div > p:first-child {
+.stats .statsData > p:first-child {
   font-size: 2em;
+  font-weight: 700;
 }
-.stats > div > p:last-child {
+.stats .statsData > p:last-child {
   font-weight: bold;
 }
 .co2 {
@@ -205,11 +246,28 @@ export default {
 }
 </style>
 
-<style>
+<style lang="scss">
 .el-carousel__container {
   height: 130px;
+  & button {
+    background-color: inherit;
+  }
+  & button:hover {
+    background-color: inherit;
+  }
+  & button .el-icon, button .el-icon svg {
+    height: 2em;
+    width: 2em;
+  }
 }
 .hideButtons .el-carousel__container button{
   display: none;
 }
+.el-carousel ul.el-carousel__indicators {
+  margin-left: 0px;
+  & li button {
+    padding: 0;
+  }
+}
+
 </style>

@@ -280,7 +280,7 @@ components: {
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .bold {
   font-weight: 700;
 }

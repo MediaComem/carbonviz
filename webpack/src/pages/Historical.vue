@@ -33,6 +33,7 @@ export default {
   gap: 60px;
 }
 .flexContainer div{
+  flex-grow: 1;
   width: 45%;
 }
 .flexContainer div h3{

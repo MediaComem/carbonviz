@@ -43,6 +43,7 @@
     "history": {
       "WeeklyConsumption": "Weekly consumption",
       "MonthlyConsumption": "Monthly consumption",
+      "scrolling": "Loading data",
       "scrollEnd": "No more data to load"
     },
     "popup": {

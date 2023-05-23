@@ -51,9 +51,11 @@ export default {
         <button :class="currentView === 'statistics' ? 'activeTab' : '' " @click='viewChange("statistics")'>{{ t('global.trends') }}</button>
         <button :class="currentView === 'Settings' ? 'activeTab' : '' " @click='viewChange("Settings")'>{{ t('global.settings') }}</button>
       </div>
-      <History v-if="currentView === 'history'"></History>
-      <Analogies v-if="currentView === 'analogies'"></Analogies>
-      <Statistics v-if="currentView === 'statistics'"></Statistics>
+      <div id="view">
+        <History v-if="currentView === 'history'"></History>
+        <Analogies v-if="currentView === 'analogies'"></Analogies>
+        <Statistics v-if="currentView === 'statistics'"></Statistics>
+      </div>
       <div id="footer">
         <div data-area="logo" id="appTitle"></div>
         <h2 data-area="title"> {{ t('appTitle') }} </h2>
@@ -67,19 +69,32 @@ export default {
 
 
 <style scoped>
+.container {
+  /*  height: 600px;
+      width: 500px; */
+  display: grid;
+  grid-template-rows: 60px 490px 50px;
+  grid-template-areas:
+    "header"
+    "body"
+    "footer"
+}
+#tabs {
+  grid-area: header;
+}
+#view {
+  grid-area: body;
+}
+#footer {
+  grid-area: footer;
+}
 .container{
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 20px;
   width: auto;
   padding: 0% 2%;
 }
 #tabs {
   display: flex;
   width: 100%;
-  height: 10%;
 }
 #tabs button {
   flex-grow: 1;
@@ -92,8 +107,6 @@ export default {
 #footer {
   display: flex;
   width: 100%;
-  height: 10%;
-  margin-top: auto;
 }
 #openNewTab {
   color: var(--grey);
@@ -108,6 +121,7 @@ export default {
   margin: auto;
   text-align: left;
   font-weight: 900;
+  text-decoration: underline;
 }
 /* logo */
 [data-area="logo"] {

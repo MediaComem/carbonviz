@@ -3,13 +3,14 @@
   --black: #000000;
   --white: #ffffff;
   --grey: #E6E6E6;
-  --light-grey: #F8F8F8;
+  --light-grey: #CECECE;
   --dark-grey: #616161;
+  --button-grey: #F8F8F8;
   --co2: #906C0D;
   --data: #4F6D70;
   --normal: 500;
   --heavy: 700;
-  --activeBackground: var(--light-grey);
+  --activeBackground: var(--button-grey);
   --activeColor: var(--dark-grey);
   --activeWeight: var(--normal);
 }
