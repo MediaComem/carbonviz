@@ -1,6 +1,6 @@
 <script lang="ts">
 import { ApexOptions } from 'apexcharts';
-import { ref, computed, watchEffect } from 'vue';
+import { ref, computed, watchEffect, onMounted } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
 import { getTopWebsitesSeries } from '../composables/storage';
 import { useI18n } from 'vue-i18n'
@@ -11,12 +11,13 @@ export default {
   },
   setup() {
     const { t } = useI18n({});
+    const chartCo2 = ref(null);
+    const chartData = ref(null);
     const period = ref('day');
-    const colors = ['#d9d9d9', '#d9d9d9', '#d9d9d9', '#d9d9d9'];
+    const type = ref('co2');
+    const colors = ['#7D76DE', '#AC84FA', '#8EA3F5', '#76A6DE', '#84DBFA'];
     const colorsCo2 = ref(colors);
     const colorsData = ref(colors);
-    const activeColorsCo2 = ['#906C0D', '#906C0D', '#A59366', '#958A70'];
-    const activeColorsData = ['#384E50', '#719598', '#213C3F', '#0F2D30'];
     const seriesCo2 = ref([]);
     const seriesData = ref([]);
     const annotation = {
@@ -40,9 +41,30 @@ export default {
     const categories = computed(() => {
       switch(period.value) {
         case 'day':
-          return ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+          return [
+            t('components.statistics.days.Mon'),
+            t('components.statistics.days.Tue'),
+            t('components.statistics.days.Wed'),
+            t('components.statistics.days.Thu'),
+            t('components.statistics.days.Fri'),
+            t('components.statistics.days.Sat'),
+            t('components.statistics.days.Sun'),
+          ];
         case 'month':
-          return ['Jan.', 'Fev.', 'Mar.', 'Avr.', 'Mai', 'Jun.', 'Jul.', 'Aou.', 'Sep', 'Oct.', 'Nov.', 'Dec.'];
+          return [
+            t('components.statistics.months.Jan'),
+            t('components.statistics.months.Feb'),
+            t('components.statistics.months.Mar'),
+            t('components.statistics.months.Apr'),
+            t('components.statistics.months.May'),
+            t('components.statistics.months.Jun'),
+            t('components.statistics.months.Jul'),
+            t('components.statistics.months.Aug'),
+            t('components.statistics.months.Sep'),
+            t('components.statistics.months.Oct'),
+            t('components.statistics.months.Nov'),
+            t('components.statistics.months.Dec'),
+          ];
       }
     });
 
@@ -77,10 +99,10 @@ export default {
         },
         legend: {
           onItemClick: {
-            toggleDataSeries: false
+            toggleDataSeries: true
           },
           onItemHover: {
-            highlightDataSeries: false
+            highlightDataSeries: true
           }
         },
         states: {
@@ -99,21 +121,6 @@ export default {
         }
       };
       const chartOptionsCo2 = computed(() => {
-        console.log({
-          ...chartOptions,
-          chart: {
-            ...chartOptions.chart,
-            id: 'co2'
-          },
-          xaxis: {
-            categories: categories.value,
-          },
-          yaxis: yAxisCo2,
-          annotations: {
-            yaxis: [annotationCo2.value]
-          },
-          colors: colorsCo2.value
-        });
         return {
           ...chartOptions,
           chart: {
@@ -148,69 +155,84 @@ export default {
         }
       });
 
-    const highlightSource = (chartContext, seriesIndex, config) => {
-      const id = config.config.chart.id;
-      const colors = id === 'co2' ? colorsCo2 : colorsData;
-      const activeColors = id === 'co2' ? activeColorsCo2 : activeColorsData;
-      const chartColors = [...config.config.colors];
-      const isActive = chartColors[seriesIndex] === activeColors[seriesIndex];
-      chartColors[seriesIndex] = isActive ? '#d9d9d9' : activeColors[seriesIndex];
-      colors.value = chartColors;
-    }
 
     const switchPeriod = (newPeriod : 'day' | 'month') => {
       period.value = newPeriod;
     }
 
+    const switchType = (newType : 'co2' | 'data') => {
+      type.value = newType;
+    }
+
+    onMounted(() => {
+      setTimeout(() => {
+        if (chartCo2.value) {
+        chartCo2.value.hideSeries('computer');
+        }
+      }, 1000);
+    });
+
     watchEffect(async () => {
-      getTopWebsitesSeries('co2', 4, period.value).then((series: [{name: String, data: [number]}]) => {
+      getTopWebsitesSeries('co2', 4, period.value).then((series: {name: String, data: [number]}[]) => {
         seriesCo2.value = series;
         // update annotation with mean value
+        // get number of active period (based on computer activity which is last serie)
+        const nbActivePeriods = series[4] ? series[4].data?.filter(e => e > 0).length : series[0].data?.filter(e => e > 0).length;
         const total = series.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
         annotationCo2.value = {
           ...annotation,
-          y: total / series[0].data.length
+          y: total / nbActivePeriods
         };
       });
-      getTopWebsitesSeries('data', 4, period.value).then((series: [{name: String, data: [number]}]) => {
+      getTopWebsitesSeries('data', 4, period.value).then((series: {name: String, data: [number]}[]) => {
         seriesData.value = series;
         // update annotation with mean value
+        // get number of active period (based on last serie aggregated domains - no computer activity for data)
+        const nbActivePeriods = series[3] ? series[3].data?.filter(e => e > 0).length : series[0].data?.filter(e => e > 0).length;
         const total = series.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
         annotationData.value = {
           ...annotation,
-          y: total / series[0].data.length
+          y: total / nbActivePeriods
         };
       });
     })
-    return { chartOptionsCo2, chartOptionsData, seriesCo2, seriesData, highlightSource, switchPeriod, t };
+    return { type, chartCo2, chartData, chartOptionsCo2, chartOptionsData, seriesCo2, seriesData, switchPeriod, switchType, t };
   }
 }
 </script>
 
 <template>
-  <div id="type">
+  <div id="period">
     <button type="button" class="activeButton" @click='switchPeriod("day")'> {{ t('global.period.days') }}</button>
     <button type="button"  @click='switchPeriod("month")'> {{ t('global.period.months') }}</button>
   </div>
+  <div id="type">
+    <button type="button" class="activeButton" @click='switchType("co2")'> co2 </button>
+    <button type="button"  @click='switchType("data")'> data </button>
+  </div>
   <div>
-    Co2 (g)
+    <div v-if="type === 'co2'">
+      Co2 (g)
+      <apexchart
+        ref="chartCo2"
+        width="450"
+        height="175"
+        id="co2"
+        :options="chartOptionsCo2"
+        :series="seriesCo2"
+      ></apexchart>
+    </div>
+    <div v-if="type === 'data'">
+      Data (Mo)
     <apexchart
-      width="450"
-      height="175"
-      id="co2"
-      :options="chartOptionsCo2"
-      :series="seriesCo2"
-      @legendClick="highlightSource"
-    ></apexchart>
-    Data (Mo)
-    <apexchart
+      ref="chartData"
       width="450"
       height="175"
       id="data"
       :options="chartOptionsData"
       :series="seriesData"
-      @legendClick="highlightSource"
     ></apexchart>
+    </div>
   </div>
 </template>
 
