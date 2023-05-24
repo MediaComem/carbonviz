@@ -141,6 +141,7 @@ export default {
     height: 5%;
     display: flex;
     width: 100%;
+    column-gap: 9px;
   }
   .dataArea {
     display: flex;

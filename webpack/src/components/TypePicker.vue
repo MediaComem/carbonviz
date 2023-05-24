@@ -27,25 +27,23 @@ const changeType = (type) => {
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   #type {
     display: flex;
     width: 100%;
+    border: 1px solid #D8D8D8;
+    border-radius: 5px;
   }
 
   #type button {
     flex-grow: 1;
     cursor: pointer;
-    border: 2px solid var(--grey);
     background-color: var(--activeBackground);
     color: var(--activeColor);
     font-weight: var(--activeWeight);
     margin: 0.5px;
-  }
-  #type button:first-child {
-    border-radius: 5px 0px 0px 5px;
-  }
-  #type button:last-child {
-    border-radius: 0px 5px 5px 0px;
+    &:not(:first-child) {
+      border-left: 1px solid var(--grey);
+    }
   }
 </style>

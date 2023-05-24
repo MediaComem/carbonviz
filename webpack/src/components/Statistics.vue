@@ -246,5 +246,11 @@ export default {
   </div>
 </template>
 
-<style>
+<style scoped>
+  .buttons {
+    height: 5%;
+    display: flex;
+    width: 100%;
+    column-gap: 9px;
+  }
 </style>

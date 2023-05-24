@@ -25,25 +25,24 @@ const changePeriod = (period) => {
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   #time {
     display: flex;
     width: 100%;
+    border: 1px solid #D8D8D8;
+    border-radius: 5px;
   }
 
   #time button {
     flex-grow: 1;
     cursor: pointer;
-    border: 2px solid var(--grey);
     background-color: var(--activeBackground);
     color: var(--activeColor);
     font-weight: var(--activeWeight);
     margin: 0.5px;
+    &:not(:first-child) {
+      border-left: 1px solid var(--grey);
+    }
   }
-  #time button:first-child {
-    border-radius: 5px 0px 0px 5px;
-  }
-  #time button:last-child {
-    border-radius: 0px 5px 5px 0px;
-  }
+
 </style>

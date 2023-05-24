@@ -172,7 +172,7 @@ export default {
   display: flex;
   width: 300px;
   justify-self: center;
-  padding: 15px;
+  height: 30px;
 }
 .section {
   grid-area: analogies;
