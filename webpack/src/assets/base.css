@@ -20,11 +20,14 @@
   --el-scrollbar-opacity: 1;
   --el-scrollbar-hover-bg-color: var(--dark-grey);
   --el-scrollbar-hover-opacity: 1
-  background-color: white;
 }
 
 .activeButton {
   --activeBackground: var(--white);
   --activeColor: var(--black);
   --activeWeight: var(--heavy);
+}
+
+.el-scrollbar__bar {
+  background-color: white;
 }
