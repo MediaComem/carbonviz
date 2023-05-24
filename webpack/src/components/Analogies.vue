@@ -5,9 +5,10 @@ import { roundToPrecision } from '../utils/format.js'
 import { kwPerUnitCo2, mbPerUnitData, analogyNames } from '../utils/analogies'
 import { retrieveAnalogiesLayer } from '../composables/storage';
 import Analogy from './Analogy.vue'
+import TypePicker from './TypePicker.vue';
 
 export default {
-  components: { Analogy },
+  components: { Analogy, TypePicker },
   props: {
     defaultDataType: {
       type: String,
@@ -118,7 +119,7 @@ export default {
       const analogyType = this.customAnalogyNames[dataType.value][activeIndex.value];
       return this.t(`components.analogies.${analogyType}${getAnalogyValue(value).unit}`)
     }
-  
+
     onMounted(async () => {
       await retrieveData();
     });
@@ -131,10 +132,7 @@ export default {
 
 <template>
   <div class="analogiesWrapper">
-    <div v-if="!hideTypeChange" id="type">
-      <button type="button" name="co2" :class="{activeButton: dataType ==='co2'}" @click='measureChange("co2")'> {{ t('global.co2') }}</button>
-      <button type="button" name="data" :class="{activeButton: dataType ==='data'}" @click='measureChange("data")'> {{ t('global.data') }}</button>
-    </div>
+    <type-picker id="type" v-if="!hideTypeChange" @change="measureChange"></type-picker>
     <div class="section" :class="dataType === 'co2' ? 'co2' : 'data'">
       <div class="section-title bold"> {{ t('components.analogies.message') }} </div>
       <el-carousel arrow="always" class="analogies" :class="{hideButtons: isOneAnalogy}" trigger="click" :indicator-position="isOneAnalogy ? 'none':''" @change="statsIndex">
@@ -172,26 +170,9 @@ export default {
 #type {
   grid-area: header;
   display: flex;
-  width: 100%;
-  justify-content: center;
-}
-#type button {
-  cursor: pointer;
-  background-color: var(--activeBackground);
-  color: var(--activeColor);
-  border: 2px solid var(--grey);
-  font-weight: var(--activeWeight);
-  height: 30px;
-  width: 150px;
-  margin: auto;
-}
-#type button[name=co2] {
-  margin-right: 0px;
-  border-radius: 5px 0px 0px 5px;
-}
-#type button[name=data] {
-  margin-left: 0px;
-  border-radius: 0px 5px 5px 0px;
+  width: 300px;
+  justify-self: center;
+  padding: 15px;
 }
 .section {
   grid-area: analogies;

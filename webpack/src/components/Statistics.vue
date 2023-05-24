@@ -1,19 +1,33 @@
 <script lang="ts">
 import { ApexOptions } from 'apexcharts';
-import { ref, computed, watchEffect, onMounted } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
+import { ref, computed, watchEffect, onMounted } from 'vue';
 import { getTopWebsitesSeries } from '../composables/storage';
 import { useI18n } from 'vue-i18n'
+import PeriodPicker from './PeriodPicker.vue';
+import TypePicker from './PeriodPicker.vue';
 
 export default {
   components: {
+    PeriodPicker,
+    TypePicker,
     apexchart: VueApexCharts
   },
   setup() {
     const { t } = useI18n({});
     const chartCo2 = ref(null);
     const chartData = ref(null);
-    const period = ref('day');
+    const period = ref('days');
+    const granularity = computed(() => {
+      switch(period.value) {
+        case 'days':
+          return 'day';
+        case 'months':
+          return 'month';
+        default:
+          throw('Invalid period for trends');
+      }
+    });
     const type = ref('co2');
     const colors = ['#7D76DE', '#AC84FA', '#8EA3F5', '#76A6DE', '#84DBFA'];
     const colorsCo2 = ref(colors);
@@ -40,7 +54,7 @@ export default {
     const annotationData = ref(annotation);
     const categories = computed(() => {
       switch(period.value) {
-        case 'day':
+        case 'days':
           return [
             t('components.statistics.days.Mon'),
             t('components.statistics.days.Tue'),
@@ -50,7 +64,7 @@ export default {
             t('components.statistics.days.Sat'),
             t('components.statistics.days.Sun'),
           ];
-        case 'month':
+        case 'months':
           return [
             t('components.statistics.months.Jan'),
             t('components.statistics.months.Feb'),
@@ -156,7 +170,7 @@ export default {
       });
 
 
-    const switchPeriod = (newPeriod : 'day' | 'month') => {
+    const switchPeriod = (newPeriod : 'days' | 'months') => {
       period.value = newPeriod;
     }
 
@@ -173,7 +187,7 @@ export default {
     });
 
     watchEffect(async () => {
-      getTopWebsitesSeries('co2', 4, period.value).then((series: {name: String, data: [number]}[]) => {
+      getTopWebsitesSeries('co2', 4, granularity.value).then((series: {name: String, data: [number]}[]) => {
         seriesCo2.value = series;
         // update annotation with mean value
         // get number of active period (based on computer activity which is last serie)
@@ -184,7 +198,7 @@ export default {
           y: total / nbActivePeriods
         };
       });
-      getTopWebsitesSeries('data', 4, period.value).then((series: {name: String, data: [number]}[]) => {
+      getTopWebsitesSeries('data', 4, granularity.value).then((series: {name: String, data: [number]}[]) => {
         seriesData.value = series;
         // update annotation with mean value
         // get number of active period (based on last serie aggregated domains - no computer activity for data)
@@ -202,13 +216,9 @@ export default {
 </script>
 
 <template>
-  <div id="period">
-    <button type="button" class="activeButton" @click='switchPeriod("day")'> {{ t('global.period.days') }}</button>
-    <button type="button"  @click='switchPeriod("month")'> {{ t('global.period.months') }}</button>
-  </div>
-  <div id="type">
-    <button type="button" class="activeButton" @click='switchType("co2")'> co2 </button>
-    <button type="button"  @click='switchType("data")'> data </button>
+  <div class="buttons">
+   <period-picker @change="switchPeriod"></period-picker>
+   <type-picker @change="switchType"></type-picker>
   </div>
   <div>
     <div v-if="type === 'co2'">
