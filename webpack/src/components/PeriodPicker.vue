@@ -14,11 +14,10 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { ref, toRefs } from 'vue';
-
-export type Period = 'days'|'weeks'|'months';
+import { Period } from '../utils/types'
 
 export interface Props {
-  periods: Period[]
+  periods?: Period[]
 }
 
 const { t } = useI18n({});

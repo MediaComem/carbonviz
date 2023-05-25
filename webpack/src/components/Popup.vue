@@ -3,13 +3,13 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n'
 import History from './History.vue';
 import Analogies from './Analogies.vue';
-import Statistics from './Statistics.vue';
+import Trends from './Trends.vue';
 import Settings from './Settings.vue';
 import { setup as setupExtensionTab } from '../composables/tab';
 
 export default {
   components: {
-    History, Analogies, Statistics, Settings
+    History, Analogies, Trends, Settings
   },
   setup() {
     let currentView = ref("history");
@@ -55,7 +55,7 @@ export default {
       <div id="view">
         <History v-if="currentView === 'history'"></History>
         <Analogies v-if="currentView === 'analogies'"></Analogies>
-        <Statistics v-if="currentView === 'statistics'"></Statistics>
+        <Trends v-if="currentView === 'statistics'"></Trends>
         <Settings v-if="currentView === 'settings'"></Settings>
       </div>
       <div id="footer">
@@ -75,7 +75,7 @@ export default {
   /*  height: 600px;
       width: 500px; */
   display: grid;
-  grid-template-rows: 60px 490px 50px;
+  grid-template-rows: 70px 480px 50px;
   grid-template-areas:
     "header"
     "body"
@@ -92,7 +92,7 @@ export default {
 }
 .container{
   width: auto;
-  padding: 0% 2%;
+  padding: 0% 15px;
 }
 #tabs {
   display: flex;
