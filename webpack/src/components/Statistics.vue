@@ -217,7 +217,7 @@ export default {
 
 <template>
   <div class="buttons">
-   <period-picker @change="switchPeriod"></period-picker>
+   <period-picker :periods="['days', 'months']" @change="switchPeriod"></period-picker>
    <type-picker @change="switchType"></type-picker>
   </div>
   <div>
