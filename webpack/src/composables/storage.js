@@ -74,7 +74,7 @@ export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity
                     aggregate: 0
                 }
             }
-            const index = period - 1;
+            let index = period - 1;
             if (index < 0) {
                 index = periods.length - 1; // special case for sunday (period 0 instead of 7)
             }
