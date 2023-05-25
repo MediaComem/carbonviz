@@ -133,8 +133,8 @@ export default {
 		"share"
 		"delete";
 	border-radius: 10px 10px 10px 10px;
-	box-shadow: inset 0px 0px 5px 0px var(--dark-grey);
-	background-color: var(--activeBackground);
+	box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25);
+	background-color: var(--background-grey);
 }
 
 #settingsWrapper>div {

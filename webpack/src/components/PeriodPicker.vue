@@ -1,16 +1,32 @@
 <template>
   <div id="time">
-    <button type="button" name="days" :class="{activeButton: timePeriod ==='days'}" @click="changePeriod('days')"> {{ t('global.period.days') }}</button>
-    <button type="button" name="weeks" :class="{activeButton: timePeriod ==='weeks'}" @click="changePeriod('weeks')"> {{ t('global.period.weeks') }}</button>
-    <button type="button" name="months" :class="{activeButton: timePeriod ==='months'}" @click="changePeriod('months')"> {{ t('global.period.months') }}</button>
+    <button v-for="period in periods" :key="period"
+      type="button"
+      :name="period"
+      :class="{activeButton: (timePeriod === period) }"
+      @click="changePeriod(period)"
+      >
+        {{ t(`global.period.${period}`) }}
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { ref } from 'vue';
+import { ref, toRefs } from 'vue';
+import { Period } from '../utils/types'
+
+export interface Props {
+  periods?: Period[]
+}
 
 const { t } = useI18n({});
+
+const props = withDefaults(defineProps<Props>(), {
+  periods: () => ['days', 'weeks', 'months'],
+})
+
+const { periods } = toRefs(props);
 
 const emit = defineEmits<{
   (e: 'change', value: 'days' | 'weeks' | 'months'): void

@@ -1,11 +1,18 @@
 <script lang="ts">
 import { ApexOptions } from 'apexcharts';
 import VueApexCharts from "vue3-apexcharts";
-import { ref, computed, watchEffect, onMounted } from 'vue';
+import { ref, computed, watchEffect, onMounted, toRefs, ComputedRef } from 'vue';
 import { getTopWebsitesSeries } from '../composables/storage';
 import { useI18n } from 'vue-i18n'
 import PeriodPicker from './PeriodPicker.vue';
 import TypePicker from './PeriodPicker.vue';
+import { Indicator, Granularity } from '../utils/types';
+
+export interface Props {
+  type: Indicator,
+  granularity: Granularity,
+  height: Number
+}
 
 export default {
   components: {
@@ -13,48 +20,42 @@ export default {
     TypePicker,
     apexchart: VueApexCharts
   },
-  setup() {
+  props: {
+    type: String,
+    granularity: String,
+    height: Number
+  },
+  setup(props) {
     const { t } = useI18n({});
-    const chartCo2 = ref(null);
-    const chartData = ref(null);
-    const period = ref('days');
-    const granularity = computed(() => {
-      switch(period.value) {
-        case 'days':
-          return 'day';
-        case 'months':
-          return 'month';
-        default:
-          throw('Invalid period for trends');
+
+    const { type, granularity, height } = toRefs(props);
+
+    const chart = ref(null);
+
+    const colors = ['#7D76DE', '#AC84FA', '#8EA3F5', '#76A6DE', '#84DBFA'];
+    const series = ref([]);
+    const average = ref(0);
+    const annotation = computed(() => {
+      return {
+        y: average.value,
+        borderColor: '#616161',
+        strokeDashArray: 0,
+        opacity: 1,
+        label: {
+          borderWidth: 0,
+          offsetX: 10,
+          offsetY: 8,
+          style: {
+            color: '#616161',
+            fontFamily: 'Roboto, Arial, sans-serif'
+          },
+          text: 'Moy'
+        }
       }
     });
-    const type = ref('co2');
-    const colors = ['#7D76DE', '#AC84FA', '#8EA3F5', '#76A6DE', '#84DBFA'];
-    const colorsCo2 = ref(colors);
-    const colorsData = ref(colors);
-    const seriesCo2 = ref([]);
-    const seriesData = ref([]);
-    const annotation = {
-      y: 0,
-      borderColor: '#616161',
-      strokeDashArray: 0,
-      opacity: 1,
-      label: {
-        borderWidth: 0,
-        offsetX: 10,
-        offsetY: 8,
-        style: {
-          color: '#616161',
-          fontFamily: 'Roboto, Arial, sans-serif'
-        },
-        text: 'Moy'
-      }
-    };
-    const annotationCo2 = ref(annotation);
-    const annotationData = ref(annotation);
     const categories = computed(() => {
-      switch(period.value) {
-        case 'days':
+      switch(granularity.value) {
+        case 'day':
           return [
             t('components.statistics.days.Mon'),
             t('components.statistics.days.Tue'),
@@ -64,7 +65,7 @@ export default {
             t('components.statistics.days.Sat'),
             t('components.statistics.days.Sun'),
           ];
-        case 'months':
+        case 'month':
           return [
             t('components.statistics.months.Jan'),
             t('components.statistics.months.Feb'),
@@ -99,15 +100,26 @@ export default {
             }
           }
     };
-    const chartOptions: ApexOptions = {
+    const yAxis = computed(() => type.value === 'co2' ? yAxisCo2 : yAxisData);
+    const chartOptions: ComputedRef<ApexOptions> = computed(() => {
+      return {
         chart: {
           type: 'bar',
           stacked: true,
           fontFamily: 'Roboto, Arial, sans-serif',
           toolbar: {
             show: false
-          }
+          },
+          id: 'chart'
         },
+        xaxis: {
+          categories: categories.value,
+        },
+        yaxis: yAxis.value,
+        annotations: {
+          yaxis: [annotation.value]
+        },
+        colors: colors,
         dataLabels: {
           enabled: false
         },
@@ -133,124 +145,35 @@ export default {
               }
           }
         }
-      };
-      const chartOptionsCo2 = computed(() => {
-        return {
-          ...chartOptions,
-          chart: {
-            ...chartOptions.chart,
-            id: 'co2'
-          },
-          xaxis: {
-            categories: categories.value,
-          },
-          yaxis: yAxisCo2,
-          annotations: {
-            yaxis: [annotationCo2.value]
-          },
-          colors: colorsCo2.value
-        }
-      });
-      const chartOptionsData = computed(() => {
-        return {
-          ...chartOptions,
-          chart: {
-            ...chartOptions.chart,
-            id: 'data'
-          },
-          xaxis: {
-            categories: categories.value,
-          },
-          yaxis: yAxisData,
-          annotations: {
-            yaxis: [annotationData.value]
-          },
-          colors: colorsData.value
-        }
-      });
-
-
-    const switchPeriod = (newPeriod : 'days' | 'months') => {
-      period.value = newPeriod;
-    }
-
-    const switchType = (newType : 'co2' | 'data') => {
-      type.value = newType;
-    }
-
-    onMounted(() => {
-      setTimeout(() => {
-        if (chartCo2.value) {
-        chartCo2.value.hideSeries('computer');
-        }
-      }, 1000);
+      }
     });
 
     watchEffect(async () => {
-      getTopWebsitesSeries('co2', 4, granularity.value).then((series: {name: String, data: [number]}[]) => {
-        seriesCo2.value = series;
+      getTopWebsitesSeries(type.value, 4, granularity.value).then((seriesData: {name: String, data: [number]}[]) => {
+        series.value = seriesData;
         // update annotation with mean value
-        // get number of active period (based on computer activity which is last serie)
-        const nbActivePeriods = series[4] ? series[4].data?.filter(e => e > 0).length : series[0].data?.filter(e => e > 0).length;
-        const total = series.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
-        annotationCo2.value = {
-          ...annotation,
-          y: total / nbActivePeriods
-        };
-      });
-      getTopWebsitesSeries('data', 4, granularity.value).then((series: {name: String, data: [number]}[]) => {
-        seriesData.value = series;
-        // update annotation with mean value
-        // get number of active period (based on last serie aggregated domains - no computer activity for data)
-        const nbActivePeriods = series[3] ? series[3].data?.filter(e => e > 0).length : series[0].data?.filter(e => e > 0).length;
-        const total = series.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
-        annotationData.value = {
-          ...annotation,
-          y: total / nbActivePeriods
-        };
+        // get number of active period (based on last serie aggregated domains)
+        const nbActivePeriods = seriesData[3] ?
+          seriesData[3].data?.filter(e => e > 0).length : seriesData[0].data?.filter(e => e > 0).length;
+        const total = seriesData.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
+        average.value = total / nbActivePeriods;
       });
     })
-    return { type, chartCo2, chartData, chartOptionsCo2, chartOptionsData, seriesCo2, seriesData, switchPeriod, switchType, t };
+    return { type, chart, chartOptions, series, t };
   }
 }
 </script>
 
 <template>
-  <div class="buttons">
-   <period-picker @change="switchPeriod"></period-picker>
-   <type-picker @change="switchType"></type-picker>
-  </div>
   <div>
-    <div v-if="type === 'co2'">
-      Co2 (g)
-      <apexchart
-        ref="chartCo2"
-        width="450"
-        height="175"
-        id="co2"
-        :options="chartOptionsCo2"
-        :series="seriesCo2"
-      ></apexchart>
-    </div>
-    <div v-if="type === 'data'">
-      Data (Mo)
+    Title
     <apexchart
-      ref="chartData"
+      ref="chart"
       width="450"
-      height="175"
-      id="data"
-      :options="chartOptionsData"
-      :series="seriesData"
+      :height="height"
+      id="chart"
+      :options="chartOptions"
+      :series="series"
     ></apexchart>
-    </div>
   </div>
 </template>
-
-<style scoped>
-  .buttons {
-    height: 5%;
-    display: flex;
-    width: 100%;
-    column-gap: 9px;
-  }
-</style>

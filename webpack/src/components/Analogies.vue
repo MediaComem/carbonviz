@@ -161,7 +161,7 @@ export default {
       width: 480px; */
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 60px 200px 220px;
+  grid-template-rows: 54px 220px 206px;
   grid-template-areas:
     "header"
     "analogies"
@@ -188,9 +188,9 @@ export default {
   display: flex;
   flex-wrap: wrap;
   border-radius: 0 0 10px 10px;
-  box-shadow: inset 0 -5px 5px -5px var(--dark-grey),
-    inset -5px 0 5px -5px var(--dark-grey),
-    inset 5px 0 5px -5px var(--dark-grey);
+  box-shadow: inset 0 -5px 5px -5px rgba(0, 0, 0, 0.25),
+    inset -5px 0 5px -5px rgba(0, 0, 0, 0.25),
+    inset 5px 0 5px -5px rgba(0, 0, 0, 0.25);
   background-color: var(--activeBackground);
 }
 .stats > div {

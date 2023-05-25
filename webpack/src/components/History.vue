@@ -138,7 +138,8 @@ export default {
     cursor: pointer;
   }
   .buttons {
-    height: 5%;
+    height: 30px;
+    margin-bottom: 10px;
     display: flex;
     width: 100%;
     column-gap: 9px;
@@ -146,7 +147,7 @@ export default {
   .dataArea {
     display: flex;
     width: 100%;
-    height: 90%;
+    height: 87%;
   }
   .history-wrapper {
     margin-top: 20px;
