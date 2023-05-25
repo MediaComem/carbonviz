@@ -17,12 +17,14 @@ export const getTopWebsites = async (mode = 'co2', limit = 10) => {
 }
 
 // Retrieve top websites data series for current week by day or current year by month
+// add computer energy as additionnal set
 // granularity: 'day' | 'month'
 // format is as expected by ApexChart in Statistics.vue component
 // Data for top 'number' websites + aggregate of others in 'Divers'
 //    [{name: 'Netflix', data: [300, 250, 0, 600, 0, 800, 2000]},
 //    {name: 'YouTube', data: [100, 50, 500, 200, 0, 100, 0]},
-//    {name: 'Divers', data: [1300, 50, 200, 100, 1500, 0, 0]}]
+//    {name: 'Divers', data: [600, 50, 200, 100, 150, 0, 0],
+//    {name: 'Computer', data: [1300, 500, 2000, 1000, 1500, 1000, 3000]}]
 export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity = 'day') => {
     database ??= await initDB();
 
@@ -59,7 +61,7 @@ export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity
 
     // retrieve data from database
     for (const period of periods) {
-        const table = `domains_${granularity}_${period}`;
+        const table = `domains_${granularity}_${period}`; // TODO fix inactive days may not be empty
         const dailyData = await getWebsites(mode, limit, table);
         for (const website of dailyData) {
             const name = website.name;
@@ -102,6 +104,25 @@ export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity
         name: 'Divers',
         data: totalPerTimeEntity.map((total, idx) => total - totalPerTimeEntity4TopWebsites[idx])
     });
+    // Add computer active time energy for co2
+    if (mode === 'co2') {
+        let dailyData;
+        if (granularity === 'day') {
+            dailyData = await getDailyAggregates('week', 1); // may contain holes for inactive days
+            const data =  new Array(periods.length).fill(0);
+            for (const info of dailyData) {
+                const dayOfWeek = info.dayOfWeek; // sunday is 0
+                data[dayOfWeek > 0 ? dayOfWeek - 1 : 6] = info.computer.co2;
+            }
+            result.push({
+                name: "computer",
+                data
+            });
+        } else if (granularity === 'month') {
+            dailyData = await getDailyAggregates('month', 12);
+            // aggregate per month
+        }
+    }
     return result;
 }
 export const getCurWeek = async (mode = 'co2') => {

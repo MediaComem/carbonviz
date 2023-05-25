@@ -39,6 +39,32 @@
       }
     },
     "analogy": {},
+    "statistics": {
+      "days": {
+        "Mon": "Lun.",
+        "Tue": "Mar.",
+        "Wed": "Mer.",
+        "Thu": "Jeu.",
+        "Fri": "Ven.",
+        "Sat": "Sam.",
+        "Sun": "Dim."
+      },
+      "months": {
+        "Jan": "Janv.",
+        "Feb": "Févr.",
+        "Mar": "Mars",
+        "Apr": "Avr.",
+        "May": "Mai",
+        "Jun": "Juin",
+        "Jul": "Juill.",
+        "Aug": "Août.",
+        "Sep": "Sept.",
+        "Oct": "Oct.",
+        "Nov": "Nov.",
+        "Dec": "Déc."
+      },
+      "computer": "Énergie grise ordinateur'"
+    },
     "appFullpage": {},
     "history": {
       "WeeklyConsumption": "Consommation hebdomadaire",

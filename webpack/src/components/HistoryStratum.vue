@@ -21,8 +21,7 @@ export default {
   props: {
     index: {type: Number},
     layer: {type: Object},
-    type: {type: String},
-    stage: {type: Number}
+    type: {type: String}
   },
   emits: ['willExpand', 'willCollapse'],
   setup(props, { emit }) {

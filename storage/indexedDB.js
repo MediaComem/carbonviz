@@ -372,7 +372,8 @@ async function getDailyAggregates(period, occurrence) {
           return {
             ...entry,
             co2: entry.co2 + computerCo2,
-            energy: entry.energy + computerEnergy
+            energy: entry.energy + computerEnergy,
+            computer: { co2: computerCo2, energy: computerEnergy }
           }
         });
         return resolve(dailyAggregates);
