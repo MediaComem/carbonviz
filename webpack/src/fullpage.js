@@ -10,6 +10,7 @@ import fr from './locales/fr.json'
 const i18n = createI18n({
   locale: 'fr',
   legacy: false,
+  fallbackLocale: 'en',
   messages: {
     en,
     fr

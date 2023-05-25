@@ -12,7 +12,8 @@ const hashRoutes = {
   '#Journey': "Data's journey",
   '#Method': 'Method & links',
   '#About': 'About',
-  '#Privacy': 'Data & Privacy'
+  '#Privacy': 'Data & Privacy',
+  '#Settings': 'Settings',
 };
 
 export default {

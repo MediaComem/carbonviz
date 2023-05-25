@@ -2,6 +2,7 @@
 :root {
   --black: #000000;
   --white: #ffffff;
+  --green: #96E467;
   --grey: #E6E6E6;
   --light-grey: #CECECE;
   --dark-grey: #616161;
@@ -15,6 +16,13 @@
   --activeWeight: var(--normal);
 }
 
+.activeButton {
+  --activeBackground: var(--white);
+  --activeColor: var(--black);
+  --activeWeight: var(--heavy);
+}
+
+
 .el-scrollbar {
   --el-scrollbar-bg-color: var(--dark-grey);
   --el-scrollbar-opacity: 1;
@@ -22,12 +30,18 @@
   --el-scrollbar-hover-opacity: 1
 }
 
-.activeButton {
-  --activeBackground: var(--white);
-  --activeColor: var(--black);
-  --activeWeight: var(--heavy);
-}
-
 .el-scrollbar__bar {
   background-color: white;
+}
+
+.el-slider {
+  --el-slider-height: 2px;
+  --el-slider-runway-bg-color: var(--dark-grey);
+  --el-slider-main-bg-color: var(--dark-grey);
+  --el-slider-stop-bg-color: var(--dark-grey);
+  --el-slider-button-size: 15px;
+}
+
+.el-date-editor {
+  --el-date-editor-width: 130px;
 }

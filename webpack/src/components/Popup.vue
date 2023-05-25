@@ -4,11 +4,12 @@ import { useI18n } from 'vue-i18n'
 import History from './History.vue';
 import Analogies from './Analogies.vue';
 import Statistics from './Statistics.vue';
+import Settings from './Settings.vue';
 import { setup as setupExtensionTab } from '../composables/tab';
 
 export default {
   components: {
-    History, Analogies, Statistics
+    History, Analogies, Statistics, Settings
   },
   setup() {
     let currentView = ref("history");
@@ -49,12 +50,13 @@ export default {
         <button :class="currentView === 'analogies' ? 'activeTab' : '' " @click='viewChange("analogies")'>{{ t('global.analogies') }}</button>
         <button :class="currentView === 'history' ? 'activeTab' : '' " @click='viewChange("history")'>{{ t('global.history') }}</button>
         <button :class="currentView === 'statistics' ? 'activeTab' : '' " @click='viewChange("statistics")'>{{ t('global.trends') }}</button>
-        <button :class="currentView === 'Settings' ? 'activeTab' : '' " @click='viewChange("Settings")'>{{ t('global.settings') }}</button>
+        <button :class="currentView === 'settings' ? 'activeTab' : '' " @click='viewChange("settings")'>{{ t('global.settings') }}</button>
       </div>
       <div id="view">
         <History v-if="currentView === 'history'"></History>
         <Analogies v-if="currentView === 'analogies'"></Analogies>
         <Statistics v-if="currentView === 'statistics'"></Statistics>
+        <Settings v-if="currentView === 'settings'"></Settings>
       </div>
       <div id="footer">
         <div data-area="logo" id="appTitle"></div>

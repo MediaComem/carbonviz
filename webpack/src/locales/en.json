@@ -78,6 +78,19 @@
         "checkActivity": "You can then check your activity from that tab while browsing the internet.",
         "accessPopup": "You can still access the extension pop-up window on any page by clicking the extension icon in the browser bar."
       }
+    },
+    "settings": {
+      "usingSince": "You have been using this computer since",
+      "dataUseCase": "This data allows us to better calculate the gray footprint of your activity",
+      "showMiniViz": "Show MiniViz",
+      "disablePlugin": "Disable plugin",
+      "shareData": "Share my data",
+      "shareDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "deleteData": "Delete my data",
+      "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "confirmMiniVizStatus": "MiniViz is now {text}",
+      "confirmShareData": "Data is {text}",
+      "datePlaceholder": "Pick a date"
     }
   },
   "global": {
@@ -112,5 +125,24 @@
     "de": "Deutsch",
     "en": "English",
     "fr": "Français"
+  },
+  "pages": {
+    "settings": {
+      "partnersInstitution": "Institutional Partners",
+      "institutionSupport": {
+        "one": "The CarbonViz project is supported by ",
+        "link1": "Innosuisse",
+        "two": "the scientific teams of the",
+        "link2": "Media Engineering Institute",
+        "three": "(MEI) and the",
+        "link3": "Institut de Génie Thermique",
+        "four": "(IGT) of the",
+        "link4": "Haute Ecole d'Ingénierie et de Gestion du canton de Vaud",
+        "end": "(HEIG-VD)"
+      },
+      "partnersInd": "Industrial Partners",
+      "indSupport": "The CarbonViz project is supported by the Industrial Services of Lausanne and Equiwatt"
+
+    }
   }
 }

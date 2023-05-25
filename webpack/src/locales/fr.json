@@ -78,6 +78,19 @@
         "checkActivity": "Vous pouvez ensuite vérifier votre activité à partir de cet onglet lorsque vous naviguez sur l'internet.",
         "accessPopup": "Vous pouvez toujours accéder à la fenêtre contextuelle de l'extension sur n'importe quelle page en cliquant sur l'icône de l'extension dans la barre du navigateur."
       }
+    },
+    "settings": {
+      "usingSince": "Vous utilisez cet ordinateur depuis le",
+      "dataUseCase": "Cette donnée nous permet de mieux calculer l'empreinte grise de votre activité",
+      "showMiniViz": "Afficher MiniViz",
+      "disablePlugin": "Désactiver le pluggin",
+      "shareData": "Partager mes données",
+      "shareDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "deleteData": "Effacer mes données",
+      "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "confirmMiniVizStatus": "MiniViz est maintenant {text}",
+      "confirmShareData": "Les données sont {text}",
+      "datePlaceholder": "Choisis une date"
     }
   },
   "global": {
@@ -112,5 +125,23 @@
     "de": "Deutsch",
     "en": "English",
     "fr": "Français"
+  },
+  "pages": {
+    "settings": {
+      "partnersInstitution": "Partenaires Institutionnels",
+      "institutionSupport": {
+        "one": "Le projet CarbonViz est soutenu par ",
+        "link1": "Innosuisse",
+        "two": "les équipes scientifiques du",
+        "link2": "Media Engineering Institute",
+        "three": "(MEI) et du",
+        "link3": "Institut de Génie Thermique",
+        "four": "(IGT) de la",
+        "link4": "Haute Ecole d'Ingénierie et de Gestion du canton de Vaud",
+        "end": "(HEIG-VD)"
+      },
+      "partnersInd": "Partenaires Industriels",
+      "indSupport": "Le projet CarbonViz est soutenu par les Services Industriels de Lausanne et Equiwatt"
+    }
   }
 }
