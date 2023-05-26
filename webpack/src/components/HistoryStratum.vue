@@ -193,7 +193,7 @@ export default {
         <div v-if="showGraph">
           <div v-if="layer.level === 'week'" class="section-title bold"> {{ t('components.history.WeeklyConsumption') }}</div>
           <div v-if="layer.level === 'month'" class="section-title bold"> {{ t('components.history.MonthlyConsumption') }} </div>
-          <apexchart class="apexchart" type="bar" height="180" width="160" :options="options" :series="series"></apexchart>
+          <apexchart class="apexchart" type="bar" height="180" max-width="160" :options="options" :series="series"></apexchart>
         </div>
       </el-col>
     </el-row>
@@ -226,8 +226,9 @@ export default {
     .label {
       position: absolute;
       top: 50%;
-      margin-top: -8px;
+      margin-top: -5px;
       text-align: left;
+      left: -10px;
     }
   }
   .details {
@@ -268,8 +269,7 @@ export default {
     margin-top: 33px;
   }
   .section-title {
-    margin-left: 10px;
-    text-align: left;
+    text-align: center;
   }
   .expanded .analogies {
     :deep(.el-carousel__container) {
@@ -290,83 +290,83 @@ export default {
     }
   }
   .co2 {
-    background-color: #906C0D;
+    background-color: var(--co2);
     border-top: solid 1px white;
 
     &.today{
-      background-color: #906C0D;
+      background-color: var(--co2);
       &:hover{
-        background-color: darken(#906C0D, 5);
+        background-color: var(--co2Active);
       }
       &.expanded{
-        background-color: darken(#906C0D, 10);
+        background-color: var(--co2Active);
       }
     }
     &.daily{
-      background-color: #A59366;
+      background-color: var(--co2);
       &:hover{
-        background-color: darken(#A59366, 5);
+        background-color: var(--co2Active);
       }
       &.expanded{
-        background-color: darken(#A59366, 10);
+        background-color: var(--co2Active);
       }
     }
     &.weekly{
-      background-color: #958A70;
+      background-color: var(--co2Week);
       &:hover{
-        background-color: darken(#958A70, 5);
+        background-color: var(--co2WeekActive);
       }
       &.expanded{
-        background-color: darken(#958A70, 10);
+        background-color: var(--co2WeekActive);
       }
     }
     &.monthly{
-      background-color: #827E76;
+      background-color: var(--co2Month);
       &:hover{
-        background-color: darken(#827E76, 5);
+        background-color: var(--co2MonthActive);
       }
       &.expanded{
-        background-color: darken(#827E76, 10);
+        background-color: var(--co2MonthActive);
       }
     }
   }
   .data {
-    background-color: #384E50;
+    background-color: var(--data);
     border-bottom: solid 1px white;
     &.today{
-      background-color: #384E50;
+      background-color: var(--data);
       &:hover{
-        background-color: darken(#384E50, 5);
+        background-color: var(--dataActive);
       }
       &.expanded{
-        background-color: darken(#384E50, 10);
+        background-color: var(--dataActive);
       }
     }
     &.daily{
-      background-color: #719598;
+      background-color: var(--data);
       &:hover{
-        background-color: darken(#719598, 5);
+        background-color: var(--dataActive);
       }
       &.expanded{
-        background-color: darken(#719598, 10);
+        background-color: var(--dataActive);
       }
     }
     &.weekly{
-      background-color: #213C3F;
+      background-color: var(--dataWeek);
       &:hover{
-        background-color: darken(#213C3F, 5);
+        background-color: var(--dataWeekActive);
       }
       &.expanded{
-        background-color: darken(#213C3F, 10);
+        background-color: var(--dataWeekActive);
       }
     }
     &.monthly{
-      background-color: #0F2D30;
+      background-color: var(--dataMonth);
       &:hover{
-        background-color: darken(#0F2D30, 5);
+        background-color: var(--dataMonthActive);
       }
       &.expanded{
-        background-color: darken(#0F2D30, 10);
+        background-color: var(--dataMonthActive);
       }
     }
   }

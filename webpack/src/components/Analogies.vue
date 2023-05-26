@@ -220,10 +220,10 @@ export default {
   font-weight: bold;
 }
 .co2 {
-  background-color: var(--co2);
+  background-color: var(--co2Analogies);
 }
 .data {
-  background-color: var(--data);
+  background-color: var(--dataAnalogies);
 }
 </style>
 
@@ -250,5 +250,10 @@ export default {
     padding: 0;
   }
 }
-
+button.el-carousel__arrow--right {
+  right: 0px;
+}
+button.el-carousel__arrow--left {
+  left: 0px;
+}
 </style>
