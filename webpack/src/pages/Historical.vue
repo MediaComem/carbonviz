@@ -30,7 +30,7 @@ export default {
 .flexContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: 60px;
+  gap: 40px;
 }
 .flexContainer div{
   flex-grow: 1;
