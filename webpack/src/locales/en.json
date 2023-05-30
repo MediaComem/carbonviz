@@ -63,7 +63,16 @@
         "Nov": "Nov.",
         "Dec": "Dec."
       },
-      "computer": "Computer's embodied energy"
+      "day": {
+        "average": "Weekly average",
+        "trend": "Weekly trend"
+      },
+      "month": {
+        "average": "Monthly average",
+        "trend": "Monthly trend"
+      },
+      "computer_impact": "from computer's embodied energy",
+      "computer_tip": "You can reduce the impact of your computer by keeping it longer. See "
     },
     "appFullpage": {},
     "history": {
@@ -98,12 +107,16 @@
     "askAgain": "Do not ask again",
     "cancel": "Cancel",
     "co2": "CO2",
+    "of_co2": "of CO2",
     "current_today": "Today",
     "current_week": "This week",
     "current_month": "This month",
     "current_year": "Since January {year}",
     "data": "Data",
+    "downloaded": "downloaded",
     "history": "History",
+    "internet": "Internet",
+    "computer": "Computer",
     "last": {
       "today": "Today",
       "week": "The 7 last days",

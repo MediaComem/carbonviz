@@ -5,11 +5,18 @@
   </div>
   <div class="wrapper">
     <div v-if="type === 'co2'">
-      <statistics :type="type" :granularity="granularity" :height="200"></statistics>
-      <statistics :type="type" :granularity="granularity" :height="200"></statistics>
+      <statistics :type="type" subtype="web" :granularity="granularity" :height="130">
+        <template #title>{{ t('global.internet') }}</template>
+      </statistics>
+      <statistics :type="type" subtype="computer" :granularity="granularity" :height="110">
+        <template #title>{{ t('global.computer') }}</template>
+        <template #info>
+          {{ t('components.statistics.computer_tip') }} <span @click="$emit('showSettings')" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
+        </template>
+      </statistics>
     </div>
     <div v-if="type === 'data'">
-      <statistics :type="type" :granularity="granularity" :height="350"></statistics>
+      <statistics :type="type" subtype="web" :granularity="granularity" :height="200"></statistics>
     </div>
   </div>
 </template>
@@ -20,6 +27,13 @@ import Statistics from './Statistics.vue'
 import PeriodPicker from './PeriodPicker.vue';
 import TypePicker from './TypePicker.vue';
 import { Indicator } from '../utils/types';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n({});
+
+const emit = defineEmits<{
+  (e: 'showSettings'): void
+}>()
 
 const type = ref('co2');
 const period = ref('days');

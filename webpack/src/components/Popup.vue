@@ -55,7 +55,7 @@ export default {
       <div id="view">
         <History v-if="currentView === 'history'"></History>
         <Analogies v-if="currentView === 'analogies'"></Analogies>
-        <Trends v-if="currentView === 'statistics'"></Trends>
+        <Trends v-if="currentView === 'statistics'" @show-settings='viewChange("settings")'></Trends>
         <Settings v-if="currentView === 'settings'"></Settings>
       </div>
       <div id="footer">

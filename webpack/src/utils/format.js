@@ -18,12 +18,12 @@ export function formatSize(size, precision = 2) {
 
 export function formatCo2(amount, precision = 2) {
   if (amount < 1e-3) {
-    return `${roundToPrecision(amount * 1e6, precision)} mg`;
+    return `${roundToPrecision(amount * 1e6, precision)} MG`;
   } else if (amount < 1) {
-    return `${roundToPrecision(amount * 1e3, precision)} g`;
+    return `${roundToPrecision(amount * 1e3, precision)} G`;
   } else if (amount < 1000) {
-    return `${roundToPrecision(amount, precision)} kg`;
+    return `${roundToPrecision(amount, precision)} KG`;
   } else {
-    return `${roundToPrecision(amount / 1000, precision)} Mg`;
+    return `${roundToPrecision(amount / 1000, precision)} MG`;
   }
 }
