@@ -189,9 +189,14 @@ export default {
           getTopWebsitesSeries(type.value, 4, granularity.value).then((seriesData: {name: String, data: [number]}[]) => {
               series.value = seriesData;
               // update annotation with mean value
-              // get number of active period (based on last serie aggregated domains)
-              nbActivePeriods.value = seriesData[3] ?
-                seriesData[3].data?.filter(e => e > 0).length : seriesData[0].data?.filter(e => e > 0).length;
+              // get number of active periods
+              const activePeriods = Array(seriesData[0].data.length).fill(false);
+              for (const serie of seriesData) {
+                for (let idx = 0; idx < activePeriods.length; idx++) {
+                  activePeriods[idx] = activePeriods[idx] || serie.data[idx]!==0;
+                }
+              }
+              nbActivePeriods.value = activePeriods.filter(e => e).length;
               const total = seriesData.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
               average.value = total / nbActivePeriods.value;
             });
