@@ -63,7 +63,16 @@
         "Nov": "Nov.",
         "Dec": "Déc."
       },
-      "computer": "Énergie grise ordinateur'"
+      "day": {
+        "average": "Moyenne hebdomadaire",
+        "trend": "Tendance hebdomadaire"
+      },
+      "month": {
+        "average": "Moyenne mensuelle",
+        "trend": "Tendance mensuelle"
+      },
+      "computer_impact": "d'énergie grise de l'ordinateur",
+      "computer_tip": "Vous pouvez réduire l'impact de l'ordinateur en le gardant plus logntemps. Voir"
     },
     "appFullpage": {},
     "history": {
@@ -98,12 +107,16 @@
     "askAgain": "Ne demandez pas à nouveau",
     "cancel": "Annuler",
     "co2": "CO2",
+    "of_co2": "de CO2",
     "current_today": "Aujourd'hui",
     "current_week": "Cette semaine",
     "current_month": "Ce mois",
     "current_year": "Depuis Janvier {year}",
     "data": "Données",
+    "downloaded": "téléchargés",
     "history": "Histoire",
+    "internet": "Internet",
+    "computer": "Ordinateur",
     "last": {
       "today": "Aujourd'hui",
       "week": "Les 7 derniers jours",

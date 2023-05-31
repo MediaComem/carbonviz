@@ -11,9 +11,11 @@ export default function (type, periods) {
   const length = periods.length;
   const max = periods.reduce((max, period) => Math.max(period.amount, max), 0);
   let barChartColors = Array(length).fill(colorBars);
+  let textColors = type === 'co2' ? Array(length).fill(colorDataLabelCo2) : Array(length).fill(colorDataLabelData);
   if(periods.length > 1) {
     const maxIndex = periods.findIndex(period => period.amount === Math.max(...periods.map(period => period.amount)));
     barChartColors[maxIndex] = '#e2786b';
+    textColors[maxIndex] = '#ffffff';
   }
   const options =  {
     fill: {opacity: 1},
@@ -27,7 +29,7 @@ export default function (type, periods) {
       style: {
         fontSize: '9px',
         fontFamily, fontWeight,
-        colors: type === 'co2' ? Array(length).fill(colorDataLabelCo2) : Array(length).fill(colorDataLabelData)
+        colors: textColors
       },
       formatter: val =>  {
         if (val < 0.3 * max) {

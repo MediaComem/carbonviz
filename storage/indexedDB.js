@@ -328,30 +328,37 @@ async function getLastStoredEntries(today, domainName = undefined) {
   });
 }
 
-function getkeyRangeSummary(period, occurrence) {
+// Range is the range desired
+// ex: 'day'/[-7,0] will return data for the last 7 days
+// ex: 'day'/[-14,-7] will return data for the previous last 7 days
+function getkeyRangeSummary(period, range) {
+  const now = new Date();
+  let startDate = new Date();
   let endDate = new Date();
-  let startDate = new Date(endDate);
   let startKey = '';
   let endKey = '';
 
   if (period === 'day') {
-    startDate = new Date(startDate.setDate(startDate.getDate() - occurrence));
+    startDate = new Date(startDate.setDate(startDate.getDate() + range[0]));
+    endDate = new Date(endDate.setDate(endDate.getDate() + range[1]));
   }
   if (period === 'week') {
-    startDate = new Date(startDate.setDate(startDate.getDate() - (7 * occurrence)));
+    startDate = new Date(startDate.setDate(startDate.getDate() +  7 * range[0]));
+    endDate = new Date(endDate.setDate(endDate.getDate() + 7 * range[1]));
   }
   if (period === 'month') {
-    startDate = new Date(startDate.setMonth(startDate.getMonth() - occurrence));
+    startDate = new Date(startDate.setMonth(startDate.getMonth() + range[0]));
+    endDate = new Date(endDate.setMonth(endDate.getMonth() + range[1]));
   }
   endKey = dateString(endDate);
   startKey = dateString(startDate);
   return {startKey, endKey};
 }
 
-async function getDailyAggregates(period, occurrence) {
+async function getDailyAggregates(period, range) {
   return new Promise(function (resolve, reject) {
     let data = [];
-    const keys = getkeyRangeSummary(period, occurrence);
+    const keys = getkeyRangeSummary(period, range);
     let keyRangeValue = IDBKeyRange.bound(keys.startKey, keys.endKey);
 
     const db = co2HistoryDB.db;
@@ -377,40 +384,6 @@ async function getDailyAggregates(period, occurrence) {
           }
         });
         return resolve(dailyAggregates);
-      }
-    };
-    dbCursor.onerror = function(error) { reject(error)};
-  });
-}
-
-async function getDailyEntries(period, occurrence) {
-  return new Promise(function (resolve, reject) {
-
-    let data = [];
-    const keys = getkeyRangeSummary(period, occurrence);
-    let keyRangeValue = IDBKeyRange.bound(keys.startKey, keys.endKey);
-
-    const db = co2HistoryDB.db;
-    const trans = db.transaction(["history"], "readonly");
-    const historySummaryStore = trans.objectStore("history");
-
-    const dbCursor = historySummaryStore.openCursor(keyRangeValue).onsuccess = function(event) {
-      let cursor = event.target.result;
-      if(cursor) {
-        data.push(cursor.value);
-        cursor.continue();
-      } else {
-        // add computer co2 + computer energy
-        const dailyEntrie =  data.map( entry => {
-          const computerCo2 = entry.duration * 6.57e-6; // constant value: ~6.57 [mg/sec]
-          const computerEnergy = entry.duration * 180e-6;// constant value: ~180 [J/sec]
-          return {
-            ...entry,
-            co2: entry.co2 + computerCo2,
-            energy: entry.energy + computerEnergy
-          }
-        });
-        return resolve(dailyEntrie);
       }
     };
     dbCursor.onerror = function(error) { reject(error)};
@@ -544,4 +517,4 @@ async function downloadData(dbStore) {
   });
 }
 
-export { init, getLastStoredEntries, updateData, getDailyAggregates, getDailyEntries, getTodayCounter, deleteData, getWebsites, getAggregate, getCurWeekHistory, downloadData }
+export { init, getLastStoredEntries, updateData, getDailyAggregates, getTodayCounter, deleteData, getWebsites, getAggregate, getCurWeekHistory, downloadData }

@@ -5,6 +5,18 @@ let database;
 
 const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 
+export const getLastDaysSummary = async(range) => {
+    const dailyData = await getDailyAggregates('day', range); // may contain holes for inactive days
+    return dailyData.reduce((acc, day) => {
+        return {
+            data: acc.data + day.data,
+            energy: acc.energy + day.energy,
+            co2: acc.co2 + day.co2,
+            computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
+        }
+    }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+}
+
 export const retrieveTodayCounter = async () => {
     database ??= await initDB();
     return getTodayCounter();
@@ -16,6 +28,63 @@ export const getTopWebsites = async (mode = 'co2', limit = 10) => {
     return await getWebsites(mode, limit, 'domains');
 }
 
+const arrayForPeriods = (granularity) => {
+    // Retrieve data for given periods
+    switch (granularity) {
+        case 'month': {
+            // Period: full year (last 12 months)
+            // Time entity: 1 month
+            return [1,2,3,4,5,6,7,8,9,10,11,12];
+        }
+        case 'day': {
+            // Period: last 7 days (1 week)
+            // Time entity: 1 day
+            return [1,2,3,4,5,6,0]; // Week Monday to Sunday
+        }
+        default:
+            throw new Error('Invalid period');
+    }
+}
+
+// Retrieve computer co2 series for current week by day or current year by month
+// add computer energy as additionnal set
+// granularity: 'day' | 'month'
+// format is as expected by ApexChart in Statistics.vue component
+export const getComputerCo2Series = async (granularity = 'day') => {
+    database ??= await initDB();
+
+    const periods = arrayForPeriods(granularity); // Periods to retrieve (days 0 to 6 or months 1 to 12)
+
+    const result = [];
+
+    // Add computer active time energy for co2
+    let dailyData;
+    if (granularity === 'day') {
+        dailyData = await getDailyAggregates('week', [-1, 0]); // may contain holes for inactive days
+        const data =  new Array(periods.length).fill(0);
+        for (const info of dailyData) {
+            const dayOfWeek = info.dayOfWeek; // sunday is 0
+            data[dayOfWeek > 0 ? dayOfWeek - 1 : 6] = info.computer.co2;
+        }
+        result.push({
+            name: "computer",
+            data
+        });
+    } else if (granularity === 'month') {
+        dailyData = await getDailyAggregates('month', [-12, 0]);
+        // aggregate per month
+        const data =  new Array(periods.length).fill(0);
+        for (const info of dailyData) {
+            const month = info.month;
+            data[month-1] += info.computer.co2;
+        }
+        result.push({
+            name: "computer",
+            data
+        });
+    }
+    return result;
+}
 // Retrieve top websites data series for current week by day or current year by month
 // add computer energy as additionnal set
 // granularity: 'day' | 'month'
@@ -31,25 +100,16 @@ export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity
     const consumptionByWebsite = {}; // consumption by website (gggregated for the full period + detail per time entity)
     const totalPerTimeEntity = []; // total consumption per time entity (1 day or 1 month)
     let totalPerTimeEntity4TopWebsites; // total consumption from top websites per time entity (1 day or 1 month)
-    let periods; // Periods to retrieve (days 0 to 6 or months 1 to 12)
     let limit;
 
-    // Retrieve data for given periods
     switch (granularity) {
         case 'month': {
-            // Period: full year (last 12 months)
-            // Time entity: 1 month
-            periods = [1,2,3,4,5,6,7,8,9,10,11,12];
             // Worse case, we have different top website for each month
             // To get the top "number" for a year, we need to consider the top 12*number websites
             limit = 12 * number;
             break;
         }
         case 'day': {
-            // Period: last 7 days (1 week)
-            // Time entity: 1 day
-            periods = [1,2,3,4,5,6,0]; // Week Monday to Sunday
-
             // Worse case, we have different top website for each day
             // To get the top "number" for a week, we need to consider the top 7*number websites
             limit = 7 * number;
@@ -58,6 +118,8 @@ export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity
         default:
             throw new Error('Invalid period');
     }
+
+    const periods = arrayForPeriods(granularity); // Periods to retrieve (days 0 to 6 or months 1 to 12)
 
     // retrieve data from database
     for (const period of periods) {
@@ -99,30 +161,15 @@ export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity
         result.push(serie);
         totalPerTimeEntity4TopWebsites = totalPerTimeEntity4TopWebsites.map((total, idx) => total + serie.data[idx]);
     }
+    // sort series
+    result.sort((a,b) => b.aggregate - a.aggregate);
+
     // Add remaing data consumption to 'Divers' category
     result.push({
         name: 'Divers',
         data: totalPerTimeEntity.map((total, idx) => total - totalPerTimeEntity4TopWebsites[idx])
     });
-    // Add computer active time energy for co2
-    if (mode === 'co2') {
-        let dailyData;
-        if (granularity === 'day') {
-            dailyData = await getDailyAggregates('week', 1); // may contain holes for inactive days
-            const data =  new Array(periods.length).fill(0);
-            for (const info of dailyData) {
-                const dayOfWeek = info.dayOfWeek; // sunday is 0
-                data[dayOfWeek > 0 ? dayOfWeek - 1 : 6] = info.computer.co2;
-            }
-            result.push({
-                name: "computer",
-                data
-            });
-        } else if (granularity === 'month') {
-            dailyData = await getDailyAggregates('month', 12);
-            // aggregate per month
-        }
-    }
+
     return result;
 }
 export const getCurWeek = async (mode = 'co2') => {
@@ -155,7 +202,7 @@ export const retrieveHistoryLayers = async (period, scrollCount) => {
     database ??= await initDB();
 
     // get data (daily summaries) for the last 4 months
-    const dailyData = await getDailyAggregates('month', historyLimit);
+    const dailyData = await getDailyAggregates('month', [-historyLimit, 0]);
     if (!dailyData) {
         return { co2: layersCo2, data: layersData };
     }
@@ -272,7 +319,7 @@ export const retrieveAnalogiesLayer = async (type) => {
     database ??= await initDB();
 
     // get data (daily summaries) for the last month
-    const dailyData = await getDailyAggregates('month', 1);
+    const dailyData = await getDailyAggregates('month', [-1, 0]);
     if (!dailyData) {
         return { co2: consumedCo2, data: consumedData };
     }

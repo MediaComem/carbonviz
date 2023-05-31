@@ -63,9 +63,9 @@ export default {
     const legend = computed(() => {
       switch(type.value) {
         case 'co2':
-          return 'of Co2';
+          return t('global.of_co2');
         case 'data':
-          return 'downloaded';
+          return t('global.downloaded');
         default:
           throw('Invalid layer type');
       }

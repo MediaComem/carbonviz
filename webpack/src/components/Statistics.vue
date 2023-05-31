@@ -1,15 +1,17 @@
 <script lang="ts">
 import { ApexOptions } from 'apexcharts';
 import VueApexCharts from "vue3-apexcharts";
-import { ref, computed, watchEffect, onMounted, toRefs, ComputedRef } from 'vue';
-import { getTopWebsitesSeries } from '../composables/storage';
+import { ref, computed, watchEffect, toRefs, ComputedRef } from 'vue';
+import { getLastDaysSummary, getComputerCo2Series, getTopWebsitesSeries } from '../composables/storage';
 import { useI18n } from 'vue-i18n'
 import PeriodPicker from './PeriodPicker.vue';
 import TypePicker from './PeriodPicker.vue';
 import { Indicator, Granularity } from '../utils/types';
+import { formatCo2, formatSize } from '../utils/format';
 
 export interface Props {
   type: Indicator,
+  subtype: 'computer' | 'web' // computer means emboddied energy
   granularity: Granularity,
   height: Number
 }
@@ -22,13 +24,18 @@ export default {
   },
   props: {
     type: String,
+    subtype: String,
     granularity: String,
     height: Number
   },
   setup(props) {
     const { t } = useI18n({});
 
-    const { type, granularity, height } = toRefs(props);
+    const { type, subtype, granularity, height } = toRefs(props);
+
+    const summary = ref({ data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+    const nbActivePeriods = ref(1);
+    const trend =ref(0);
 
     const chart = ref(null);
 
@@ -149,24 +156,104 @@ export default {
     });
 
     watchEffect(async () => {
-      getTopWebsitesSeries(type.value, 4, granularity.value).then((seriesData: {name: String, data: [number]}[]) => {
-        series.value = seriesData;
-        // update annotation with mean value
-        // get number of active period (based on last serie aggregated domains)
-        const nbActivePeriods = seriesData[3] ?
-          seriesData[3].data?.filter(e => e > 0).length : seriesData[0].data?.filter(e => e > 0).length;
-        const total = seriesData.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
-        average.value = total / nbActivePeriods;
-      });
+      let currentValue;
+      let previousPeriod;
+      let previousPeriodValue;
+      switch(granularity.value) {
+        case 'day':
+          summary.value = await getLastDaysSummary([-7, 0]);
+          previousPeriod = await getLastDaysSummary([-14, -7]);
+        break;
+        case 'month':
+          summary.value = await getLastDaysSummary([-30, 0]);
+          previousPeriod = await getLastDaysSummary([-60, -30]);
+        break;
+      }
+      switch(type.value) {
+        case 'co2':
+          currentValue = summary.value.co2;
+          previousPeriodValue = previousPeriod.co2;
+        break;
+        case 'data':
+          currentValue = summary.value.data;
+          previousPeriodValue = previousPeriod.data;
+        break;
+      }
+      if (previousPeriodValue) {
+        trend.value = (currentValue - previousPeriodValue) / previousPeriodValue
+      } else {
+        trend.value = 0;
+      }
+      switch(subtype.value) {
+        case 'web':
+          getTopWebsitesSeries(type.value, 4, granularity.value).then((seriesData: {name: String, data: [number]}[]) => {
+              series.value = seriesData;
+              // update annotation with mean value
+              // get number of active periods
+              const activePeriods = Array(seriesData[0].data.length).fill(false);
+              for (const serie of seriesData) {
+                for (let idx = 0; idx < activePeriods.length; idx++) {
+                  activePeriods[idx] = activePeriods[idx] || serie.data[idx]!==0;
+                }
+              }
+              nbActivePeriods.value = activePeriods.filter(e => e).length;
+              const total = seriesData.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
+              average.value = total / nbActivePeriods.value;
+            });
+          break;
+        case 'computer':
+          getComputerCo2Series(granularity.value).then((seriesData: {name: String, data: number[]}[]) => {
+              series.value = seriesData;
+              const computer = seriesData[0];
+              // update annotation with mean value
+              // get number of active period
+              nbActivePeriods.value = computer.data?.filter(e => e > 0).length;
+              const total = computer.data.reduce((acc, amount) => amount + acc, 0);
+              average.value = total / nbActivePeriods.value;
+            });
+        break;
+        default:
+          throw('Invalid trends type')
+      }
+
     })
-    return { type, chart, chartOptions, series, t };
+    return { summary, trend, nbActivePeriods, type, granularity, chart, chartOptions, series, t, formatCo2, formatSize };
   }
 }
 </script>
 
 <template>
   <div>
-    Title
+    <div class="header" :class="type" v-if="subtype==='web'">
+      <div class="teaser">
+        <span v-if="type==='co2'">{{ formatCo2(summary.co2, 0) }} {{ t('global.of_co2') }}</span>
+        <span v-if="type==='data'">{{ formatSize(summary.data, 0) }} </span>
+      </div>
+      <div class="teaser-subtitle">
+        <span v-if="granularity==='day'">{{ t('global.last.week') }}</span>
+        <span v-if="granularity==='month'">{{ t('global.last.month') }}</span>
+        <span class="computer" v-if="type==='co2'">&nbsp;incl. {{ formatCo2(summary.computer.co2, 0) }} {{ t('components.statistics.computer_impact') }}</span>
+      </div>
+      <div class="average">{{ t(`components.statistics.${granularity}.average`) }}:
+        <span class="value">
+          <span v-if="type==='co2'">{{ formatCo2(summary.co2 / nbActivePeriods, 0) }}</span>
+          <span v-if="type==='data'">{{ formatSize(summary.data / nbActivePeriods, 0) }}</span>
+        </span>
+      </div>
+      <div class="trend-title">{{ t(`components.statistics.${granularity}.trend`) }}:</div>
+      <div class="trend-value">
+        <div v-if="trend">
+          <span v-if="trend > 0">+</span>
+          <span v-if="trend < 0">-</span>
+          {{ Math.round(Math.abs(100 * trend))}} % 
+          <svg :class="trend > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
+        </div>
+        <div v-else>
+          -
+        </div>
+      </div>
+    </div>
+    <div class="title"><slot name="title"></slot></div>
     <apexchart
       ref="chart"
       width="450"
@@ -175,5 +262,81 @@ export default {
       :options="chartOptions"
       :series="series"
     ></apexchart>
+    <div class="info"><slot name="info"></slot></div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.header {
+  padding-top: 15px;
+  padding-left: 15px;
+
+  color: var(--dark-grey);
+
+  .teaser {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 40px;
+  }
+  .teaser-subtitle {
+    font-size: 14px;
+    text-transform: lowercase;
+    .computer {
+      font-weight: 700;
+    }
+  }
+
+  .average {
+    margin-top: 18px;
+  }
+  .average, .trend-title {
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .average .value {
+    font-weight: 700;
+  }
+  .trend-value {
+    margin-top: 15px;
+    font-size: 32px;
+    font-weight: 700;
+    svg {
+      width: 23px;
+      height: 23px;
+      &.up {
+        color: red;
+      }
+      &.down {
+        color: var(--green);
+        transform: rotate(90deg);
+      }
+    }
+  }
+}
+
+.header.co2 {
+  .average {
+  margin-top: 10px;
+  }
+  .trend-value {
+    margin-top: 10px;
+  }
+}
+
+.title {
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: -20px;
+  color: var(--dark-grey);
+  font-size: 14px;
+  font-weight: 700;
+  font-style: italic;
+}
+.info {
+  margin-top: -15px;
+  margin-left: 15px;
+  color: var(--dark-grey);
+  font-size: 11px;
+  font-style: italic;
+}
+</style>

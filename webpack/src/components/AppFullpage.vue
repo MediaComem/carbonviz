@@ -43,7 +43,7 @@ export default {
   <div id="carbonViz" class="wrapper">
     <div data-area="logo"></div>
     <h1 data-area="title">{{ t('appTitle') }}</h1>
-    <img src="../../../icons/logos/logo-equiwatt-large.png" width="200" height="60" data-area="title" id="logoEquiwatt">
+    <img src="../../../icons/logos/logo-equiwatt-large.png" width="200" height="auto" data-area="title" id="logoEquiwatt">
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">
