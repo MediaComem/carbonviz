@@ -232,7 +232,7 @@ export default {
       <div class="teaser-subtitle">
         <span v-if="granularity==='day'">{{ t('global.last.week') }}</span>
         <span v-if="granularity==='month'">{{ t('global.last.month') }}</span>
-        <span class="computer" v-if="type==='co2'">&nbsp;incl. {{ formatCo2(summary.computer.co2, 0) }} {{ t('components.statistics.computer_impact') }}</span>
+        <span class="computer" v-if="type==='co2'">&nbsp;incl. {{ formatCo2(summary.computer.co2, 0) }} {{ t('components.statistics.computerImpact') }}</span>
       </div>
       <div class="average">{{ t(`components.statistics.${granularity}.average`) }}:
         <span class="value">
@@ -311,15 +311,6 @@ export default {
         transform: rotate(90deg);
       }
     }
-  }
-}
-
-.header.co2 {
-  .average {
-  margin-top: 10px;
-  }
-  .trend-value {
-    margin-top: 10px;
   }
 }
 

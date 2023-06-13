@@ -71,8 +71,10 @@
         "average": "Moyenne mensuelle",
         "trend": "Tendance mensuelle"
       },
-      "computer_impact": "d'énergie grise de l'ordinateur",
-      "computer_tip": "Vous pouvez réduire l'impact de l'ordinateur en le gardant plus logntemps. Voir"
+      "fromComputer": "de l'ordinateur",
+      "computerImpact": "d'énergie grise de l'ordinateur",
+      "computerInfo": "Des ressources et de l'énergie ont été nécessaires à la fabrication de votre appareil.",
+      "computerTip": "Vous pouvez réduire l'impact de l'ordinateur en le gardant plus longtemps. Voir"
     },
     "appFullpage": {},
     "history": {
@@ -116,7 +118,7 @@
     "downloaded": "téléchargés",
     "history": "Histoire",
     "internet": "Internet",
-    "computer": "Ordinateur",
+    "computerEnergy": "Énergie grise ordinateur",
     "last": {
       "today": "Aujourd'hui",
       "week": "Les 7 derniers jours",

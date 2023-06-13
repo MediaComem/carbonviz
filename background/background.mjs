@@ -51,6 +51,8 @@ const domain = (packet) => {
   let match;
   if (match = hostname.match(/^[^\.]+\.(.+)\..+$/)) {
     domain = match[1]
+  } else if (match = hostname.match(/^([^\.]+)\..+$/)) {
+    domain = match[1]
   }
   const capitalized = domain.charAt(0).toUpperCase() + domain.slice(1)
   return capitalized;
@@ -187,24 +189,49 @@ const completedListener = (responseDetails) => {
   const headers = [];
   const mainHeaders = ['content-range', 'content-length', 'content-type' ];
   let packetWithSize = false;
+  // console.log(`${requestId}: ${fromCache}`);
+
   for (let header of responseHeaders) {
     const keep = mainHeaders.includes(header.name.toLowerCase());
     if (keep) {
       headers.push(header);
-      if (header.name.toLowerCase().localeCompare('content-length')==0) {
+      if (header.name.toLowerCase().localeCompare('content-length')===0) {
         packetWithSize = true;
         info.contentLength = header.value;
       }
     }
   }
 
-  const packetSize = parseInt(info.contentLength);
+  let packetSize = parseInt(info.contentLength);
 
   if (info.fromCache || // skip data from cache
-      !packetWithSize || packetSize < 1 ||// skip no data packet or packet less than 1 byte
-      url.startsWith('http://localhost') || url.startsWith('https://localhost') || // skip localhost (since local)
-      url.startsWith('chrome-extension:') // skip extension files (since local)
+      packetSize < 1) { // skip packet less than 1 byte)
+        return
+  }
+
+  if(
+    url.startsWith('http://localhost') || url.startsWith('https://localhost') || // skip localhost (since local)
+    url.startsWith('chrome-extension:') // skip extension files (since local)
   ){
+    return;
+  }
+
+  if (!packetWithSize) {
+    // Try to get packet size even though Content-Length not provided
+    // In particular video with range request
+    // ex: specific to YouTube QUIC Request
+    const rangeRegex = /range=(\d+)-(\d+)/g;
+    const m = rangeRegex.exec(url);
+    if (m!==null && m.length > 2) {
+      packetWithSize = true;
+      packetSize = parseInt(m[2])-parseInt(m[1]);
+      if (packetSize < 1) { // skip packet less than 1 byte)
+        return
+      }
+    }
+  }
+
+  if(!packetWithSize) { // no size
     return;
   }
 
@@ -245,7 +272,6 @@ const completedListener = (responseDetails) => {
       }
       // send data to popup
       sendMessageToPopup({ data: info });
-      sendMessageToPopup({ statistics });
 
       if (!writeDataInterval) {
         writeDataInterval = setInterval(writeData, writingIntervalMs);
@@ -330,7 +356,6 @@ const computerCo2 =  () => {
 
   // send data to animation
   sendMessageToPopup({ data: computerCo2 });
-  sendMessageToPopup({ statistics });
 
   // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {
@@ -354,6 +379,7 @@ const startComputerCo2Interval = () => {
 
 const writeData = async () => {
   for(let packet of dump) {
+    console.log(JSON.stringify(packet))
     await updateHistoryDb(packet);
   }
   updateRunningDurationSec(writingIntervalMs / 1000);

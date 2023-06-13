@@ -71,8 +71,10 @@
         "average": "Monthly average",
         "trend": "Monthly trend"
       },
-      "computer_impact": "from computer's embodied energy",
-      "computer_tip": "You can reduce the impact of your computer by keeping it longer. See "
+      "fromComputer": "from computer",
+      "computerImpact": "from computer's embodied energy",
+      "computerInfo": "Resources and energy were used to manufacture your device.",
+      "computerTip": "You can reduce the impact of your computer by keeping it longer. See "
     },
     "appFullpage": {},
     "history": {
@@ -116,7 +118,7 @@
     "downloaded": "downloaded",
     "history": "History",
     "internet": "Internet",
-    "computer": "Computer",
+    "computerEnergy": "Computer's embodied energy",
     "last": {
       "today": "Today",
       "week": "The 7 last days",
