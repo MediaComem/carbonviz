@@ -8,7 +8,7 @@ import Historical from '../pages/Historical.vue';
 const hashRoutes = {
   '#Historical': 'Historical',
   '#Analogies': 'Analogies',
-  '#Statistics': 'Statistics',
+  '#Trends': 'Trends',
   '#Journey': "Data's journey",
   '#Method': 'Method & links',
   '#About': 'About',
@@ -24,13 +24,22 @@ export default {
     const { t } = useI18n({});
 
     const subNav = ref([]);
-    provide('setSubNav', nav => subNav.value = nav);
+    const scrollElt = ref(null);
+    provide('setSubNav', (nav, scroll = undefined) => {
+      subNav.value = nav;
+      if (scroll)
+      {
+        scrollElt.value = scroll.value;
+      }
+    });
 
     const onSubnavClick = evt => {
       const data = evt.currentTarget.dataset;
       const scrollTo = document.querySelector(`[data-section="${data.scrollto}"]`);
-      const topPos = scrollTo?.offsetTop ?? 200;
-      document.querySelector('[data-area="body"]').scrollTop = topPos - 200;
+      const topPos = scrollTo?.offsetTop ?? 0;
+      if (scrollElt.value) {
+        scrollElt.value.setScrollTop(topPos);
+      }
     }
 
     return {subNav, hashRoutes, currentHash, currentPage, onSubnavClick, t};
@@ -43,7 +52,7 @@ export default {
   <div id="carbonViz" class="wrapper">
     <div data-area="logo"></div>
     <h1 data-area="title">{{ t('appTitle') }}</h1>
-    <img src="../../../icons/logos/logo-equiwatt-large.png" width="200" height="auto" data-area="title" id="logoEquiwatt">
+    <img src="../../../icons/logos/logo-equiwatt-large.png" class="equiwatt" data-area="title" id="logoEquiwatt">
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">
@@ -58,12 +67,12 @@ export default {
         </li>
       </ul>
     </nav>
-    <main data-area="body">
+    <div data-area="body">
       <Historical v-show="currentHash === '#Historical'"></Historical>
       <transition name="fade" mode="out-in">
           <component :is="currentPage" v-if="currentHash !== '#Historical'"></component>
       </transition>
-    </main>
+    </div>
   </div>
 </template>
 
@@ -109,12 +118,18 @@ export default {
     font-size: 16px;
   }
 
+  .equiwatt {
+    width: 200px;
+    height: auto;
+  }
+
   @media (prefers-color-scheme: dark) {
     #fullpage, [data-area="body"] {
       background-color: #262626;
       color: #BFBFBF;
     }
   }
+
 </style>
 
 <style scoped>
@@ -229,9 +244,8 @@ export default {
   }
   /* body */
   [data-area="body"] {
-    width: 1000px;
-    height: calc(100vh - 250px);
-    overflow: auto;
+    justify-self: stretch;
+    height: calc(100vh - 220px);
     padding-left: 70px;
   }
   /* Vue3 transition */

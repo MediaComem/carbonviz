@@ -55,7 +55,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <el-scrollbar>
     <article class="live" data-section="Live">
       <h1>Live Digest</h1>
       <div id="live-grid" :style="`--size: 410px`">
@@ -112,7 +112,7 @@ export default {
       <h2>Data</h2>
       <apexchart class="apexchart" type="heatmap" height="550" width="450" :options="optionsData" :series="seriesData"></apexchart>
     </article>
-  </div>
+  </el-scrollbar>
 </template>
 
 <style>

@@ -17,7 +17,7 @@ export default {
 </script>
 
 <template>
-	<div>
+	<el-scrollbar>
 		<article>
 			<h2> {{ t('pages.settings.partnersInstitution') }}</h2>
 			<p> {{ t('pages.settings.institutionSupport.one') }}
@@ -44,7 +44,7 @@ export default {
 				<el-col :span="6"><img src="../../../icons/logos/logoSil.svg" alt="" width="183" height="73"></el-col>
 				<el-col :span="6"><img src="../../../icons/logos/logo-equiwatt-large.png" alt="" width="200" height="60"></el-col>
 			</el-row>
-	</div>
+	</el-scrollbar>
 </template>
 
 <style scoped lang="scss">

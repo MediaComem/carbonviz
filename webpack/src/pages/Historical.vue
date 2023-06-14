@@ -26,15 +26,17 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .flexContainer {
+  position: relative;
+  max-width: 1000px;
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
 }
 .flexContainer div{
-  flex-grow: 1;
-  width: 45%;
+  width: 400px;
 }
 .flexContainer div h3{
   text-align: center;
@@ -50,7 +52,7 @@ export default {
 }
 </style>
 
-<style>
+<style lang="scss">
 #historical #time {
   height: 30px;
 }
@@ -60,6 +62,14 @@ button {
   font-weight: 700;
 }
 #historical .dataArea {
-  height: 450px
+  position: absolute;
+  height: unset;
+  width: 400px;
+  top: 90px;
+  bottom: 0px;
+
+  .history-wrapper {
+    border-radius: unset;
+  }
 }
 </style>
