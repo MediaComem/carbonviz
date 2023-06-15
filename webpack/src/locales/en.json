@@ -65,11 +65,13 @@
       },
       "day": {
         "average": "Weekly average",
-        "trend": "Weekly trend"
+        "trend": "Weekly trend",
+        "details": "Based on the last 7 days"
       },
       "month": {
         "average": "Monthly average",
-        "trend": "Monthly trend"
+        "trend": "Monthly trend",
+        "details": "Based on the last 30 days"
       },
       "fromComputer": "from computer",
       "computerImpact": "from computer's embodied energy",

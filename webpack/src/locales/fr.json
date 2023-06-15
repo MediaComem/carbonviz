@@ -65,11 +65,13 @@
       },
       "day": {
         "average": "Moyenne hebdomadaire",
-        "trend": "Tendance hebdomadaire"
+        "trend": "Tendance hebdomadaire",
+        "details": "Sur la base des 7 derniers jours"
       },
       "month": {
         "average": "Moyenne mensuelle",
-        "trend": "Tendance mensuelle"
+        "trend": "Tendance mensuelle",
+        "details": "Sur la base des 30 derniers jours"
       },
       "fromComputer": "de l'ordinateur",
       "computerImpact": "d'énergie grise de l'ordinateur",
