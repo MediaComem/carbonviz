@@ -52,7 +52,7 @@ export default {
   <div id="carbonViz" class="wrapper">
     <div data-area="logo"></div>
     <h1 data-area="title">{{ t('appTitle') }}</h1>
-    <img src="../../../icons/logos/logo-equiwatt-large.png" class="equiwatt" data-area="title" id="logoEquiwatt">
+    <img data-area="equiwatt" src="../../../icons/logos/logo-equiwatt-large.png" id="logoEquiwatt">
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">
@@ -82,30 +82,28 @@ export default {
   body {
     margin: 0;
     padding: 0;
+    min-width: 800px;
   }
   :root {
     --trans-time: 0.3s;
+  }
+  [data-area="body"] {
+    padding: 10px 10px 0px 0px;
   }
   [data-area="body"] h1 {
     font-size: 24px;
     font-weight: 900;
     margin: 0;
-    padding: 34px 0 17px 59px;
-  }
-  [data-area="body"] h1::after {
-    display: block;
-    margin: 17px 84px 0 23px;
-    content: '';
-    border-bottom: solid #BFBFBF 2px;
+    padding: 30px 0 17px 0px;
   }
   [data-area="body"] h2, [data-area="body"] h3, [data-area="body"] ul, [data-area="body"] p, [data-area="body"] article > div {
-    margin-left: 122px;
+    margin-left: 60px;
   }
   [data-area="body"] h2 {
     font-size: 22px;
     font-weight: 800;
     margin-top: 0;
-    padding: 34px 0 17px 0;
+    padding: 10px 0 17px 0;
   }
   [data-area="body"] h3 {
     font-weight: 600;
@@ -116,11 +114,6 @@ export default {
     max-width: 600px;
     font-weight: 400;
     font-size: 16px;
-  }
-
-  .equiwatt {
-    width: 200px;
-    height: auto;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -135,6 +128,7 @@ export default {
 <style scoped>
   [data-area="logo"] {grid-area: logo;}
   [data-area="title"] {grid-area: title;}
+  [data-area="equiwatt"] {grid-area: equiwatt;}
   [data-area="nav"] {grid-area: nav;}
   [data-area="subnav"] {grid-area: subnav;}
   [data-area="body"] {grid-area: body}
@@ -143,12 +137,12 @@ export default {
     display: grid;
     /* width: 1000px;
     margin: 0 auto; */
-    grid-template-columns: 200px auto;
+    grid-template-columns: 200px auto 300px;
     grid-template-rows: 120px 100px auto;
     grid-template-areas:
-      "logo   title"
-      ".      nav"
-      "subnav body"
+      "logo   title equiwatt"
+      ".      nav nav"
+      "subnav body body"
   }
   /* title */
   [data-area="title"] {
@@ -171,16 +165,21 @@ export default {
     width: 42px;
     height: 48px;
   }
-  #logoEquiwatt {
+
+  [data-area="equiwatt"] {
+    width: 200px;
+    height: auto;
     margin: auto;
+    justify-self: start;
   }
+
   /* nav */
   [data-area="nav"] {
     font-size: 18px;
     font-weight: 700;
   }
   [data-area="nav"] ul {
-    padding-left: 70px;
+    padding-left: 0px;
   }
   [data-area="nav"] li {
     display: inline-block;
@@ -192,6 +191,7 @@ export default {
     min-width: 150px;
     text-decoration: none;
     padding-bottom: 8px;
+    padding-top: 8px;
     border-bottom: solid 5px;
     border-bottom-color: #BFBFBF;
     transition: border-bottom-color var(--trans-time), color var(--trans-time);
@@ -206,6 +206,9 @@ export default {
     font-weight: 700;
     margin: 25px 0 0 0;
     padding: 0;
+  }
+  [data-area="subnav"] ul {
+    padding-left: 0px;
   }
   [data-area="subnav"] li {
     margin: 0;
@@ -246,7 +249,6 @@ export default {
   [data-area="body"] {
     justify-self: stretch;
     height: calc(100vh - 220px);
-    padding-left: 70px;
   }
   /* Vue3 transition */
   .fade-enter-active, .fade-leave-active {
@@ -254,6 +256,16 @@ export default {
   }
   .fade-enter-from, .fade-leave-to {
     opacity: 0;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    .wrapper {
+      grid-template-columns: 60px auto 300px;
+    }
+
+    [data-area="subnav"] {
+      display: none;
+    }
   }
 
   @media (prefers-color-scheme: dark) {

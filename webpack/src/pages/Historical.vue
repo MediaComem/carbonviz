@@ -36,7 +36,9 @@ export default {
   gap: 40px;
 }
 .flexContainer div{
-  width: 400px;
+  max-width: 400px;
+  flex-grow: 1;
+  position: relative;
 }
 .flexContainer div h3{
   text-align: center;
@@ -64,7 +66,7 @@ button {
 #historical .dataArea {
   position: absolute;
   height: unset;
-  width: 400px;
+  max-width: 400px;
   top: 90px;
   bottom: 0px;
 
