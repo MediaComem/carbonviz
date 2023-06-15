@@ -189,7 +189,6 @@ const completedListener = (responseDetails) => {
   const headers = [];
   const mainHeaders = ['content-range', 'content-length', 'content-type' ];
   let packetWithSize = false;
-  // console.log(`${requestId}: ${fromCache}`);
 
   for (let header of responseHeaders) {
     const keep = mainHeaders.includes(header.name.toLowerCase());
@@ -379,7 +378,6 @@ const startComputerCo2Interval = () => {
 
 const writeData = async () => {
   for(let packet of dump) {
-    console.log(JSON.stringify(packet))
     await updateHistoryDb(packet);
   }
   updateRunningDurationSec(writingIntervalMs / 1000);
