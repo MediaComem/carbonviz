@@ -108,6 +108,13 @@ export default {
           }
     };
     const yAxis = computed(() => type.value === 'co2' ? yAxisCo2 : yAxisData);
+    const tooltipFormatter = (value) => {
+      if (type.value === 'co2') {
+        return formatCo2(value, 0);
+      } else {
+        return formatSize(value, 0);
+      }
+    }
     const chartOptions: ComputedRef<ApexOptions> = computed(() => {
       return {
         chart: {
@@ -136,6 +143,12 @@ export default {
           },
           onItemHover: {
             highlightDataSeries: true
+          }
+        },
+        tooltip: {
+          x: { show: false },
+          y: {
+            formatter: tooltipFormatter
           }
         },
         states: {
