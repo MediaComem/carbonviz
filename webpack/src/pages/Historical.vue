@@ -58,7 +58,7 @@ export default {
 #historical #time {
   height: 30px;
 }
-button {
+#historical button {
   border: none;
   font-size: 12px;
   font-weight: 700;

@@ -4,24 +4,24 @@ import { useI18n } from 'vue-i18n'
 import LocationHashRouter from '../composables/LocationHashRouter';
 import Historical from '../pages/Historical.vue';
 
-// Hash's name must mach the Page's name in the pages folder
-const hashRoutes = {
-  '#Historical': 'Historical',
-  '#Analogies': 'Analogies',
-  '#Trends': 'Trends',
-  '#Journey': "Data's journey",
-  '#Method': 'Method & links',
-  '#About': 'About',
-  '#Privacy': 'Data & Privacy',
-  '#Settings': 'Settings',
-};
-
 export default {
   components: { Historical },
 
   setup(props, context) {
-    const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
     const { t } = useI18n({});
+
+    // Hash's name must mach the Page's name in the pages folder
+    const hashRoutes = {
+      '#Historical': t('global.history'),
+      '#Analogies': t('global.analogies'),
+      '#Trends': t('global.trends'),
+      '#Journey': t('global.data_journey'),
+      '#FAQ': t('global.faq'),
+      '#Settings': t('global.settings'),
+      '#Partners': t('global.partners'),
+    };
+
+    const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
 
     const subNav = ref([]);
     const scrollElt = ref(null);

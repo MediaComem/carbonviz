@@ -62,14 +62,7 @@ const domain = (packet) => {
   const capitalized = domain.charAt(0).toUpperCase() + domain.slice(1)
   return capitalized;
 }
-const type = (packet) => {
-  const type = packet.extraInfo.type;
-  if (!type) {
-    return '';
-  }
-  const capitalized = type.charAt(0).toUpperCase() + type.slice(1)
-  return capitalized;
-}
+
 const co2 = (packet) => {
   return `${CarbonVue.co2DataCounter.formatCo2(packet.chunkSizeCo2)}`;
 }
@@ -98,7 +91,6 @@ const dataNewer = window.document.getElementById("dataNewer");
 // Menu
 // Packet info
 const info = window.document.getElementById("packet-info");
-const packetType = window.document.getElementById("packet-type");
 const packetTime = window.document.getElementById("packet-time");
 const packetSize = window.document.getElementById("packet-size");
 const packetSizeSubheader = window.document.getElementById("packet-size-subheader");
@@ -323,29 +315,23 @@ const showLegend = () => {
 
 const displayCo2Info = (data) => {
   hide([ packetSize, packetSizeSubheader ]);
-  show([info, packetTime, packetType, packetCo2, packetCo2Subheader ]);
+  show([info, packetTime, packetCo2, packetCo2Subheader ]);
   info.classList.add("co2-highlight");
   info.classList.remove("data-highlight");
 
   packetTime.innerHTML = time(data);
   packetCo2.innerHTML = co2(data);
 
-  if (data.initiator === 'computer') {
-    packetType.innerHTML = 'Computer';
-  } else {
-    packetType.innerHTML = type(data);
-  }
 }
 
 const displayDataInfo = (data) => {
   hide([ packetCo2, packetCo2Subheader ]);
-  show([info, packetType, packetTime, packetSize, packetSizeSubheader ]);
+  show([info, packetTime, packetSize, packetSizeSubheader ]);
 
   info.classList.add("data-highlight");
   info.classList.remove("co2-highlight");
 
   packetTime.innerHTML = time(data);
-  packetType.innerHTML = type(data);
   packetSize.innerHTML = size(data);
 }
 
@@ -369,8 +355,8 @@ const sendToAnimation = () => {
   packetsBuffer = [];
   // merge small packets together
   for (let packet of packets) {
-    // merge by tab + type
-    const id = `${packet.extraInfo.tabUrl}_${packet.extraInfo.type}`;
+    // merge by tab
+    const id = `${packet.extraInfo.tabUrl}`;
     if (!animations[id]) {
       animations[id] = packet;
     } else {

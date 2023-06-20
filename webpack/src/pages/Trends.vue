@@ -1,5 +1,5 @@
 <script>
-import Statistics from './Statistics.vue'
+import Statistics from '../components/Statistics.vue'
 import { inject, onMounted } from 'vue';
 import { ElRow, ElCol } from 'element-plus';
 import { useI18n } from 'vue-i18n';

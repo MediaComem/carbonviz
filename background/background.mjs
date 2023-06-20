@@ -184,8 +184,8 @@ const sendMessageToTab = (tabId, data) => {
 }
 
 const completedListener = (responseDetails) => {
-  const { frameId, fromCache, initiator, requestId, responseHeaders, statusCode, timeStamp, type, url, ip, event } = responseDetails;
-  const info = { frameId, fromCache, initiator, requestId, statusCode, timeStamp, type, url, ip, event };
+  const { fromCache, initiator, responseHeaders, statusCode, timeStamp, url } = responseDetails;
+  const info = { fromCache, initiator, statusCode, timeStamp, url };
   const headers = [];
   const mainHeaders = ['content-range', 'content-length', 'content-type' ];
   let packetWithSize = false;
@@ -243,12 +243,14 @@ const completedListener = (responseDetails) => {
   info.energyNRE = energyInternet.energyNRE;
   info.energyRE = energyInternet.energyRE;
   info.energy = energyInternet.energyNRE + energyInternet.energyRE;
-  info.extraInfo = { timeStamp, type };
+  info.extraInfo = { timeStamp };
 
   statistics.co2 += info.co2 - 0;
   statistics.data += info.contentLength - 0;
 
-  // retrieve tab name
+  // retrieve tab url
+  // we do not use initiator since some embedded frame could be different from the original website
+  // ex: we want to assign a youtube video on a webpage to the webpage and not to youtube
   if (responseDetails.tabId > 0 ) {
     chrome.tabs.get(responseDetails.tabId, tab => {
       if(chrome.runtime.lastError) {
