@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Check, Close } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus';
 
 
 export default {

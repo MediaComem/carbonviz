@@ -1,7 +1,7 @@
 <script>
 import { computed, toRefs } from 'vue';
-import { useI18n } from 'vue-i18n'
-import { analogiesCo2, analogiesData } from '../utils/analogies'
+import { useI18n } from 'vue-i18n';
+import { analogiesCo2, analogiesData } from '../utils/analogies';
 
 export default {
   props: {

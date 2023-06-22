@@ -82,7 +82,7 @@ export const analogiesCo2 = {
             let number = roundToPrecision(value/kwPerUnit, 1);
             return t('components.analogies.number.boiling', {number});
         },
-        asset: 'analogy_boilingwater.png'
+        asset: 'analogy_boiling.png'
     },
     sawing: {
         text: (value, t) => {
@@ -147,4 +147,66 @@ export const analogiesData = {
         },
         asset: 'analogy_usbdrive.png'
     }
+}
+
+// Compute the necessary data for one analogy based on the raw amount
+// ex: 1Kw means boiling 8.6 liters of water [currentAnalogy: 'boilingwater', amount: 1, amountPerUnit: 0.116] 0.116kW for 1L
+export function computeAnalogy(currentAnalogy , amount, amountPerUnit) {
+    let unit = '';
+    let number = Math.floor(amount/amountPerUnit);
+    switch(currentAnalogy) {
+        case 'marathon':
+        if(number < 1) {
+            number = Math.ceil(100* amount / amountPerUnit)+'%';
+            unit = '_%';
+        }
+        break;
+        case 'swimming':
+        if(number > 1000) {
+            number = Math.ceil(number/1000);
+            unit = '_km';
+        } else {
+            unit = '_meter';
+        }
+        break;
+        case 'cooking':
+        case 'boiling':
+        case "dictionaries":
+        number = roundToPrecision(amount/amountPerUnit, 1);
+        break;
+        case "netflix":
+        number = roundToPrecision(amount/amountPerUnit, 2);
+        break;
+        case "wordFile":
+        if (number > 1000000) {
+            number = Math.ceil(number/1000000);
+            unit = '_million'
+        }
+        break;
+    }
+    return { amount: number, unit: unit};
+}
+
+export function getAnalogyValue(customAnalogyNames, dataType, value, activeIndex) {
+    if(dataType === 'co2') {
+      // analogies based on energy (switch energy MJ to kWh)
+      const amountCo2 = 0.278 * value.energy;
+      const currentAnalogy = customAnalogyNames.co2[activeIndex];
+      const kwPerUnit = kwPerUnitCo2[currentAnalogy];
+      const { amount, unit } = computeAnalogy(currentAnalogy, amountCo2, kwPerUnit);
+      return { amount, unit }
+    }
+    else {
+      // data in MB for analogies
+      const amountData = value.amount / 1000000;
+      const currentAnalogy = customAnalogyNames.data[activeIndex];
+      const mbPerUnit = mbPerUnitData[currentAnalogy];
+      const  { amount, unit } = computeAnalogy(currentAnalogy, amountData, mbPerUnit);
+      return { amount, unit }
+    }
+}
+
+export function getAnalogyText(customAnalogyNames, dataType, value, activeIndex) {
+    const analogyType = this.customAnalogyNames[dataType][activeIndex];
+    return this.t(`components.analogies.${analogyType}${getAnalogyValue(customAnalogyNames, dataType, value, activeIndex).unit}`)
 }

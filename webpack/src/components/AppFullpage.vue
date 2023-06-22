@@ -1,6 +1,6 @@
 <script>
 import {ref, provide} from 'vue';
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 import LocationHashRouter from '../composables/LocationHashRouter';
 import Historical from '../pages/Historical.vue';
 

@@ -39,6 +39,7 @@
         "content/*",
         "unplug/js/*",
         "unplug/assets/*",
+        "icons/*",
         "bundle/*",
         "popup/*"
       ],

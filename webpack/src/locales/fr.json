@@ -39,6 +39,35 @@
       }
     },
     "analogy": {},
+    "history": {
+      "WeeklyConsumption": "Consommation hebdomadaire",
+      "MonthlyConsumption": "Consommation mensuelle",
+      "scrolling": "Chargement des données",
+      "scrollEnd": "Pas d’autres données à charger"
+    },
+    "miniViz": {
+      "description": "Vous avez dégagé {data} en {time} Soit l'équivalent de {amount}"
+    },
+    "popup": {
+      "messages": {
+        "openTab": "L'extension s'ouvrira dans un nouvel onglet. Images aériennes Direction du cadastre.",
+        "checkActivity": "Vous pouvez ensuite vérifier votre activité à partir de cet onglet lorsque vous naviguez sur l'internet.",
+        "accessPopup": "Vous pouvez toujours accéder à la fenêtre contextuelle de l'extension sur n'importe quelle page en cliquant sur l'icône de l'extension dans la barre du navigateur."
+      }
+    },
+    "settings": {
+      "usingSince": "Vous utilisez cet ordinateur depuis le",
+      "dataUseCase": "Cette donnée nous permet de mieux calculer l'empreinte grise de votre activité",
+      "showMiniViz": "Afficher MiniViz",
+      "disablePlugin": "Désactiver le pluggin",
+      "shareData": "Partager mes données",
+      "shareDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "deleteData": "Effacer mes données",
+      "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "confirmMiniVizStatus": "MiniViz est maintenant {text}",
+      "confirmShareData": "Les données sont {text}",
+      "datePlaceholder": "Choisis une date"
+    },
     "statistics": {
       "days": {
         "Mon": "Lun.",
@@ -49,6 +78,7 @@
         "Sat": "Sam.",
         "Sun": "Dim."
       },
+      "liveDigest" : "Digest Live",
       "months": {
         "Jan": "Janv.",
         "Feb": "Févr.",
@@ -73,33 +103,6 @@
       },
       "computer_impact": "d'énergie grise de l'ordinateur",
       "computer_tip": "Vous pouvez réduire l'impact de l'ordinateur en le gardant plus logntemps. Voir"
-    },
-    "appFullpage": {},
-    "history": {
-      "WeeklyConsumption": "Consommation hebdomadaire",
-      "MonthlyConsumption": "Consommation mensuelle",
-      "scrolling": "Chargement des données",
-      "scrollEnd": "Pas d’autres données à charger"
-    },
-    "popup": {
-      "messages": {
-        "openTab": "L'extension s'ouvrira dans un nouvel onglet. Images aériennes Direction du cadastre.",
-        "checkActivity": "Vous pouvez ensuite vérifier votre activité à partir de cet onglet lorsque vous naviguez sur l'internet.",
-        "accessPopup": "Vous pouvez toujours accéder à la fenêtre contextuelle de l'extension sur n'importe quelle page en cliquant sur l'icône de l'extension dans la barre du navigateur."
-      }
-    },
-    "settings": {
-      "usingSince": "Vous utilisez cet ordinateur depuis le",
-      "dataUseCase": "Cette donnée nous permet de mieux calculer l'empreinte grise de votre activité",
-      "showMiniViz": "Afficher MiniViz",
-      "disablePlugin": "Désactiver le pluggin",
-      "shareData": "Partager mes données",
-      "shareDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      "deleteData": "Effacer mes données",
-      "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      "confirmMiniVizStatus": "MiniViz est maintenant {text}",
-      "confirmShareData": "Les données sont {text}",
-      "datePlaceholder": "Choisis une date"
     }
   },
   "global": {

@@ -74,6 +74,3 @@ export default {
   max-width: 180px;
 }
 </style>
-
-
-font-size: clamp(0.3rem, 0.4vw, 0.5rem);

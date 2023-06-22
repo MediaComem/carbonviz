@@ -1,6 +1,6 @@
 <script>
 import { ref } from 'vue';
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 import History from './History.vue';
 import Analogies from './Analogies.vue';
 import Trends from './Trends.vue';

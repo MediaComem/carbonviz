@@ -1,10 +1,10 @@
 <script>
 import { ref, toRefs, onMounted } from 'vue';
-import { useI18n } from 'vue-i18n'
-import { roundToPrecision } from '../utils/format.js'
-import { kwPerUnitCo2, mbPerUnitData, analogyNames } from '../utils/analogies'
+import { useI18n } from 'vue-i18n';
+import { roundToPrecision } from '../utils/format.js';
+import { analogyNames, getAnalogyValue, getAnalogyText } from '../utils/analogies';
 import { retrieveAnalogiesLayer } from '../composables/storage';
-import Analogy from './Analogy.vue'
+import Analogy from './Analogy.vue';
 import TypePicker from './TypePicker.vue';
 
 export default {
@@ -58,68 +58,6 @@ export default {
       activeIndex.value = newIndex
     };
 
-    // Compute the necessary data for one analogy based on the raw amount
-    // ex: 1Kw means boiling 8.6 liters of water [currentAnalogy: 'boilingwater', amount: 1, amountPerUnit: 0.116] 0.116kW for 1L
-    function computeAnalogy(currentAnalogy , amount, amountPerUnit) {
-      let unit = '';
-      let number = Math.floor(amount/amountPerUnit);
-      switch(currentAnalogy) {
-        case 'marathon':
-          if(number < 1) {
-            number = Math.ceil(100* amount / amountPerUnit)+'%';
-            unit = '_%';
-          }
-          break;
-        case 'swimming':
-          if(number > 1000) {
-            number = Math.ceil(number/1000);
-            unit = '_km';
-          } else {
-            unit = '_meter';
-          }
-          break;
-        case 'cooking':
-        case 'boiling':
-        case "dictionaries":
-          number = roundToPrecision(amount/amountPerUnit, 1);
-          break;
-        case "netflix":
-          number = roundToPrecision(amount/amountPerUnit, 2);
-          break;
-        case "wordFile":
-          if (number > 1000000) {
-            number = Math.ceil(number/1000000);
-            unit = '_million'
-          }
-          break;
-      }
-      return { amount: number, unit: unit};
-    }
-
-    function getAnalogyValue(value) {
-      if(dataType.value === 'co2') {
-        // analogies based on energy (switch energy MJ to kWh)
-        const amountCo2 = 0.278 * value.energy;
-        const currentAnalogy = customAnalogyNames.co2[activeIndex.value];
-        const kwPerUnit = kwPerUnitCo2[currentAnalogy];
-        const { amount, unit } = computeAnalogy(currentAnalogy, amountCo2, kwPerUnit);
-        return { amount, unit }
-      }
-      else {
-        // data in MB for analogies
-        const amountData = value.amount / 1000000;
-        const currentAnalogy = customAnalogyNames.data[activeIndex.value];
-        const mbPerUnit = mbPerUnitData[currentAnalogy];
-        const  { amount, unit } = computeAnalogy(currentAnalogy, amountData, mbPerUnit);
-        return { amount, unit }
-      }
-    };
-
-    function getAnalogyText(value) {
-      const analogyType = this.customAnalogyNames[dataType.value][activeIndex.value];
-      return this.t(`components.analogies.${analogyType}${getAnalogyValue(value).unit}`)
-    }
-
     onMounted(async () => {
       await retrieveData();
     });
@@ -146,8 +84,8 @@ export default {
     <div class="stats">
       <div v-for="(value, key) in layer">
         <div class="statsData">
-          <p> {{ getAnalogyValue(value).amount }} </p>
-          <p> {{ getAnalogyText(value) }} </p>
+          <p> {{ getAnalogyValue(customAnalogyNames, dataType, value, activeIndex).amount }} </p>
+          <p> {{ getAnalogyText(customAnalogyNames, dataType, value, activeIndex) }} </p>
           <p> {{ key === 'year' ? t(`global.last.${key}`)+this.currentYear : t(`global.last.${key}`) }} </p>
         </div>
       </div>

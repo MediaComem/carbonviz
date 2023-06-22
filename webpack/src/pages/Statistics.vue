@@ -1,6 +1,7 @@
 <script>
 import VueApexCharts from "vue3-apexcharts";
 import { inject, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { retrieveTodayCounter, getTopWebsites, getCurWeek } from '../composables/storage';
 import {formatSize, formatCo2} from '../utils/format';
 import { layerHeightCo2, layerHeightData } from '../composables/history'
@@ -18,6 +19,7 @@ export default {
   components: { apexchart: VueApexCharts },
 
   setup() {
+    const { t } = useI18n({});
     const setSubNav = inject('setSubNav');
     const data = ref(0);
     const co2 = ref(0);
@@ -48,7 +50,7 @@ export default {
     const {options: optionsData, series: seriesData} = heatmapChart(dailyData, 'data');
     const {options: optionsCo2, series: seriesCo2} = heatmapChart(dailyCo2, 'co2');
 
-    return {data, co2, topSitesData, topSitesCo2, formatSize, formatCo2, layerHeightCo2, layerHeightData, optionsData, seriesData, optionsCo2, seriesCo2};
+    return {data, co2, topSitesData, topSitesCo2, formatSize, formatCo2, layerHeightCo2, layerHeightData, t, optionsData, seriesData, optionsCo2, seriesCo2};
   }
 
 }
@@ -57,7 +59,7 @@ export default {
 <template>
   <div>
     <article class="live" data-section="Live">
-      <h1>Live Digest</h1>
+      <h1> {{ t('components.statistics.liveDigest') }} </h1>
       <div id="live-grid" :style="`--size: 410px`">
         <div>
           <div class="co2" :style="`--size: ${layerHeightCo2(co2)}px`">

@@ -3,7 +3,7 @@ import { ApexOptions } from 'apexcharts';
 import VueApexCharts from "vue3-apexcharts";
 import { ref, computed, watchEffect, toRefs, ComputedRef } from 'vue';
 import { getLastDaysSummary, getComputerCo2Series, getTopWebsitesSeries } from '../composables/storage';
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 import PeriodPicker from './PeriodPicker.vue';
 import TypePicker from './PeriodPicker.vue';
 import { Indicator, Granularity } from '../utils/types';

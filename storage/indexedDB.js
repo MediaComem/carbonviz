@@ -403,10 +403,10 @@ async function getTodayCounter() {
       if (summary) {
         const computerCo2 = summary.duration * 6.57e-6;// constant value: ~6.57 [mg/sec]
         const computerEnergy = summary.duration * 180e-6;// constant value: ~180 [J/sec]
-        const counter = { co2: summary.co2 + computerCo2, energy: summary.energy + computerEnergy, data: summary.data };
+        const counter = { co2: summary.co2 + computerCo2, energy: summary.energy + computerEnergy, data: summary.data, time: summary.duration  };
         return resolve(counter);
       }
-      return { co2:0, data: 0, energy: 0};
+      return { co2:0, data: 0, energy: 0, time: 0};
     }
   });
 }

@@ -170,18 +170,12 @@ const co2ImpactInternet = (bytes) => {
   return co2CoreNetworkElectricity + co2DataCenterElectricity;
 }
 
-const sendMessageToPopup = (data) => {
-  // only send message if pop up opened
-  chrome.runtime.sendMessage(data).then()
-  .catch(e => { /* pop-up probably not opened */ });
-}
-
 const sendMessageToTab = (tabId, data) => {
   chrome.tabs.sendMessage(tabId, data).then()
   .catch(e => { /* miniViz probably not loaded */ });
 }
 
-const completedListener = (responseDetails) => {
+const completedListener = async(responseDetails) => {
   const { frameId, fromCache, initiator, requestId, responseHeaders, statusCode, timeStamp, type, url, ip, event } = responseDetails;
   const info = { frameId, fromCache, initiator, requestId, statusCode, timeStamp, type, url, ip, event };
   const headers = [];
@@ -243,9 +237,6 @@ const completedListener = (responseDetails) => {
         info.extraInfo.tabTitle = tab.title;
         info.extraInfo.tabUrl = tab.url;
       }
-      // send data to popup
-      sendMessageToPopup({ data: info });
-      sendMessageToPopup({ statistics });
 
       if (!writeDataInterval) {
         writeDataInterval = setInterval(writeData, writingIntervalMs);
@@ -258,11 +249,15 @@ const completedListener = (responseDetails) => {
     });
   }
 
+  // Get todays total for miniViz
+  const dayTotal = await getTodayCounter();
+
   // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
       for (const tab of tabs) {
         sendMessageToTab(tab.id, { data: info });
+        sendMessageToTab(tab.id, { total: dayTotal });
         sendMessageToTab(tab.id, { statistics });
       }
     }
@@ -328,9 +323,6 @@ const computerCo2 =  () => {
 
   statistics.co2 += computerCo2.co2 - 0;
 
-  // send data to animation
-  sendMessageToPopup({ data: computerCo2 });
-  sendMessageToPopup({ statistics });
 
   // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {

@@ -39,6 +39,35 @@
       }
     },
     "analogy": {},
+    "history": {
+      "WeeklyConsumption": "Weekly consumption",
+      "MonthlyConsumption": "Monthly consumption",
+      "scrolling": "Loading data",
+      "scrollEnd": "No more data to load"
+    },
+    "miniViz": {
+      "description": "You have released {data} in {time} That is the equivalent of {amount}"
+    },
+    "popup": {
+      "messages": {
+        "openTab": "The extension will open in a new tab.",
+        "checkActivity": "You can then check your activity from that tab while browsing the internet.",
+        "accessPopup": "You can still access the extension pop-up window on any page by clicking the extension icon in the browser bar."
+      }
+    },
+    "settings": {
+      "usingSince": "You have been using this computer since",
+      "dataUseCase": "This data allows us to better calculate the gray footprint of your activity",
+      "showMiniViz": "Show MiniViz",
+      "disablePlugin": "Disable plugin",
+      "shareData": "Share my data",
+      "shareDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "deleteData": "Delete my data",
+      "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "confirmMiniVizStatus": "MiniViz is now {text}",
+      "confirmShareData": "Data is {text}",
+      "datePlaceholder": "Pick a date"
+    },
     "statistics": {
       "days": {
         "Mon": "Mon.",
@@ -49,6 +78,7 @@
         "Sat": "Sat.",
         "Sun": "Sun."
       },
+      "liveDigest" : "Live Digest",
       "months": {
         "Jan": "Jan.",
         "Feb": "Feb.",
@@ -73,33 +103,6 @@
       },
       "computer_impact": "from computer's embodied energy",
       "computer_tip": "You can reduce the impact of your computer by keeping it longer. See "
-    },
-    "appFullpage": {},
-    "history": {
-      "WeeklyConsumption": "Weekly consumption",
-      "MonthlyConsumption": "Monthly consumption",
-      "scrolling": "Loading data",
-      "scrollEnd": "No more data to load"
-    },
-    "popup": {
-      "messages": {
-        "openTab": "The extension will open in a new tab.",
-        "checkActivity": "You can then check your activity from that tab while browsing the internet.",
-        "accessPopup": "You can still access the extension pop-up window on any page by clicking the extension icon in the browser bar."
-      }
-    },
-    "settings": {
-      "usingSince": "You have been using this computer since",
-      "dataUseCase": "This data allows us to better calculate the gray footprint of your activity",
-      "showMiniViz": "Show MiniViz",
-      "disablePlugin": "Disable plugin",
-      "shareData": "Share my data",
-      "shareDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      "deleteData": "Delete my data",
-      "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      "confirmMiniVizStatus": "MiniViz is now {text}",
-      "confirmShareData": "Data is {text}",
-      "datePlaceholder": "Pick a date"
     }
   },
   "global": {
