@@ -65,16 +65,19 @@
       },
       "day": {
         "average": "Moyenne hebdomadaire",
-        "trend": "Tendance hebdomadaire"
+        "trend": "Tendance hebdomadaire",
+        "details": "Sur la base des 7 derniers jours"
       },
       "month": {
         "average": "Moyenne mensuelle",
-        "trend": "Tendance mensuelle"
+        "trend": "Tendance mensuelle",
+        "details": "Sur la base des 30 derniers jours"
       },
-      "computer_impact": "d'énergie grise de l'ordinateur",
-      "computer_tip": "Vous pouvez réduire l'impact de l'ordinateur en le gardant plus logntemps. Voir"
+      "fromComputer": "de l'ordinateur",
+      "computerImpact": "d'énergie grise de l'ordinateur",
+      "computerInfo": "Des ressources et de l'énergie ont été nécessaires à la fabrication de votre appareil.",
+      "computerTip": "Vous pouvez réduire l'impact de l'ordinateur en le gardant plus longtemps. Voir"
     },
-    "appFullpage": {},
     "history": {
       "WeeklyConsumption": "Consommation hebdomadaire",
       "MonthlyConsumption": "Consommation mensuelle",
@@ -103,27 +106,32 @@
     }
   },
   "global": {
+    "about": "À propos",
     "analogies": "Analogies",
     "askAgain": "Ne demandez pas à nouveau",
     "cancel": "Annuler",
     "co2": "CO2",
     "of_co2": "de CO2",
+    "computerEnergy": "Énergie grise ordinateur",
     "current_today": "Aujourd'hui",
     "current_week": "Cette semaine",
     "current_month": "Ce mois",
     "current_year": "Depuis Janvier {year}",
     "data": "Données",
+    "data_journey": "Voyage des données",
     "downloaded": "téléchargés",
+    "faq": "FAQ",
     "history": "Histoire",
     "internet": "Internet",
-    "computer": "Ordinateur",
     "last": {
       "today": "Aujourd'hui",
       "week": "Les 7 derniers jours",
       "month": "Les 30 derniers jours",
       "year": "Depuis janvier {year}"
     },
+    "method_links": "Méthode & liens",
     "newTab": "Ouvrir page principale",
+    "partners": "Partenaires",
     "period": {
       "days": "Jours",
       "weeks": "Semaines",
@@ -140,7 +148,101 @@
     "fr": "Français"
   },
   "pages": {
-    "settings": {
+    "journey": {
+      "part_1": "Jour après jour, nous consommons tous des données qui transitent par internet : courrier électronique, images, vidéos, documents, musique ou articles de presse, pour ne citer que les principaux. L'accès instantané au contenu en ligne est devenu une normalité, et la perte de cet accès nous laisse aussi désemparés qu'une coupure d'électricité.",
+      "part_2": "Or, \"en ligne\" signifie que les données voyagent à travers des équipements physiques et des câbles, pour arriver de leur point de déaprt jusqu'à notre navigateur préféré. Ce voyage n'est donc pas gratuit. Il n'est rendu possible que par une extraordinaire profusion de ressources : des milliers de kilomètres de câbles sous-marins qui relient les continents, des centres de données colossaux qui tournent en permanence à plein régime pour garantir une disponibilité sans faille des contenus, des flottes de satellites qui se déplacent depuis chaque coin de l'orbite terrestre pour nous garder connectés même lorsque nous dormons, des usines qui fabriquent des centaines de millions d'appareils que nous ignorons souvent complètement.",
+      "energy_mix": "Mix énergétique",
+      "energy_mix_details": "L'électricité peut provenir d'énergies renouvelables (solaire, éolienne, hydraulique, etc.) ou de combustibles fossiles. En fonction du mix énergétique, l'impact sur l'environnement peut être très différent. Les énergies renouvelables ont un impact beaucoup plus faible.",
+      "connected_devices": "Équipements connectés",
+      "connected_devices_details": "Les appareils consomment de l'énergie lorsqu'ils sont sous tension ou en mode veille. Beaucoup d'énergie et de ressources ont également été utilisées lors de leur fabrication. L'impact environnemental des appareils varie donc beaucoup en fonction de leur durée de vie. Plus un appareil est utilisé longtemps, plus son impact sera faible par heure d'utilisation.",
+      "core_network": "Réseau",
+      "core_network_details": "Le cœur du réseau est constitué de câbles, de relais et de switchs qui transportent vos données depuis et vers votre appareil.",
+      "data_center": "Centre de données",
+      "data_center_details": "Les centres de données fonctionnent en permanence et gardent les données disponibles 24 heures sur 24, 7 jours sur 7. Ils ont besoin d'électricité pour les serveurs qui stockent, encodent ou traitent les données, ainsi que d'un système de refroidissement pour éviter la surchauffe des serveurs.",
+      "part_3": "Ces infrastructures et équipements, qui transforment notre paysage et nos intérieurs, nécessitent une quantité colossale d'énergie et de matériaux pour être construits, pour fonctionner et pour être remplacés en cas de besoin. Les émissions de gaz à effet de serre, l'épuisement des terres rares, les émissions toxiques, y compris les plastiques, sont autant de signes visibles mais souvent négligés de notre empreinte numérique sur notre environnement. La dématérialisation est en effet très coûteuse. CarbonViz s'attaque à ce problème en cherchant à améliorer la perception et la compréhension des enjeux de l'énergie liée au numérique. En se plaçant au cœur de nos activités, au sein même du navigateur, CarbonViz permet de visualiser en direct les données téléchargées et la quantité de CO2 émise correspondante."
+    },
+    "faq": {
+      "data_privacy": "Données & Confidentialité",
+      "data_explanation_intro": "Les paquets internet téléchargés dans votre navigateur sont utilisés pour vérifier la quantité de données téléchargées et estimer l'impact de vos activités numériques sur le climat. Les informations suivantes sont récupérées pour chaque paquet :",
+      "data_url": "url: utilisé pour indiquer les données et l'impact par site",
+      "data_header": "header: utilisé pour estimer la quantité de données",
+      "data_timestamp": "timestamp: utilisé pour afficher l'historique",
+      "data_cache": "cache: utilisé pour ne considérer que les paquets pertinents",
+      "computer_duration": "La durée d'utilisation du plugin est également utilisée pour estimer l'impact de l'ordinateur.",
+      "data_storage": "Données enregistrées",
+      "data_storage_explanation": "CarbonViz ne stocke les données que localement dans votre navigateur. Aucune donnée n'est synchronisée automatiquement avec des serveurs externes.",
+      "data_download": "Télécharger mes données",
+      "data_history": "Historique des données",
+      "data_history_explanation_intro": "Les données historiques sont sauvegardées afin que vous puissiez vérifier l'historique de votre utilisation. Les données suivantes sont enregistrées :",
+      "data_aggregated": "consommation aggrégée de données + co2/énergie par jour",
+      "data_daily": "données quotidienne: données aggrégées des 7 derniers jours par domaine",
+      "data_monthly": "données mensuelles: données aggrégées des 12 derniers mois par domaine",
+      "open_source": "Open Source",
+      "open_source_explanation": "CarbonViz est un logiciel open source et vous pouvez vérifier le codes source sur ",
+      "observations": {
+        "title": "Observations",
+        "part1": "Selon l'Union internationale des télécommunications, il y avait environ 4 milliards d'internautes en 2019 [1]. C'est quatre fois le nombre d'utilisateurs de 2005. Cette croissance du nombre d'utilisateurs implique que le trafic de données a également augmenté de façon spectaculaire pour atteindre environ 20,6 zettaoctets (ZB), ce qui représente 2e13 gigaoctets (GB), soit 12 fois la consommation de 2010 [2] [3]. En conséquence, la consommation d'électricité d'internet a considérablement augmenté pour atteindre environ 5 % de la consommation mondiale en 2012, et pourrait atteindre 20 % d'ici 2025 [4] [5].",
+        "part2": "L'augmentation des usages en ligne et la croissance des données, posent la question de l'empreinte environnementale du numérique. Quel est l'impact de nos activités numériques sur le changement climatique ? Quelle quantité d'énergie consommons-nous pour ces activités ? Quelle quantité de ressources non renouvelables est utilisée pour fabriquer nos appareils ? Quelle quantité d'énergie a été nécessaire pour construire nos appareils ou nos serveurs à l'intérieur des centres de données ",
+        "part3": "Il est actuellement difficile de trouver des réponses à ces questions et de nombreuses sources sont contradictoires [6]. De plus, les modèles actuels ne sont pas toujours transparents et ne sont pas adaptés à la Suisse, en particulier en ce qui concerne le mix énergétique suisse qui est constitué d'une majorité d'énergie hydroélectrique. C'est pourquoi nous avons décidé de concevoir un nouveau modèle de calcul transparent pour comprendre l'impact environnemental des activités numériques à utiliser en Suisse",
+        "part4": "Ce modèle a été développé dans le cadre du projet CarbonViz soutenu par Innosuisse, les équipes scientifiques du Media Engineering Institute (MEI) et de l'Institut de Génie Thermique (IGT) de la Haute Ecole d'Ingénierie et de Gestion du canton de Vaud (HEIG-VD)."
+      },
+      "model": {
+        "title": "Modèle CarbonViz",
+        "principle": "1. Principe",
+        "principle_lca": "Le modèle de calcul de CarbonViz suit les principes de l'analyse du cycle de vie afin de prendre en compte les impacts globaux de l'ensemble de la chaîne de valeur qui conduit au service en ligne fourni. Nous prenons donc en compte non seulement l'énergie nécessaire à la fourniture du service, mais aussi l'énergie utilisée pour fabriquer l'appareil.",
+        "principle_example_intro": "Par exemple, si l'on considère la diffusion en continu d'une vidéo en ligne, différents éléments doivent être pris en compte pour calculer l'impact de ce service. Les éléments suivants sont nécessaires pour permettre la visualisation d'une vidéo en ligne depuis le centre de données qui héberge la vidéo jusqu'à l'écran de l'utilisateur:",
+        "principle_example_user_level": "Au niveau de l'utilisateur",
+        "principle_example_user_computer": "un ordinateur",
+        "principle_example_user_access": "un point d'accès réseau",
+        "principle_example_network_level": "Au niveau du réseau",
+        "principle_example_network_core": "un réseau internet (fibre optique, équipement des fournisseurs d'accès, etc.)",
+        "principle_example_network_dc": "un centre de données",
+        "data_sources": "2. Source de données",
+        "data_sources_1": "Afin de concevoir notre modèle de calcul, nous avons utilisé Ecoinvent pour les données primaires concernant l'impact des équipements et de l'électricité [7]. Ecoinvent est une base de données de référence pour les données d'inventaire du cycle de vie, avec des données de processus bien documentées pour des milliers de produits. Il s'agit de la base de données internationale d'ICV la plus complète et la plus transparente. Elle est gérée par une association à but non lucratif fondée par plusieurs instituts du domaine des EPF (ETH Zurich, EPF Lausanne, Institut Paul Scherrer et Empa) et par Agroscope. La base de données Ecoinvent est utilisée par plus de 3 000 organisations dans le monde entier, allant de sociétés multinationales à des universités de premier plan [8].",
+        "data_sources_2": "Afin d'estimer la consommation d'électricité du réseau d'infrastructure et des centres de données sur la base de la quantité de données transférées, des rapports de Cisco et de l'Agence internationale de l'énergie ont été utilisés [9], [10]. Les chiffres ont été recoupés avec différents articles scientifiques pour garantir la cohérence [11] [13].",
+        "parameters": "3. Paramètres",
+        "parameters_1": "Pour chacun des éléments nécessaires aux activités numériques, il faut considérer l'ensemble du cycle de vie, depuis l'extraction des ressources nécessaires à la fabrication de l'équipement, jusqu'à sa fin de vie. Il ne faut pas non plus oublier les impacts indirects. Par exemple, un serveur dans un centre de données nécessite non seulement de l'énergie pour son alimentation électrique, mais aussi de l'énergie pour son refroidissement.",
+        "parameters_2": "Afin de simplifier notre modèle, le bâtiment du centre de données et les câbles sont exclus. Les serveurs et les équipements réseau étant utilisés 24 heures sur 24 et 7 jours sur 7, la part de l'impact de la fabrication des centres de données et de l'internet est considérée comme négligeable.",
+        "parameters_3": "Notre modèle CarbonViz prend en compte les impacts suivants :",
+        "parameters_scope": "<li>la consommation électrique du centre de données (serveur et consommation indirecte telle que la climatisation)</li><li>la consommation électrique du réseau entre le centre de données et l'utilisateur</li><li>la fabrication et la consommation électrique du système d'accès à l'internet</li><li>la fabrication de l'ordinateur</li><li>la consommation électrique de l'ordinateur</li>",
+        "parameters_4": "Les différents impacts liés à la fabrication et à l'électricité extraits de la base de données Ecoinvent permettent un choix fin entre différents paramètres :",
+        "parameters_input": "<li>type d'ordinateur (portable ou de bureau)</li><li>durée de vie de l'ordinateur (amortissement de l'impact de la fabrication)</li><li>préiphériques additionnles (écran, souris, clavier)</li><li>origine de l'électricité utilisateur (mix électrique standard Suisse ou 100% renouvelable)</li><li>origine de l'électricité réseau (mix électrique standard Suisse ou Européen ou 100% renouvelable)</li><li>origine de l'électricité du centre de données (mix électrique standard Suisse, Européen ou 100% renouvelable)</li><li>quantité de données transférées</li>",
+        "model_link": "La définition du modèle est disponible ici: ",
+        "parameters_default": "Dans sa version générique, CarbonViz n'intègre pas tous ces paramètres et fixe des valeurs génériques pour certains d'entre eux. Par exemple, les paramètres suivants sont définis par défaut :",
+        "parameters_default_list": "<li>Ordinateur: ordinateur portable (durée de vie 6.5 ans – temps d'utilisation moyen 1917 heures/an)</li><li>Pas d'écran additionnel, clavier ou souris</li><li>Durée de vie routeur et point d'accès internet: 6 ans</li><li>Consommation électrique moyenne des centres de données: 6.16e-11 kWh/bytes</li><li>Consommation électrique moyenne du réseau d'infrastructure: 8.39e-11 kWh/bytes</li><li>Origine de l'électricité maison / bureau: mix électrique CH standard</li><li>Origine électricité réseau d'infrastructure: moyenne tension CH standard</li><li>Origine électricité centres de données: moyenne tension EU standard</li>",
+        "parameters_customization": "Pour un déploiement au sein d'une entreprise, ces paramètres pourraient être adaptés. Par exemple, les paramètres suivants peuvent être personnalisés : spécifications de l'ordinateur, durée de vie de l'appareil, source d'électricité personnalisée pour le bureau dans le cas d'un mélange d'électricité connu."
+      },
+      "electricity": {
+        "title": "4. Électricité",
+        "part1": "Une partie importante de l'évaluation d'impact dépend de la source d'énergie utilisée pour alimenter les éléments du modèle : électricité utilisée par les centres de données, électricité utilisée par le réseau d'infrastructure, électricité utilisée à la maison ou au bureau.",
+        "part2": "L'électricité peut être produite à partir de sources renouvelables (solaire, éolien, biomasse, etc.) ou non renouvelables (charbon, pétrole, gaz, nucléaire, etc.). L'électricité utilisée est alors un mélange de ces différentes sources. Chaque pays dispose d'un mix de sources différent. Par exemple, l'électricité consommée en Suisse se compose d'environ 35% d'énergie hydraulique et de 41% d'énergie nucléaire [14]. Dans certains cas, un utilisateur ou une entreprise peut décider de n'acheter que de l'électricité provenant d'énergies renouvelables, auquel cas un mix électrique 100 % renouvelable est utilisé. En Suisse, le mix 100 % renouvelable est composé à 98% d'électricité provenant de centrales hydroélectriques. Certains fournisseurs de services cloud, comme Google, ont également acheté de l'énergie 100% renouvelable pour couvrir la consommation de leurs centres de données [15].",
+        "part3": "L'impact de l'électricité sur le climat peut changer radicalement en fonction du mix électrique utilisé. En Suisse, 1 kWh d'électricité provenant d'un mix 100 % renouvelable n'émettra que 4,4 g de CO2 fossile, alors que le mix standard en émettra 105 g [14].",
+        "part4": "L'énergie grise contenue dans 1 kWh d'électricité dépend également beaucoup de la source d'énergie. L'électricité produite à partir de combustibles fossiles dépend beaucoup plus de l'énergie primaire, notamment en raison du faible rendement de la conversion de l'énergie fossile en électricité et de la perte d'énergie par la chaleur."
+      },
+      "example": "5. Exemple de résultat pour des activités théoriques en ligne dans un navigateur",
+      "disclaimer": "Avertissement",
+      "disclaimer_text_video": "Les estimations de la taille des vidéos sont basées sur le débit d'encodage recommandé. Les tailles réelles peuvent être inférieures en fonction du contenu de la vidéo et de la compression supplémentaire de youtube avant la publication.",
+      "model_result": "Ce que montre le modèle",
+      "model_result_video": {
+        "title": "Ce que montre le modèle pour 1H de streaming video 720p",
+        "subtitle1": "1. Impact énergétique et déreglement climatique",
+        "part1": "Analysons l'impact sur le climat (mesuré par le potentiel de réchauffement planétaire en kg d'équivalent CO2) d'une heure de vidéo en streaming à 720p.",
+        "part2": "La méthode CarbonViz montre clairement que le potentiel de réchauffement global (PRG) du visionnage d'une vidéo 720p pendant une heure sur un ordinateur portable d'une durée de vie de 6,5 ans est significativement plus faible lorsque l'on utilise un mix d'énergies renouvelables que lorsque l'on utilise un mix d'énergies standard. Dans le cas du streaming vidéo, cela est principalement dû à l'impact de l'électricité du serveur et du réseau central qui représente plus de 2/3 de l'impact dans le cas d'un mix standard. Comme on peut le voir ci-dessous, dans le cas d'un mix renouvelable, l'impact de l'énergie grise de l'ordinateur portable (l'impact provenant de la fabrication complète et du transport) devient prédominant. Les utilisateurs finaux et les services internet ont tous deux un impact sur le PRG : l'impact des services internet dépend fortement de la source d'énergie (renouvelable ou standard), l'impact de l'utilisateur final provenant principalement de la fabrication de l'appareil.",
+        "part3": "La méthode montre également que l'énergie nécessaire (énergie primaire pour produire l'électricité) pour regarder la vidéo est beaucoup plus faible avec un mix renouvelable. Ceci est dû à la grande quantité d'énergie non renouvelable (ENR) utilisée dans un mix standard par rapport au mix renouvelable qui est davantage basé sur l'énergie renouvelable (ER). En effet, l'énergie primaire nécessaire à la production d'électricité non renouvelable est plus élevée dans le cas des sources non renouvelables (en partie à cause de la perte d'énergie de chauffage pendant la production d'électricité à partir de combustibles fossiles par exemple).",
+        "subtitle2": "2. Comparaison de l'impact entre une durée de vie de l'ordinateur de 6.5 ans ou 4 ans",
+        "part4": "CarbonViz suppose par défaut une durée de vie de 6,5 ans pour les ordinateurs. Vérifions l'impact si l'utilisateur renouvelle son ordinateur après seulement 4 ans.",
+        "part5": "Lorsque l'on regarde une vidéo 720p pendant une heure, on observe que le PRG est nettement plus faible avec un ordinateur portable d'une durée de vie de 6,5 ans qu'avec un ordinateur portable d'une durée de vie de 4 ans. Le choix de la durée de vie de l'ordinateur par l'utilisateur final a une influence pour réduire l'impact PRG.",
+        "part6": "C'est le cas dans le scénario du streaming vidéo où l'impact des services internet est prédominant. C'est encore plus vrai dans un scénario plus habituel où la plupart du temps d'utilisation de l'ordinateur est consacré au travail de bureau."
+      },
+      "analogies": "Analogies",
+      "analogies_explanation1": "Comme l'explique le modèle CarbonViz, les centres de données, le réseau d'infrastructure et votre ordinateur ont besoin d'électricité pour fonctionner et vous permettre de mener des activités sur le web. Mais avez-vous vraiment conscience de la quantité d'énergie nécessaire ? Selon les résultats de notre modèle, 1 heure de streaming vidéo peut représenter jusqu'à 1KWh d'énergie. À quoi cette quantité d'énergie peut-elle être comparée ?",
+      "analogies_explanation2": "C'est la question que nous avons posée à plusieurs personnes lors de sessions de brainstorming dans le but de mieux comprendre leur compréhension de l'énergie et comment nous pouvons comparer une quantité spécifique d'énergie pour la rendre plus tangible. Les séances de brainstorming nous ont permis de découvrir de nombreuses analogies possibles pour parler d'une quantité d'énergie. Nous avons choisi et mis en œuvre des analogies multiples et hétérogènes pour combler le fossé entre les activités en ligne et le monde réel.",
+      "analogies_explanation3": "Outre les analogies avec l'énergie, nous voulions également trouver des analogies avec la consommation de données dans le même but : aider les utilisateurs à comprendre ce que représente une certaine quantité de données.",
+      "analogies_legend": "1 heure de streaming vidéo 1080p peut représenter:",
+      "disclaimer_text_analogies": "Il est important de garder à l'esprit que le modèle de calcul de ces analogies n'est pas exact à 100 % et présente un ordre de grandeur, basé sur diverses sources.",
+      "sources": "Sources"
+    },
+    "partners": {
       "partnersInstitution": "Partenaires Institutionnels",
       "institutionSupport": {
         "one": "Le projet CarbonViz est soutenu par ",
@@ -153,8 +255,24 @@
         "link4": "Haute Ecole d'Ingénierie et de Gestion du canton de Vaud",
         "end": "(HEIG-VD)"
       },
-      "partnersInd": "Partenaires Industriels",
-      "indSupport": "Le projet CarbonViz est soutenu par les Services Industriels de Lausanne et Equiwatt"
+      "partnersIndustrial": "Partenaires Industriels",
+      "industrialSupport": {
+        "one": "Le projet CarbonViz est soutenu par les ",
+        "link1": "Services industriels de Lausanne",
+        "two": ", ",
+        "link2": "Équiwatt",
+        "three": "et le ",
+        "link3": "Fonds pour l'efficacité énergétique"
+      },
+      "team": {
+        "project": "Équipe projet",
+        "management": "Gestion de projet",
+        "ux": "Désign d'intéraction",
+        "tests": "Tests utilisateurs",
+        "dev": "Développement web",
+        "model": "Modèle de calcul"
+
+      }
     }
   }
 }
