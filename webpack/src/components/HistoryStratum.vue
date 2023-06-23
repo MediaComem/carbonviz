@@ -128,6 +128,7 @@ export default {
 
     return {
       t,
+      formatCo2,
       stratum,
       active_index, height,
       amount, legend, layerName,
@@ -180,6 +181,9 @@ export default {
         </div>
         <div class="legend">
           {{ legend }}
+        </div>
+        <div v-if="type === 'co2'" class="computer">
+          (<span class="bold">{{ formatCo2(layer.computer, 0) }}</span> {{ t('components.statistics.fromComputer') }})
         </div>
       </el-col>
       <el-col :span="showGraph ? 8 : 16" class="section">
@@ -287,6 +291,9 @@ export default {
       margin-top: 40px;
       font-size: 2em;
       font-weight: 700;
+    }
+    .computer {
+      margin-top: 8px;
     }
   }
   .co2 {

@@ -80,11 +80,7 @@ export function updateHistoryDb(packet) {
             domainData.daily.data = domainDataInfo.data + historyDomainDay.data;
             domainData.daily.energy = domainDataInfo.energy + historyDomainDay.energy;
         }
-        // Clean obsolete data storage (older than four months)
-        let oldestDate = new Date(storedDates[0]);
-        if (oldestDate.getFullYear != date.getFullYear || oldestDate.getMonth() < date.getMonth() - 4) {
-            deleteData(storedDates[0]);
-        }
+
         // same hour
         if (history != undefined) {
             hourlyData.co2 += history.co2;

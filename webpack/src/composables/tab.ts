@@ -59,7 +59,7 @@ const setup = () => {
   }
   // set new tab index to local storage
   const  createNewTab = async () => {
-    let page = 'Live';
+    let page = 'History';
     let url = `fullpage/fullpage.html#${page}`;
     const isFirefox = typeof(browser) !== 'undefined';
     if (isFirefox) {

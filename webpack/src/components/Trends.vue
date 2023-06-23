@@ -3,22 +3,23 @@
    <period-picker :periods="['days', 'months']" @change="switchPeriod"></period-picker>
    <type-picker @change="switchType"></type-picker>
   </div>
-  <div class="wrapper">
+  <el-scrollbar class="wrapper">
     <div v-if="type === 'co2'">
-      <statistics :type="type" subtype="web" :granularity="granularity" :height="130">
+      <statistics :type="type" subtype="web" :granularity="granularity" :height="180">
         <template #title>{{ t('global.internet') }}</template>
       </statistics>
-      <statistics :type="type" subtype="computer" :granularity="granularity" :height="110">
-        <template #title>{{ t('global.computer') }}</template>
+      <statistics :type="type" subtype="computer" :granularity="granularity" :height="180" class="computer_trends">
+        <template #title>{{ t('global.computerEnergy') }}</template>
         <template #info>
-          {{ t('components.statistics.computer_tip') }} <span @click="$emit('showSettings')" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
+          {{ t('components.statistics.computerInfo') }}<br/>
+          {{ t('components.statistics.computerTip') }} <span @click="$emit('showSettings')" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
         </template>
       </statistics>
     </div>
     <div v-if="type === 'data'">
       <statistics :type="type" subtype="web" :granularity="granularity" :height="200"></statistics>
     </div>
-  </div>
+  </el-scrollbar>
 </template>
 
 <script setup lang="ts">
@@ -72,5 +73,9 @@ const switchType = (newType: Indicator) => {
     box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25);
     border-radius: 5px;
     background-color: var(--background-grey);
+  }
+  .computer_trends{
+    margin-top: 20px;
+    padding-bottom: 12px;
   }
 </style>

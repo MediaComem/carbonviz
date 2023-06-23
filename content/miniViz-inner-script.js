@@ -119,8 +119,8 @@ function sendToAnimation() {
   debounceId = null;
   packetsBuffer = [];
   for (let packet of packets) {
-    // merge by tab + type
-    const id = `${packet.extraInfo.tabUrl}_${packet.extraInfo.type}`;
+    // merge by tab
+    const id = `${packet.extraInfo.tabUrl}`;
     if (!animations[id]) {
       animations[id] = packet;
     } else {

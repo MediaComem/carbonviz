@@ -139,7 +139,7 @@ export default {
   }
   .buttons {
     height: 30px;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
     display: flex;
     width: 100%;
     column-gap: 9px;
@@ -150,7 +150,6 @@ export default {
     height: 87%;
   }
   .history-wrapper {
-    margin-top: 20px;
     transition: margin-top 0.5s ease;
     flex-grow: 1;
     width: 90%;
@@ -160,6 +159,7 @@ export default {
   }
   .scroll>div {
     padding-top: 40px;
+    padding-bottom: 40px;
   }
   .history-wrapper div:first-child {
     border-top: none;

@@ -108,6 +108,13 @@ export default {
           }
     };
     const yAxis = computed(() => type.value === 'co2' ? yAxisCo2 : yAxisData);
+    const tooltipFormatter = (value) => {
+      if (type.value === 'co2') {
+        return formatCo2(value, 0);
+      } else {
+        return formatSize(value, 0);
+      }
+    }
     const chartOptions: ComputedRef<ApexOptions> = computed(() => {
       return {
         chart: {
@@ -136,6 +143,12 @@ export default {
           },
           onItemHover: {
             highlightDataSeries: true
+          }
+        },
+        tooltip: {
+          x: { show: false },
+          y: {
+            formatter: tooltipFormatter
           }
         },
         states: {
@@ -232,7 +245,7 @@ export default {
       <div class="teaser-subtitle">
         <span v-if="granularity==='day'">{{ t('global.last.week') }}</span>
         <span v-if="granularity==='month'">{{ t('global.last.month') }}</span>
-        <span class="computer" v-if="type==='co2'">&nbsp;incl. {{ formatCo2(summary.computer.co2, 0) }} {{ t('components.statistics.computer_impact') }}</span>
+        <span class="computer" v-if="type==='co2'">&nbsp;incl. {{ formatCo2(summary.computer.co2, 0) }} {{ t('components.statistics.computerImpact') }}</span>
       </div>
       <div class="average">{{ t(`components.statistics.${granularity}.average`) }}:
         <span class="value">
@@ -311,15 +324,6 @@ export default {
         transform: rotate(90deg);
       }
     }
-  }
-}
-
-.header.co2 {
-  .average {
-  margin-top: 10px;
-  }
-  .trend-value {
-    margin-top: 10px;
   }
 }
 

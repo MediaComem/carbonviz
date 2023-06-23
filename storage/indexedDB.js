@@ -41,6 +41,44 @@ function dateString(dataObject) {
   return dateToISOLocal(dataObject).slice(0,10);
 }
 
+const cleanData = async () => {
+  // Clean old data
+  // Clear new month if needed [max 1 year monthly domains aggregate retention]
+  // Clear new day if needed [max 1 week daily domains aggregate retention]
+  // Done asynchronously since write every 60 seconds, should be sufficient for cleaning operations
+  return new Promise(function(resolve) {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDay();
+    let trans = co2HistoryDB.db.transaction(["dataTimeStamp"], "readonly");
+    const dates = trans.objectStore("dataTimeStamp");
+
+    // retrieve last running dates
+    dates.get(0).onsuccess = function (event) {
+      const info = event.target.result;
+      if (info) {
+        const lastRunning = new Date(info.lastStoredDate);
+        const lastRunningMonth = lastRunning.getMonth() + 1;
+        const lastRunningDay = lastRunning.getDay();
+        // check if we need to clear data from last week or last year
+        if (month !== lastRunningMonth || day !== lastRunningDay) {
+          let clearTransaction = co2HistoryDB.db.transaction([`domains_month_${month}`, `domains_day_${day}`], "readwrite");
+          const monthlyDomainStore = clearTransaction.objectStore(`domains_month_${month}`);
+          const dailyDomainStore = clearTransaction.objectStore(`domains_day_${day}`);
+          if (month !== lastRunningMonth) {
+            monthlyDomainStore.clear();
+          }
+          if (day !== lastRunningDay) {
+            dailyDomainStore.clear();
+          }
+          return resolve(clearTransaction);
+        }
+      }
+    };
+    return resolve(trans);
+  });
+}
+
 co2HistoryDB.open = () => {
 
   return new Promise(function(resolve) {
@@ -165,33 +203,7 @@ co2HistoryDB.open = () => {
 
     request.onsuccess = function (e) {
       co2HistoryDB.db = request.result;
-      // Clean old data
-      // Clear new month if needed [max 1 year monthly domains aggregate retention]
-      // Clear new day if needed [max 1 week daily domains aggregate retention]
-      // Done asynchronously since write every 60 seconds, should be sufficient for cleaning operations
-      const today = new Date();
-      const month = today.getMonth() + 1;
-      const day = today.getDay();
-      let trans = co2HistoryDB.db.transaction(["dataTimeStamp",  `domains_month_${month}`, `domains_day_${day}`], "readwrite");
-      const dates = trans.objectStore("dataTimeStamp");
-      const monthlyDomainStore = trans.objectStore(`domains_month_${month}`);
-      const dailyDomainStore = trans.objectStore(`domains_day_${day}`);
-      // retrieve last running dates
-      dates.get(0).onsuccess = function (event) {
-        const info = event.target.result;
-        if (info) {
-          const lastRunning = new Date(info.lastStoredDate);
-          const lastRunningMonth = lastRunning.getMonth() + 1;
-          const lastRunningDay = lastRunning.getDay();
-          if (month !== lastRunningMonth) {
-            monthlyDomainStore.clear();
-          }
-          if (day !== lastRunningDay) {
-            dailyDomainStore.clear();
-          }
-        }
-      };
-
+      cleanData();
       return resolve(co2HistoryDB.db);
     };
 
@@ -207,67 +219,74 @@ function init() {
 
 async function updateData(date, hourlyData, dailyData, domainData = undefined) {
   return new Promise(function (resolve) {
-    const month = date.getMonth()+1;
-    const day = date.getDay();
-    const db = co2HistoryDB.db;
-    const trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains", `domains_month_${month}`, `domains_day_${day}`], "readwrite");
-    const daysStore = trans.objectStore("dataTimeStamp");
-    const historyStore = trans.objectStore("history");
-    const historySummaryStore = trans.objectStore("historySummary");
-    const domainStore = trans.objectStore("domains");
-    const monthlyDomainStore = trans.objectStore(`domains_month_${month}`);
-    const dailyDomainStore = trans.objectStore(`domains_day_${day}`);
-
-    const storedData  = {
-      index: 0,
-      lastStoredDate: date,
-      weekStartDate: getMonday(date)
-    }
-
-    const dateInfo = {
-      date: date.getDate(),
-      month: date.getMonth()+1,
-      dayOfWeek: date.getDay(),
-      weekOfYear: getWeekOfYear(date),
-      weekOfMonth: Math.floor((date.getDate() / 7)+1)
-    }
-
-    const history = {
-      ...dateInfo,
-      index: dateStringHour(date),
-      hour: date.getHours(),
-      co2: hourlyData.co2,
-      data: hourlyData.data,
-      energy: hourlyData.energy,
-      duration: hourlyData.duration
-    }
-    const historySummary = {
-      ...dateInfo,
-      index: dateString(date),
-      co2: dailyData.co2,
-      data: dailyData.data,
-      energy: dailyData.energy,
-      duration: dailyData.duration
-    }
-
-    daysStore.put(storedData );
-    historyStore.put(history);
-    historySummaryStore.put(historySummary);
-    if (domainData) {
-      if (domainData.full?.name) {
-        domainStore.put(domainData.full);
+    const storeData = () => {
+      const month = date.getMonth()+1;
+      const day = date.getDay();
+      const db = co2HistoryDB.db;
+      const trans = db.transaction(["dataTimeStamp", "history", "historySummary", "domains", `domains_month_${month}`, `domains_day_${day}`], "readwrite");
+      const daysStore = trans.objectStore("dataTimeStamp");
+      const historyStore = trans.objectStore("history");
+      const historySummaryStore = trans.objectStore("historySummary");
+      const domainStore = trans.objectStore("domains");
+      const monthlyDomainStore = trans.objectStore(`domains_month_${month}`);
+      const dailyDomainStore = trans.objectStore(`domains_day_${day}`);
+      const storedData  = {
+        index: 0,
+        lastStoredDate: date,
+        weekStartDate: getMonday(date)
       }
-      if (domainData.monthly?.name) {
-        monthlyDomainStore.put(domainData.monthly);
+
+      const dateInfo = {
+        date: date.getDate(),
+        month: date.getMonth()+1,
+        dayOfWeek: date.getDay(),
+        weekOfYear: getWeekOfYear(date),
+        weekOfMonth: Math.floor((date.getDate() / 7)+1)
       }
-      if (domainData.daily?.name) {
-        dailyDomainStore.put(domainData.daily);
+
+      const history = {
+        ...dateInfo,
+        index: dateStringHour(date),
+        hour: date.getHours(),
+        co2: hourlyData.co2,
+        data: hourlyData.data,
+        energy: hourlyData.energy,
+        duration: hourlyData.duration
       }
-    }
-    trans.oncomplete = function() {
-      return resolve();
+      const historySummary = {
+        ...dateInfo,
+        index: dateString(date),
+        co2: dailyData.co2,
+        data: dailyData.data,
+        energy: dailyData.energy,
+        duration: dailyData.duration
+      }
+
+      daysStore.put(storedData );
+      historyStore.put(history);
+      historySummaryStore.put(historySummary);
+      if (domainData) {
+        if (domainData.full?.name) {
+          domainStore.put(domainData.full);
+        }
+        if (domainData.monthly?.name) {
+          monthlyDomainStore.put(domainData.monthly);
+        }
+        if (domainData.daily?.name) {
+          dailyDomainStore.put(domainData.daily);
+        }
+      }
+      trans.oncomplete = function() {
+        return resolve();
+      }
     }
 
+    // reset daily / monthly data if new day or new month
+    cleanData().then((resetDailyMonthlyTrans) => {
+      resetDailyMonthlyTrans.oncomplete = () => {
+        storeData();
+      };
+    });
   });
 };
 

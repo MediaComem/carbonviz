@@ -21,41 +21,64 @@ export default {
 </script>
 
 <template>
-  <div id="Analogies" class="flexContainer">
-    <div class="AnalogiesCol">
-        <h3>{{ t('global.co2') }}</h3>
-        <div class="AnalogyItem" v-for="(item, index) in analogyNames['co2']" :key="index">
-            <Analogies :hideTypeChange="true" defaultDataType="co2" :analogy="item"></Analogies>
-        </div>
+  <div id="Analogies" class="container">
+    <div class="header">
+      <h3>{{ t('global.co2') }}</h3>
+      <h3>{{ t('global.data') }}</h3>
     </div>
-    <div class="AnalogiesCol">
-        <h3>{{ t('global.data') }}</h3>
-        <div class="AnalogyItem" v-for="(item, index) in analogyNames['data']" :key="index">
+    <el-scrollbar class="scroll">
+      <div  class="content">
+        <div class="co2">
+          <div class="AnalogyItem" v-for="(item, index) in analogyNames['co2']" :key="index">
+              <Analogies :hideTypeChange="true" defaultDataType="co2" :analogy="item"></Analogies>
+          </div>
+        </div>
+        <div class="data">
+          <div class="AnalogyItem" v-for="(item, index) in analogyNames['data']" :key="index">
             <Analogies :hideTypeChange="true" defaultDataType="data" :analogy="item"></Analogies>
+          </div>
         </div>
-    </div>
+      </div>
+    </el-scrollbar>
   </div>
 </template>
 
 <style scoped>
-.flexContainer {
+
+.container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.header, .content {
+    max-width: 1000px;
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
 }
-.flexContainer div h3{
+
+.header h3{
   text-align: center;
   font-size: xx-large;
   margin: 0;
   margin-bottom: 10px;
-}
-.flexContainer > .AnalogiesCol {
   flex-basis: 45%;
-  height: 75px;
-  margin-bottom: 10px;
 }
+.scroll {
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 50px);
+  top: 50px;
+  bottom: 0px;
+}
+
+.content .co2, .content .data {
+  flex-basis: 45%;
+}
+
 .AnalogyItem {
     height: 500px;
+    flex-basis: 45%;
 }
 </style>
 
