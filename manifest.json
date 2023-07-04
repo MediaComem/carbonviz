@@ -10,7 +10,8 @@
     "128": "icons/icon128.png" },
   "permissions": [
       "webRequest",
-      "storage"
+      "storage",
+      "alarms"
   ],
   "host_permissions": [
       "<all_urls>"

@@ -1,5 +1,5 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
-import { init as initDB, getTodayCounter } from "../storage/indexedDB.js";
+import { init as initDB, getTodayCounter, getDailyAggregates } from "../storage/indexedDB.js";
 
 // Note that since the switch to manifest v3, chrome extension API switched mostly to Promises (as Firefox)
 // And Firefox supports chrome.* namespace for API available in chrome and firefox
@@ -38,6 +38,7 @@ const co2ComputerIntervalMs = 2000;
 let lastCo2Tick = new Date();
 let writeDataInterval;
 const writingIntervalMs = 60000;
+const NotificationIntervalMins = 10080; // Set the alarm to repeat every week (7 days * 24 hours * 60 minutes = 10080 minutes)
 
 let statistics = { co2: 0, data: 0};
 
@@ -265,8 +266,6 @@ const completedListener = async(responseDetails) => {
         info.extraInfo.tabTitle = tab.title;
         info.extraInfo.tabUrl = tab.url;
       }
-      // send data to popup
-      sendMessageToPopup({ data: info });
 
       if (!writeDataInterval) {
         writeDataInterval = setInterval(writeData, writingIntervalMs);
@@ -353,9 +352,6 @@ const computerCo2 =  () => {
 
   statistics.co2 += computerCo2.co2 - 0;
 
-  // send data to animation
-  sendMessageToPopup({ data: computerCo2 });
-
   // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
@@ -385,6 +381,18 @@ const writeData = async () => {
   dump = [];
 };
 
+const getNextMonday9AM = () => {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+  const daysUntilMonday = (8 - dayOfWeek) % 7; // Calculate the number of days until the next Monday
+  const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
+  nextMonday.setHours(9, 0, 0, 0); // Set the time to 9 AM
+  //return nextMonday;
+  const TestNow = new Date();
+  TestNow.setSeconds(TestNow.getSeconds() + 5);
+  return TestNow;
+};
+
 startComputerCo2Interval();
 
 chrome.webRequest.onCompleted.addListener(
@@ -395,7 +403,43 @@ chrome.webRequest.onCompleted.addListener(
 
 chrome.runtime.onMessage.addListener(handleMessage);
 
-// TODO handle light / dark also with service owrker
+// Set up a notification every Monday at 9am
+chrome.alarms.create('weeklyAlarm', {
+  when: getNextMonday9AM().getTime(), // Set the alarm to trigger the next Monday at 9 AM
+  periodInMinutes: NotificationIntervalMins
+});
+
+chrome.alarms.onAlarm.addListener(alarm => {
+  if (alarm.name === 'weeklyAlarm') {
+    chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
+      const activeTab = tabs[0];
+      if(activeTab?.id) {
+        let weekData = await getDailyAggregates('day',[-7, 0]);
+        weekData = weekData.reduce((acc, day) => {
+          return {
+              data: acc.data + day.data,
+              energy: acc.energy + day.energy,
+              co2: acc.co2 + day.co2,
+              computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
+          }
+        }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+
+        let lastWeekData = await getDailyAggregates('day',[-14, -7]);
+        lastWeekData = lastWeekData.reduce((acc, day) => {
+          return {
+              data: acc.data + day.data,
+              energy: acc.energy + day.energy,
+              co2: acc.co2 + day.co2,
+              computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
+          }
+        }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+        sendMessageToTab(activeTab.id, { notification: {currentWeek: weekData, lastWeek: lastWeekData} });
+      }
+    });
+  }
+});
+
+// TODO handle light / dark also with service worker
 /*
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
   chrome.browserAction.setIcon({path: '../icons/iconDark.png'});

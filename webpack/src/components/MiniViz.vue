@@ -1,4 +1,13 @@
  <template>
+  <dialog id="notificationDialog">
+    <form method="dialog">
+      <div v-for="item in notification">
+        <h3 class="title"> {{ item.title }} {{ item.date }}</h3>
+        <span v-html="item.messageHTML" class="message"></span>
+      </div>
+      <button class="button" value="cancel">{{ t('global.close') }}</button>
+    </form>
+  </dialog>
   <div class="extension">
     <div class="miniviz" :class="{ 'hidden': showInteraction}" id="miniViz_container" @mouseover="hideAnimation" @click="onMiniVizClick">
       <div class="anim" :class=" dataType === 'data' ? 'data' : 'co2'">
@@ -8,9 +17,9 @@
         <img class="image" :src="asset" height="40" width="40">
         <p>{{ t('components.miniViz.description',
             {
-              data: dataType === 'co2' ? formatCo2(AnalogiesData[dataType][activeIndex].amount) : formatSize(AnalogiesData[dataType][activeIndex].amount),
-              time: format(AnalogiesData.time),
-              amount: getAnalogyValue(customAnalogyNames, dataType, AnalogiesData[dataType][activeIndex], activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, AnalogiesData[dataType][activeIndex], activeIndex)
+              data: dataType === 'co2' ? formatCo2(AnalogyDayTotals[dataType][activeIndex].amount) : formatSize(AnalogyDayTotals[dataType][activeIndex].amount),
+              time: format(AnalogyDayTotals.time),
+              amount: getAnalogyValue(customAnalogyNames, dataType, AnalogyDayTotals[dataType][activeIndex], activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, AnalogyDayTotals[dataType][activeIndex], activeIndex)
             }
           )}}
         </p>
@@ -55,7 +64,7 @@ export default {
     const interactive = ref(false);
     let activeIndex = ref(0);
     let dataType = ref('co2');
-    const AnalogiesData = ref({
+    const AnalogyDayTotals = ref({
       co2: [
         {
           name: 'boiling',
@@ -72,6 +81,17 @@ export default {
       ],
       time: 0
     });
+    const summary = ref({ data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+    const trend = ref({ data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+    let notification = ref(
+      [
+        {
+          date: '',
+          title: '',
+          messageHTML: ''
+        }
+      ]
+    );
     // Icon bar of 12
     const iconBar = [0,1,2,3,4,5,6,7,8,9,10,11];
     let currentMeter = Array(12).fill(0);
@@ -83,9 +103,9 @@ export default {
     };
     const asset = computed(() => {
       if (dataType.value === 'co2') {
-        return chrome.runtime.getURL(`icons/analogies/${analogiesCo2[AnalogiesData.value[dataType.value][activeIndex.value].name].asset}`);
+        return chrome.runtime.getURL(`icons/analogies/${analogiesCo2[AnalogyDayTotals.value[dataType.value][activeIndex.value].name].asset}`);
       } else
-        return chrome.runtime.getURL(`icons/analogies/${analogiesData[AnalogiesData.value[dataType.value][activeIndex.value].name].asset}`);
+        return chrome.runtime.getURL(`icons/analogies/${analogiesData[AnalogyDayTotals.value[dataType.value][activeIndex.value].name].asset}`);
     });
     const hideAnimation = () => {
       if (dataType.value === 'data') {
@@ -114,30 +134,96 @@ export default {
     function updateIconBar() {
       switch(dataType.value) {
         case 'co2':
-          setMeter(parseInt(formatCo2(AnalogiesData.value.co2[activeIndex.value].amount)));
+          setMeter(parseInt(formatCo2(AnalogyDayTotals.value.co2[activeIndex.value].amount)));
           break;
         case 'data':
-          setMeter(parseInt(formatSize(AnalogiesData.value.data[activeIndex.value].amount)));
+          setMeter(parseInt(formatSize(AnalogyDayTotals.value.data[activeIndex.value].amount)));
           break;
         default:
           return;
       }
     }
 
+    async function fetchNotificationData() {
+      const Today = new Date();
+      const TodayString = Today.toLocaleDateString();
+      const LastWeek = new Date(Today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const LastWeekString = LastWeek.toLocaleDateString();
+      let currentCo2;
+      let currentData;
+      let previousWeekCo2;
+      let previousWeekData;
+      let trendCo2;
+      let trendData;
+
+      currentCo2 = summary.value.co2;
+      currentData = summary.value.data;
+      previousWeekCo2 = trend.value.co2;
+      previousWeekData = trend.value.data;
+      if (previousWeekCo2 > 0 && previousWeekData > 0) {
+        trendCo2 = (currentCo2 - previousWeekCo2) / previousWeekCo2;
+        trendData = (currentData - previousWeekData) / previousWeekData;
+      } else {
+        trendCo2 = 0;
+        trendData = 0;
+      }
+
+      const data = [
+        {
+          date: TodayString,
+          title: "Weekly CO2 comsumption",
+          messageHTML: `<p>${formatCo2(currentCo2,0)} ${t('global.of_co2')} ${ t('global.last.week') } incl.${ formatCo2(summary.value.computer.co2, 0) } ${ t('components.statistics.computerImpact') }</p>`
+        },
+        {
+          date: TodayString,
+          title: "Weekly Data comsumption",
+          messageHTML: `<p>${formatSize(currentData,0)} ${ t('global.last.week')}</p>`
+        },
+        {
+          date: LastWeekString,
+          title: "weekly CO2 trend",
+          messageHTML: `<p>${t(`components.statistics.day.trend`)} ${trendCo2 ? trendCo2 > 0 ? '+' : '-' : 'N/A'} ${ trendCo2 ? Math.round(Math.abs(100 * trendCo2))+'%' : ''}</p>`
+        },
+        {
+          date: LastWeekString,
+          title: "Weekly Data trend",
+          messageHTML: `<p>${t(`components.statistics.day.trend`)} ${trendData ? trendData > 0 ? '+' : '-' : 'N/A'} ${ trendData ? Math.round(Math.abs(100 * trendData))+'%' : ''}</p>`
+        }
+      ]
+
+      return data;
+    }
+
+    async function showNotification() {
+      notification.value = await fetchNotificationData();
+      const openTabDialog = window.document.getElementById("notificationDialog") as HTMLDialogElement;
+      if (typeof openTabDialog.showModal === "function") {
+        if (!openTabDialog.open) {
+          openTabDialog.showModal();
+        }
+      }
+    }
+
     chrome.runtime.onMessage.addListener(request => {
-      if (!request?.total) return;
-      const stats = request.total;
-      if (stats?.extraInfo?.tabIcon?.startsWith('chrome-extension:')) return;
-      AnalogiesData.value.co2[activeIndex.value].amount = stats.co2;
-      AnalogiesData.value.co2[activeIndex.value].energy = stats.energy;
-      AnalogiesData.value.data[activeIndex.value].amount = parseInt(stats.data);
-      AnalogiesData.value.data[activeIndex.value].energy = stats.energy;
-      AnalogiesData.value.time = stats.time;
-      console.log(stats);
-      updateIconBar();
+      if (request.total) {
+        // Update stats
+        const stats = request.total;
+        if (stats?.extraInfo?.tabIcon?.startsWith('chrome-extension:')) return;
+        AnalogyDayTotals.value.co2[activeIndex.value].amount = stats.co2;
+        AnalogyDayTotals.value.co2[activeIndex.value].energy = stats.energy;
+        AnalogyDayTotals.value.data[activeIndex.value].amount = parseInt(stats.data);
+        AnalogyDayTotals.value.data[activeIndex.value].energy = stats.energy;
+        AnalogyDayTotals.value.time = stats.time;
+        updateIconBar();
+      }
+      if (request.notification) {
+        summary.value = request.notification.currentWeek;
+        trend.value = request.notification.lastWeek;
+        showNotification();
+      }
     });
 
-    return { color, asset, iconBar, currentMeter, showInteraction, interactive, customAnalogyNames, AnalogiesData, dataType, activeIndex,
+    return { color, asset, iconBar, currentMeter, showInteraction, interactive, customAnalogyNames, AnalogyDayTotals, dataType, activeIndex, notification,
       formatCo2, formatSize, format, openTabExtension, hideAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText }
   }
 }
@@ -145,6 +231,31 @@ export default {
 
 <style lang="scss" scoped>
 
+#notificationDialog {
+  font-family: initial;
+  max-width: 350px;
+  border-radius: 10px;
+  border-width: 1px;
+  .title {
+    font-weight: bold;
+    font-size: medium;
+    margin-bottom: 5px;
+  }
+  .message {
+    display: block;
+    font-size: medium;
+    margin-bottom: 5px;
+  }
+  .button {
+    float: right;
+    background: none;
+    color:black;
+    border: none;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+}
 .extension {
   all: initial;
 }
