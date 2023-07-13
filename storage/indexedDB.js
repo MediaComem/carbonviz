@@ -5,6 +5,8 @@ if ('webkitIndexedDB' in window) {
   window.IDBKeyRange = window.webkitIDBKeyRange;
 }
 */
+import { energyImpactHome, co2ImpactHome} from '../model/model.js'
+
 const co2HistoryDB = {
   db: null
 };
@@ -49,6 +51,7 @@ const cleanData = async () => {
   return new Promise(function(resolve) {
     const today = new Date();
     const month = today.getMonth() + 1;
+    const week = getWeekOfYear(today);
     const day = today.getDay();
     let trans = co2HistoryDB.db.transaction(["dataTimeStamp"], "readonly");
     const dates = trans.objectStore("dataTimeStamp");
@@ -59,17 +62,23 @@ const cleanData = async () => {
       if (info) {
         const lastRunning = new Date(info.lastStoredDate);
         const lastRunningMonth = lastRunning.getMonth() + 1;
+        const lastRunningWeek = getWeekOfYear(lastRunning);
         const lastRunningDay = lastRunning.getDay();
         // check if we need to clear data from last week or last year
-        if (month !== lastRunningMonth || day !== lastRunningDay) {
+        if (month !== lastRunningMonth || week !== lastRunningWeek || day !== lastRunningDay) {
           let clearTransaction = co2HistoryDB.db.transaction([`domains_month_${month}`, `domains_day_${day}`], "readwrite");
-          const monthlyDomainStore = clearTransaction.objectStore(`domains_month_${month}`);
-          const dailyDomainStore = clearTransaction.objectStore(`domains_day_${day}`);
           if (month !== lastRunningMonth) {
+            const monthlyDomainStore = clearTransaction.objectStore(`domains_month_${month}`);
             monthlyDomainStore.clear();
           }
-          if (day !== lastRunningDay) {
-            dailyDomainStore.clear();
+          if (week !== lastRunningWeek || day !== lastRunningDay) {
+            const days = [0,1,2,3,4,5,6];
+            // check how many days the plugin was inactive to clear irrelevant data for last 7 days
+            const nbDaysInactive = Math.floor((today - lastRunning) / (1000 * 3600 * 24));
+            for (let inactiveDay = 0; inactiveDay < Math.min(nbDaysInactive, 7); inactiveDay++) {
+              const dailyDomainStore = clearTransaction.objectStore(`domains_day_${days[(7 + day - inactiveDay) % 7]}`);
+              dailyDomainStore.clear();
+            }
           }
           return resolve(clearTransaction);
         }
@@ -374,7 +383,7 @@ function getkeyRangeSummary(period, range) {
   return {startKey, endKey};
 }
 
-async function getDailyAggregates(period, range) {
+async function getDailyAggregates(period, range, lifetime) {
   return new Promise(function (resolve, reject) {
     let data = [];
     const keys = getkeyRangeSummary(period, range);
@@ -393,8 +402,8 @@ async function getDailyAggregates(period, range) {
       } else {
         // add computer co2
         const dailyAggregates = data.map( entry => {
-          const computerCo2 = entry.duration * 6.57e-6; // constant value: ~6.57 [mg/sec]
-          const computerEnergy = entry.duration * 180e-6;// constant value: ~180 [J/sec]
+          const computerCo2 = co2ImpactHome(entry.duration, lifetime)
+          const computerEnergy = energyImpactHome(entry.duration, lifetime);
           return {
             ...entry,
             co2: entry.co2 + computerCo2,
@@ -409,7 +418,7 @@ async function getDailyAggregates(period, range) {
   });
 }
 
-async function getTodayCounter() {
+async function getTodayCounter(lifetime) {
   const today = new Date();
   const index = dateString(today);
   return new Promise(function (resolve) {
@@ -420,8 +429,8 @@ async function getTodayCounter() {
     historySummaryStore.get(index).onsuccess = function (event) {
       const summary = event.target.result;
       if (summary) {
-        const computerCo2 = summary.duration * 6.57e-6;// constant value: ~6.57 [mg/sec]
-        const computerEnergy = summary.duration * 180e-6;// constant value: ~180 [J/sec]
+        const computerCo2 = co2ImpactHome(summary.duration, lifetime)
+        const computerEnergy = energyImpactHome(summary.duration, lifetime);
         const counter = { co2: summary.co2 + computerCo2, energy: summary.energy + computerEnergy, data: summary.data };
         return resolve(counter);
       }
