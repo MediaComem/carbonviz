@@ -111,7 +111,10 @@
     "settings": {
       "usingSince": "Vous utilisez cet ordinateur depuis ",
       "usingUntil": "et prévoyez de l'utiliser encore",
-      "dataUseCase": "Cette donnée nous permet de mieux calculer l'énergie grise de votre activité liée à votre ordinateur. Si vous gardez votre ordinateur plus longtemps, la part de l'énergie et les ressources nécessaires à sa fabrication pour chaque activité sera réduite.",
+      "computerLifetimeDefault": "6 ans (par défaut)",
+      "computerUsageOneDay": "1 jour d'usage de l'ordinateur représente",
+      "dataUseCase": "Cette donnée nous permet de mieux calculer l'énergie grise de votre activité liée à votre ordinateur.",
+      "longerUsageTip": "En utilisant votre ordinateur plus longtemps, vous évitez la production de nouveaux appareils et économisez de grandes quantités d'énergie et de ressources nécessaires à la fabrication.",
       "showMiniViz": "Afficher MiniViz",
       "disablePlugin": "Désactiver le pluggin",
       "shareData": "Partager mes données",
@@ -141,7 +144,7 @@
     "data_journey": "Voyage des données",
     "downloaded": "téléchargés",
     "faq": "FAQ",
-    "history": "Histoire",
+    "history": "Historique",
     "internet": "Internet",
     "last": {
       "today": "Aujourd'hui",

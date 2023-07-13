@@ -39,7 +39,7 @@ export default {
     const height = computed(() => {
       switch(type.value) {
         case 'co2':
-          return layerHeightCo2(layerInfo.amount);
+          return layerHeightCo2(layerInfo.amount - layerInfo.computer);
         case 'data':
           return layerHeightData(layerInfo.amount);
         default:
@@ -79,29 +79,11 @@ export default {
       // check offset
       const layerPosition = stratum.value.getBoundingClientRect();
       let outerOffsetNeeded = 0;
-      switch(type.value) {
-        case 'co2': {
-          // co2 history stratum are on top
-          const availableHeight = historyHeight - layerPosition.top;
-          if (layerPosition.top + fullHeight > historyHeight) { // layer will be hidden at bottom when expanding
-            outerOffsetNeeded = fullHeight - availableHeight;
-          } else if (layerPosition.top < barHeight){ // top of the layer is already partially outside
-            outerOffsetNeeded = layerPosition.top - barHeight;
-          }
-        }
-        break;
-        case 'data': {
-          // data layer are at bottom and the animation container is offseted while navigating them
-          const availableHeight = historyHeight - layerPosition.top;
-          if (layerPosition.top + fullHeight > historyHeight) { // layer will be hidden at bottom when expanding
-            outerOffsetNeeded = fullHeight - availableHeight;
-          } else if (layerPosition.top < barHeight){ // top of the layer is already partially outside
-            outerOffsetNeeded = layerPosition.top - barHeight;
-          }
-        }
-        break;
-        default:
-          throw('Invalid layer type');
+      const availableHeight = historyHeight - layerPosition.top;
+      if (layerPosition.top + fullHeight > historyHeight) {
+        outerOffsetNeeded = fullHeight - availableHeight;
+      } else if (layerPosition.top < barHeight){
+        outerOffsetNeeded = layerPosition.top - barHeight;
       }
       if (!isExpanded) {
         emit('willExpand', outerOffsetNeeded);

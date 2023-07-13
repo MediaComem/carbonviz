@@ -8,7 +8,9 @@ const laptopPowerAdaptorEnergyConsumptionKWh = 0.001;
 const internetEquipmentEnergyConsumptionKWh = 0.005;
 const routerEnergyConsumptionKWh = 0.0076;
 
-const energyImpactHome = (timeElapsedSec, lifetime = lifetimeLaptopYears) => {
+const ONE_DAY_MEAN_COMPUTER_USAGE_SEC = 8 * 3600; // 1 day computer usage based on 8 hours
+
+const energyImpactHome = (timeElapsedSec = ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime = lifetimeLaptopYears) => {
   const timeHour = timeElapsedSec / 3600;
   // NRE stands for Non renewable primary energy
   // RE stands for renewable energy
@@ -48,7 +50,7 @@ const energyImpactHome = (timeElapsedSec, lifetime = lifetimeLaptopYears) => {
 }
 
 // get co2 emissions
-const co2ImpactHome = (timeElapsedSec, lifetime = lifetimeLaptopYears) => {
+const co2ImpactHome = (timeElapsedSec = ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime = lifetimeLaptopYears) => {
   const timeHour = timeElapsedSec / 3600;
   // Low voltage standard CH electricity
   const electricityCHLowFactor = 0.129;
