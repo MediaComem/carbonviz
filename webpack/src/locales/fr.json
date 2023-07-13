@@ -92,8 +92,9 @@
       }
     },
     "settings": {
-      "usingSince": "Vous utilisez cet ordinateur depuis le",
-      "dataUseCase": "Cette donnée nous permet de mieux calculer l'empreinte grise de votre activité",
+      "usingSince": "Vous utilisez cet ordinateur depuis ",
+      "usingUntil": "et prévoyez de l'utiliser encore",
+      "dataUseCase": "Cette donnée nous permet de mieux calculer l'énergie grise de votre activité liée à votre ordinateur. Si vous gardez votre ordinateur plus longtemps, la part de l'énergie et les ressources nécessaires à sa fabrication pour chaque activité sera réduite.",
       "showMiniViz": "Afficher MiniViz",
       "disablePlugin": "Désactiver le pluggin",
       "shareData": "Partager mes données",
@@ -117,6 +118,7 @@
     "current_week": "Cette semaine",
     "current_month": "Ce mois",
     "current_year": "Depuis Janvier {year}",
+    "years": "an(s)",
     "data": "Données",
     "data_journey": "Voyage des données",
     "downloaded": "téléchargés",
@@ -209,7 +211,7 @@
         "parameters_input": "<li>type d'ordinateur (portable ou de bureau)</li><li>durée de vie de l'ordinateur (amortissement de l'impact de la fabrication)</li><li>préiphériques additionnles (écran, souris, clavier)</li><li>origine de l'électricité utilisateur (mix électrique standard Suisse ou 100% renouvelable)</li><li>origine de l'électricité réseau (mix électrique standard Suisse ou Européen ou 100% renouvelable)</li><li>origine de l'électricité du centre de données (mix électrique standard Suisse, Européen ou 100% renouvelable)</li><li>quantité de données transférées</li>",
         "model_link": "La définition du modèle est disponible ici: ",
         "parameters_default": "Dans sa version générique, CarbonViz n'intègre pas tous ces paramètres et fixe des valeurs génériques pour certains d'entre eux. Par exemple, les paramètres suivants sont définis par défaut :",
-        "parameters_default_list": "<li>Ordinateur: ordinateur portable (durée de vie 6.5 ans – temps d'utilisation moyen 1917 heures/an)</li><li>Pas d'écran additionnel, clavier ou souris</li><li>Durée de vie routeur et point d'accès internet: 6 ans</li><li>Consommation électrique moyenne des centres de données: 6.16e-11 kWh/bytes</li><li>Consommation électrique moyenne du réseau d'infrastructure: 8.39e-11 kWh/bytes</li><li>Origine de l'électricité maison / bureau: mix électrique CH standard</li><li>Origine électricité réseau d'infrastructure: moyenne tension CH standard</li><li>Origine électricité centres de données: moyenne tension EU standard</li>",
+        "parameters_default_list": "<li>Ordinateur: ordinateur portable (durée de vie 6 ans – temps d'utilisation moyen 1917 heures/an)</li><li>Pas d'écran additionnel, clavier ou souris</li><li>Durée de vie routeur et point d'accès internet: 6 ans</li><li>Consommation électrique moyenne des centres de données: 6.16e-11 kWh/bytes</li><li>Consommation électrique moyenne du réseau d'infrastructure: 8.39e-11 kWh/bytes</li><li>Origine de l'électricité maison / bureau: mix électrique CH standard</li><li>Origine électricité réseau d'infrastructure: moyenne tension CH standard</li><li>Origine électricité centres de données: moyenne tension EU standard</li>",
         "parameters_customization": "Pour un déploiement au sein d'une entreprise, ces paramètres pourraient être adaptés. Par exemple, les paramètres suivants peuvent être personnalisés : spécifications de l'ordinateur, durée de vie de l'appareil, source d'électricité personnalisée pour le bureau dans le cas d'un mélange d'électricité connu."
       },
       "electricity": {

@@ -1,20 +1,13 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
 import { init as initDB, getTodayCounter } from "../storage/indexedDB.js";
+import { retrieveSettings } from "../webpack/src/utils/settings.js";
 
 // Note that since the switch to manifest v3, chrome extension API switched mostly to Promises (as Firefox)
 // And Firefox supports chrome.* namespace for API available in chrome and firefox
 // Only the path to the extension web pages is still different
 const isFirefox = typeof(browser) !== 'undefined';
 
-const usageDevicePerYear = 1917.3;
-const lifetimeLaptopYears = 6.5;
-const lifetimeInternetAccessEquipmentYears = 6;
-const lifetimeRouterYears = 6;
 
-const laptopEnergyConsumptionKWh = 0.03;
-const laptopPowerAdaptorEnergyConsumptionKWh = 0.001;
-const internetEquipmentEnergyConsumptionKWh = 0.005;
-const routerEnergyConsumptionKWh = 0.0076;
 
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
@@ -75,46 +68,6 @@ const saveToDump = (data) => {
   }
 }
 
-const energyImpactHome = (timeElapsed) => {
-  const timeHour = timeElapsed / (1000 * 3600);
-  // NRE stands for Non renewable primary energy
-  // RE stands for renewable energy
-  // Low voltage standard CH electricity
-  const electricityCHLowNRE = 7.0625547;
-  const electricityCHLowRE = 2.300712;
-
-  // setup: laptop + core network CH + data center EU
-  const impactManufacturingLaptopNRE = 2098.3146;
-  const impactManufacturingLaptopRE = 185.389;
-  const impactManufacturingPowerAdaptorLaptopNRE = 57.620504;
-  const impactManufacturingPowerAdaptorLaptopRE = 8.814852;
-
-  const laptopNREPerHour = (impactManufacturingLaptopNRE+impactManufacturingPowerAdaptorLaptopNRE)/(lifetimeLaptopYears*usageDevicePerYear);
-  const laptopREPerHour = (impactManufacturingLaptopRE+impactManufacturingPowerAdaptorLaptopRE)/(lifetimeLaptopYears*usageDevicePerYear);
-
-  const impactManufacturingInternetAccessEquipmentNRE = 98.930851;
-  const impactManufacturingInternetAccessEquipmentRE = 8.698307;
-
-  const internetEquipementNREPerHour = impactManufacturingInternetAccessEquipmentNRE/(lifetimeInternetAccessEquipmentYears*usageDevicePerYear);
-  const internetEquipementREPerHour = impactManufacturingInternetAccessEquipmentRE/(lifetimeInternetAccessEquipmentYears*usageDevicePerYear);
-
-  const impactManufacturingRouterNRE = 449.28912;
-  const impactManufacturingRouterRE = 39.83213;
-
-  const routerNREPerHour = impactManufacturingRouterNRE/(lifetimeRouterYears*usageDevicePerYear);
-  const routerREPerHour = impactManufacturingRouterRE/(lifetimeRouterYears*usageDevicePerYear);
-
-  const homeElectricityNREPerHour = (laptopEnergyConsumptionKWh + laptopPowerAdaptorEnergyConsumptionKWh + internetEquipmentEnergyConsumptionKWh + routerEnergyConsumptionKWh) * electricityCHLowNRE;
-  const homeElectricityREPerHour = (laptopEnergyConsumptionKWh + laptopPowerAdaptorEnergyConsumptionKWh + internetEquipmentEnergyConsumptionKWh + routerEnergyConsumptionKWh) * electricityCHLowRE;
-
-  const energyNREHomePerHour = laptopNREPerHour + internetEquipementNREPerHour + routerNREPerHour + homeElectricityNREPerHour;
-  const energyREHomePerHour = laptopREPerHour + internetEquipementREPerHour + routerREPerHour + homeElectricityREPerHour;
-
-  const energyNRE = energyNREHomePerHour * timeHour;
-  const energyRE = energyREHomePerHour * timeHour;
-  return { energyNRE, energyRE };
-}
-
 const energyImpactInternet = (bytes) => {
   // Medium voltage standard CH electricity
   const electricityCHMediumNRE = 6.7217031;
@@ -131,32 +84,6 @@ const energyImpactInternet = (bytes) => {
   const energyRE = coreNetworkElectricityRE + dataCenterElectricityRE;
 
   return { energyNRE, energyRE };
-}
-
-// get co2 emissions
-const co2ImpactHome = (timeElapsed) => {
-  const timeHour = timeElapsed / (1000 * 3600);
-  // Low voltage standard CH electricity
-  const electricityCHLowFactor = 0.129;
-
-  // setup: laptop + core network CH + data center EU
-  const impactManufacturingLaptop = 173.7;
-  const impactManufacturingPowerAdaptorLaptop = 4.7;
-  const lifetimeLaptopYears = 6.5;
-
-  const co2LaptopPerHour = (impactManufacturingLaptop+impactManufacturingPowerAdaptorLaptop)/(lifetimeLaptopYears*usageDevicePerYear);
-
-  const impactManufacturingInternetAccessEquipment = 7.7;
-
-  const co2InternetEquipementPerHour = impactManufacturingInternetAccessEquipment/(lifetimeInternetAccessEquipmentYears*usageDevicePerYear);
-
-  const impactManufacturingRouter = 35;
-
-  const co2RouterPerHour = impactManufacturingRouter/(lifetimeRouterYears*usageDevicePerYear);
-
-  const co2HomeElectricityPerHour = (laptopEnergyConsumptionKWh + laptopPowerAdaptorEnergyConsumptionKWh + internetEquipmentEnergyConsumptionKWh + routerEnergyConsumptionKWh) * electricityCHLowFactor;
-  const co2HomePerHour = co2LaptopPerHour + co2InternetEquipementPerHour + co2RouterPerHour + co2HomeElectricityPerHour;
-  return co2HomePerHour * timeHour;
 }
 
 // get co2 emissions
@@ -434,5 +361,6 @@ const addPluginToNewTab = async () => {
 }
 
 initDB().then( async () => {
-  statistics = await getTodayCounter();
+  const settings = await retrieveSettings();
+  statistics = await getTodayCounter(settings.lifetimeComputer);
 })
