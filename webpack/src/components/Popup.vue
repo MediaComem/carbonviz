@@ -101,7 +101,7 @@ export default {
 #tabs button {
   flex-grow: 1;
   color: var(--light-grey);
-  font-size: 22px;
+  font-size: 20px;
 }
 #tabs button.activeTab {
   color: var(--black);

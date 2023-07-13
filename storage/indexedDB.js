@@ -6,6 +6,7 @@ if ('webkitIndexedDB' in window) {
 }
 */
 import { energyImpactHome, co2ImpactHome} from '../model/model.js'
+const ONE_DAY_MEAN_COMPUTER_USAGE_SEC = 8 * 3600; // 1 day computer usage based on 8 hours
 
 const co2HistoryDB = {
   db: null
@@ -402,8 +403,8 @@ async function getDailyAggregates(period, range, lifetime) {
       } else {
         // add computer co2
         const dailyAggregates = data.map( entry => {
-          const computerCo2 = co2ImpactHome(entry.duration, lifetime)
-          const computerEnergy = energyImpactHome(entry.duration, lifetime);
+          const computerCo2 = co2ImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime)
+          const computerEnergy = energyImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime);
           return {
             ...entry,
             co2: entry.co2 + computerCo2,
@@ -429,8 +430,8 @@ async function getTodayCounter(lifetime) {
     historySummaryStore.get(index).onsuccess = function (event) {
       const summary = event.target.result;
       if (summary) {
-        const computerCo2 = co2ImpactHome(summary.duration, lifetime)
-        const computerEnergy = energyImpactHome(summary.duration, lifetime);
+        const computerCo2 = co2ImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime)
+        const computerEnergy = energyImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime);
         const counter = { co2: summary.co2 + computerCo2, energy: summary.energy + computerEnergy, data: summary.data };
         return resolve(counter);
       }
@@ -494,37 +495,6 @@ async function getAggregate(mode = 'co2', table='domains') {
   });
 }
 
-async function getCurWeekHistory() {
-  // Ceate a date one week ago at the begening of the day
-  const date = new Date();
-  date.setHours(0,0,0,0);
-  date.setDate(date.getDate() - 6);
-  const startTime = dateToISOLocal(date).substring(0, 13);
-
-  return new Promise(function (resolve) {
-    const db = co2HistoryDB.db;
-    const trans = db.transaction(["history"], "readonly");
-    const store = trans.objectStore("history");
-    const index = store.index('by_index');
-    const dbCursor = index.openCursor(null, "prev");
-    const data = [];
-    const computerCo2 = 3600 * 6.57e-6; // constant value: ~6.57 [mg/sec] * 3600 seconds
-    dbCursor.onsuccess = event => {
-      const cursor = event.target.result;
-      if (cursor) {
-        if (cursor.value.index >= startTime) {
-          let obj = {...cursor.value};
-          obj.co2 += computerCo2;
-          data.push(obj);
-        }
-        if (cursor.value.index > startTime) { cursor.continue(); return; }
-      }
-      return resolve(data);
-    };
-    dbCursor.onerror = error => reject(error);
-  });
-}
-
 async function downloadData(dbStore) {
   return new Promise(function (resolve, reject) {
     let data = [];
@@ -545,4 +515,4 @@ async function downloadData(dbStore) {
   });
 }
 
-export { init, getLastStoredEntries, updateData, getDailyAggregates, getTodayCounter, deleteData, getWebsites, getAggregate, getCurWeekHistory, downloadData }
+export { init, getLastStoredEntries, updateData, getDailyAggregates, getTodayCounter, deleteData, getWebsites, getAggregate, downloadData }

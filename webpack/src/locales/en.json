@@ -94,7 +94,10 @@
     "settings": {
       "usingSince": "You have been using this computer for",
       "usingUntil": "and plan to use it for another",
-      "dataUseCase": "This data allows us to better calculate the gray footprint of your activity",
+      "computerLifetimeDefault": "6 years (default)",
+      "computerUsageOneDay": "1 day of computer usage represents",
+      "dataUseCase": "This data allows us to better calculate the gray footprint of your activity associated with your computer",
+      "longerUsageTip": "By keeping your computer longer, you avoid having to produce new equipment and save a lot of energy and resources in the manufacturing process.",
       "showMiniViz": "Show MiniViz",
       "disablePlugin": "Disable plugin",
       "shareData": "Share my data",

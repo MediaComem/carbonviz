@@ -53,6 +53,7 @@ export default {
           offsetX: 10,
           offsetY: 8,
           style: {
+            background: '#f8f8f8',
             color: '#616161',
             fontFamily: 'Roboto, Arial, sans-serif'
           },
@@ -92,20 +93,32 @@ export default {
 
     // Should it be dynamic depending on value range?
     const yAxisCo2 = {
+      tickAmount: 3,
       labels: {
-            maxWidth: 20,
-            formatter: (value) => {
-                return (1000 * value).toFixed().toString();
-            }
+        maxWidth: 40,
+        offsetX: 5,
+        offsetY: 2,
+        formatter: (value) => {
+          if (value === 0) {
+            return '';
           }
+          return formatCo2(value, 0);
+        }
+      }
     };
     const yAxisData = {
+      tickAmount: 4,
       labels: {
-            maxWidth: 20,
-            formatter: (value) => {
-              return (value / 1000000).toFixed().toString();
-            }
+        maxWidth: 40,
+        offsetX: 5,
+        offsetY: 2,
+        formatter: (value) => {
+          if (value === 0) {
+            return '';
           }
+          return formatSize(value, 0);
+        }
+      }
     };
     const yAxis = computed(() => type.value === 'co2' ? yAxisCo2 : yAxisData);
     const tooltipFormatter = (value) => {

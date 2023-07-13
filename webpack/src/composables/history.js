@@ -1,15 +1,17 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { retrieveHistoryLayers } from './storage';
+import { co2ImpactHome } from '../../../model/model.js'
 
 const MAX_HEIGHT = 150;
 
 const layerHeightCo2 = (amount) => {
-  const height = 25 + (amount / 0.9) * MAX_HEIGHT; // min 25px, max 150 px for 900g CO2eq ( 8h laptop consumption no activities ~ 200g)
+  // amount is the co2 impact without computer daily embodied energy
+  const height = 25 + (amount / 0.05) * MAX_HEIGHT; // min 25px, max 175 px for 50g CO2eq ( 8h laptop consumption no activities ~ 200g)
   return Math.min(height, MAX_HEIGHT);
 }
 
 const layerHeightData = (amount) => {
-  const height = 25 + (amount / (1*750000000)) * MAX_HEIGHT; // min 25px, max 150 px for 750MB
+  const height = 25 + (amount / (1*750000000)) * MAX_HEIGHT; // min 25px, max 175 px for 750MB
   return Math.min(height, MAX_HEIGHT);
 }
 

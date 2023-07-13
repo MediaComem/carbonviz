@@ -1,5 +1,5 @@
 import { days } from '../utils/format';
-import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getAggregate, getTodayCounter, getWebsites, getCurWeekHistory } from '../../../storage/indexedDB';
+import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getAggregate, getTodayCounter, getWebsites } from '../../../storage/indexedDB';
 import { retrieveSettings } from '../utils/settings.js';
 
 let database;
@@ -180,25 +180,6 @@ export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity
 
     return result;
 }
-export const getCurWeek = async (mode = 'co2') => {
-    database ??= await initDB();
-    let history = await getCurWeekHistory(mode);
-    // build 24h history for 7 days filled with 0 if no data
-    const byHours = [];
-    for (let h = 0; h < 24; h++) byHours.push(Array(7).fill(0));
-    // Ceate a date one week ago at the begening of the day
-    const date = new Date();
-    date.setHours(0,0,0,0);
-    date.setDate(date.getDate() - 6);
-    for (const entry of history) {
-        // Put the history data to the right hour's index in the right day's index
-        const d = new Date(entry.index + ':00:00');
-        const diffInTime = d.getTime() - date.getTime();
-        const indDay = Math.ceil(diffInTime / 86400000) - 1 ;
-        byHours[entry.hour][indDay] = mode == 'co2' ? entry.co2 : entry.data;
-    }
-    return byHours;
-}
 
 export const retrieveHistoryLayers = async (period, scrollCount) => {
     const year = new Date().getFullYear();
@@ -221,8 +202,8 @@ export const retrieveHistoryLayers = async (period, scrollCount) => {
 
     const getDaysList = () => {
         for(let data of dailyData) {
-            layersCo2.push({ amount: data.co2, computer: data.computer.co2, energy: data.energy, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `co2Day${data.date}` });
-            layersData.push({ amount: data.data, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `dataDay${data.date}`  });
+            layersCo2.push({ amount: data.co2, computer: data.computer.co2, energy: data.energy, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `co2Day${data.index}` });
+            layersData.push({ amount: data.data, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `dataDay${data.index}`  });
         }
         layersCo2[layersCo2.length-1].label = 'current_today';
         layersData[layersCo2.length-1].label = 'current_today';
