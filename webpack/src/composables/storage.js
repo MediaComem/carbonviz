@@ -1,9 +1,15 @@
 import { days } from '../utils/format';
-import { init as initDB, getDailyAggregates, getAggregate, getTodayCounter, getWebsites, getCurWeekHistory } from '../../../storage/indexedDB';
+import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getAggregate, getTodayCounter, getWebsites, getCurWeekHistory } from '../../../storage/indexedDB';
+import { retrieveSettings } from '../utils/settings.js';
 
 let database;
 
 const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+
+const getDailyAggregates = async (period, range) => {
+    const settings = await retrieveSettings();
+    return dailyAggregatesFromDB(period, range, settings.lifetimeComputer)
+}
 
 export const getLastDaysSummary = async(range) => {
     database ??= await initDB();
@@ -20,7 +26,8 @@ export const getLastDaysSummary = async(range) => {
 
 export const retrieveTodayCounter = async () => {
     database ??= await initDB();
-    return getTodayCounter();
+    const settings = await retrieveSettings();
+    return getTodayCounter(settings.lifetimeComputer);
 }
 
 // Retrieve top websites for all time

@@ -38,6 +38,7 @@
     {
       "resources": [
         "content/*",
+        "model/*",
         "unplug/js/*",
         "unplug/assets/*",
         "icons/*",
