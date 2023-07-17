@@ -403,10 +403,15 @@ chrome.webRequest.onCompleted.addListener(
 
 chrome.runtime.onMessage.addListener(handleMessage);
 
-// Set up a notification every Monday at 9am
-chrome.alarms.create('weeklyAlarm', {
-  when: getNextMonday9AM().getTime(), // Set the alarm to trigger the next Monday at 9 AM
-  periodInMinutes: NotificationIntervalMins
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
+    return;
+  }
+  // Set up a notification every Monday at 9am
+  chrome.alarms.create('weeklyAlarm', {
+    when: getNextMonday9AM().getTime(), // Set the alarm to trigger the next Monday at 9 AM
+    periodInMinutes: NotificationIntervalMins
+  });
 });
 
 chrome.alarms.onAlarm.addListener(alarm => {

@@ -46,7 +46,10 @@
       "scrollEnd": "No more data to load"
     },
     "miniViz": {
-      "description": "You have released {data} in {time} That is the equivalent of {amount}"
+      "description": {
+        "co2": "You have released {data} of co2 in {time} That is the equivalent of {amount}",
+        "data": "You have consumed {data} of data in {time} That is the equivalent of {amount}"
+      }
     },
     "popup": {
       "messages": {

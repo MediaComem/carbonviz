@@ -1,29 +1,40 @@
  <template>
-  <dialog id="notificationDialog">
-    <form method="dialog">
-      <div v-for="item in notification">
-        <h3 class="title"> {{ item.title }} {{ item.date }}</h3>
-        <span v-html="item.messageHTML" class="message"></span>
-      </div>
-      <button class="button" value="cancel">{{ t('global.close') }}</button>
-    </form>
-  </dialog>
   <div class="extension">
-    <div class="miniviz" :class="{ 'hidden': showInteraction}" id="miniViz_container" @mouseover="hideAnimation" @click="onMiniVizClick">
-      <div class="anim" :class=" dataType === 'data' ? 'data' : 'co2'">
-        <img v-for="(item, index) in iconBar" key="item" class="image" :class="currentMeter[item] ? 'fill': ''" :src="asset" height="20" width="20">
+    <div class="miniviz" :class="{ 'hidden': showInteraction}" id="miniViz_container" @mouseover="showDescAnimation" @click="onMiniVizClick">
+      <div class="anim" :class="dataType === 'data' ? 'data' : 'co2'">
+        <img v-for="(item, index) in iconBar" key="item" class="image" :class="currentMeter[dataType][item] ? 'fill': ''" :src="asset" height="20" width="20">
       </div>
-      <div id="description" :class=" dataType === 'data' ? 'data' : 'co2'">
+      <div
+        id="description"
+        :class="{
+          hidden: !showDescription,
+          co2: dataType === 'co2',
+          data: dataType === 'data',
+        }"
+      >
         <img class="image" :src="asset" height="40" width="40">
-        <p>{{ t('components.miniViz.description',
+        <p>{{ t(`components.miniViz.description.${dataType}`,
             {
-              data: dataType === 'co2' ? formatCo2(AnalogyDayTotals[dataType][activeIndex].amount) : formatSize(AnalogyDayTotals[dataType][activeIndex].amount),
-              time: format(AnalogyDayTotals.time),
-              amount: getAnalogyValue(customAnalogyNames, dataType, AnalogyDayTotals[dataType][activeIndex], activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, AnalogyDayTotals[dataType][activeIndex], activeIndex)
+              data: dataType === 'co2' ? formatCo2(dayTotals.energy) : formatSize(dayTotals.data),
+              time: format(dayTotals.time),
+              amount: getAnalogyValue(customAnalogyNames, dataType, dayTotals, activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, dayTotals, activeIndex)
             }
           )}}
         </p>
 
+      </div>
+      <div
+        id="notification"
+        :class="{
+          hidden: !showNotification,
+          co2: dataType === 'co2',
+          data: dataType === 'data',
+        }"
+      >
+        <div v-for="item in notification">
+          <h3 class="title"> {{ item.title }} {{ item.date }}</h3>
+          <span v-html="item.messageHTML" class="message"></span>
+        </div>
       </div>
     </div>
     <div class="actionContainer" v-if="interactive">
@@ -45,6 +56,7 @@
 <script lang='ts'>
 
 const HIDE_MINIVIZ_DELAY = 5000;
+const SHOW_DESC_NOTIF_DELAY = 10000;
 
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -60,25 +72,16 @@ export default {
     const color = ref('#333');
     const { t } = useI18n({});
     const today = new Date();
+    const showDescription = ref(false);
+    const showNotification = ref(false);
     const showInteraction = ref(false);
     const interactive = ref(false);
     let activeIndex = ref(0);
     let dataType = ref('co2');
-    const AnalogyDayTotals = ref({
-      co2: [
-        {
-          name: 'boiling',
-          amount: 0,
-          energy: 0
-        }
-      ],
-      data: [
-        {
-          name: 'music',
-          amount: 0,
-          energy: 0
-        }
-      ],
+    const dayTotals = ref({
+      co2: 0,
+      data: 0,
+      energy: 0,
       time: 0
     });
     const summary = ref({ data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
@@ -94,8 +97,12 @@ export default {
     );
     // Icon bar of 12
     const iconBar = [0,1,2,3,4,5,6,7,8,9,10,11];
-    let currentMeter = Array(12).fill(0);
-
+    let currentMeter = {
+      co2: Array(12).fill(0),
+      shownCo2Desc: false,
+      data: Array(12).fill(0),
+      shownDataDesc: false
+    }
     const analogies = analogyNames; // ** if we want to replace customAnalogyNames and incluide all analogies with some timer to switch betweem them
     const customAnalogyNames = {
       co2: ['boiling'],
@@ -103,44 +110,52 @@ export default {
     };
     const asset = computed(() => {
       if (dataType.value === 'co2') {
-        return chrome.runtime.getURL(`icons/analogies/${analogiesCo2[AnalogyDayTotals.value[dataType.value][activeIndex.value].name].asset}`);
-      } else
-        return chrome.runtime.getURL(`icons/analogies/${analogiesData[AnalogyDayTotals.value[dataType.value][activeIndex.value].name].asset}`);
+        return chrome.runtime.getURL(`icons/analogies/${analogiesCo2[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
+      } else {
+        return chrome.runtime.getURL(`icons/analogies/${analogiesData[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
+      }
     });
-    const hideAnimation = () => {
-      if (dataType.value === 'data') {
-        setTimeout( () => { dataType.value = 'co2'; }, 500);
-      } else { setTimeout( () => { dataType.value = 'data'; }, 500); }
-/*       showInteraction.value = true;
-      interactive.value = true;
-      setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY); */
+    const showDescAnimation = () => {
+      showDescription.value = true;
+      setTimeout( () => showDescription.value = false, SHOW_DESC_NOTIF_DELAY);
     };
     const onMiniVizClick = () => {
       showInteraction.value = true;
       interactive.value = true;
       setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY);
     };
-    const openTabExtension = () => {
-      chrome.runtime.sendMessage({ query: 'openExtension' });
-    };
 
-    function setMeter(size: number) {
-      const normalizedData = size % 12 || 12;
-      const index = 12 - normalizedData;
-      currentMeter.fill(0);
-      currentMeter.fill(1, index);
+    function switchDataType () {
+      if (dataType.value === 'co2') {
+        dataType.value = 'data';
+      } else { dataType.value = 'co2' }
     }
+    // switch dataType every 10mins
+    setInterval(function () { switchDataType(); }, 1000000);
 
     function updateIconBar() {
-      switch(dataType.value) {
-        case 'co2':
-          setMeter(parseInt(formatCo2(AnalogyDayTotals.value.co2[activeIndex.value].amount)));
-          break;
-        case 'data':
-          setMeter(parseInt(formatSize(AnalogyDayTotals.value.data[activeIndex.value].amount)));
-          break;
-        default:
-          return;
+      currentMeter.co2.fill(0);
+      currentMeter.data.fill(0);
+      const Co2Value = getAnalogyValue(customAnalogyNames, 'co2', dayTotals.value, activeIndex.value).amount;
+      const DataValue = getAnalogyValue(customAnalogyNames, 'data', dayTotals.value, activeIndex.value).amount;
+      const normalizedCo2 = Co2Value % 12 || 12;
+      const normalizedData = DataValue % 12 || 12;
+      const Co2Index = 12 - Math.floor(normalizedCo2);
+      const DataIndex = 12 - Math.floor(normalizedData);
+      currentMeter.co2.fill(1, Co2Index);
+      currentMeter.data.fill(1, DataIndex);
+      // Switch display to data type which has maxed (0 index) to show its desc
+      Co2Index ? dataType.value = 'data' : dataType.value = 'co2';
+      // Display description when bar is full once per cycle
+      if(Co2Index === 0 && !currentMeter.shownCo2Desc) {
+        currentMeter.shownCo2Desc = true;
+        showDescAnimation();
+      } else if (DataIndex === 0 && !currentMeter.shownDataDesc) {
+        currentMeter.shownDataDesc = true;
+        showDescAnimation();
+      } else {
+        currentMeter.shownCo2Desc = false;
+        currentMeter.shownDataDesc = false;
       }
     }
 
@@ -194,37 +209,33 @@ export default {
       return data;
     }
 
-    async function showNotification() {
+    async function displayNotification() {
       notification.value = await fetchNotificationData();
-      const openTabDialog = window.document.getElementById("notificationDialog") as HTMLDialogElement;
-      if (typeof openTabDialog.showModal === "function") {
-        if (!openTabDialog.open) {
-          openTabDialog.showModal();
-        }
-      }
+      showNotification.value = true;
+      setTimeout( () => showNotification.value = false, SHOW_DESC_NOTIF_DELAY);
     }
 
     chrome.runtime.onMessage.addListener(request => {
       if (request.total) {
-        // Update stats
+        // Update stats with todays totals
         const stats = request.total;
         if (stats?.extraInfo?.tabIcon?.startsWith('chrome-extension:')) return;
-        AnalogyDayTotals.value.co2[activeIndex.value].amount = stats.co2;
-        AnalogyDayTotals.value.co2[activeIndex.value].energy = stats.energy;
-        AnalogyDayTotals.value.data[activeIndex.value].amount = parseInt(stats.data);
-        AnalogyDayTotals.value.data[activeIndex.value].energy = stats.energy;
-        AnalogyDayTotals.value.time = stats.time;
+        dayTotals.value = {...stats}
         updateIconBar();
       }
       if (request.notification) {
         summary.value = request.notification.currentWeek;
         trend.value = request.notification.lastWeek;
-        showNotification();
+        displayNotification();
       }
     });
 
-    return { color, asset, iconBar, currentMeter, showInteraction, interactive, customAnalogyNames, AnalogyDayTotals, dataType, activeIndex, notification,
-      formatCo2, formatSize, format, openTabExtension, hideAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText }
+    const openTabExtension = () => {
+      chrome.runtime.sendMessage({ query: 'openExtension' });
+    };
+
+    return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames, dayTotals, dataType, activeIndex, notification,
+      formatCo2, formatSize, format, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText }
   }
 }
 </script>
@@ -266,9 +277,9 @@ export default {
 .miniviz {
   all: initial;
   position: fixed;
-  top: 20%;
+  top: 5%;
   right: 5px;
-  height: 80px;
+  height: auto;
   max-height: 130px;
   width: 270px;
   z-index: 10000;
@@ -278,6 +289,7 @@ export default {
 }
 .anim {
   display: flex;
+  border-radius: 10px;
   justify-content: space-evenly;
   margin-bottom: 1px;
   background-color: var(--co2);
@@ -291,16 +303,23 @@ export default {
     opacity: 1;
   }
 }
-.miniviz #description {
+.miniviz #description, .miniviz #notification {
   display: flex;
+  border-radius: 10px;
   justify-content: space-evenly;
   align-items: center;
   color: white;
   height: 50px;
   max-height: 100px;
   background-color: var(--co2Active);
+  transition: height 1s linear, opacity 1.5s linear;
+  opacity: 1;
   &.data {
     background-color: var(--dataActive);
+  }
+  &.hidden {
+    height: 0px;
+    opacity: 0;
   }
   & .image, p {
     margin: 5px;

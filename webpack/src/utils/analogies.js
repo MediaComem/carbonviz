@@ -1,6 +1,6 @@
 import { roundToPrecision } from '../utils/format.js'
 /*
-*   When updating analogies please be aware of the *analogiesData* object in webpack\src\pages\Method.vue 
+*   When updating analogies please be aware of the *analogiesData* object ex: webpack\src\pages\FAQ.vue
 */
 
 // kwPerUnit
@@ -198,7 +198,7 @@ export function getAnalogyValue(customAnalogyNames, dataType, value, activeIndex
     }
     else {
       // data in MB for analogies
-      const amountData = value.amount / 1000000;
+      const amountData = value.data / 1000000;
       const currentAnalogy = customAnalogyNames.data[activeIndex];
       const mbPerUnit = mbPerUnitData[currentAnalogy];
       const  { amount, unit } = computeAnalogy(currentAnalogy, amountData, mbPerUnit);

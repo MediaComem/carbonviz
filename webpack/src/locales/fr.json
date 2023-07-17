@@ -46,7 +46,10 @@
       "scrollEnd": "Pas d’autres données à charger"
     },
     "miniViz": {
-      "description": "Vous avez dégagé {data} en {time} Soit l'équivalent de {amount}"
+      "description": {
+        "co2": "Vous avez dégagé {data} de co2 en {time} Soit l'équivalent de {amount}",
+        "data": "Vous avez consommé {data} de data en {time} Soit l'équivalent de {amount}"
+      }
     },
     "popup": {
       "messages": {
