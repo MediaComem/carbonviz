@@ -1,10 +1,11 @@
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import History from './History.vue';
 import Analogies from './Analogies.vue';
 import Trends from './Trends.vue';
 import Settings from './Settings.vue';
+import { saveSettings, retrieveSettings } from '../utils/settings.js';
 import { setup as setupExtensionTab } from '../composables/tab';
 
 export default {
@@ -16,8 +17,14 @@ export default {
     const { t, locale } = useI18n();
 
     function changeLang(lang) {
-      this.locale = lang;
+      saveSettings('lang', lang);
+      locale.value = lang;
     }
+
+    onMounted(async () => {
+      const settings = await retrieveSettings();
+      locale.value = settings.lang;
+    });
 
     function viewChange (newTab) {
       currentView.value = newTab;

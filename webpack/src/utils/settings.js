@@ -5,7 +5,8 @@ let settings = {
   lifetimeComputer: 6,
   computer: 'laptop',
   showMiniviz: true,
-  deactivateUntil: undefined
+  deactivateUntil: undefined,
+  lang: 'fr'
 }
 
 const saveSettings = async (key, value) => {

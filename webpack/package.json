@@ -33,7 +33,6 @@
     "client-zip": "^2.4.4",
     "dayjs": "^1.11.8",
     "element-plus": "^2.3.0",
-    "format-duration": "^2.0.0",
     "vue": "^3.2.0",
     "vue-i18n": "^9.2.2",
     "vue3-apexcharts": "^1.4.1"

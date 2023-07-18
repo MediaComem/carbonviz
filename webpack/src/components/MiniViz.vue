@@ -1,5 +1,5 @@
  <template>
-  <div class="extension">
+  <div class="extension" v-if="showMiniViz">
     <div class="miniviz" :class="{ 'hidden': showInteraction}" id="miniViz_container" @mouseover="showDescAnimation" @click="onMiniVizClick">
       <div class="anim" :class="dataType === 'data' ? 'data' : 'co2'">
         <img v-for="(item, index) in iconBar" key="item" class="image" :class="currentMeter[dataType][item] ? 'fill': ''" :src="asset" height="20" width="20">
@@ -16,7 +16,7 @@
         <p>{{ t(`components.miniViz.description.${dataType}`,
             {
               data: dataType === 'co2' ? formatCo2(dayTotals.energy) : formatSize(dayTotals.data),
-              time: format(dayTotals.time),
+              time: createTimeString(dayTotals.time),
               amount: getAnalogyValue(customAnalogyNames, dataType, dayTotals, activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, dayTotals, activeIndex)
             }
           )}}
@@ -58,10 +58,10 @@
 const HIDE_MINIVIZ_DELAY = 5000;
 const SHOW_DESC_NOTIF_DELAY = 10000;
 
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import format from 'format-duration';
 import { formatSize, formatCo2 } from '../utils/format';
+import { retrieveSettings } from '../utils/settings.js';
 import { analogiesCo2, analogiesData, analogyNames, getAnalogyValue, getAnalogyText } from '../utils/analogies';
 
 export default {
@@ -70,8 +70,8 @@ export default {
   setup(props) {
     // Setup color theme
     const color = ref('#333');
-    const { t } = useI18n({});
-    const today = new Date();
+    const { t, locale } = useI18n();
+    const showMiniViz = ref(true);
     const showDescription = ref(false);
     const showNotification = ref(false);
     const showInteraction = ref(false);
@@ -108,6 +108,10 @@ export default {
       co2: ['boiling'],
       data: ['music' ]
     };
+
+    retrieveSettings().then(settings => {
+      showMiniViz.value = settings.showMiniviz;
+    });
     const asset = computed(() => {
       if (dataType.value === 'co2') {
         return chrome.runtime.getURL(`icons/analogies/${analogiesCo2[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
@@ -157,6 +161,17 @@ export default {
         currentMeter.shownCo2Desc = false;
         currentMeter.shownDataDesc = false;
       }
+    }
+
+    function createTimeString(milliseconds: number) {
+      const dateObject = new Date(milliseconds);
+      if (dateObject.getHours() > 0) {
+          return dateObject.getHours() + 'h' + ' ' + dateObject.getMinutes() + 'min';
+        } else if (dateObject.getMinutes() > 0) {
+          return dateObject.getMinutes() + 'min' + ' ' + dateObject.getSeconds() + 's';
+        } else {
+          return dateObject.getSeconds() + 's';
+        }
     }
 
     async function fetchNotificationData() {
@@ -234,8 +249,14 @@ export default {
       chrome.runtime.sendMessage({ query: 'openExtension' });
     };
 
-    return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames, dayTotals, dataType, activeIndex, notification,
-      formatCo2, formatSize, format, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText }
+    onMounted(async () => {
+      const settings = await retrieveSettings();
+      locale.value = settings.lang;
+    });
+
+    return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames,
+      dayTotals, dataType, activeIndex, notification, showMiniViz,
+      formatCo2, formatSize, createTimeString, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText }
   }
 }
 </script>
