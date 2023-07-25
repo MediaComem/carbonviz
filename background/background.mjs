@@ -1,13 +1,15 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
 import { init as initDB, getTodayCounter, getDailyAggregates } from "../storage/indexedDB.js";
 import { retrieveSettings } from "../webpack/src/utils/settings.js";
+import { saveNotifications, retrieveNotifications } from '../webpack/src/utils/offlineNotifications.js';
 
 // Note that since the switch to manifest v3, chrome extension API switched mostly to Promises (as Firefox)
 // And Firefox supports chrome.* namespace for API available in chrome and firefox
 // Only the path to the extension web pages is still different
 const isFirefox = typeof(browser) !== 'undefined';
 
-
+const dailyNotificationURL = 'http://localhost:8000/data.json';
+const notificationIcon = '../icons/logos/carbonViz-48.png'  //'../icons/logos/logo-equiwatt-large.png';
 
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
@@ -23,7 +25,16 @@ chrome.storage.local.get(['minivizOptions']).then(storage => {
   if (minivizPreviousState) {
     minivizOptions = JSON.parse(minivizPreviousState);
   }
-})
+});
+
+let failedNotifications = {
+  weeklynotificationTimeStamp: '',
+  dailyNotificationTimeStamp: ''
+};
+
+retrieveNotifications().then(notifications => {
+  failedNotifications = notifications;
+});
 
 let dump = [];
 let co2ComputerInterval;
@@ -31,7 +42,8 @@ const co2ComputerIntervalMs = 2000;
 let lastCo2Tick = new Date();
 let writeDataInterval;
 const writingIntervalMs = 60000;
-const NotificationIntervalMins = 10080; // Set the alarm to repeat every week (7 days * 24 hours * 60 minutes = 10080 minutes)
+const weeklyIntervalMins = 10080; // Set the alarm to repeat every week (7 days * 24 hours * 60 minutes = 10080 minutes)
+const dailyIntervalMins = 1440;
 
 let statistics = { co2: 0, data: 0};
 
@@ -335,39 +347,73 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
     return;
   }
   // Set up a notification every Monday at 9am
-  chrome.alarms.create('weeklyAlarm', {
-    when: getNextMonday9AM().getTime(), // Set the alarm to trigger the next Monday at 9 AM
-    periodInMinutes: NotificationIntervalMins
+  chrome.alarms.create('weeklynotification', {
+    when: getNextMonday9AM().getTime(), // Set the alarm to trigger next Monday at 9 AM
+    periodInMinutes: weeklyIntervalMins
+  });
+  // Set up a notification daily
+  chrome.alarms.create('dailyNotification', {
+    when: new Date().setHours(8, 0, 0, 0), // Set the alarm to trigger the next Monday at 9 AM
+    periodInMinutes: dailyIntervalMins
   });
 });
 
 chrome.alarms.onAlarm.addListener(alarm => {
-  if (alarm.name === 'weeklyAlarm') {
+  if (alarm.name === 'weeklynotification') {
     chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
       const activeTab = tabs[0];
       if(activeTab?.id) {
-        let weekData = await getDailyAggregates('day',[-7, 0]);
-        weekData = weekData.reduce((acc, day) => {
-          return {
-              data: acc.data + day.data,
-              energy: acc.energy + day.energy,
-              co2: acc.co2 + day.co2,
-              computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
-          }
-        }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
-
-        let lastWeekData = await getDailyAggregates('day',[-14, -7]);
-        lastWeekData = lastWeekData.reduce((acc, day) => {
-          return {
-              data: acc.data + day.data,
-              energy: acc.energy + day.energy,
-              co2: acc.co2 + day.co2,
-              computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
-          }
-        }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
-        sendMessageToTab(activeTab.id, { notification: {currentWeek: weekData, lastWeek: lastWeekData} });
+        sendWeeklyNotification(activeTab.id);
+      } else {
+        saveNotifications('weeklynotificationTimeStamp', new Date().getTime());
+        chrome.notifications.create('weekly-' + new Date().getTime(), {
+          type: 'basic',
+          iconUrl: notificationIcon,
+          title: 'CarbonViz weekly notification',
+          message: 'Notification will be shown the next time you open a chrome broswer',
+          priority: 2,
+          buttons: [
+            { title: 'Ignore' },
+            { title: 'openTab' }
+          ]
+        })
       }
     });
+  }
+  if (alarm.name === 'dailyNotification') {
+    chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
+      const activeTab = tabs[0];
+      if(activeTab?.id) {
+        sendDailyNotification(activeTab.id);
+      } else {
+        saveNotifications('dailyNotificationTimeStamp', new Date().getTime());
+        chrome.notifications.create('weekly-' + new Date().getTime(), {
+          type: 'basic',
+          iconUrl: notificationIcon,
+          title: 'CarbonViz daily notification',
+          message: 'Notification will be shown the next time you open a chrome broswer',
+          priority: 2,
+          buttons: [
+            { title: 'Ignore' },
+            { title: 'openTab' }
+          ]
+        })
+      }
+    });
+  }
+});
+
+chrome.notifications.onButtonClicked.addListener(function(notifType, openTab) {
+  if (openTab) { // TBD what action do we want when user clicks for weekly or daily notifi...
+    notifType.startsWith('weekly') ? chrome.tabs.create({url: "https://www.equiwatt-lausanne.ch/"}) : chrome.tabs.create({url: "https://www.equiwatt-lausanne.ch/"});
+  }
+});
+
+// Check for failed messages on new tab
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  // make sure the status is 'complete' and it's the right tab
+  if (changeInfo.status == 'complete') {
+    checkFailedNotifications([tab]);
   }
 });
 
@@ -405,6 +451,62 @@ const addPluginToNewTab = async () => {
   else {
     createExtensionTab();
   }
+}
+
+const sendWeeklyNotification = async (activeTabId) => {
+  let weekData = await getDailyAggregates('day',[-7, 0]);
+  weekData = weekData.reduce((acc, day) => {
+    return {
+        data: acc.data + day.data,
+        energy: acc.energy + day.energy,
+        co2: acc.co2 + day.co2,
+        computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
+    }
+  }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+
+  let lastWeekData = await getDailyAggregates('day',[-14, -7]);
+  lastWeekData = lastWeekData.reduce((acc, day) => {
+    return {
+        data: acc.data + day.data,
+        energy: acc.energy + day.energy,
+        co2: acc.co2 + day.co2,
+        computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
+    }
+  }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+  saveNotifications('weeklynotificationTimeStamp', '');
+  sendMessageToTab(activeTabId, { weeklynotification: {currentWeek: weekData, lastWeek: lastWeekData} });
+}
+
+const sendDailyNotification = async (activeTabId) => {
+  let dataJSON =  await fetch(dailyNotificationURL).then((response) => {
+    if (response.ok) {
+      saveNotifications('dailyNotificationTimeStamp', '');
+      return response.json();
+    }
+    throw new Error('Failed to fetch dailyNotification');
+  })
+  .then((responseJson) => {
+    return responseJson.dailyNotifications;
+  })
+  .catch((error) => {
+    console.log(error)
+    return [];
+  })
+  sendMessageToTab(activeTabId, { dailyNotifications: {data: dataJSON} });
+}
+
+const checkFailedNotifications = async (tab = false) => {
+  failedNotifications = await retrieveNotifications();
+  let queryOptions = { active: true, lastFocusedWindow: true };
+  // `tab` will either be a `tabs.Tab` instance or `undefined`.
+  let activeTab = tab ? tab : await chrome.tabs.query(queryOptions);
+  if (activeTab[0].id && failedNotifications.dailyNotificationTimeStamp) {
+    sendDailyNotification(activeTab[0].id);
+    return; // User to acknowledge popup before replacing with weekly below.
+  };
+  if (activeTab[0].id && failedNotifications.weeklynotificationTimeStamp) {
+    sendWeeklyNotification(activeTab[0].id);
+  };
 }
 
 initDB().then( async () => {

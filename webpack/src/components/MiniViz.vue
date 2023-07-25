@@ -1,7 +1,7 @@
  <template>
   <div class="extension" v-if="showMiniViz">
-    <div class="miniviz" :class="{ 'hidden': showInteraction}" id="miniViz_container" @mouseover="showDescAnimation" @click="onMiniVizClick">
-      <div class="anim" :class="dataType === 'data' ? 'data' : 'co2'">
+    <div class="miniviz" :class="{ 'hidden': showInteraction}" id="miniViz_container">
+      <div class="anim" :class="dataType === 'data' ? 'data' : 'co2'" @mouseover="showDescAnimation" @click="onMiniVizClick">
         <img v-for="(item, index) in iconBar" key="item" class="image" :class="currentMeter[dataType][item] ? 'fill': ''" :src="asset" height="20" width="20">
       </div>
       <div
@@ -11,6 +11,7 @@
           co2: dataType === 'co2',
           data: dataType === 'data',
         }"
+        @click="onMiniVizClick"
       >
         <img class="image" :src="asset" height="40" width="40">
         <p>{{ t(`components.miniViz.description.${dataType}`,
@@ -30,8 +31,9 @@
           co2: dataType === 'co2',
           data: dataType === 'data',
         }"
+        @click="onNotificationClick"
       >
-        <div v-for="item in notification">
+        <div v-for="item in notification" class="notificationItem">
           <h3 class="title"> {{ item.title }} {{ item.date }}</h3>
           <span v-html="item.messageHTML" class="message"></span>
         </div>
@@ -95,6 +97,13 @@ export default {
         }
       ]
     );
+    let notificationDataJSON = [
+      {
+        date: '',
+        title: '',
+        messageHTML: ''
+      }
+    ];
     // Icon bar of 12
     const iconBar = [0,1,2,3,4,5,6,7,8,9,10,11];
     let currentMeter = {
@@ -127,6 +136,9 @@ export default {
       showInteraction.value = true;
       interactive.value = true;
       setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY);
+    };
+    const onNotificationClick = () => {
+      showNotification.value = false
     };
 
     function switchDataType () {
@@ -174,7 +186,7 @@ export default {
         }
     }
 
-    async function fetchNotificationData() {
+    function buildWeeklyNotification() {
       const Today = new Date();
       const TodayString = Today.toLocaleDateString();
       const LastWeek = new Date(Today.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -222,12 +234,40 @@ export default {
       ]
 
       return data;
-    }
+    };
 
-    async function displayNotification() {
-      notification.value = await fetchNotificationData();
-      showNotification.value = true;
-      setTimeout( () => showNotification.value = false, SHOW_DESC_NOTIF_DELAY);
+    function buildDailyNotification() { // TBD -- Do we want to change or validate the data??
+      return notificationDataJSON;
+    };
+
+    function DefaultNotification() {
+      return [{
+        date: '-',
+        title: "No data to display",
+        messageHTML: '-'
+      }]
+    };
+
+    async function displayNotification(type: string) {
+      switch(type) {
+        case 'weekly':
+          notification.value = await buildWeeklyNotification();
+          if(notification.value.length > 0) {
+            showNotification.value = true;
+            setTimeout( () => showNotification.value = false,  1000000);//SHOW_DESC_NOTIF_DELAY);
+          }
+          break;
+        case 'daily':
+          notification.value = await buildDailyNotification();
+          if(notification.value.length > 0) {
+            showNotification.value = true;
+          }
+          break;
+        default:
+          notification.value = DefaultNotification();
+          showNotification.value = true;
+          setTimeout( () => showNotification.value = false,  1000000);//SHOW_DESC_NOTIF_DELAY);
+      }
     }
 
     chrome.runtime.onMessage.addListener(request => {
@@ -238,10 +278,14 @@ export default {
         dayTotals.value = {...stats}
         updateIconBar();
       }
-      if (request.notification) {
-        summary.value = request.notification.currentWeek;
-        trend.value = request.notification.lastWeek;
-        displayNotification();
+      if (request.weeklynotification) {
+        summary.value = request.weeklynotification.currentWeek;
+        trend.value = request.weeklynotification.lastWeek;
+        displayNotification('weekly');
+      }
+      if (request.dailyNotifications) {
+        notificationDataJSON = request.dailyNotifications.data;
+        displayNotification('daily');
       }
     });
 
@@ -256,38 +300,14 @@ export default {
 
     return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames,
       dayTotals, dataType, activeIndex, notification, showMiniViz,
-      formatCo2, formatSize, createTimeString, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText }
+      formatCo2, formatSize, createTimeString, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText,
+      onNotificationClick
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-
-#notificationDialog {
-  font-family: initial;
-  max-width: 350px;
-  border-radius: 10px;
-  border-width: 1px;
-  .title {
-    font-weight: bold;
-    font-size: medium;
-    margin-bottom: 5px;
-  }
-  .message {
-    display: block;
-    font-size: medium;
-    margin-bottom: 5px;
-  }
-  .button {
-    float: right;
-    background: none;
-    color:black;
-    border: none;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-}
 .extension {
   all: initial;
 }
@@ -302,7 +322,8 @@ export default {
   right: 5px;
   height: auto;
   max-height: 130px;
-  width: 270px;
+  width: auto;
+  max-width: 500px;
   z-index: 10000;
   &.hidden {
     display: none;
@@ -313,6 +334,9 @@ export default {
   border-radius: 10px;
   justify-content: space-evenly;
   margin-bottom: 1px;
+  max-width: 270px;
+  margin-right: 0px;
+  margin-left: auto;
   background-color: var(--co2);
   &.data {
     background-color: var(--data);
@@ -330,22 +354,36 @@ export default {
   justify-content: space-evenly;
   align-items: center;
   color: white;
-  height: 50px;
-  max-height: 100px;
+  max-height: auto;
+  max-height: 500px;
   background-color: var(--co2Active);
-  transition: height 1s linear, opacity 1.5s linear;
+  transition: max-height 1.5s linear, opacity 1.5s linear;
   opacity: 1;
   &.data {
     background-color: var(--dataActive);
   }
   &.hidden {
-    height: 0px;
+    max-height: 0px;
     opacity: 0;
   }
   & .image, p {
     margin: 5px;
     line-height: normal;
     font-size: 12px;
+  }
+}
+.miniviz #description {
+  max-width: 270px;
+  margin-right: 0px;
+  margin-left: auto;
+  margin-bottom: 1px;
+}
+.miniviz #notification {
+  padding: 10px;
+  width: auto;
+  flex-wrap: wrap;
+  & .notificationItem {
+    flex-basis: 100%;
   }
 }
 .actionContainer {

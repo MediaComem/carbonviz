@@ -58,3 +58,11 @@
 .el-date-editor {
   --el-date-editor-width: 130px;
 }
+
+/* Miniviz styles for message HTML which is created after injection of miniViz styles from vue component */
+#notification.data .message a {
+  color: #00A0D6;
+}
+#notification.co2 .message a {
+  color: #52B788;
+}
