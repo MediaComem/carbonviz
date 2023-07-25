@@ -5,8 +5,7 @@ if ('webkitIndexedDB' in window) {
   window.IDBKeyRange = window.webkitIDBKeyRange;
 }
 */
-import { energyImpactHome, co2ImpactHome} from '../model/model.js'
-const ONE_DAY_MEAN_COMPUTER_USAGE_SEC = 8 * 3600; // 1 day computer usage based on 8 hours
+import { ONE_DAY_SEC, energyImpactHomeHardware, co2ImpactHomeHardware} from '../model/model.js'
 
 const co2HistoryDB = {
   db: null
@@ -67,13 +66,17 @@ const cleanData = async () => {
         const lastRunningDay = lastRunning.getDay();
         // check if we need to clear data from last week or last year
         if (month !== lastRunningMonth || week !== lastRunningWeek || day !== lastRunningDay) {
-          let clearTransaction = co2HistoryDB.db.transaction([`domains_month_${month}`, `domains_day_${day}`], "readwrite");
+          const days = [0,1,2,3,4,5,6];
+          const tables = [`domains_month_${month}`];
+          for (const day of days) {
+            tables.push(`domains_day_${day}`);
+          }
+          let clearTransaction = co2HistoryDB.db.transaction(tables, "readwrite");
           if (month !== lastRunningMonth) {
             const monthlyDomainStore = clearTransaction.objectStore(`domains_month_${month}`);
             monthlyDomainStore.clear();
           }
           if (week !== lastRunningWeek || day !== lastRunningDay) {
-            const days = [0,1,2,3,4,5,6];
             // check how many days the plugin was inactive to clear irrelevant data for last 7 days
             const nbDaysInactive = Math.floor((today - lastRunning) / (1000 * 3600 * 24));
             for (let inactiveDay = 0; inactiveDay < Math.min(nbDaysInactive, 7); inactiveDay++) {
@@ -403,8 +406,8 @@ async function getDailyAggregates(period, range, lifetime) {
       } else {
         // add computer co2
         const dailyAggregates = data.map( entry => {
-          const computerCo2 = co2ImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime)
-          const computerEnergy = energyImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime);
+          const computerCo2 = co2ImpactHomeHardware(ONE_DAY_SEC, lifetime);
+          const computerEnergy = energyImpactHomeHardware(ONE_DAY_SEC, lifetime);
           return {
             ...entry,
             co2: entry.co2 + computerCo2,
@@ -430,8 +433,8 @@ async function getTodayCounter(lifetime) {
     historySummaryStore.get(index).onsuccess = function (event) {
       const summary = event.target.result;
       if (summary) {
-        const computerCo2 = co2ImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime)
-        const computerEnergy = energyImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime);
+        const computerCo2 = co2ImpactHomeHardware(ONE_DAY_SEC, lifetime)
+        const computerEnergy = energyImpactHomeHardware(ONE_DAY_SEC, lifetime);
         const counter = { co2: summary.co2 + computerCo2, energy: summary.energy + computerEnergy, data: summary.data };
         return resolve(counter);
       }

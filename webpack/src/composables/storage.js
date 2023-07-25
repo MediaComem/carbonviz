@@ -1,6 +1,7 @@
 import { days } from '../utils/format';
 import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getAggregate, getTodayCounter, getWebsites } from '../../../storage/indexedDB';
 import { retrieveSettings } from '../utils/settings.js';
+import { ONE_DAY_SEC, co2ImpactHomeHardware} from '../../../model/model.js'
 
 let database;
 
@@ -11,17 +12,25 @@ const getDailyAggregates = async (period, range) => {
     return dailyAggregatesFromDB(period, range, settings.lifetimeComputer)
 }
 
-export const getLastDaysSummary = async(range) => {
+export const computerDailyEmbodiedCo2 = async () => {
+    const settings = await retrieveSettings();
+    return co2ImpactHomeHardware(ONE_DAY_SEC, settings.lifetimeComputer);
+}
+
+export const getLastDaysSummary = async (range) => {
     database ??= await initDB();
     const dailyData = await getDailyAggregates('day', range); // may contain holes for inactive days
+    // Add missing computer embodied energy for inactive days
+    const nbDaysInactive = range[1] - range [0] - dailyData.length;
+    const computerDailyCo2 = await computerDailyEmbodiedCo2();
+    dailyData.push({ data: 0, co2: nbDaysInactive * computerDailyCo2, computer: { co2: nbDaysInactive * computerDailyCo2 } });
     return dailyData.reduce((acc, day) => {
         return {
             data: acc.data + day.data,
-            energy: acc.energy + day.energy,
             co2: acc.co2 + day.co2,
-            computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
+            computer: { co2: acc.computer.co2 + day.computer.co2 }
         }
-    }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+    }, { data: 0, co2: 0, computer: { co2: 0}});
 }
 
 export const retrieveTodayCounter = async () => {
@@ -58,34 +67,25 @@ const arrayForPeriods = (granularity) => {
 // add computer energy as additionnal set
 // granularity: 'day' | 'month'
 // format is as expected by ApexChart in Statistics.vue component
+// computer embodied energy is assumed uniforms on its lifespan
 export const getComputerCo2Series = async (granularity = 'day') => {
     database ??= await initDB();
 
     const periods = arrayForPeriods(granularity); // Periods to retrieve (days 0 to 6 or months 1 to 12)
+    const computerDailyCo2 = await computerDailyEmbodiedCo2();
 
     const result = [];
 
     // Add computer active time energy for co2
     let dailyData;
     if (granularity === 'day') {
-        dailyData = await getDailyAggregates('week', [-1, 0]); // may contain holes for inactive days
-        const data =  new Array(periods.length).fill(0);
-        for (const info of dailyData) {
-            const dayOfWeek = info.dayOfWeek; // sunday is 0
-            data[dayOfWeek > 0 ? dayOfWeek - 1 : 6] = info.computer.co2;
-        }
+        const data =  new Array(periods.length).fill(computerDailyCo2);
         result.push({
             name: "computer",
             data
         });
     } else if (granularity === 'month') {
-        dailyData = await getDailyAggregates('month', [-12, 0]);
-        // aggregate per month
-        const data =  new Array(periods.length).fill(0);
-        for (const info of dailyData) {
-            const month = info.month;
-            data[month-1] += info.computer.co2;
-        }
+        const data =  new Array(periods.length).fill(30*computerDailyCo2);
         result.push({
             name: "computer",
             data
@@ -131,7 +131,7 @@ export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity
 
     // retrieve data from database
     for (const period of periods) {
-        const table = `domains_${granularity}_${period}`; // TODO fix inactive days may not be empty
+        const table = `domains_${granularity}_${period}`;
         const dailyData = await getWebsites(mode, limit, table);
         for (const website of dailyData) {
             const name = website.name;

@@ -1,6 +1,5 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { retrieveHistoryLayers } from './storage';
-import { co2ImpactHome } from '../../../model/model.js'
 
 const MAX_HEIGHT = 150;
 
