@@ -2,7 +2,7 @@
 import { ApexOptions } from 'apexcharts';
 import VueApexCharts from "vue3-apexcharts";
 import { ref, computed, watchEffect, toRefs, ComputedRef } from 'vue';
-import { getLastDaysSummary, getComputerCo2Series, getTopWebsitesSeries } from '../../../storage/storage';
+import { getLastDaysSummary, getComputerCo2Series, getTopWebsitesSeries, computerDailyEmbodiedCo2 } from '../../../storage/storage';
 import { useI18n } from 'vue-i18n';
 import PeriodPicker from './PeriodPicker.vue';
 import TypePicker from './PeriodPicker.vue';
@@ -31,11 +31,20 @@ export default {
   setup(props) {
     const { t } = useI18n({});
 
-    const { type, subtype, granularity, height } = toRefs(props);
+    const { type, subtype, granularity } = toRefs(props);
 
+    // Summary for the last 7 or 30 days
     const summary = ref({ data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
-    const nbActivePeriods = ref(1);
+    // Trends compared to the previous 7 or 30 days
     const trend =ref(0);
+
+    // Number of active days for weekly stats or month for yearly stats
+    const nbActivePeriods = ref(1);
+    // Total number of period (7 days or 12 months)
+    const nbPeriods = ref(1);
+    const nbDays = ref(1);
+    // Average per day or month
+    const averagePerPeriod = ref(0);
 
     const chart = ref(null);
 
@@ -189,10 +198,14 @@ export default {
         case 'day':
           summary.value = await getLastDaysSummary([-7, 0]);
           previousPeriod = await getLastDaysSummary([-14, -7]);
+          nbPeriods.value = 7;
+          nbDays.value = 7;
         break;
         case 'month':
           summary.value = await getLastDaysSummary([-30, 0]);
           previousPeriod = await getLastDaysSummary([-60, -30]);
+          nbPeriods.value = 12;
+          nbDays.value = 30 * 12;
         break;
       }
       switch(type.value) {
@@ -212,7 +225,7 @@ export default {
       }
       switch(subtype.value) {
         case 'web':
-          getTopWebsitesSeries(type.value, 4, granularity.value).then((seriesData: {name: String, data: [number]}[]) => {
+          getTopWebsitesSeries(type.value, 4, granularity.value).then(async (seriesData: {name: String, data: [number]}[]) => {
               series.value = seriesData;
               // update annotation with mean value
               // get number of active periods
@@ -223,8 +236,20 @@ export default {
                 }
               }
               nbActivePeriods.value = activePeriods.filter(e => e).length;
-              const total = seriesData.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
-              average.value = total / nbActivePeriods.value;
+              const totalWeb = seriesData.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
+              average.value = nbActivePeriods.value ? totalWeb / nbActivePeriods.value : 0;
+              switch(type.value) {
+                case 'co2':
+                  // for co2 we have to consider embodied energy in addition to web
+                  // and the fact that exist also for inactive period
+                  const computerDailyCo2 = await computerDailyEmbodiedCo2();
+                  averagePerPeriod.value = ( totalWeb + nbDays.value * computerDailyCo2 ) / nbPeriods.value;
+                  break;
+                case 'data':
+                  // for Data average per period is the same as the average per active period
+                  averagePerPeriod.value = average.value;
+                  break;
+              }
             });
           break;
         case 'computer':
@@ -241,9 +266,8 @@ export default {
         default:
           throw('Invalid trends type')
       }
-
     })
-    return { summary, trend, nbActivePeriods, type, granularity, chart, chartOptions, series, t, formatCo2, formatSize };
+    return { summary, averagePerPeriod, trend, nbActivePeriods, type, granularity, chart, chartOptions, series, t, formatCo2, formatSize };
   }
 }
 </script>
@@ -260,18 +284,18 @@ export default {
         <span v-if="granularity==='month'">{{ t('global.last.month') }}</span>
         <span class="computer" v-if="type==='co2'">&nbsp;incl. {{ formatCo2(summary.computer.co2, 0) }} {{ t('components.statistics.computerImpact') }}</span>
       </div>
-      <div class="average">{{ t(`components.statistics.${granularity}.average`) }}:
+      <div class="average">{{ t(`components.statistics.average`) }}:
         <span class="value">
-          <span v-if="type==='co2'">{{ formatCo2(summary.co2 / nbActivePeriods, 0) }}</span>
-          <span v-if="type==='data'">{{ formatSize(summary.data / nbActivePeriods, 0) }}</span>
+          <span v-if="type==='co2'">{{ formatCo2(averagePerPeriod, 0) }} / {{ t(`global.${granularity}`) }} </span>
+          <span v-if="type==='data'">{{ formatSize( averagePerPeriod, 0) }} / {{ t(`global.${granularity}`) }} </span>
         </span>
       </div>
-      <div class="trend-title">{{ t(`components.statistics.${granularity}.trend`) }}:</div>
+      <div class="trend-title">{{ t(`components.statistics.trend`) }}:</div>
       <div class="trend-value">
         <div v-if="trend">
           <span v-if="trend > 0">+</span>
           <span v-if="trend < 0">-</span>
-          {{ Math.round(Math.abs(100 * trend))}} % 
+          {{ Math.round(Math.abs(100 * trend))}} %
           <svg :class="trend > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
         </div>
         <div v-else>

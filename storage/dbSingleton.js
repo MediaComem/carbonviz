@@ -186,7 +186,12 @@ export class DBInstance {
           const lastRunningDay = lastRunning.getDay();
           // check if we need to clear data from last week or last year
           if (month !== lastRunningMonth || week !== lastRunningWeek || day !== lastRunningDay) {
-            let clearTransaction = DBInstance.db.transaction([`domains_month_${month}`, `domains_day_${day}`], "readwrite");
+            const days = [0,1,2,3,4,5,6];
+            const tables = [`domains_month_${month}`];
+            for (const day of days) {
+              tables.push(`domains_day_${day}`);
+            }
+            let clearTransaction = co2HistoryDB.db.transaction(tables, "readwrite");
             if (month !== lastRunningMonth) {
               const monthlyDomainStore = clearTransaction.objectStore(`domains_month_${month}`);
               monthlyDomainStore.clear();

@@ -69,6 +69,8 @@
       }
     },
     "statistics": {
+      "average": "Moyenne",
+      "trend": "Tendance",
       "days": {
         "Mon": "Lun.",
         "Tue": "Mar.",
@@ -94,13 +96,9 @@
         "Dec": "Déc."
       },
       "day": {
-        "average": "Moyenne hebdomadaire",
-        "trend": "Tendance hebdomadaire",
         "details": "Sur la base des 7 derniers jours"
       },
       "month": {
-        "average": "Moyenne mensuelle",
-        "trend": "Tendance mensuelle",
         "details": "Sur la base des 30 derniers jours"
       },
       "fromComputer": "de l'ordinateur",
@@ -140,6 +138,8 @@
     "current_month": "Ce mois",
     "current_year": "Depuis Janvier {year}",
     "years": "an(s)",
+    "day": "jour",
+    "month": "mois",
     "data": "Données",
     "data_journey": "Voyage des données",
     "downloaded": "téléchargés",

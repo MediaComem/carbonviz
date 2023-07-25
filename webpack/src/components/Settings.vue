@@ -5,7 +5,7 @@ import { Check, Close } from '@element-plus/icons-vue';
 import { ElConfigProvider, ElMessage } from 'element-plus';
 import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 import { formatCo2, roundToPrecision } from '../../../utils/format.js';
-import { co2ImpactHome } from '../../../model/model.js';;
+import { ONE_DAY_SEC, co2ImpactHomeHardware } from '../../../model/model.js';
 
 import en from 'element-plus/dist/locale/fr.mjs'
 import fr from 'element-plus/dist/locale/fr.mjs'
@@ -36,8 +36,8 @@ export default {
 		const yearsRemaining = ref(0);
   	const lifetimeLaptopYears = computed(() => yearsSincePurchase.value + yearsRemaining.value);
 
-		const co2ImpactDefault = co2ImpactHome( 8 * 3600 );
-		const co2ImpactCustom = computed(() => co2ImpactHome( 8 * 3600, lifetimeLaptopYears.value ));
+		const co2ImpactDefault = co2ImpactHomeHardware();
+		const co2ImpactCustom = computed(() => co2ImpactHomeHardware( ONE_DAY_SEC, lifetimeLaptopYears.value ));
 		const co2VsDefault = computed(() => {
 			const percent = ( co2ImpactCustom.value - co2ImpactDefault ) / co2ImpactDefault * 100;
 			return `${percent > 0 ? '+' : ''}${percent.toFixed(0)} %`

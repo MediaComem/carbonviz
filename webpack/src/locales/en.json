@@ -69,6 +69,8 @@
       }
     },
     "statistics": {
+      "average": "Average",
+      "trend": "Trend",
       "days": {
         "Mon": "Mon.",
         "Tue": "Tue.",
@@ -94,13 +96,9 @@
         "Dec": "Dec."
       },
       "day": {
-        "average": "Weekly average",
-        "trend": "Weekly trend",
         "details": "Based on the last 7 days"
       },
       "month": {
-        "average": "Monthly average",
-        "trend": "Monthly trend",
         "details": "Based on the last 30 days"
       },
       "fromComputer": "from computer",
@@ -140,6 +138,8 @@
     "current_month": "This month",
     "current_year": "Since January {year}",
     "years": "year(s)",
+    "day": "day",
+    "month": "month",
     "data": "Data",
     "data_journey": "Data's journey",
     "downloaded": "downloaded",

@@ -5,9 +5,8 @@ if ('webkitIndexedDB' in window) {
   window.IDBKeyRange = window.webkitIDBKeyRange;
 }
 */
-import { energyImpactHome, co2ImpactHome} from '../model/model.js'
 import { DBInstance } from './dbSingleton.js';
-const ONE_DAY_MEAN_COMPUTER_USAGE_SEC = 8 * 3600; // 1 day computer usage based on 8 hours
+import { ONE_DAY_SEC, energyImpactHomeHardware, co2ImpactHomeHardware} from '../model/model.js'
 
 function getMonday(date) {
   date = new Date(date);
@@ -220,8 +219,8 @@ async function getDailyAggregates(period, range, lifetime) {
       } else {
         // add computer co2
         const dailyAggregates = data.map( entry => {
-          const computerCo2 = co2ImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime)
-          const computerEnergy = energyImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime);
+          const computerCo2 = co2ImpactHomeHardware(ONE_DAY_SEC, lifetime);
+          const computerEnergy = energyImpactHomeHardware(ONE_DAY_SEC, lifetime);
           return {
             ...entry,
             co2: entry.co2 + computerCo2,
@@ -247,8 +246,8 @@ async function getTodayCounter(lifetime) {
     historySummaryStore.get(index).onsuccess = function (event) {
       const summary = event.target.result;
       if (summary) {
-        const computerCo2 = co2ImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime)
-        const computerEnergy = energyImpactHome(ONE_DAY_MEAN_COMPUTER_USAGE_SEC, lifetime);
+        const computerCo2 = co2ImpactHomeHardware(ONE_DAY_SEC, lifetime)
+        const computerEnergy = energyImpactHomeHardware(ONE_DAY_SEC, lifetime);
         const counter = { co2: summary.co2 + computerCo2, energy: summary.energy + computerEnergy, data: summary.data };
         return resolve(counter);
       }
