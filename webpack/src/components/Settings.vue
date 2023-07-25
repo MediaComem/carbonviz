@@ -3,8 +3,8 @@ import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Check, Close } from '@element-plus/icons-vue';
 import { ElConfigProvider , ElMessage } from 'element-plus';
-import { saveSettings, retrieveSettings } from '../utils/settings.js';
-import { formatCo2, roundToPrecision } from '../utils/format.js';
+import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
+import { formatCo2, roundToPrecision } from '../../../utils/format.js';
 import { co2ImpactHome } from '../../../model/model.js';;
 
 import en from 'element-plus/dist/locale/fr.mjs'

@@ -1,18 +1,21 @@
-import { days } from '../utils/format';
-import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getAggregate, getTodayCounter, getWebsites, getCurWeekHistory } from '../../../storage/indexedDB';
-import { retrieveSettings } from '../utils/settings.js';
+import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getAggregate, getTodayCounter, getWebsites, getCurWeekHistory } from './indexedDB.js';
+import { retrieveSettings } from '../settings/settings.js';
 
-let database;
 
 const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+const initStorage = async() => {
+    return initDB();
+}
 
 const getDailyAggregates = async (period, range) => {
     const settings = await retrieveSettings();
     return dailyAggregatesFromDB(period, range, settings.lifetimeComputer)
 }
 
-export const getLastDaysSummary = async(range) => {
-    database ??= await initDB();
+const getLastDaysSummary = async(range) => {
+    await initDB();
     const dailyData = await getDailyAggregates('day', range); // may contain holes for inactive days
     return dailyData.reduce((acc, day) => {
         return {
@@ -24,15 +27,15 @@ export const getLastDaysSummary = async(range) => {
     }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
 }
 
-export const retrieveTodayCounter = async () => {
-    database ??= await initDB();
+const retrieveTodayCounter = async () => {
+    await initDB();
     const settings = await retrieveSettings();
     return getTodayCounter(settings.lifetimeComputer);
 }
 
 // Retrieve top websites for all time
-export const getTopWebsites = async (mode = 'co2', limit = 10) => {
-    database ??= await initDB();
+const getTopWebsites = async (mode = 'co2', limit = 10) => {
+    await initDB();
     return await getWebsites(mode, limit, 'domains');
 }
 
@@ -58,8 +61,8 @@ const arrayForPeriods = (granularity) => {
 // add computer energy as additionnal set
 // granularity: 'day' | 'month'
 // format is as expected by ApexChart in Statistics.vue component
-export const getComputerCo2Series = async (granularity = 'day') => {
-    database ??= await initDB();
+const getComputerCo2Series = async (granularity = 'day') => {
+    await initDB();
 
     const periods = arrayForPeriods(granularity); // Periods to retrieve (days 0 to 6 or months 1 to 12)
 
@@ -102,8 +105,8 @@ export const getComputerCo2Series = async (granularity = 'day') => {
 //    {name: 'YouTube', data: [100, 50, 500, 200, 0, 100, 0]},
 //    {name: 'Divers', data: [600, 50, 200, 100, 150, 0, 0],
 //    {name: 'Computer', data: [1300, 500, 2000, 1000, 1500, 1000, 3000]}]
-export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity = 'day') => {
-    database ??= await initDB();
+const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity = 'day') => {
+    await initDB();
 
     const consumptionByWebsite = {}; // consumption by website (gggregated for the full period + detail per time entity)
     const totalPerTimeEntity = []; // total consumption per time entity (1 day or 1 month)
@@ -180,8 +183,8 @@ export const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity
 
     return result;
 }
-export const getCurWeek = async (mode = 'co2') => {
-    database ??= await initDB();
+const getCurWeek = async (mode = 'co2') => {
+    await initDB();
     let history = await getCurWeekHistory(mode);
     // build 24h history for 7 days filled with 0 if no data
     const byHours = [];
@@ -200,14 +203,14 @@ export const getCurWeek = async (mode = 'co2') => {
     return byHours;
 }
 
-export const retrieveHistoryLayers = async (period, scrollCount) => {
+const retrieveHistoryLayers = async (period, scrollCount) => {
     const year = new Date().getFullYear();
     const layersCo2 = [];
     const layersData = [];
     // min 3 months / max is one year
     const historyLimit = (3 + scrollCount) < 12 ? (3 + scrollCount) : 12;
 
-    database ??= await initDB();
+    await initDB();
 
     // get data (daily summaries) for the last 4 months
     const dailyData = await getDailyAggregates('month', [-historyLimit, 0]);
@@ -312,7 +315,7 @@ export const retrieveHistoryLayers = async (period, scrollCount) => {
 
 }
 
-export const retrieveAnalogiesLayer = async (type) => {
+const retrieveAnalogiesLayer = async (type) => {
     const consumedCo2 = {
         today: '',
         week: '',
@@ -326,7 +329,7 @@ export const retrieveAnalogiesLayer = async (type) => {
         year: ''
     };
 
-    database ??= await initDB();
+    await initDB();
 
     // get data (daily summaries) for the last month
     const dailyData = await getDailyAggregates('month', [-1, 0]);
@@ -392,3 +395,5 @@ export const retrieveAnalogiesLayer = async (type) => {
         return { data: consumedData };
     }
 }
+
+export { initStorage, getLastDaysSummary, retrieveTodayCounter, getTopWebsites, getComputerCo2Series, getTopWebsitesSeries, getCurWeek, retrieveHistoryLayers, retrieveAnalogiesLayer}

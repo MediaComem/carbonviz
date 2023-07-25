@@ -1,9 +1,9 @@
 <script>
 import { ref, toRefs, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { roundToPrecision } from '../utils/format.js';
-import { analogyNames, getAnalogyValue, getAnalogyText } from '../utils/analogies';
-import { retrieveAnalogiesLayer } from '../composables/storage';
+import { roundToPrecision } from '../../../utils/format.js';
+import { analogyNames, getAnalogyValue, getAnalogyText } from '../../../utils/analogies';
+import { retrieveAnalogiesLayer } from '../../../storage/storage';
 import Analogy from './Analogy.vue';
 import TypePicker from './TypePicker.vue';
 
