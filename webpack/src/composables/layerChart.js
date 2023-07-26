@@ -1,4 +1,4 @@
-import { formatSize, formatCo2} from '../utils/format';
+import { formatSize, formatCo2} from '../../../utils/format';
 
 const colorLabel = '#fff';
 const colorDataLabelCo2 = '#8B7B52';
