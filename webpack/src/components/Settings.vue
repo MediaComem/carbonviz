@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Check, Close } from '@element-plus/icons-vue';
-import { ElConfigProvider , ElMessage } from 'element-plus';
+import { ElConfigProvider, ElMessage } from 'element-plus';
 import { saveSettings, retrieveSettings } from '../utils/settings.js';
 import { formatCo2, roundToPrecision } from '../utils/format.js';
 import { co2ImpactHome } from '../../../model/model.js';;
@@ -31,15 +31,18 @@ export default {
 		const deviceMonthStart = ref(nowMinus6HalfYears);
 		const deviceMonthEnd = ref(now);
 		//const lifetimeLaptopYears = computed(()=> (deviceMonthEnd.value - deviceMonthStart.value)/(365.25 * 24 * 3600 * 1000));
+		const computer = ref('laptop');
 		const yearsSincePurchase = ref(6);
 		const yearsRemaining = ref(0);
-  	const lifetimeLaptopYears = computed(()=> yearsSincePurchase.value + yearsRemaining.value);
+		const lifetimeLaptopYears = computed(() => yearsSincePurchase.value + yearsRemaining.value);
 
-    retrieveSettings().then(settings => {
+		retrieveSettings().then(settings => {
 			yearsSincePurchase.value = settings.yearsSinceComputerPurchase;
 			yearsRemaining.value = settings.yearsComputerRemaining;
+			showMiniViz.value = settings.showMiniviz;
+			computer.value = settings.computer;
+			disablePeriod.value = settings.deactivateUntil;
 		});
-
 
 		const setMinvizDisplay = (status) => {
 			miniVizStatusUpdating.value = true;
@@ -69,16 +72,12 @@ export default {
 			saveSettings('yearsComputerRemaining', yearsRemaining.value);
 			saveSettings('lifetimeComputer', lifetimeLaptopYears.value);
 		}
-		onMounted(async () => {
-			// ** need to confirm user settings logic to store in local storage
-		});
 
 		return {
 			showMiniViz, miniVizStatusUpdating, shareData, shareDataStatusUpdating, disablePeriod, marks,
-			yearsSincePurchase, yearsRemaining, lifetimeLaptopYears, co2ImpactHome,
+			yearsSincePurchase, yearsRemaining, lifetimeLaptopYears, locale, en, fr,
 			Check, Close,
-			t, locale, en, fr,
-			roundToPrecision, formatCo2, setMinvizDisplay, setShareData, lifetimeUpdate
+			t, roundToPrecision, formatCo2, setMinvizDisplay, setShareData, lifetimeUpdate, co2ImpactHome
 		};
 	}
 }
@@ -93,7 +92,7 @@ export default {
 						<h3> {{ t('components.settings.usingSince') }} </h3>
 					</el-col>
 					<el-col :span="7">
-						<el-input-number v-model="yearsSincePurchase" :min="0" size="small" @change="lifetimeUpdate"/>
+						<el-input-number v-model="yearsSincePurchase" :min="0" size="small" @change="lifetimeUpdate" />
 					</el-col>
 					<el-col :span="2">
 						{{ t('global.years') }}
@@ -112,7 +111,7 @@ export default {
 						<h3> {{ t('components.settings.usingUntil') }} </h3>
 					</el-col>
 					<el-col :span="7">
-						<el-input-number v-model="yearsRemaining" :min="0" size="small" @change="lifetimeUpdate"/>
+						<el-input-number v-model="yearsRemaining" :min="0" size="small" @change="lifetimeUpdate" />
 					</el-col>
 					<el-col :span="2">
 						{{ t('global.years') }}
@@ -128,12 +127,14 @@ export default {
 				</el-row>
 				<p> {{ t('components.settings.dataUseCase') }} </p>
 				<el-row>
-					<el-col :span="12" justify="center" >6.5 years (default)</el-col>
-					<el-col :span="12" justify="center" > {{ roundToPrecision(lifetimeLaptopYears, 1) }} years </el-col>
+					<el-col :span="12" justify="center">6.5 years (default)</el-col>
+					<el-col :span="12" justify="center"> {{ roundToPrecision(lifetimeLaptopYears, 1) }} years </el-col>
 				</el-row>
 				<el-row>
-					<el-col :span="12">8 hours of computer usage represents: {{ formatCo2(co2ImpactHome( 8 * 3600 ), 0) }}</el-col>
-					<el-col :span="12">8 hours of computer usage represents: {{ formatCo2(co2ImpactHome( 8 * 3600, lifetimeLaptopYears ), 0) }} -XX%</el-col>
+					<el-col :span="12">8 hours of computer usage represents: {{ formatCo2(co2ImpactHome(8 * 3600), 0)
+					}}</el-col>
+					<el-col :span="12">8 hours of computer usage represents: {{ formatCo2(co2ImpactHome(8 * 3600,
+						lifetimeLaptopYears), 0) }} -XX%</el-col>
 				</el-row>
 			</div>
 			<div id="showMiniViz">
@@ -189,7 +190,7 @@ export default {
     width: 480px; */
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: 120px 80px 80px 110px 100px;
+	grid-template-rows: 150px 80px 80px 100px 80px;
 	grid-template-areas:
 		"calendar"
 		"showMiniViz"
@@ -215,7 +216,7 @@ export default {
 }
 
 #calendar .el-row {
-  margin-bottom: 5px;
+	margin-bottom: 5px;
 }
 
 #showMiniViz {

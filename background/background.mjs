@@ -37,6 +37,7 @@ retrieveNotifications().then(notifications => {
 });
 
 let dump = [];
+let dayTotal = { co2:0, data: 0, energy: 0, time: 0};
 let co2ComputerInterval;
 const co2ComputerIntervalMs = 2000;
 let lastCo2Tick = new Date();
@@ -79,6 +80,18 @@ const saveToDump = (data) => {
   if(!match) {
     dump.push(data);
   }
+}
+
+const reduceDailyAggregates = (data) => {
+  data.reduce((acc, day) => {
+    return {
+        data: acc.data + day.data,
+        energy: acc.energy + day.energy,
+        co2: acc.co2 + day.co2,
+        computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
+    }
+  }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+  return data;
 }
 
 const energyImpactInternet = (bytes) => {
@@ -217,8 +230,11 @@ const completedListener = async(responseDetails) => {
     });
   }
 
-  // Get todays total for miniViz
-  const dayTotal = await getTodayCounter();
+  // update todays total for miniViz
+  dayTotal.co2 += info.co2;
+  dayTotal.data += info.contentLength;
+  dayTotal.energy += info.energy;
+  //dayTotal.time += info.extraInfo;
 
   // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {
@@ -455,24 +471,11 @@ const addPluginToNewTab = async () => {
 
 const sendWeeklyNotification = async (activeTabId) => {
   let weekData = await getDailyAggregates('day',[-7, 0]);
-  weekData = weekData.reduce((acc, day) => {
-    return {
-        data: acc.data + day.data,
-        energy: acc.energy + day.energy,
-        co2: acc.co2 + day.co2,
-        computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
-    }
-  }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+  weekData = reduceDailyAggregates(weekData);
 
   let lastWeekData = await getDailyAggregates('day',[-14, -7]);
-  lastWeekData = lastWeekData.reduce((acc, day) => {
-    return {
-        data: acc.data + day.data,
-        energy: acc.energy + day.energy,
-        co2: acc.co2 + day.co2,
-        computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
-    }
-  }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+  lastWeekData = reduceDailyAggregates(lastWeekData);
+
   saveNotifications('weeklynotificationTimeStamp', '');
   sendMessageToTab(activeTabId, { weeklynotification: {currentWeek: weekData, lastWeek: lastWeekData} });
 }
@@ -512,4 +515,6 @@ const checkFailedNotifications = async (tab = false) => {
 initDB().then( async () => {
   const settings = await retrieveSettings();
   statistics = await getTodayCounter(settings.lifetimeComputer);
+  // Get todays total for miniViz
+  dayTotal = await getTodayCounter();
 })

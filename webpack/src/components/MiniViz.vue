@@ -147,7 +147,7 @@ export default {
       } else { dataType.value = 'co2' }
     }
     // switch dataType every 10mins
-    setInterval(function () { switchDataType(); }, 1000000);
+    setInterval(function () { switchDataType(); }, 600000);
 
     function updateIconBar() {
       currentMeter.co2.fill(0);

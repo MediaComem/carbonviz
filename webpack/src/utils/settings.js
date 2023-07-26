@@ -2,7 +2,6 @@ let settings = {
   lifetimeComputer: 6,
   yearsSinceComputerPurchase: 6,
   yearsComputerRemaining: 0,
-  lifetimeComputer: 6,
   computer: 'laptop',
   showMiniviz: true,
   deactivateUntil: undefined,
