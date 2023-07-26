@@ -362,4 +362,5 @@ async function downloadData(dbStore) {
   });
 }
 
-export { init, getLastStoredEntries, updateData, getDailyAggregates, getTodayCounter, deleteData, getWebsites, getAggregate, getCurWeekHistory, downloadData }
+export { init, getLastStoredEntries, updateData, getDailyAggregates, getTodayCounter, deleteData, getWebsites, getAggregate, getCurWeekHistory,
+  downloadData, getMonday, getWeekOfYear, dateStringHour, dateString }

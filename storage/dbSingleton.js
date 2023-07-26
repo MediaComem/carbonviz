@@ -1,10 +1,4 @@
-function getWeekOfYear(date){
-  let d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  let dayNum = d.getDay() || 7;
-  d.setDate(d.getDate() + 4 - dayNum);
-  let yearStart = new Date(d.getFullYear(),0,1);
-  return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-};
+import { getWeekOfYear, getMonday, dateStringHour, dateString } from "./indexedDB.js"
 
 export class DBInstance {
   static db = null;
@@ -22,6 +16,7 @@ export class DBInstance {
     }
 
     this._opened = true;
+    const today = new Date();
 
     return new Promise((resolve) => {
 
@@ -41,8 +36,8 @@ export class DBInstance {
         // upgrading, it is type versionchange, and is similar to
         // readwrite.
         var tx = request.transaction;
-        if (!db.objectStoreNames.contains('dataTimeStamp')) {
-          const storeDays = db.createObjectStore("dataTimeStamp", { keyPath: "index" });
+        if (!DBInstance.db.objectStoreNames.contains('dataTimeStamp')) {
+          const storeDays = DBInstance.db.createObjectStore("dataTimeStamp", { keyPath: "index" });
           storeDays.createIndex("by_index", "index", { unique: true });
           storeDays.add({
             index: 0,
@@ -59,8 +54,8 @@ export class DBInstance {
           weekOfMonth: Math.floor((today.getDate() / 7)+1)
         }
 
-        if (!db.objectStoreNames.contains('history')) {
-          const storeHistory = db.createObjectStore("history", { keyPath: "index" });
+        if (!DBInstance.db.objectStoreNames.contains('history')) {
+          const storeHistory = DBInstance.db.createObjectStore("history", { keyPath: "index" });
           storeHistory.createIndex("by_index", "index", { unique: true });
           storeHistory.add({
             ...dateInfo,
@@ -73,8 +68,8 @@ export class DBInstance {
           });
         }
 
-        if (!db.objectStoreNames.contains('historySummary')) {
-          const storeHistorySummary = db.createObjectStore("historySummary", { keyPath: "index" });
+        if (!DBInstance.db.objectStoreNames.contains('historySummary')) {
+          const storeHistorySummary = DBInstance.db.createObjectStore("historySummary", { keyPath: "index" });
           storeHistorySummary.createIndex("by_index", "index", { unique: true });
           storeHistorySummary.add({
             ...dateInfo,
@@ -86,8 +81,8 @@ export class DBInstance {
           });
         }
 
-        if (!db.objectStoreNames.contains('domains')) {
-          const storeDomains = db.createObjectStore("domains", { keyPath: "name" });
+        if (!DBInstance.db.objectStoreNames.contains('domains')) {
+          const storeDomains = DBInstance.db.createObjectStore("domains", { keyPath: "name" });
           storeDomains.createIndex("by_name", "name", { unique: true });
           storeDomains.createIndex("by_co2", "co2");
           storeDomains.createIndex("by_data", "data");
@@ -111,8 +106,8 @@ export class DBInstance {
         // create one table per month
         for (const month of [1,2,3,4,5,6,7,8,9,10,11,12]) {
           const table = `domains_month_${month}`;
-          if (!db.objectStoreNames.contains(table)) {
-            const storeDomains = db.createObjectStore(table, { keyPath: "name" });
+          if (!DBInstance.db.objectStoreNames.contains(table)) {
+            const storeDomains = DBInstance.db.createObjectStore(table, { keyPath: "name" });
             storeDomains.createIndex("by_name", "name", { unique: true });
             storeDomains.createIndex("by_co2", "co2");
             storeDomains.createIndex("by_data", "data");
@@ -129,8 +124,8 @@ export class DBInstance {
         // create one table per day (0 to 6 - sunday is 0)
         for (const day of [0,1,2,3,4,5,6]) {
           const table = `domains_day_${day}`;
-          if (!db.objectStoreNames.contains(table)) {
-            const storeDomains = db.createObjectStore(table, { keyPath: "name" });
+          if (!DBInstance.db.objectStoreNames.contains(table)) {
+            const storeDomains = DBInstance.db.createObjectStore(table, { keyPath: "name" });
             storeDomains.createIndex("by_name", "name", { unique: true });
             storeDomains.createIndex("by_co2", "co2");
             storeDomains.createIndex("by_data", "data");
