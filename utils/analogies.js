@@ -1,10 +1,10 @@
-import { roundToPrecision } from '../utils/format.js'
+import { roundToPrecision } from './format.js'
 /*
 *   When updating analogies please be aware of the *analogiesData* object ex: webpack\src\pages\FAQ.vue
 */
 
 // kwPerUnit
-export const kwPerUnitCo2 = {
+const kwPerUnitCo2 = {
     marathon: 2.790697674,
     swimming: 0.0001813953488,
     biking: 0.02543604651,
@@ -13,7 +13,7 @@ export const kwPerUnitCo2 = {
     sawing: 0.0203488372093023,
 }
 // mbPerUnit
-export const mbPerUnitData = {
+const mbPerUnitData = {
     dictionaries: 20,
     instagram: 0.078,
     music: 2.4,
@@ -23,7 +23,7 @@ export const mbPerUnitData = {
 }
 
 // Populate analogies from the defined unit types
-export const analogyNames = {
+const analogyNames = {
     co2: [],
     data: [],
 };
@@ -35,7 +35,7 @@ for (let key in mbPerUnitData) {
 }
 
 
-export const analogiesCo2 = {
+const analogiesCo2 = {
     marathon: {
         text: (value, t) => {
             const kwPerUnit = kwPerUnitCo2.marathon;
@@ -94,7 +94,7 @@ export const analogiesCo2 = {
     }
 }
 
-export const analogiesData = {
+const analogiesData = {
     dictionaries: {
         text: (value, t) =>  {
             const mbPerUnit = mbPerUnitData.dictionaries;
@@ -151,7 +151,7 @@ export const analogiesData = {
 
 // Compute the necessary data for one analogy based on the raw amount
 // ex: 1Kw means boiling 8.6 liters of water [currentAnalogy: 'boilingwater', amount: 1, amountPerUnit: 0.116] 0.116kW for 1L
-export function computeAnalogy(currentAnalogy , amount, amountPerUnit) {
+function computeAnalogy(currentAnalogy , amount, amountPerUnit) {
     let unit = '';
     let number = Math.floor(amount/amountPerUnit);
     switch(currentAnalogy) {
@@ -187,7 +187,7 @@ export function computeAnalogy(currentAnalogy , amount, amountPerUnit) {
     return { amount: number, unit: unit};
 }
 
-export function getAnalogyValue(customAnalogyNames, dataType, value, activeIndex) {
+function getAnalogyValue(customAnalogyNames, dataType, value, activeIndex) {
     if(dataType === 'co2') {
       // analogies based on energy (switch energy MJ to kWh)
       const amountCo2 = 0.278 * value.energy;
@@ -206,7 +206,9 @@ export function getAnalogyValue(customAnalogyNames, dataType, value, activeIndex
     }
 }
 
-export function getAnalogyText(customAnalogyNames, dataType, value, activeIndex) {
+function getAnalogyText(customAnalogyNames, dataType, value, activeIndex) {
     const analogyType = this.customAnalogyNames[dataType][activeIndex];
     return this.t(`components.analogies.${analogyType}${getAnalogyValue(customAnalogyNames, dataType, value, activeIndex).unit}`)
 }
+
+export { analogyNames, analogiesCo2, analogiesData, computeAnalogy, getAnalogyValue, getAnalogyText }

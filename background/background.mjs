@@ -1,7 +1,8 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
-import { init as initDB, getTodayCounter, getDailyAggregates } from "../storage/indexedDB.js";
-import { retrieveSettings } from "../webpack/src/utils/settings.js";
-import { saveNotifications, retrieveNotifications } from '../webpack/src/utils/offlineNotifications.js';
+import { getTodayCounter, getDailyAggregates } from "../storage/indexedDB.js";
+import { initStorage } from "../storage/storage.js";
+import { retrieveSettings } from "../settings/settings.js";
+import { saveNotifications, retrieveNotifications } from '../utils/offlineNotifications.js';
 
 // Note that since the switch to manifest v3, chrome extension API switched mostly to Promises (as Firefox)
 // And Firefox supports chrome.* namespace for API available in chrome and firefox
@@ -512,7 +513,7 @@ const checkFailedNotifications = async (tab = false) => {
   };
 }
 
-initDB().then( async () => {
+initStorage().then( async () => {
   const settings = await retrieveSettings();
   statistics = await getTodayCounter(settings.lifetimeComputer);
   // Get todays total for miniViz

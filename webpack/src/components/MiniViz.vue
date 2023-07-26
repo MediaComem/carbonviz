@@ -62,9 +62,9 @@ const SHOW_DESC_NOTIF_DELAY = 10000;
 
 import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { formatSize, formatCo2 } from '../utils/format';
-import { retrieveSettings } from '../utils/settings.js';
-import { analogiesCo2, analogiesData, analogyNames, getAnalogyValue, getAnalogyText } from '../utils/analogies';
+import { formatSize, formatCo2 } from '../../../utils/format';
+import { retrieveSettings } from '../../../settings/settings.js';
+import { analogiesCo2, analogiesData, analogyNames, getAnalogyValue, getAnalogyText } from '../../../utils/analogies';
 
 export default {
   props: {

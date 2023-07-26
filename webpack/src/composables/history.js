@@ -1,5 +1,5 @@
 import { ref, onMounted, watch, computed } from 'vue';
-import { retrieveHistoryLayers } from './storage';
+import { retrieveHistoryLayers } from '../../../storage/storage.js';
 
 const MAX_HEIGHT = 150;
 

@@ -5,7 +5,7 @@ import History from './History.vue';
 import Analogies from './Analogies.vue';
 import Trends from './Trends.vue';
 import Settings from './Settings.vue';
-import { saveSettings, retrieveSettings } from '../utils/settings.js';
+import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 import { setup as setupExtensionTab } from '../composables/tab';
 
 export default {

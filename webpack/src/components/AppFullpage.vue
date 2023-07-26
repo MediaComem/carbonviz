@@ -3,7 +3,7 @@ import {ref, provide, onMounted, watch} from 'vue';
 import { useI18n } from 'vue-i18n';
 import LocationHashRouter from '../composables/LocationHashRouter';
 import Historical from '../pages/Historical.vue';
-import { retrieveSettings } from '../utils/settings.js';
+import { retrieveSettings } from '../../../settings/settings.js';
 
 export default {
   components: { Historical },
