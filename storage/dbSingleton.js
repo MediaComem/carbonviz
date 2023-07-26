@@ -2,6 +2,7 @@ import { getWeekOfYear, getMonday, dateStringHour, dateString } from "./indexedD
 
 export class DBInstance {
   static db = null;
+  _opening = false;
   _opened = false;
   constructor() {
     if (DBInstance._instance) {
@@ -11,11 +12,19 @@ export class DBInstance {
   }
 
   open = () => {
-    if(this._opened) {
+    if (this._opened) {
       return Promise.resolve(DBInstance.db);
     }
+    if (this._opening) {
+      const openingTimer = setInterval(() => {
+        if (DBInstance.db) {
+          clearInterval(openingTimer);
+          return Promise.resolve(DBInstance.db);
+        }
+      }, 100)
+    }
 
-    this._opened = true;
+    this._opening = true;
     const today = new Date();
 
     return new Promise((resolve) => {
@@ -48,10 +57,10 @@ export class DBInstance {
 
         const dateInfo = {
           date: today.getDate(),
-          month: today.getMonth()+1,
+          month: today.getMonth() + 1,
           dayOfWeek: today.getDay(),
           weekOfYear: getWeekOfYear(today),
-          weekOfMonth: Math.floor((today.getDate() / 7)+1)
+          weekOfMonth: Math.floor((today.getDate() / 7) + 1)
         }
 
         if (!DBInstance.db.objectStoreNames.contains('history')) {
@@ -94,17 +103,17 @@ export class DBInstance {
           });
         } else {
           var domains = tx.objectStore('domains');
-          if(!domains.indexNames.contains('by_co2')) {
+          if (!domains.indexNames.contains('by_co2')) {
             domains.createIndex("by_co2", "co2");
           }
-          if(!domains.indexNames.contains('by_data')) {
+          if (!domains.indexNames.contains('by_data')) {
             domains.createIndex("by_data", "data");
           }
         }
 
         // Monthly history data (keeping maximum 1 year)
         // create one table per month
-        for (const month of [1,2,3,4,5,6,7,8,9,10,11,12]) {
+        for (const month of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]) {
           const table = `domains_month_${month}`;
           if (!DBInstance.db.objectStoreNames.contains(table)) {
             const storeDomains = DBInstance.db.createObjectStore(table, { keyPath: "name" });
@@ -122,7 +131,7 @@ export class DBInstance {
 
         // Daily history data (keeping maximum 1 week)
         // create one table per day (0 to 6 - sunday is 0)
-        for (const day of [0,1,2,3,4,5,6]) {
+        for (const day of [0, 1, 2, 3, 4, 5, 6]) {
           const table = `domains_day_${day}`;
           if (!DBInstance.db.objectStoreNames.contains(table)) {
             const storeDomains = DBInstance.db.createObjectStore(table, { keyPath: "name" });
@@ -140,18 +149,21 @@ export class DBInstance {
       };
 
       request.onsuccess = (e) => {
+        this._opening = false;
         DBInstance.db = request.result;
-        this.cleanData();
+        DBInstance.cleanData();
+        this._opened = true;
         return resolve(DBInstance.db);
       };
 
       request.onerror = (e) => {
+        this._opening = false;
         return reject();
       }
     })
   }
 
-  cleanData = async () => {
+  static cleanData = async () => {
     // Clean old data
     // Clear new month if needed [max 1 year monthly domains aggregate retention]
     // Clear new day if needed [max 1 week daily domains aggregate retention]
@@ -180,7 +192,7 @@ export class DBInstance {
               monthlyDomainStore.clear();
             }
             if (week !== lastRunningWeek || day !== lastRunningDay) {
-              const days = [0,1,2,3,4,5,6];
+              const days = [0, 1, 2, 3, 4, 5, 6];
               // check how many days the plugin was inactive to clear irrelevant data for last 7 days
               const nbDaysInactive = Math.floor((today - lastRunning) / (1000 * 3600 * 24));
               for (let inactiveDay = 0; inactiveDay < Math.min(nbDaysInactive, 7); inactiveDay++) {

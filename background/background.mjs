@@ -38,7 +38,6 @@ retrieveNotifications().then(notifications => {
 });
 
 let dump = [];
-let dayTotal = { co2:0, data: 0, energy: 0, time: 0};
 let co2ComputerInterval;
 const co2ComputerIntervalMs = 2000;
 let lastCo2Tick = new Date();
@@ -47,7 +46,7 @@ const writingIntervalMs = 60000;
 const weeklyIntervalMins = 10080; // Set the alarm to repeat every week (7 days * 24 hours * 60 minutes = 10080 minutes)
 const dailyIntervalMins = 1440;
 
-let statistics = { co2: 0, data: 0};
+let statistics = { co2: 0, data: 0, energy: 0, time: 0};
 
 const domain = (packet) => {
   if (!packet.extraInfo.tabUrl) {
@@ -84,7 +83,7 @@ const saveToDump = (data) => {
 }
 
 const reduceDailyAggregates = (data) => {
-  data.reduce((acc, day) => {
+  return data.reduce((acc, day) => {
     return {
         data: acc.data + day.data,
         energy: acc.energy + day.energy,
@@ -92,7 +91,6 @@ const reduceDailyAggregates = (data) => {
         computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
     }
   }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
-  return data;
 }
 
 const energyImpactInternet = (bytes) => {
@@ -231,18 +229,11 @@ const completedListener = async(responseDetails) => {
     });
   }
 
-  // update todays total for miniViz
-  dayTotal.co2 += info.co2;
-  dayTotal.data += info.contentLength;
-  dayTotal.energy += info.energy;
-  //dayTotal.time += info.extraInfo;
-
   // send message to miniViz
   chrome.tabs.query({active: true}, function(tabs) {
     if (tabs && tabs[0]) {
       for (const tab of tabs) {
         sendMessageToTab(tab.id, { data: info });
-        sendMessageToTab(tab.id, { total: dayTotal });
         sendMessageToTab(tab.id, { statistics });
       }
     }
@@ -333,7 +324,7 @@ const writeData = async () => {
     await updateHistoryDb(packet);
   }
   updateRunningDurationSec(writingIntervalMs / 1000);
-
+  statistics.time += writingIntervalMs / 1000;
   dump = [];
 };
 
@@ -516,6 +507,4 @@ const checkFailedNotifications = async (tab = false) => {
 initStorage().then( async () => {
   const settings = await retrieveSettings();
   statistics = await getTodayCounter(settings.lifetimeComputer);
-  // Get todays total for miniViz
-  dayTotal = await getTodayCounter();
 })

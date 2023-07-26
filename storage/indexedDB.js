@@ -108,7 +108,7 @@ async function updateData(date, hourlyData, dailyData, domainData = undefined) {
     }
 
     // reset daily / monthly data if new day or new month
-    co2HistoryDB.cleanData().then((resetDailyMonthlyTrans) => {
+    DBInstance.cleanData().then((resetDailyMonthlyTrans) => {
       resetDailyMonthlyTrans.oncomplete = () => {
         storeData();
       };

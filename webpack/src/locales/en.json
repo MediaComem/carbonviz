@@ -49,6 +49,16 @@
       "description": {
         "co2": "You have released {data} of co2 in {time} That is the equivalent of {amount}",
         "data": "You have consumed {data} of data in {time} That is the equivalent of {amount}"
+      },
+      "notification": {
+        "weekly": {
+          "title": "Weekly Notification",
+          "co2": "{data} of co2",
+          "data": "{data} of data",
+          "days": "The last 7 days",
+          "analogy": "Equal to {amount}"
+        },
+        "daily": "daily notification"
       }
     },
     "popup": {

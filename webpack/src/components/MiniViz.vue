@@ -33,9 +33,38 @@
         }"
         @click="onNotificationClick"
       >
-        <div v-for="item in notification" class="notificationItem">
-          <h3 class="title"> {{ item.title }} {{ item.date }}</h3>
-          <span v-html="item.messageHTML" class="message"></span>
+        <div v-if="notificationType === 'weekly'" style="max-width: 270px;">
+          <div id="stats">
+            <h3 class="title"> {{ t('components.miniViz.notification.weekly.title') }} </h3>
+            <div id="current">
+              <p>
+                {{ t(`components.miniViz.notification.weekly.${dataType}`,
+                  {
+                    data: formatCo2(weeklyTotals.currentWeek[dataType])
+                  }
+                )}}
+              </p>
+              <p> {{ t(`components.miniViz.notification.weekly.days`)}} </p>
+              <p>
+                {{ t(`components.miniViz.notification.weekly.analogy`,
+                  { amount: getAnalogyValue(customAnalogyNames, dataType, dayTotals, activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, dayTotals, activeIndex) }
+                )}}
+              </p>
+            </div>
+            <div id="average">
+              <p>
+                {{ t('components.statistics.day.average') }}
+                {{ dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek.co2 / 7, 0) : formatSize(weeklyTotals.currentWeek.data / 7, 0) }}
+              </p>
+              <p>
+                {{ t('components.statistics.day.trend') }}
+                <span v-if="weeklyTotals.trend[dataType] > 0">+</span>
+                <span v-if="weeklyTotals.trend[dataType] < 0">-</span>
+                {{ Math.round(Math.abs(100 * weeklyTotals.trend[dataType]))}} %
+                <svg :class="weeklyTotals.trend[dataType] > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -80,14 +109,18 @@ export default {
     const interactive = ref(false);
     let activeIndex = ref(0);
     let dataType = ref('co2');
+    let notificationType = ref('weekly');
     const dayTotals = ref({
       co2: 0,
       data: 0,
       energy: 0,
       time: 0
     });
-    const summary = ref({ data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
-    const trend = ref({ data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+    const weeklyTotals = ref({
+      currentWeek: {data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}},
+      lastWeek: {data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}},
+      trend: {co2: 0, data: 0}
+    });
     let notification = ref(
       [
         {
@@ -187,53 +220,17 @@ export default {
     }
 
     function buildWeeklyNotification() {
-      const Today = new Date();
-      const TodayString = Today.toLocaleDateString();
-      const LastWeek = new Date(Today.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const LastWeekString = LastWeek.toLocaleDateString();
-      let currentCo2;
-      let currentData;
-      let previousWeekCo2;
-      let previousWeekData;
-      let trendCo2;
-      let trendData;
-
-      currentCo2 = summary.value.co2;
-      currentData = summary.value.data;
-      previousWeekCo2 = trend.value.co2;
-      previousWeekData = trend.value.data;
+      let currentCo2 = weeklyTotals.value.currentWeek.co2;
+      let currentData = weeklyTotals.value.currentWeek.data;
+      let previousWeekCo2 = weeklyTotals.value.lastWeek.co2;
+      let previousWeekData = weeklyTotals.value.lastWeek.data;
       if (previousWeekCo2 > 0 && previousWeekData > 0) {
-        trendCo2 = (currentCo2 - previousWeekCo2) / previousWeekCo2;
-        trendData = (currentData - previousWeekData) / previousWeekData;
+        weeklyTotals.value.trend.co2 = (currentCo2 - previousWeekCo2) / previousWeekCo2;
+        weeklyTotals.value.trend.data = (currentData - previousWeekData) / previousWeekData;
       } else {
-        trendCo2 = 0;
-        trendData = 0;
+        weeklyTotals.value.trend.co2 = 0;
+        weeklyTotals.value.trend.data = 0;
       }
-
-      const data = [
-        {
-          date: TodayString,
-          title: "Weekly CO2 comsumption",
-          messageHTML: `<p>${formatCo2(currentCo2,0)} ${t('global.of_co2')} ${ t('global.last.week') } incl.${ formatCo2(summary.value.computer.co2, 0) } ${ t('components.statistics.computerImpact') }</p>`
-        },
-        {
-          date: TodayString,
-          title: "Weekly Data comsumption",
-          messageHTML: `<p>${formatSize(currentData,0)} ${ t('global.last.week')}</p>`
-        },
-        {
-          date: LastWeekString,
-          title: "weekly CO2 trend",
-          messageHTML: `<p>${t(`components.statistics.day.trend`)} ${trendCo2 ? trendCo2 > 0 ? '+' : '-' : 'N/A'} ${ trendCo2 ? Math.round(Math.abs(100 * trendCo2))+'%' : ''}</p>`
-        },
-        {
-          date: LastWeekString,
-          title: "Weekly Data trend",
-          messageHTML: `<p>${t(`components.statistics.day.trend`)} ${trendData ? trendData > 0 ? '+' : '-' : 'N/A'} ${ trendData ? Math.round(Math.abs(100 * trendData))+'%' : ''}</p>`
-        }
-      ]
-
-      return data;
     };
 
     function buildDailyNotification() { // TBD -- Do we want to change or validate the data??
@@ -251,36 +248,36 @@ export default {
     async function displayNotification(type: string) {
       switch(type) {
         case 'weekly':
-          notification.value = await buildWeeklyNotification();
-          if(notification.value.length > 0) {
-            showNotification.value = true;
-            setTimeout( () => showNotification.value = false,  1000000);//SHOW_DESC_NOTIF_DELAY);
-          }
+          await buildWeeklyNotification();
+          notificationType.value = 'weekly';
+          showNotification.value = true;
+          setTimeout( () => showNotification.value = false,  SHOW_DESC_NOTIF_DELAY );
           break;
         case 'daily':
           notification.value = await buildDailyNotification();
           if(notification.value.length > 0) {
+            notificationType.value = 'daily';
             showNotification.value = true;
           }
           break;
         default:
           notification.value = DefaultNotification();
           showNotification.value = true;
-          setTimeout( () => showNotification.value = false,  1000000);//SHOW_DESC_NOTIF_DELAY);
+          setTimeout( () => showNotification.value = false,  SHOW_DESC_NOTIF_DELAY );
       }
     }
 
     chrome.runtime.onMessage.addListener(request => {
-      if (request.total) {
+      if (request.statistics) {
         // Update stats with todays totals
-        const stats = request.total;
+        const stats = request.statistics;
         if (stats?.extraInfo?.tabIcon?.startsWith('chrome-extension:')) return;
-        dayTotals.value = {...stats}
+        dayTotals.value = {...stats};
         updateIconBar();
       }
       if (request.weeklynotification) {
-        summary.value = request.weeklynotification.currentWeek;
-        trend.value = request.weeklynotification.lastWeek;
+        const stats = request.weeklynotification;
+        weeklyTotals.value = {...stats, trend: { co2: 0, data: 0 } };
         displayNotification('weekly');
       }
       if (request.dailyNotifications) {
@@ -299,7 +296,7 @@ export default {
     });
 
     return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames,
-      dayTotals, dataType, activeIndex, notification, showMiniViz,
+      dayTotals, dataType, activeIndex, notification, showMiniViz, notificationType, weeklyTotals,
       formatCo2, formatSize, createTimeString, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText,
       onNotificationClick
     }
@@ -323,7 +320,7 @@ export default {
   height: auto;
   max-height: 130px;
   width: auto;
-  max-width: 500px;
+  max-width: 270px;
   z-index: 10000;
   &.hidden {
     display: none;
@@ -331,7 +328,6 @@ export default {
 }
 .anim {
   display: flex;
-  border-radius: 10px;
   justify-content: space-evenly;
   margin-bottom: 1px;
   max-width: 270px;
@@ -350,18 +346,12 @@ export default {
 }
 .miniviz #description, .miniviz #notification {
   display: flex;
-  border-radius: 10px;
   justify-content: space-evenly;
   align-items: center;
-  color: white;
   max-height: auto;
   max-height: 500px;
-  background-color: var(--co2Active);
   transition: max-height 1.5s linear, opacity 1.5s linear;
   opacity: 1;
-  &.data {
-    background-color: var(--dataActive);
-  }
   &.hidden {
     max-height: 0px;
     opacity: 0;
@@ -377,14 +367,25 @@ export default {
   margin-right: 0px;
   margin-left: auto;
   margin-bottom: 1px;
+  color: white;
+  background-color: var(--co2Active);
+  &.data {
+    background-color: var(--dataActive);
+  }
 }
 .miniviz #notification {
   padding: 10px;
   width: auto;
   flex-wrap: wrap;
+  color: black;
+  background-color: var(--grey);
   & .notificationItem {
     flex-basis: 100%;
   }
+}
+
+.stats .current {
+  font-weight: bold;
 }
 .actionContainer {
   position: fixed;
@@ -458,4 +459,14 @@ export default {
   100% {transform: translateY(var(--translate-amount))}
 }
 
+</style>
+
+<style>
+/* styles for messageHTML which is created after injection */
+#notification.data .message a {
+  color: #00A0D6;
+}
+#notification.co2 .message a {
+  color: #52B788;
+}
 </style>
