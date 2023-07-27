@@ -10,7 +10,9 @@
     "128": "icons/icon128.png" },
   "permissions": [
       "webRequest",
-      "storage"
+      "storage",
+      "alarms",
+      "notifications"
   ],
   "host_permissions": [
       "<all_urls>"
@@ -40,6 +42,7 @@
         "model/*",
         "unplug/js/*",
         "unplug/assets/*",
+        "icons/*",
         "bundle/*",
         "popup/*"
       ],

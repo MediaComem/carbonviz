@@ -1,5 +1,5 @@
 <script>
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 import { setup as setupHistoryLayers } from '../composables/history';
 import Stratum from './HistoryStratum.vue';
 import PeriodPicker from './PeriodPicker.vue';

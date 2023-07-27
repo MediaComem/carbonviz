@@ -1,7 +1,7 @@
 <script>
 import { inject, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n'
-import { analogyNames } from '../utils/analogies'
+import { analogyNames } from '../../../utils/analogies'
 import Analogies from '../components/Analogies.vue';
 
 const subNav = {};

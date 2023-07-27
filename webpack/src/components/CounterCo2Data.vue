@@ -1,7 +1,7 @@
 <script>
 import {ref} from 'vue';
-import { useI18n } from 'vue-i18n'
-import {formatSize, formatCo2} from '../utils/format';
+import { useI18n } from 'vue-i18n';
+import {formatSize, formatCo2} from '../../../utils/format';
 export default {
   data() {
     return {

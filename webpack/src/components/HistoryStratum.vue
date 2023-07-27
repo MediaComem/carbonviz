@@ -1,14 +1,14 @@
 <script>
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 import { computed, inject, ref, toRefs, watch } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
 import { ElCarousel, ElCarouselItem, ElRow, ElCol } from 'element-plus';
 import 'element-plus/theme-chalk/index.css';
-import Analogy from './Analogy.vue'
+import Analogy from './Analogy.vue';
 import layerChart from '../composables/layerChart';
-import { layerHeightCo2, layerHeightData } from '../composables/history'
-import { formatSize, formatCo2 } from '../utils/format'
-import { analogyNames } from '../utils/analogies'
+import { layerHeightCo2, layerHeightData } from '../composables/history';
+import { formatSize, formatCo2 } from '../../../utils/format';
+import { analogyNames } from '../../../utils/analogies';
 
 export default {
   components: {

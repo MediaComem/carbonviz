@@ -39,6 +39,35 @@
       }
     },
     "analogy": {},
+    "history": {
+      "WeeklyConsumption": "Weekly consumption",
+      "MonthlyConsumption": "Monthly consumption",
+      "scrolling": "Loading data",
+      "scrollEnd": "No more data to load"
+    },
+    "miniViz": {
+      "description": {
+        "co2": "You have released {data} of co2 in {time} That is the equivalent of {amount}",
+        "data": "You have consumed {data} of data in {time} That is the equivalent of {amount}"
+      },
+      "notification": {
+        "weekly": {
+          "title": "Weekly Notification",
+          "co2": "{data} of co2",
+          "data": "{data} of data",
+          "days": "The last 7 days",
+          "analogy": "Equal to {amount}"
+        },
+        "daily": "daily notification"
+      }
+    },
+    "popup": {
+      "messages": {
+        "openTab": "The extension will open in a new tab.",
+        "checkActivity": "You can then check your activity from that tab while browsing the internet.",
+        "accessPopup": "You can still access the extension pop-up window on any page by clicking the extension icon in the browser bar."
+      }
+    },
     "statistics": {
       "days": {
         "Mon": "Mon.",
@@ -49,6 +78,7 @@
         "Sat": "Sat.",
         "Sun": "Sun."
       },
+      "liveDigest" : "Live Digest",
       "months": {
         "Jan": "Jan.",
         "Feb": "Feb.",
@@ -78,19 +108,6 @@
       "computerInfo": "Resources and energy were used to manufacture your device.",
       "computerTip": "You can reduce the impact of your computer by keeping it longer. See "
     },
-    "history": {
-      "WeeklyConsumption": "Weekly consumption",
-      "MonthlyConsumption": "Monthly consumption",
-      "scrolling": "Loading data",
-      "scrollEnd": "No more data to load"
-    },
-    "popup": {
-      "messages": {
-        "openTab": "The extension will open in a new tab.",
-        "checkActivity": "You can then check your activity from that tab while browsing the internet.",
-        "accessPopup": "You can still access the extension pop-up window on any page by clicking the extension icon in the browser bar."
-      }
-    },
     "settings": {
       "usingSince": "You have been using this computer for",
       "usingUntil": "and plan to use it for another",
@@ -111,6 +128,7 @@
     "analogies": "Analogies",
     "askAgain": "Do not ask again",
     "cancel": "Cancel",
+    "close": "Close",
     "co2": "CO2",
     "of_co2": "of CO2",
     "computerEnergy": "Computer's embodied energy",

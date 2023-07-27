@@ -1,14 +1,15 @@
 <script>
-import {ref, provide} from 'vue';
-import { useI18n } from 'vue-i18n'
+import {ref, provide, onMounted, watch} from 'vue';
+import { useI18n } from 'vue-i18n';
 import LocationHashRouter from '../composables/LocationHashRouter';
 import Historical from '../pages/Historical.vue';
+import { retrieveSettings } from '../../../settings/settings.js';
 
 export default {
   components: { Historical },
 
   setup(props, context) {
-    const { t } = useI18n({});
+    const { t, locale } = useI18n({});
 
     // Hash's name must mach the Page's name in the pages folder
     const hashRoutes = {
@@ -20,6 +21,18 @@ export default {
       '#Settings': t('global.settings'),
       '#Partners': t('global.partners'),
     };
+
+    // Watch for changes to the locale value
+    watch(locale, async (newLocale) => {
+      // Update the hashRoutes object with the new translations
+      hashRoutes['#Historical'] = t('global.history');
+      hashRoutes['#Analogies'] = t('global.analogies');
+      hashRoutes['#Trends'] = t('global.trends');
+      hashRoutes['#Journey'] = t('global.data_journey');
+      hashRoutes['#FAQ'] = t('global.faq');
+      hashRoutes['#Settings'] = t('global.settings');
+      hashRoutes['#Partners'] = t('global.partners');
+    });
 
     const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
 
@@ -41,6 +54,11 @@ export default {
         scrollElt.value.setScrollTop(topPos);
       }
     }
+
+    onMounted(async () => {
+      const settings = await retrieveSettings();
+      locale.value = settings.lang;
+    });
 
     return {subNav, hashRoutes, currentHash, currentPage, onSubnavClick, t};
   }

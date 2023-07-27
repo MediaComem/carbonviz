@@ -39,6 +39,35 @@
       }
     },
     "analogy": {},
+    "history": {
+      "WeeklyConsumption": "Consommation hebdomadaire",
+      "MonthlyConsumption": "Consommation mensuelle",
+      "scrolling": "Chargement des données",
+      "scrollEnd": "Pas d’autres données à charger"
+    },
+    "miniViz": {
+      "description": {
+        "co2": "Vous avez dégagé {data} de co2 en {time} Soit l'équivalent de {amount}",
+        "data": "Vous avez consommé {data} de data en {time} Soit l'équivalent de {amount}"
+      },
+      "notification": {
+        "weekly": {
+          "title": "Notification hebdomadaire",
+          "co2": "{data} de co2",
+          "data": "{data} de data",
+          "days": "Les 7 derniers jours",
+          "analogy": "soit {amount}"
+        },
+        "daily": "notification quotidienne"
+      }
+    },
+    "popup": {
+      "messages": {
+        "openTab": "L'extension s'ouvrira dans un nouvel onglet. Images aériennes Direction du cadastre.",
+        "checkActivity": "Vous pouvez ensuite vérifier votre activité à partir de cet onglet lorsque vous naviguez sur l'internet.",
+        "accessPopup": "Vous pouvez toujours accéder à la fenêtre contextuelle de l'extension sur n'importe quelle page en cliquant sur l'icône de l'extension dans la barre du navigateur."
+      }
+    },
     "statistics": {
       "days": {
         "Mon": "Lun.",
@@ -49,6 +78,7 @@
         "Sat": "Sam.",
         "Sun": "Dim."
       },
+      "liveDigest" : "Digest Live",
       "months": {
         "Jan": "Janv.",
         "Feb": "Févr.",
@@ -78,19 +108,6 @@
       "computerInfo": "Des ressources et de l'énergie ont été nécessaires à la fabrication de votre appareil.",
       "computerTip": "Vous pouvez réduire l'impact de l'ordinateur en le gardant plus longtemps. Voir"
     },
-    "history": {
-      "WeeklyConsumption": "Consommation hebdomadaire",
-      "MonthlyConsumption": "Consommation mensuelle",
-      "scrolling": "Chargement des données",
-      "scrollEnd": "Pas d’autres données à charger"
-    },
-    "popup": {
-      "messages": {
-        "openTab": "L'extension s'ouvrira dans un nouvel onglet. Images aériennes Direction du cadastre.",
-        "checkActivity": "Vous pouvez ensuite vérifier votre activité à partir de cet onglet lorsque vous naviguez sur l'internet.",
-        "accessPopup": "Vous pouvez toujours accéder à la fenêtre contextuelle de l'extension sur n'importe quelle page en cliquant sur l'icône de l'extension dans la barre du navigateur."
-      }
-    },
     "settings": {
       "usingSince": "Vous utilisez cet ordinateur depuis ",
       "usingUntil": "et prévoyez de l'utiliser encore",
@@ -111,6 +128,7 @@
     "analogies": "Analogies",
     "askAgain": "Ne demandez pas à nouveau",
     "cancel": "Annuler",
+    "close": "Fermer",
     "co2": "CO2",
     "of_co2": "de CO2",
     "computerEnergy": "Énergie grise ordinateur",

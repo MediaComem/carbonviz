@@ -12,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 import { ref, toRefs } from 'vue';
-import { Period } from '../utils/types'
+import { Period } from '../utils/types';
 
 export interface Props {
   periods?: Period[]
