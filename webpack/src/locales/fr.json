@@ -56,7 +56,9 @@
           "co2": "{data} de co2",
           "data": "{data} de data",
           "days": "Les 7 derniers jours",
-          "analogy": "soit {amount}"
+          "analogy": "soit {amount}",
+          "average": "Moyenne hebdomadaire",
+          "trend": "Tendance hebdomadaire"
         },
         "daily": "notification quotidienne"
       }

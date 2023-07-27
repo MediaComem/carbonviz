@@ -33,14 +33,15 @@
         }"
         @click="onNotificationClick"
       >
-        <div v-if="notificationType === 'weekly'" style="max-width: 270px;">
+        <div class="notificationContainer" v-if="notificationType === 'weekly'">
+          <img class="exit" :src="closeBtn" alt="X">
           <div id="stats">
             <h3 class="title"> {{ t('components.miniViz.notification.weekly.title') }} </h3>
             <div id="current">
               <p>
                 {{ t(`components.miniViz.notification.weekly.${dataType}`,
                   {
-                    data: formatCo2(weeklyTotals.currentWeek[dataType])
+                    data: dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek[dataType]) : formatSize(weeklyTotals.currentWeek[dataType])
                   }
                 )}}
               </p>
@@ -53,17 +54,29 @@
             </div>
             <div id="average">
               <p>
-                {{ t('components.statistics.day.average') }}
-                {{ dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek.co2 / 7, 0) : formatSize(weeklyTotals.currentWeek.data / 7, 0) }}
+                {{ t('components.miniViz.notification.weekly.average') }}
+                <strong> {{ dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek.co2 / 7, 0) : formatSize(weeklyTotals.currentWeek.data / 7, 0) }} </strong>
               </p>
-              <p>
-                {{ t('components.statistics.day.trend') }}
+              <p id="trend">
+                {{ t('components.miniViz.notification.weekly.trend') }}:
+              </p>
+              <div v-if="weeklyTotals.trend[dataType] !== 0">
                 <span v-if="weeklyTotals.trend[dataType] > 0">+</span>
                 <span v-if="weeklyTotals.trend[dataType] < 0">-</span>
                 {{ Math.round(Math.abs(100 * weeklyTotals.trend[dataType]))}} %
-                <svg :class="weeklyTotals.trend[dataType] > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
-              </p>
+                <svg :class="weeklyTotals.trend[dataType] > 0 ? 'up' : 'down'" width="23" height="23" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+                  <path id="arrow" d="M0.93934 19.9393C0.353553 20.5251 0.353553 21.4749 0.93934 22.0607C1.52513 22.6464 2.47487 22.6464 3.06066 22.0607L0.93934 19.9393ZM22.5 2C22.5 1.17157 21.8284 0.5 21 0.5H7.5C6.67157 0.5 6 1.17157 6 2C6 2.82843 6.67157 3.5 7.5 3.5H19.5V15.5C19.5 16.3284 20.1716 17 21 17C21.8284 17 22.5 16.3284 22.5 15.5V2ZM3.06066 22.0607L22.0607 3.06066L19.9393 0.93934L0.93934 19.9393L3.06066 22.0607Z" fill="currentColor" />
+                </svg>
+              </div>
+              <div v-else>
+                -
+              </div>
             </div>
+          </div>
+          <div id="advise">
+            <h3>Recommandations</h3>
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laborum quo quis, porro nostrum pariatur repellendus dicta sequi ipsam, nesciunt,
+              doloremque nam. Enim quo accusamus explicabo deserunt upiditate et, doloremque architecto excepturi.</p>
           </div>
         </div>
       </div>
@@ -107,6 +120,7 @@ export default {
     const showNotification = ref(false);
     const showInteraction = ref(false);
     const interactive = ref(false);
+    const closeBtn = chrome.runtime.getURL(`icons/roundBtnX.svg`);
     let activeIndex = ref(0);
     let dataType = ref('co2');
     let notificationType = ref('weekly');
@@ -251,7 +265,7 @@ export default {
           await buildWeeklyNotification();
           notificationType.value = 'weekly';
           showNotification.value = true;
-          setTimeout( () => showNotification.value = false,  SHOW_DESC_NOTIF_DELAY );
+          setTimeout( () => showNotification.value = false, SHOW_DESC_NOTIF_DELAY);
           break;
         case 'daily':
           notification.value = await buildDailyNotification();
@@ -263,7 +277,7 @@ export default {
         default:
           notification.value = DefaultNotification();
           showNotification.value = true;
-          setTimeout( () => showNotification.value = false,  SHOW_DESC_NOTIF_DELAY );
+          setTimeout( () => showNotification.value = false,  SHOW_DESC_NOTIF_DELAY);
       }
     }
 
@@ -296,7 +310,7 @@ export default {
     });
 
     return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames,
-      dayTotals, dataType, activeIndex, notification, showMiniViz, notificationType, weeklyTotals,
+      dayTotals, dataType, activeIndex, notification, showMiniViz, notificationType, weeklyTotals, closeBtn,
       formatCo2, formatSize, createTimeString, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText,
       onNotificationClick
     }
@@ -308,7 +322,6 @@ export default {
 .extension {
   all: initial;
 }
-
 .miniviz, .actionContainer {
   font-family: Roboto, Arial, sans-serif ;
 }
@@ -329,11 +342,12 @@ export default {
 .anim {
   display: flex;
   justify-content: space-evenly;
-  margin-bottom: 1px;
   max-width: 270px;
   margin-right: 0px;
   margin-left: auto;
   background-color: var(--co2);
+  border: 2px solid white;
+  border-top: 0;
   &.data {
     background-color: var(--data);
   }
@@ -358,6 +372,7 @@ export default {
   }
   & .image, p {
     margin: 5px;
+    margin-left: 0;
     line-height: normal;
     font-size: 12px;
   }
@@ -366,7 +381,6 @@ export default {
   max-width: 270px;
   margin-right: 0px;
   margin-left: auto;
-  margin-bottom: 1px;
   color: white;
   background-color: var(--co2Active);
   &.data {
@@ -374,18 +388,58 @@ export default {
   }
 }
 .miniviz #notification {
-  padding: 10px;
-  width: auto;
+  width: 100%;
+  max-width: 270px;
   flex-wrap: wrap;
   color: black;
   background-color: var(--grey);
+  & .notificationContainer {
+    width: 100%;
+  }
   & .notificationItem {
     flex-basis: 100%;
   }
+  & .title {
+    margin-bottom: 15px
+  }
+  & svg.up {
+    display: inline-flex;
+    color: red;
+  }
+  & svg.down {
+    display: inline-flex;
+    transform: rotate(90deg);
+    color: var(--green);
+  }
 }
-
-.stats .current {
+.exit {
+  float: right;
+  margin: 10px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+#stats {
+    box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
+      inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
+}
+#stats, #advise {
+  padding: 10px;
+  border: 2px solid white;
+  border-top: 0;
+}
+#stats h3, #stats p, #advise h3 {
+  margin-left: 0;
+}
+#stats #current {
   font-weight: bold;
+  margin-bottom: 20px;
+}
+#stats #trend {
+  margin-top: 20px;
+}
+#advise h3 {
+  margin-bottom: 15px
 }
 .actionContainer {
   position: fixed;
