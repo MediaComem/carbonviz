@@ -85,7 +85,7 @@ export default {
 			yearsSincePurchase, yearsRemaining, lifetimeLaptopYears,
 			co2ImpactDefault, co2ImpactCustom, co2VsDefault,
 			Check, Close,
-			t, roundToPrecision, formatCo2, setMinvizDisplay, setShareData, lifetimeUpdate, co2ImpactHome
+			t, roundToPrecision, formatCo2, setMinvizDisplay, setShareData, lifetimeUpdate
 		};
 	}
 }
