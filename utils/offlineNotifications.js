@@ -1,6 +1,7 @@
 let offlineNotifications = {
   weeklynotificationTimeStamp: '',
-  dailyNotificationTimeStamp: ''
+  dailyNotificationBacklog: [],
+  lastDisplayedDailyNotification: ''
 };
 const saveNotifications = async (key, value) => {
   offlineNotifications[key] = value;

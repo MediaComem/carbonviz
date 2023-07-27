@@ -248,7 +248,7 @@ async function getTodayCounter(lifetime) {
       if (summary) {
         const computerCo2 = co2ImpactHomeHardware(ONE_DAY_SEC, lifetime)
         const computerEnergy = energyImpactHomeHardware(ONE_DAY_SEC, lifetime);
-        const counter = { co2: summary.co2 + computerCo2, energy: summary.energy + computerEnergy, data: summary.data };
+        const counter = { co2: summary.co2 + computerCo2, energy: summary.energy + computerEnergy, data: summary.data, time: summary.duration };
         return resolve(counter);
       }
       return { co2:0, data: 0, energy: 0, time: 0};
