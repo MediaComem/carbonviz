@@ -64,7 +64,9 @@
                 <span v-if="weeklyTotals.trend[dataType] > 0">+</span>
                 <span v-if="weeklyTotals.trend[dataType] < 0">-</span>
                 {{ Math.round(Math.abs(100 * weeklyTotals.trend[dataType]))}} %
-                <img :src="trendArrow">
+                <svg :class="weeklyTotals.trend[dataType] > 0 ? 'up' : 'down'" width="23" height="23" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+                  <path id="arrow" d="M0.93934 19.9393C0.353553 20.5251 0.353553 21.4749 0.93934 22.0607C1.52513 22.6464 2.47487 22.6464 3.06066 22.0607L0.93934 19.9393ZM22.5 2C22.5 1.17157 21.8284 0.5 21 0.5H7.5C6.67157 0.5 6 1.17157 6 2C6 2.82843 6.67157 3.5 7.5 3.5H19.5V15.5C19.5 16.3284 20.1716 17 21 17C21.8284 17 22.5 16.3284 22.5 15.5V2ZM3.06066 22.0607L22.0607 3.06066L19.9393 0.93934L0.93934 19.9393L3.06066 22.0607Z" fill="currentColor" />
+                </svg>
               </div>
               <div v-else>
                 -
@@ -172,9 +174,6 @@ export default {
       } else {
         return chrome.runtime.getURL(`icons/analogies/${analogiesData[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
       }
-    });
-    const trendArrow = computed(() => {
-      return chrome.runtime.getURL(`icons/arrow${weeklyTotals.value.trend[dataType.value] > 0 ?'Up' : 'Down'}.svg`);
     });
     const showDescAnimation = () => {
       showDescription.value = true;
@@ -311,7 +310,7 @@ export default {
     });
 
     return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames,
-      dayTotals, dataType, activeIndex, notification, showMiniViz, notificationType, weeklyTotals, trendArrow, closeBtn,
+      dayTotals, dataType, activeIndex, notification, showMiniViz, notificationType, weeklyTotals, closeBtn,
       formatCo2, formatSize, createTimeString, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText,
       onNotificationClick
     }
@@ -402,6 +401,15 @@ export default {
   }
   & .title {
     margin-bottom: 15px
+  }
+  & svg.up {
+    display: inline-flex;
+    color: red;
+  }
+  & svg.down {
+    display: inline-flex;
+    transform: rotate(90deg);
+    color: var(--green);
   }
 }
 .exit {
