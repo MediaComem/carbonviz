@@ -54,11 +54,11 @@
             </div>
             <div id="average">
               <p>
-                {{ t('components.statistics.day.average') }}
+                {{ t('components.miniViz.notification.weekly.average') }}
                 <strong> {{ dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek.co2 / 7, 0) : formatSize(weeklyTotals.currentWeek.data / 7, 0) }} </strong>
               </p>
               <p id="trend">
-                {{ t('components.statistics.day.trend') }}:
+                {{ t('components.miniViz.notification.weekly.trend') }}:
               </p>
               <div v-if="weeklyTotals.trend[dataType] !== 0">
                 <span v-if="weeklyTotals.trend[dataType] > 0">+</span>

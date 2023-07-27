@@ -56,7 +56,9 @@
           "co2": "{data} of co2",
           "data": "{data} of data",
           "days": "The last 7 days",
-          "analogy": "Equal to {amount}"
+          "analogy": "Equal to {amount}",
+          "average": "Weekly average",
+          "trend": "Weekly trend"
         },
         "daily": "daily notification"
       }
