@@ -1,6 +1,6 @@
-import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getAggregate, getTodayCounter, getWebsites, getCurWeekHistory } from './indexedDB.js';
+import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getAggregate, getTodayCounter, getWebsites } from './indexedDB.js';
 import { retrieveSettings } from '../settings/settings.js';
-
+import { ONE_DAY_SEC, co2ImpactHomeHardware} from '../model/model.js'
 
 const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -14,17 +14,25 @@ const getDailyAggregates = async (period, range) => {
     return dailyAggregatesFromDB(period, range, settings.lifetimeComputer)
 }
 
-const getLastDaysSummary = async(range) => {
+const computerDailyEmbodiedCo2 = async () => {
+    const settings = await retrieveSettings();
+    return co2ImpactHomeHardware(ONE_DAY_SEC, settings.lifetimeComputer);
+}
+
+const getLastDaysSummary = async (range) => {
     await initDB();
     const dailyData = await getDailyAggregates('day', range); // may contain holes for inactive days
+    // Add missing computer embodied energy for inactive days
+    const nbDaysInactive = range[1] - range [0] - dailyData.length;
+    const computerDailyCo2 = await computerDailyEmbodiedCo2();
+    dailyData.push({ data: 0, co2: nbDaysInactive * computerDailyCo2, computer: { co2: nbDaysInactive * computerDailyCo2 } });
     return dailyData.reduce((acc, day) => {
         return {
             data: acc.data + day.data,
-            energy: acc.energy + day.energy,
             co2: acc.co2 + day.co2,
-            computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
+            computer: { co2: acc.computer.co2 + day.computer.co2 }
         }
-    }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
+    }, { data: 0, co2: 0, computer: { co2: 0}});
 }
 
 const retrieveTodayCounter = async () => {
@@ -65,30 +73,20 @@ const getComputerCo2Series = async (granularity = 'day') => {
     await initDB();
 
     const periods = arrayForPeriods(granularity); // Periods to retrieve (days 0 to 6 or months 1 to 12)
+    const computerDailyCo2 = await computerDailyEmbodiedCo2();
 
     const result = [];
 
     // Add computer active time energy for co2
     let dailyData;
     if (granularity === 'day') {
-        dailyData = await getDailyAggregates('week', [-1, 0]); // may contain holes for inactive days
-        const data =  new Array(periods.length).fill(0);
-        for (const info of dailyData) {
-            const dayOfWeek = info.dayOfWeek; // sunday is 0
-            data[dayOfWeek > 0 ? dayOfWeek - 1 : 6] = info.computer.co2;
-        }
+        const data =  new Array(periods.length).fill(computerDailyCo2);
         result.push({
             name: "computer",
             data
         });
     } else if (granularity === 'month') {
-        dailyData = await getDailyAggregates('month', [-12, 0]);
-        // aggregate per month
-        const data =  new Array(periods.length).fill(0);
-        for (const info of dailyData) {
-            const month = info.month;
-            data[month-1] += info.computer.co2;
-        }
+        const data =  new Array(periods.length).fill(30*computerDailyCo2);
         result.push({
             name: "computer",
             data
@@ -134,7 +132,7 @@ const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity = 'day
 
     // retrieve data from database
     for (const period of periods) {
-        const table = `domains_${granularity}_${period}`; // TODO fix inactive days may not be empty
+        const table = `domains_${granularity}_${period}`;
         const dailyData = await getWebsites(mode, limit, table);
         for (const website of dailyData) {
             const name = website.name;
@@ -183,25 +181,6 @@ const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity = 'day
 
     return result;
 }
-const getCurWeek = async (mode = 'co2') => {
-    await initDB();
-    let history = await getCurWeekHistory(mode);
-    // build 24h history for 7 days filled with 0 if no data
-    const byHours = [];
-    for (let h = 0; h < 24; h++) byHours.push(Array(7).fill(0));
-    // Ceate a date one week ago at the begening of the day
-    const date = new Date();
-    date.setHours(0,0,0,0);
-    date.setDate(date.getDate() - 6);
-    for (const entry of history) {
-        // Put the history data to the right hour's index in the right day's index
-        const d = new Date(entry.index + ':00:00');
-        const diffInTime = d.getTime() - date.getTime();
-        const indDay = Math.ceil(diffInTime / 86400000) - 1 ;
-        byHours[entry.hour][indDay] = mode == 'co2' ? entry.co2 : entry.data;
-    }
-    return byHours;
-}
 
 const retrieveHistoryLayers = async (period, scrollCount) => {
     const year = new Date().getFullYear();
@@ -224,8 +203,8 @@ const retrieveHistoryLayers = async (period, scrollCount) => {
 
     const getDaysList = () => {
         for(let data of dailyData) {
-            layersCo2.push({ amount: data.co2, computer: data.computer.co2, energy: data.energy, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `co2Day${data.date}` });
-            layersData.push({ amount: data.data, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `dataDay${data.date}`  });
+            layersCo2.push({ amount: data.co2, computer: data.computer.co2, energy: data.energy, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `co2Day${data.index}` });
+            layersData.push({ amount: data.data, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `dataDay${data.index}`  });
         }
         layersCo2[layersCo2.length-1].label = 'current_today';
         layersData[layersCo2.length-1].label = 'current_today';
@@ -396,4 +375,4 @@ const retrieveAnalogiesLayer = async (type) => {
     }
 }
 
-export { initStorage, getLastDaysSummary, retrieveTodayCounter, getTopWebsites, getComputerCo2Series, getTopWebsitesSeries, getCurWeek, retrieveHistoryLayers, retrieveAnalogiesLayer}
+export { initStorage, getLastDaysSummary, retrieveTodayCounter, getTopWebsites, getComputerCo2Series, getTopWebsitesSeries, retrieveHistoryLayers, retrieveAnalogiesLayer, computerDailyEmbodiedCo2 }
