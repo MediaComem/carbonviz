@@ -38,6 +38,7 @@ retrieveNotifications().then(notifications => {
   failedNotifications = notifications;
 });
 
+let DBInitialized = false;
 let dailyResponseJson = [];
 let dump = [];
 let co2ComputerInterval;
@@ -362,9 +363,6 @@ const getNextMonday9AM = () => {
   const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
   nextMonday.setHours(9, 0, 0, 0); // Set the time to 9 AM
   return nextMonday;
-/*   const TestNow = new Date();
-  TestNow.setSeconds(TestNow.getSeconds() + 10);
-  return TestNow; */
 };
 
 startComputerCo2Interval();
@@ -381,16 +379,22 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
     return;
   }
-  // Set up a notification every Monday at 9am
-  chrome.alarms.create('weeklynotification', {
-    when: getNextMonday9AM().getTime(), // Set the alarm to trigger next Monday at 9 AM
-    periodInMinutes: weeklyIntervalMins
-  });
-  // Set up a notification daily
-  chrome.alarms.create('dailyNotification', {
-    when: new Date().setHours(8, 0, 0, 0), // Set the alarm to trigger the next Monday at 9 AM
-    periodInMinutes: dailyIntervalMins
-  });
+  // Event can trigger before initStorage is complete and DB instance is not ready. 
+  const DBReady = setInterval(() => {
+    if (DBInitialized) {
+      clearInterval(DBReady);
+      // Set up a notification every Monday at 9am
+      chrome.alarms.create('weeklynotification', {
+        when: getNextMonday9AM().getTime(), // takes timestamp which getTime returns
+        periodInMinutes: weeklyIntervalMins
+      });
+      // Set up a notification daily
+      chrome.alarms.create('dailyNotification', {
+        when: new Date().setHours(8, 0, 0, 0),
+        periodInMinutes: dailyIntervalMins
+      });
+    }
+  }, 100)
 });
 
 chrome.alarms.onAlarm.addListener(alarm => {
@@ -530,4 +534,5 @@ const checkFailedNotifications = async (tab = false) => {
 initStorage().then( async () => {
   const settings = await retrieveSettings();
   statistics = await getTodayCounter(settings.lifetimeComputer);
+  DBInitialized = true;
 })
