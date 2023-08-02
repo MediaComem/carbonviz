@@ -3,7 +3,7 @@ let settings = {
   yearsSinceComputerPurchase: 6,
   yearsComputerRemaining: 0,
   computer: 'laptop',
-  showMiniviz: true,
+  showMiniViz: true,
   deactivateUntil: undefined,
   lang: 'fr'
 }
@@ -23,4 +23,17 @@ const retrieveSettings = () => {
   });
 }
 
-export { saveSettings, retrieveSettings };
+const resetSettings = () => {
+  settings = {
+    lifetimeComputer: 6,
+    yearsSinceComputerPurchase: 6,
+    yearsComputerRemaining: 0,
+    computer: 'laptop',
+    showMiniViz: true,
+    deactivateUntil: undefined,
+    lang: 'fr'
+  }
+  chrome.storage.local.set({'settings' : JSON.stringify(settings)});
+}
+
+export { saveSettings, retrieveSettings, resetSettings };

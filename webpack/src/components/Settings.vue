@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Check, Close } from '@element-plus/icons-vue';
-import { ElConfigProvider, ElMessage } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 import { formatCo2, roundToPrecision } from '../../../utils/format.js';
 import { ONE_DAY_SEC, co2ImpactHomeHardware } from '../../../model/model.js';
@@ -15,40 +15,53 @@ export default {
 		const { t } = useI18n({});
 		const showMiniViz = ref(true);
 		const miniVizStatusUpdating = ref(false);
-		const disablePeriod = ref(0);
+		const deactivateUntil = ref(undefined);
+		const disableTimer = ref(0);
 		const marks = ref({
 			30: '30min',
 			60: '1H',
 			120: '2H',
 			180: '3H'
 		})
-		const now = new Date();
+		const onSetupTimestamp = new Date();
 		const nowMinus6HalfYears = new Date();
-		nowMinus6HalfYears.setMonth(now.getMonth() - 78);
+		nowMinus6HalfYears.setMonth(onSetupTimestamp.getMonth() - 78);
 		const computer = ref('laptop');
 		const yearsSincePurchase = ref(6);
 		const yearsRemaining = ref(0);
-  	const lifetimeLaptopYears = computed(() => yearsSincePurchase.value + yearsRemaining.value);
+		const lifetimeLaptopYears = computed(() => yearsSincePurchase.value + yearsRemaining.value);
 
 		const co2ImpactDefault = co2ImpactHomeHardware();
-		const co2ImpactCustom = computed(() => co2ImpactHomeHardware( ONE_DAY_SEC, lifetimeLaptopYears.value ));
+		const co2ImpactCustom = computed(() => co2ImpactHomeHardware(ONE_DAY_SEC, lifetimeLaptopYears.value));
 		const co2VsDefault = computed(() => {
-			const percent = ( co2ImpactCustom.value - co2ImpactDefault ) / co2ImpactDefault * 100;
+			const percent = (co2ImpactCustom.value - co2ImpactDefault) / co2ImpactDefault * 100;
 			return `${percent > 0 ? '+' : ''}${percent.toFixed(0)} %`
 		})
 
 		retrieveSettings().then(settings => {
 			yearsSincePurchase.value = settings.yearsSinceComputerPurchase;
 			yearsRemaining.value = settings.yearsComputerRemaining;
-			showMiniViz.value = settings.showMiniviz;
+			showMiniViz.value = settings.showMiniViz;
 			computer.value = settings.computer;
-			disablePeriod.value = settings.deactivateUntil;
+			deactivateUntil.value = settings.deactivateUntil;
+		}).then(() => {
+			// check if plugin deactivation is still active
+			if (deactivateUntil.value) {
+				const endDate = new Date(deactivateUntil.value);
+				const now = new Date();
+				if (endDate < now) {
+					return;
+				} else {
+					const diffInMilliseconds = Math.abs(endDate.getTime() - now.getTime());
+					disableTimer.value = Math.floor(diffInMilliseconds / (1000 * 60));
+				}
+			}
 		});
 
 		const setMinvizDisplay = (status) => {
 			miniVizStatusUpdating.value = true;
 			const text = status ? "visible" : "hidden";
-			saveSettings('showMiniviz', status).then(() => {
+			saveSettings('showMiniViz', status).then(() => {
 				miniVizStatusUpdating.value = false;
 				ElMessage.success(
 					t('components.settings.confirmMiniVizStatus', { text })
@@ -59,18 +72,26 @@ export default {
 			saveSettings('yearsSinceComputerPurchase', yearsSincePurchase.value);
 			saveSettings('yearsComputerRemaining', yearsRemaining.value);
 			saveSettings('lifetimeComputer', lifetimeLaptopYears.value);
+		};
+		const updateDisablePeriod = (value) => {
+			const timerObj = new Date();
+			timerObj.setMinutes(timerObj.getMinutes() + value);
+			saveSettings('deactivateUntil', timerObj.getTime());
+			saveSettings('showMiniViz', false);
+			disableTimer.value = value;
+			deactivateUntil.value = timerObj.getTime();
+			chrome.runtime.sendMessage({ query: 'deactivateDataStorage' });
 		}
-
 		const triggerDownloadData = () => {
-      downloadData();
-    };
+			downloadData();
+		};
 
 		return {
-			showMiniViz, miniVizStatusUpdating, disablePeriod, marks,
-			yearsSincePurchase, yearsRemaining, lifetimeLaptopYears,
+			showMiniViz, miniVizStatusUpdating, marks,
+			yearsSincePurchase, yearsRemaining, lifetimeLaptopYears, disableTimer,
 			co2ImpactDefault, co2ImpactCustom, co2VsDefault,
 			Check, Close,
-			t, roundToPrecision, formatCo2, setMinvizDisplay, lifetimeUpdate, triggerDownloadData
+			t, roundToPrecision, formatCo2, setMinvizDisplay, lifetimeUpdate, triggerDownloadData, updateDisablePeriod
 		};
 	}
 }
@@ -85,7 +106,7 @@ export default {
 						<h3> {{ t('components.settings.usingSince') }} </h3>
 					</el-col>
 					<el-col :span="7">
-						<el-input-number v-model="yearsSincePurchase" :min="0" size="small" @change="lifetimeUpdate"/>
+						<el-input-number v-model="yearsSincePurchase" :min="0" size="small" @change="lifetimeUpdate" />
 					</el-col>
 					<el-col :span="2">
 						{{ t('global.years') }}
@@ -96,7 +117,7 @@ export default {
 						<h3> {{ t('components.settings.usingUntil') }} </h3>
 					</el-col>
 					<el-col :span="7">
-						<el-input-number v-model="yearsRemaining" :min="0" size="small" @change="lifetimeUpdate"/>
+						<el-input-number v-model="yearsRemaining" :min="0" size="small" @change="lifetimeUpdate" />
 					</el-col>
 					<el-col :span="2">
 						{{ t('global.years') }}
@@ -111,8 +132,8 @@ export default {
 					<el-col :span="24">{{ t('components.settings.computerUsageOneDay') }}:</el-col>
 				</el-row>
 				<el-row>
-					<el-col :span="6" justify="center" > {{ t('components.settings.computerLifetimeDefault') }} </el-col>
-					<el-col :span="6" justify="center" > {{ formatCo2(co2ImpactDefault, 0) }} </el-col>
+					<el-col :span="6" justify="center"> {{ t('components.settings.computerLifetimeDefault') }} </el-col>
+					<el-col :span="6" justify="center"> {{ formatCo2(co2ImpactDefault, 0) }} </el-col>
 					<el-col :span="6"> {{ roundToPrecision(lifetimeLaptopYears, 1) }} {{ t('global.years') }} </el-col>
 					<el-col :span="6"> {{ formatCo2(co2ImpactCustom, 0) }} ({{ co2VsDefault }})</el-col>
 				</el-row>
@@ -141,11 +162,12 @@ export default {
 				<el-row>
 					<el-col :span="18">
 						<el-slider
-						v-model="disablePeriod"
-						:marks="marks"
-						:max="180"
-						:step="10"
-					/>
+							v-model="disableTimer"
+							:marks="marks"
+							:max="180"
+							:step="10"
+							@change="updateDisablePeriod"
+						/>
 					</el-col>
 				</el-row>
 			</div>
@@ -156,7 +178,7 @@ export default {
 				</el-row>
 				<el-row>
 					<el-col :span="24">
-						<el-button style="margin: 10px; cursor: pointer;"  @click='triggerDownloadData()'>{{ t('components.settings.downloadAction') }} </el-button>
+						<el-button style="margin: 10px; cursor: pointer;" @click='triggerDownloadData()'>{{ t('components.settings.downloadAction') }} </el-button>
 					</el-col>
 				</el-row>
 			</div>
