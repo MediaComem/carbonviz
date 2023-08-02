@@ -18,18 +18,19 @@ export default {
 		const miniVizStatusUpdating = ref(false);
 		const shareData = ref(false);
 		const shareDataStatusUpdating = ref(false);
-		const disablePeriod = ref(0);
+		const deactivateUntil = ref(undefined);
+		const disableTimer = ref(0);
 		const marks = ref({
 			30: '30min',
 			60: '1H',
 			120: '2H',
 			180: '3H'
 		})
-		const now = new Date();
+		const onSetupTimestamp = new Date();
 		const nowMinus6HalfYears = new Date();
-		nowMinus6HalfYears.setMonth(now.getMonth() - 78);
+		nowMinus6HalfYears.setMonth(onSetupTimestamp.getMonth() - 78);
 		const deviceMonthStart = ref(nowMinus6HalfYears);
-		const deviceMonthEnd = ref(now);
+		const deviceMonthEnd = ref(onSetupTimestamp);
 		//const lifetimeLaptopYears = computed(()=> (deviceMonthEnd.value - deviceMonthStart.value)/(365.25 * 24 * 3600 * 1000));
 		const computer = ref('laptop');
 		const yearsSincePurchase = ref(6);
@@ -46,15 +47,28 @@ export default {
 		retrieveSettings().then(settings => {
 			yearsSincePurchase.value = settings.yearsSinceComputerPurchase;
 			yearsRemaining.value = settings.yearsComputerRemaining;
-			showMiniViz.value = settings.showMiniviz;
+			showMiniViz.value = settings.showMiniViz;
 			computer.value = settings.computer;
-			disablePeriod.value = settings.deactivateUntil;
+			deactivateUntil.value = settings.deactivateUntil;
+		}).then(() => {
+			// check if plugin deactivation is still active
+			if(deactivateUntil.value) {
+				const endDate = new Date(deactivateUntil.value);
+				const now = new Date();
+				if (endDate < now) {
+					return;
+				} else {
+					const diffInMilliseconds = Math.abs(endDate.getTime() - now.getTime());
+					disableTimer.value = Math.floor(diffInMilliseconds / (1000 * 60));
+					createCounter();
+				}
+			}
 		});
 
 		const setMinvizDisplay = (status) => {
 			miniVizStatusUpdating.value = true;
 			const text = status ? "visible" : "hidden";
-			saveSettings('showMiniviz', status).then(() => {
+			saveSettings('showMiniViz', status).then(() => {
 				miniVizStatusUpdating.value = false;
 				ElMessage.success(
 					t('components.settings.confirmMiniVizStatus', { text })
@@ -78,14 +92,35 @@ export default {
 			saveSettings('yearsSinceComputerPurchase', yearsSincePurchase.value);
 			saveSettings('yearsComputerRemaining', yearsRemaining.value);
 			saveSettings('lifetimeComputer', lifetimeLaptopYears.value);
+		};
+		const createCounter = () => {
+			const updateDisabledTimer  = setInterval(() => {
+				if(disableTimer.value) {
+					disableTimer.value = disableTimer.value - 1
+				} else {
+					clearInterval(updateDisabledTimer);
+					saveSettings('showMiniViz', true);
+					chrome.runtime.sendMessage({ query: 'reactivateDataStorage' });
+				}
+			}, 60000) // update each minute
+		};
+		const updateDisablePeriod = (value) => {
+			const timerObj = new Date();
+			timerObj.setMinutes(timerObj.getMinutes() + value);
+			saveSettings('deactivateUntil', timerObj.getTime());
+			saveSettings('showMiniViz', false);
+			disableTimer.value = value;
+			deactivateUntil.value = timerObj.getTime();
+			createCounter();
+			chrome.runtime.sendMessage({ query: 'deactivateDataStorage' });
 		}
 
 		return {
-			showMiniViz, miniVizStatusUpdating, shareData, shareDataStatusUpdating, disablePeriod, marks,
-			yearsSincePurchase, yearsRemaining, lifetimeLaptopYears,
-			co2ImpactDefault, co2ImpactCustom, co2VsDefault,
+			showMiniViz, miniVizStatusUpdating, shareData, shareDataStatusUpdating, disableTimer, marks,
+			yearsSincePurchase, yearsRemaining, lifetimeLaptopYears, disableTimer,
+			co2ImpactDefault, co2ImpactCustom, co2VsDefault, locale, en, fr,
 			Check, Close,
-			t, roundToPrecision, formatCo2, setMinvizDisplay, setShareData, lifetimeUpdate
+			t, roundToPrecision, formatCo2, setMinvizDisplay, setShareData, lifetimeUpdate, updateDisablePeriod
 		};
 	}
 }
@@ -169,13 +204,14 @@ export default {
 					/>
 				</div>
 				<div id="disable">
-					<h3> {{ t('components.settings.disablePlugin') }} </h3>
+					<h3> {{ t('components.settings.disablePlugin') }}  -- {{ disableTimer }}</h3>
 					<div class="sliderWrapper">
 						<el-slider
-							v-model="disablePeriod"
+							v-model="disableTimer"
 							:marks="marks"
 							:max="180"
 							:step="10"
+							@change="updateDisablePeriod"
 						/>
 					</div>
 				</div>

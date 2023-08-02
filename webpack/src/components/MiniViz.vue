@@ -166,7 +166,7 @@ export default {
     };
 
     retrieveSettings().then(settings => {
-      showMiniViz.value = settings.showMiniviz;
+      showMiniViz.value = settings.showMiniViz;
     });
     const asset = computed(() => {
       if (dataType.value === 'co2') {

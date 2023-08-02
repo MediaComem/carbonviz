@@ -1,7 +1,7 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
 import { getTodayCounter, getDailyAggregates } from "../storage/indexedDB.js";
 import { initStorage } from "../storage/storage.js";
-import { retrieveSettings } from "../settings/settings.js";
+import { retrieveSettings, resetSettings } from "../settings/settings.js";
 import { saveNotifications, retrieveNotifications } from '../utils/offlineNotifications.js';
 
 // Note that since the switch to manifest v3, chrome extension API switched mostly to Promises (as Firefox)
@@ -15,19 +15,6 @@ const notificationIcon = '../icons/logos/carbonViz-48.png'  //'../icons/logos/lo
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
 
-// Miniviz inner page animation option
-let minivizOptions = {
-  time: undefined,
-  show: true
-};
-
-chrome.storage.local.get(['minivizOptions']).then(storage => {
-  const minivizPreviousState = storage.minivizOptions;
-  if (minivizPreviousState) {
-    minivizOptions = JSON.parse(minivizPreviousState);
-  }
-});
-
 let failedNotifications = {
   weeklynotificationTimeStamp: '',
   dailyNotificationTimeStamp: ''
@@ -36,6 +23,11 @@ let failedNotifications = {
 retrieveNotifications().then(notifications => {
   failedNotifications = notifications;
 });
+
+const refreshSettings = async () => {
+  const settings = await retrieveSettings();
+  return settings;
+};
 
 let dump = [];
 let co2ComputerInterval;
@@ -255,24 +247,28 @@ const handleMessage = (request, _sender, sendResponse) => {
         addPluginToNewTab();
         break;
       case 'startMiniviz':
-        if(!minivizOptions.show) {
-          let timeNow = Date.now();
-          if(timeNow > minivizOptions.time) {
-            minivizOptions.show = true;
-            chrome.storage.local.set({'minivizOptions' : JSON.stringify(minivizOptions)});
+        refreshSettings().then((settings) => {
+          if(settings.showMiniViz) {
+            let now = new Date();
+            const endDate = settings.deactivateUntil ? new Date(settings.deactivateUntil) : 0;
+            if(now > endDate) {
+              sendResponse({show: true});
+            }
           }
-        }
-        sendResponse({show: minivizOptions.show});
-        return true;
+        });
+        return true; // if (response && response.show === true) {
       case 'removeMiniviz':
-        minivizOptions.time = Date.now() + request.time;
-        minivizOptions.show = false;
-        chrome.storage.local.set({'minivizOptions' : JSON.stringify(minivizOptions)});
         chrome.tabs.query({}).then((tabs) => {
           for (const tab of tabs) {
             sendMessageToTab(tab.id, { query: 'removeMiniviz' });
           }
         })
+        return;
+      case 'deactivateDataStorage':
+        chrome.webRequest.onCompleted.removeListener(completedListener);
+        return;
+      case 'reactivateDataStorage':
+        addPluginHeaderListener();
         return;
       default:
         break;
@@ -319,6 +315,17 @@ const startComputerCo2Interval = () => {
   co2ComputerInterval = setInterval(computerCo2, co2ComputerIntervalMs);
 }
 
+const addPluginHeaderListener = () => {
+  const pluginListener = chrome.webRequest.onCompleted.hasListener(completedListener);
+  if(!pluginListener) {
+    chrome.webRequest.onCompleted.addListener(
+      completedListener,
+      {urls: ['<all_urls>']},
+      ['responseHeaders']
+    );
+  }
+};
+
 const writeData = async () => {
   for(let packet of dump) {
     await updateHistoryDb(packet);
@@ -342,16 +349,13 @@ const getNextMonday9AM = () => {
 
 startComputerCo2Interval();
 
-chrome.webRequest.onCompleted.addListener(
-  completedListener,
-  {urls: ['<all_urls>']},
-  ['responseHeaders']
-);
+addPluginHeaderListener();
 
 chrome.runtime.onMessage.addListener(handleMessage);
 
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
+    resetSettings();
     return;
   }
   // Set up a notification every Monday at 9am
@@ -417,11 +421,22 @@ chrome.notifications.onButtonClicked.addListener(function(notifType, openTab) {
   }
 });
 
-// Check for failed messages on new tab
+// Check for failed messages on new tab & pluginListener if disabled
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   // make sure the status is 'complete' and it's the right tab
-  if (changeInfo.status == 'complete') {
+  if (changeInfo.status === 'complete') {
     checkFailedNotifications([tab]);
+    const pluginActive = chrome.webRequest.onCompleted.hasListener(completedListener);
+    refreshSettings().then((settings) => {
+      if(!pluginActive) {
+        let now = new Date();
+        const endDate = new Date(settings.deactivateUntil);
+        if(now > endDate) {
+          //In case popup settings page is closed we need to reactivate the listener here
+          addPluginHeaderListener();
+        }
+      }
+    });
   }
 });
 
