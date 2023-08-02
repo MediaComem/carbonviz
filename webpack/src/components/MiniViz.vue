@@ -31,9 +31,12 @@
           co2: dataType === 'co2',
           data: dataType === 'data',
         }"
-        @click="onNotificationClick"
       >
-        <div class="notificationContainer" v-if="notificationType === 'weekly'">
+        <div
+          class="notificationContainer"
+          v-if="notificationType === 'weekly'"
+          @click="onNotificationClick"
+        >
           <img class="exit" :src="closeBtn" alt="X">
           <div id="stats">
             <h3 class="title"> {{ t('components.miniViz.notification.weekly.title') }} </h3>
@@ -78,6 +81,16 @@
             <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laborum quo quis, porro nostrum pariatur repellendus dicta sequi ipsam, nesciunt,
               doloremque nam. Enim quo accusamus explicabo deserunt upiditate et, doloremque architecto excepturi.</p>
           </div>
+        </div>
+        <div
+          class="notificationContainer"
+          v-if="notificationType === 'daily'"
+          @click="onDailyNotificationClick"
+        >
+        <div id="dailyNotification">
+          <h3> {{ dailyNotificartion.title }}</h3>
+          <span v-html="dailyNotificartion.messageHTML"></span>
+        </div>
         </div>
       </div>
     </div>
@@ -135,22 +148,11 @@ export default {
       lastWeek: {data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}},
       trend: {co2: 0, data: 0}
     });
-    let notification = ref(
-      [
-        {
-          date: '',
-          title: '',
-          messageHTML: ''
-        }
-      ]
-    );
-    let notificationDataJSON = [
-      {
-        date: '',
-        title: '',
-        messageHTML: ''
-      }
-    ];
+    let dailyNotificartion = ref({
+      date: '',
+      title: '',
+      messageHTML: ''
+    });
     // Icon bar of 12
     const iconBar = [0,1,2,3,4,5,6,7,8,9,10,11];
     let currentMeter = {
@@ -185,6 +187,11 @@ export default {
       setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY);
     };
     const onNotificationClick = () => {
+      showNotification.value = false
+    };
+    const onDailyNotificationClick = () => {
+      // send next daily notification if any
+      chrome.runtime.sendMessage({ query: 'sendNextDailyNotification' });
       showNotification.value = false
     };
 
@@ -247,16 +254,12 @@ export default {
       }
     };
 
-    function buildDailyNotification() { // TBD -- Do we want to change or validate the data??
-      return notificationDataJSON;
-    };
-
     function DefaultNotification() {
-      return [{
+      return {
         date: '-',
         title: "No data to display",
         messageHTML: '-'
-      }]
+      }
     };
 
     async function displayNotification(type: string) {
@@ -268,14 +271,12 @@ export default {
           setTimeout( () => showNotification.value = false, SHOW_DESC_NOTIF_DELAY);
           break;
         case 'daily':
-          notification.value = await buildDailyNotification();
-          if(notification.value.length > 0) {
-            notificationType.value = 'daily';
-            showNotification.value = true;
-          }
+          notificationType.value = 'daily';
+          showNotification.value = true;
           break;
         default:
-          notification.value = DefaultNotification();
+          dailyNotificartion.value = DefaultNotification();
+          notificationType.value = 'daily';
           showNotification.value = true;
           setTimeout( () => showNotification.value = false,  SHOW_DESC_NOTIF_DELAY);
       }
@@ -295,7 +296,7 @@ export default {
         displayNotification('weekly');
       }
       if (request.dailyNotifications) {
-        notificationDataJSON = request.dailyNotifications.data;
+        dailyNotificartion.value = request.dailyNotifications.data;
         displayNotification('daily');
       }
     });
@@ -310,9 +311,9 @@ export default {
     });
 
     return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames,
-      dayTotals, dataType, activeIndex, notification, showMiniViz, notificationType, weeklyTotals, closeBtn,
+      dayTotals, dataType, activeIndex, showMiniViz, notificationType, dailyNotificartion, weeklyTotals, closeBtn,
       formatCo2, formatSize, createTimeString, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText,
-      onNotificationClick
+      onNotificationClick, onDailyNotificationClick
     }
   }
 }
@@ -419,11 +420,11 @@ export default {
     cursor: pointer;
   }
 }
-#stats {
+#stats, #dailyNotification {
     box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
       inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
-#stats, #advise {
+#stats, #advise, #dailyNotification {
   padding: 10px;
   border: 2px solid white;
   border-top: 0;
