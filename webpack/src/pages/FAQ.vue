@@ -37,7 +37,7 @@ Total : 15 minutes = <span class="bold">1/4 KWh per pizza</span>`,
         sources: '<a href="https://www.totalenergies.fr/particuliers/parlons-energie/dossiers-energie/economie-d-energie/tout-savoir-sur-la-consommation-de-votre-four">source</a>'
     },
     {
-        image: 'analogy_boilingwater.png',
+        image: 'analogy_boiling.png',
         title: '~ 15 liters of water brought to boil',
         explanation:`Increase 1 L of 1°C = 1.162 Wh
 From 20°C to 100°C = 116 Wh = 0.116 KWh per liter<br>

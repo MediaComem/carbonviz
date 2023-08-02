@@ -1,30 +1,35 @@
 <script>
 import Statistics from '../components/Statistics.vue'
-import { inject, onMounted } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 import { ElRow, ElCol } from 'element-plus';
 import { useI18n } from 'vue-i18n';
-
-const subNav = {
-};
+import { tips } from '../../../utils/tips';
 
 export default {
   components: {
     ElRow, ElCol, Statistics
   },
   setup() {
+    const { t, locale } = useI18n({});
+    const scroll = ref(null);
 
-    const { t } = useI18n({});
+    const subNav = {
+      'Weekly trends': t('components.statistics.day.trend'),
+      'Monthly trends': t('components.statistics.month.trend'),
+      'Recommandations': t('components.statistics.recommandations')
+    };
     const setSubNav = inject('setSubNav');
-    onMounted(() => setSubNav(subNav));
-    return { t };
+    onMounted(() => setSubNav(subNav, scroll));
+    const activeTips = ['streaming_resolution'];
+    return { t, locale, scroll, tips, activeTips };
   }
 
 }
 </script>
 
 <template>
-  <el-scrollbar>
-    <h1 class="title">{{ t(`components.statistics.day.trend`) }}</h1>
+  <el-scrollbar ref="scroll">
+    <h1 class="title" data-section="Weekly trends">{{ t(`components.statistics.day.trend`) }}</h1>
     <h3 class="subtitle">{{ t(`components.statistics.day.details`) }}</h3>
     <div class="line"></div>
     <div class="weekly">
@@ -44,7 +49,7 @@ export default {
         <statistics type="data" subtype="web" granularity="day" :height="200"></statistics>
       </div>
     </div>
-    <h1 class="title">{{ t(`components.statistics.month.trend`) }}</h1>
+    <h1 class="title" data-section="Monthly trends">{{ t(`components.statistics.month.trend`) }}</h1>
     <h3 class="subtitle">{{ t(`components.statistics.month.details`) }}</h3>
     <div class="line"></div>
     <div class="monthly">
@@ -63,6 +68,16 @@ export default {
       <div>
         <statistics type="data" subtype="web" granularity="month" :height="200"></statistics>
       </div>
+    </div>
+    <h1 class="title" data-section="Recommandations">{{ t(`components.statistics.recommandations`) }}</h1>
+    <h3 class="subtitle">{{ t(`components.statistics.tips`) }}</h3>
+    <div class="line"></div>
+    <div class="tips">
+      <el-collapse v-model="activeTips">
+      <el-collapse-item v-for="tip in tips" :key="tip.id" :title="tip.title[locale]" :name="tip.id">
+        <div v-html="tip.detailsHTML[locale]"></div>
+      </el-collapse-item>
+      </el-collapse>
     </div>
   </el-scrollbar>
 </template>
@@ -98,4 +113,18 @@ h3.subtitle {
   padding-bottom: 20px;
 }
 
+.tips {
+  margin-bottom: 20px;
+  :deep(.el-collapse-item__header) {
+    font-weight: 700;
+  }
+}
+
+a, :deep(a) {
+  color: black;
+  font-style: italic;
+}
+a:visited, :deep(a:visited) {
+  color: black;
+}
 </style>
