@@ -54,7 +54,6 @@ export default {
 				} else {
 					const diffInMilliseconds = Math.abs(endDate.getTime() - now.getTime());
 					disableTimer.value = Math.floor(diffInMilliseconds / (1000 * 60));
-					createCounter();
 				}
 			}
 		});
@@ -74,17 +73,6 @@ export default {
 			saveSettings('yearsComputerRemaining', yearsRemaining.value);
 			saveSettings('lifetimeComputer', lifetimeLaptopYears.value);
 		};
-		const createCounter = () => {
-			const updateDisabledTimer = setInterval(() => {
-				if (disableTimer.value) {
-					disableTimer.value = disableTimer.value - 1
-				} else {
-					clearInterval(updateDisabledTimer);
-					saveSettings('showMiniViz', true);
-					chrome.runtime.sendMessage({ query: 'reactivateDataStorage' });
-				}
-			}, 60000) // update each minute
-		};
 		const updateDisablePeriod = (value) => {
 			const timerObj = new Date();
 			timerObj.setMinutes(timerObj.getMinutes() + value);
@@ -92,10 +80,8 @@ export default {
 			saveSettings('showMiniViz', false);
 			disableTimer.value = value;
 			deactivateUntil.value = timerObj.getTime();
-			createCounter();
 			chrome.runtime.sendMessage({ query: 'deactivateDataStorage' });
 		}
-
 		const triggerDownloadData = () => {
 			downloadData();
 		};
@@ -172,7 +158,7 @@ export default {
 				/>
 			</div>
 			<div id="disable">
-				<h3> {{ t('components.settings.disablePlugin') }} -- {{ disableTimer }}</h3>
+				<h3> {{ t('components.settings.disablePlugin') }} </h3>
 				<el-row>
 					<el-col :span="18">
 						<el-slider
