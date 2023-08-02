@@ -1,7 +1,7 @@
  <template>
   <div class="extension" v-if="showMiniViz">
     <div class="miniviz" :class="{ 'hidden': showInteraction}" id="miniViz_container">
-      <div class="anim" :class="dataType === 'data' ? 'data' : 'co2'" @mouseover="showDescAnimation" @click="onMiniVizClick">
+      <div class="anim" :class="dataType === 'data' ? 'data' : 'co2'" @mouseover="hideMiniViz">
         <img v-for="(item, index) in iconBar" key="item" class="image" :class="currentMeter[dataType][item] ? 'fill': ''" :src="asset" height="20" width="20">
       </div>
       <div
@@ -11,7 +11,7 @@
           co2: dataType === 'co2',
           data: dataType === 'data',
         }"
-        @click="onMiniVizClick"
+        @mouseover="hideMiniViz"
       >
         <img class="image" :src="asset" height="40" width="40">
         <p>{{ t(`components.miniViz.description.${dataType}`,
@@ -102,7 +102,7 @@
           <path :fill="color" fill-rule="evenodd" clip-rule="evenodd" d="M5.56068 3.51027H3.51027V11.4897H11.4854V9.43932H12.9957V11.8139C12.9957 12.468 12.4637 13 11.8096 13H3.18609C2.53202 13 2 12.468 2 11.8139V3.18609C2 2.53202 2.53202 2 3.18609 2H5.56068V3.51027ZM7.93124 2.04474C7.41618 2.04474 6.99685 2.46406 6.99685 2.97912V7.07324C6.99685 7.5883 7.41618 8.00762 7.93124 8.00762H12.0254C12.5404 8.00762 12.9597 7.5883 12.9597 7.07324V2.97912C12.9597 2.46406 12.5404 2.04474 12.0254 2.04474H7.93124Z"/>
         </svg>
         <span class="vl"></span>
-        <svg class="closeIcon cvz-interactive" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="closeIcon cvz-interactive" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg" @click="closeActionPanel">
           <path d="M1 12.2065L12.2065 1.00003M12.2065 12.2065L1 1.00003" stroke="#333333" stroke-width="2"/>
         </svg>
       </div>
@@ -181,7 +181,7 @@ export default {
       showDescription.value = true;
       setTimeout( () => showDescription.value = false, SHOW_DESC_NOTIF_DELAY);
     };
-    const onMiniVizClick = () => {
+    const hideMiniViz = () => {
       showInteraction.value = true;
       interactive.value = true;
       setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY);
@@ -305,6 +305,10 @@ export default {
       chrome.runtime.sendMessage({ query: 'openExtension' });
     };
 
+    const closeActionPanel = () => {
+      interactive.value = false;
+    };
+
     onMounted(async () => {
       const settings = await retrieveSettings();
       locale.value = settings.lang;
@@ -312,8 +316,8 @@ export default {
 
     return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames,
       dayTotals, dataType, activeIndex, showMiniViz, notificationType, dailyNotificartion, weeklyTotals, closeBtn,
-      formatCo2, formatSize, createTimeString, openTabExtension, showDescAnimation, onMiniVizClick, t, getAnalogyValue, getAnalogyText,
-      onNotificationClick, onDailyNotificationClick
+      formatCo2, formatSize, createTimeString, openTabExtension, hideMiniViz, t, getAnalogyValue, getAnalogyText,
+      onNotificationClick, onDailyNotificationClick, closeActionPanel
     }
   }
 }
@@ -367,6 +371,8 @@ export default {
   max-height: 500px;
   transition: max-height 1.5s linear, opacity 1.5s linear;
   opacity: 1;
+  border: 2px solid white;
+  border-top: 0;
   &.hidden {
     max-height: 0px;
     opacity: 0;
@@ -389,8 +395,6 @@ export default {
   }
 }
 .miniviz #notification {
-  width: 100%;
-  max-width: 270px;
   flex-wrap: wrap;
   color: black;
   background-color: var(--grey);
@@ -426,8 +430,6 @@ export default {
 }
 #stats, #advise, #dailyNotification {
   padding: 10px;
-  border: 2px solid white;
-  border-top: 0;
 }
 #stats h3, #stats p, #advise h3 {
   margin-left: 0;
