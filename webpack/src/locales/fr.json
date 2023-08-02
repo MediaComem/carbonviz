@@ -73,6 +73,8 @@
     "statistics": {
       "average": "Moyenne",
       "trend": "Tendance",
+      "recommandations": "Recommandations",
+      "tips": "Tips sur les bonnes pratiques",
       "days": {
         "Mon": "Lun.",
         "Tue": "Mar.",
@@ -98,10 +100,14 @@
         "Dec": "Déc."
       },
       "day": {
-        "details": "Sur la base des 7 derniers jours"
+        "details": "Sur la base des 7 derniers jours",
+        "average": "Moyenne hebdomadaire",
+        "trend": "Tendance hebdomadaire"
       },
       "month": {
-        "details": "Sur la base des 30 derniers jours"
+        "details": "Sur la base des 30 derniers jours",
+        "average": "Moyenne mensuelle",
+        "trend": "Tendance mensuelle"
       },
       "fromComputer": "de l'ordinateur",
       "computerImpact": "d'énergie grise de l'ordinateur",
@@ -117,8 +123,9 @@
       "longerUsageTip": "En utilisant votre ordinateur plus longtemps, vous évitez la production de nouveaux appareils et économisez de grandes quantités d'énergie et de ressources nécessaires à la fabrication.",
       "showMiniViz": "Afficher MiniViz",
       "disablePlugin": "Désactiver le pluggin",
-      "shareData": "Partager mes données",
-      "shareDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "downloadData": "Télécharger mes données",
+      "downloadDataInfo": "CarbonViz ne stocke les données que localement dans votre navigateur. Aucune donnée n'est synchronisée automatiquement avec des serveurs externes. Vous pouvez télécharger les données stockées par CarbonViz.",
+      "downloadAction": "Télécharger",
       "deleteData": "Effacer mes données",
       "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
       "confirmMiniVizStatus": "MiniViz est maintenant {text}",

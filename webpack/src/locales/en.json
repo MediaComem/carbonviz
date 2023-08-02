@@ -73,6 +73,8 @@
     "statistics": {
       "average": "Average",
       "trend": "Trend",
+      "recommandations": "Recommandations",
+      "tips": "Tips on good practices",
       "days": {
         "Mon": "Mon.",
         "Tue": "Tue.",
@@ -98,10 +100,14 @@
         "Dec": "Dec."
       },
       "day": {
-        "details": "Based on the last 7 days"
+        "details": "Based on the last 7 days",
+        "average": "Weekly average",
+        "trend": "Weekly trend"
       },
       "month": {
-        "details": "Based on the last 30 days"
+        "details": "Based on the last 30 days",
+        "average": "Monthly average",
+        "trend": "Monthly trend"
       },
       "fromComputer": "from computer",
       "computerImpact": "from computer's embodied energy",
@@ -117,8 +123,9 @@
       "longerUsageTip": "By keeping your computer longer, you avoid having to produce new equipment and save a lot of energy and resources in the manufacturing process.",
       "showMiniViz": "Show MiniViz",
       "disablePlugin": "Disable plugin",
-      "shareData": "Share my data",
-      "shareDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "downloadData": "Download my data",
+      "downloadDataInfo": "CarbonViz stores data only locally inside your broswer. No data is automatically synchronised with external servers. You can download data stored by CarbonViz.",
+      "downloadAction": "Download",
       "deleteData": "Delete my data",
       "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
       "confirmMiniVizStatus": "MiniViz is now {text}",
