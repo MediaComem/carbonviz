@@ -191,7 +191,7 @@ export class DBInstance {
             for (const day of days) {
               tables.push(`domains_day_${day}`);
             }
-            let clearTransaction = co2HistoryDB.db.transaction(tables, "readwrite");
+            let clearTransaction = DBInstance.db.transaction(tables, "readwrite");
             if (month !== lastRunningMonth) {
               const monthlyDomainStore = clearTransaction.objectStore(`domains_month_${month}`);
               monthlyDomainStore.clear();
