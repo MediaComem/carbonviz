@@ -9,7 +9,7 @@ import { saveNotifications, retrieveNotifications } from '../utils/offlineNotifi
 // Only the path to the extension web pages is still different
 const isFirefox = typeof(browser) !== 'undefined';
 
-const dailyNotificationURL = 'http://localhost:8000/data.json';
+const dailyNotificationURL = 'https://carbonviz.heig-vd.ch/notification.json';
 const notificationIcon = '../icons/logos/carbonViz-48.png'  //'../icons/logos/logo-equiwatt-large.png';
 
 const coreNetworkElectricityUsePerByte = 8.39e-11;
@@ -30,13 +30,16 @@ chrome.storage.local.get(['minivizOptions']).then(storage => {
 
 let failedNotifications = {
   weeklynotificationTimeStamp: '',
-  dailyNotificationTimeStamp: ''
+  dailyNotificationBacklog: [],
+  lastDisplayedDailyNotification: ''
 };
 
 retrieveNotifications().then(notifications => {
   failedNotifications = notifications;
 });
 
+let DBInitialized = false;
+let dailyResponseJson = [];
 let dump = [];
 let co2ComputerInterval;
 const co2ComputerIntervalMs = 2000;
@@ -274,11 +277,36 @@ const handleMessage = (request, _sender, sendResponse) => {
           }
         })
         return;
+      case 'sendNextDailyNotification':
+        if (dailyResponseJson.length > 0) {
+          chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
+            const activeTab = tabs[0];
+            if(activeTab?.id) {
+              sendDailyUpdateStore(activeTab?.id)
+            } else {
+              sendOSAlert('daily');
+            }
+          });
+        }
       default:
         break;
     }
   }
   return;
+}
+
+const sendOSAlert = (type) => {
+  chrome.notifications.create(type+'-' + new Date().getTime(), {
+    type: 'basic',
+    iconUrl: notificationIcon,
+    title: 'CarbonViz '+type+' notification',
+    message: 'Notification will be shown the next time you open a chrome broswer',
+    priority: 2,
+    buttons: [
+      { title: 'Ignore' },
+      { title: 'openTab' }
+    ]
+  });
 }
 
 // computer CO2 default usage
@@ -334,10 +362,7 @@ const getNextMonday9AM = () => {
   const daysUntilMonday = (8 - dayOfWeek) % 7; // Calculate the number of days until the next Monday
   const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
   nextMonday.setHours(9, 0, 0, 0); // Set the time to 9 AM
-  //return nextMonday;
-  const TestNow = new Date();
-  TestNow.setSeconds(TestNow.getSeconds() + 5);
-  return TestNow;
+  return nextMonday;
 };
 
 startComputerCo2Interval();
@@ -354,16 +379,22 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
     return;
   }
-  // Set up a notification every Monday at 9am
-  chrome.alarms.create('weeklynotification', {
-    when: getNextMonday9AM().getTime(), // Set the alarm to trigger next Monday at 9 AM
-    periodInMinutes: weeklyIntervalMins
-  });
-  // Set up a notification daily
-  chrome.alarms.create('dailyNotification', {
-    when: new Date().setHours(8, 0, 0, 0), // Set the alarm to trigger the next Monday at 9 AM
-    periodInMinutes: dailyIntervalMins
-  });
+  // Event can trigger before initStorage is complete and DB instance is not ready. 
+  const DBReady = setInterval(() => {
+    if (DBInitialized) {
+      clearInterval(DBReady);
+      // Set up a notification every Monday at 9am
+      chrome.alarms.create('weeklynotification', {
+        when: getNextMonday9AM().getTime(), // takes timestamp which getTime returns
+        periodInMinutes: weeklyIntervalMins
+      });
+      // Set up a notification daily
+      chrome.alarms.create('dailyNotification', {
+        when: new Date().setHours(8, 0, 0, 0),
+        periodInMinutes: dailyIntervalMins
+      });
+    }
+  }, 100)
 });
 
 chrome.alarms.onAlarm.addListener(alarm => {
@@ -374,17 +405,7 @@ chrome.alarms.onAlarm.addListener(alarm => {
         sendWeeklyNotification(activeTab.id);
       } else {
         saveNotifications('weeklynotificationTimeStamp', new Date().getTime());
-        chrome.notifications.create('weekly-' + new Date().getTime(), {
-          type: 'basic',
-          iconUrl: notificationIcon,
-          title: 'CarbonViz weekly notification',
-          message: 'Notification will be shown the next time you open a chrome broswer',
-          priority: 2,
-          buttons: [
-            { title: 'Ignore' },
-            { title: 'openTab' }
-          ]
-        })
+        sendOSAlert('weekly');
       }
     });
   }
@@ -395,17 +416,7 @@ chrome.alarms.onAlarm.addListener(alarm => {
         sendDailyNotification(activeTab.id);
       } else {
         saveNotifications('dailyNotificationTimeStamp', new Date().getTime());
-        chrome.notifications.create('weekly-' + new Date().getTime(), {
-          type: 'basic',
-          iconUrl: notificationIcon,
-          title: 'CarbonViz daily notification',
-          message: 'Notification will be shown the next time you open a chrome broswer',
-          priority: 2,
-          buttons: [
-            { title: 'Ignore' },
-            { title: 'openTab' }
-          ]
-        })
+        sendOSAlert('daily');
       }
     });
   }
@@ -461,6 +472,16 @@ const addPluginToNewTab = async () => {
   }
 }
 
+const checkDailyDates = (notifications) => {
+  return notifications.sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
+const sendDailyUpdateStore = (activeTabId) => {
+  sendMessageToTab(activeTabId, { dailyNotifications: {data: dailyResponseJson[0]} });
+  dailyResponseJson.shift();
+  saveNotifications('dailyNotificationBacklog', dailyResponseJson );
+}
+
 const sendWeeklyNotification = async (activeTabId) => {
   let weekData = await getDailyAggregates('day',[-7, 0]);
   weekData = reduceDailyAggregates(weekData);
@@ -473,21 +494,27 @@ const sendWeeklyNotification = async (activeTabId) => {
 }
 
 const sendDailyNotification = async (activeTabId) => {
-  let dataJSON =  await fetch(dailyNotificationURL).then((response) => {
+  dailyResponseJson =  await fetch(dailyNotificationURL).then((response) => {
     if (response.ok) {
-      saveNotifications('dailyNotificationTimeStamp', '');
       return response.json();
     }
     throw new Error('Failed to fetch dailyNotification');
   })
   .then((responseJson) => {
-    return responseJson.dailyNotifications;
+    const orderByDate = checkDailyDates(responseJson.dailyNotifications);
+    return orderByDate;
   })
   .catch((error) => {
     console.log(error)
     return [];
   })
-  sendMessageToTab(activeTabId, { dailyNotifications: {data: dataJSON} });
+  if(dailyResponseJson.length > 1) {
+    // send first notification and save others to be sent after user confirmation
+    sendDailyUpdateStore(activeTabId);
+  } else {
+    sendMessageToTab(activeTabId, { dailyNotifications: {data: dailyResponseJson[0]} });
+    saveNotifications('dailyNotificationTimeStamp', '');
+  }
 }
 
 const checkFailedNotifications = async (tab = false) => {
@@ -507,4 +534,5 @@ const checkFailedNotifications = async (tab = false) => {
 initStorage().then( async () => {
   const settings = await retrieveSettings();
   statistics = await getTodayCounter(settings.lifetimeComputer);
+  DBInitialized = true;
 })
