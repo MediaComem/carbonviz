@@ -2,7 +2,7 @@ import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History
 import { getTodayCounter, getDailyAggregates } from "../storage/indexedDB.js";
 import { initStorage } from "../storage/storage.js";
 import { retrieveSettings, resetSettings } from "../settings/settings.js";
-import { saveNotifications, retrieveNotifications } from '../utils/offlineNotifications.js';
+import { saveNotifications, retrieveNotifications } from '../utils/notifications.js';
 
 // Note that since the switch to manifest v3, chrome extension API switched mostly to Promises (as Firefox)
 // And Firefox supports chrome.* namespace for API available in chrome and firefox
@@ -15,14 +15,14 @@ const notificationIcon = '../icons/logos/carbonViz-48.png'  //'../icons/logos/lo
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
 
-let failedNotifications = {
-  weeklynotificationTimeStamp: '',
+let notificationsStatus = {
+  lastDisplayedWeeklyTimeStamp: '',
+  lastDisplayedDailyTimeStamp: '',
   dailyNotificationBacklog: [],
-  lastDisplayedDailyNotification: ''
 };
 
 retrieveNotifications().then(notifications => {
-  failedNotifications = notifications;
+  notificationsStatus = notifications;
 });
 
 const refreshSettings = async () => {
@@ -259,7 +259,7 @@ const handleMessage = (request, _sender, sendResponse) => {
             }
           }
         });
-        return true; // if (response && response.show === true) {
+        return true;
       case 'removeMiniviz':
         chrome.tabs.query({}).then((tabs) => {
           for (const tab of tabs) {
@@ -277,6 +277,8 @@ const handleMessage = (request, _sender, sendResponse) => {
               sendOSAlert('daily');
             }
           });
+        } else {
+          saveNotifications('dailyNotificationBacklog', dailyResponseJson);
         }
       case 'deactivateDataStorage':
         chrome.webRequest.onCompleted.removeListener(completedListener);
@@ -432,11 +434,10 @@ chrome.notifications.onButtonClicked.addListener(function(notifType, openTab) {
   }
 });
 
-// Check for failed messages on new tab & pluginListener if disabled
+// Check for missed notifications on new tab & pluginListener if disabled
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  // make sure the status is 'complete' and it's the right tab
   if (changeInfo.status === 'complete') {
-    checkFailedNotifications([tab]);
+    checkMissedNotifications([tab]);
     const pluginActive = chrome.webRequest.onCompleted.hasListener(completedListener);
     refreshSettings().then((settings) => {
       if(!pluginActive) {
@@ -494,7 +495,10 @@ const checkDailyDates = (notifications) => {
 const sendDailyUpdateStore = (activeTabId) => {
   sendMessageToTab(activeTabId, { dailyNotifications: {data: dailyResponseJson[0]} });
   dailyResponseJson.shift();
-  saveNotifications('dailyNotificationBacklog', dailyResponseJson );
+  if(dailyResponseJson.length === 0) {
+    saveNotifications('lastDisplayedDailyTimeStamp', new Date().getTime());
+  }
+  saveNotifications('dailyNotificationBacklog', dailyResponseJson);
 }
 
 const sendWeeklyNotification = async (activeTabId) => {
@@ -504,7 +508,7 @@ const sendWeeklyNotification = async (activeTabId) => {
   let lastWeekData = await getDailyAggregates('day',[-14, -7]);
   lastWeekData = reduceDailyAggregates(lastWeekData);
 
-  saveNotifications('weeklynotificationTimeStamp', '');
+  saveNotifications('lastDisplayedWeeklyTimeStamp', new Date().getTime());
   sendMessageToTab(activeTabId, { weeklynotification: {currentWeek: weekData, lastWeek: lastWeekData} });
 }
 
@@ -528,22 +532,31 @@ const sendDailyNotification = async (activeTabId) => {
     sendDailyUpdateStore(activeTabId);
   } else {
     sendMessageToTab(activeTabId, { dailyNotifications: {data: dailyResponseJson[0]} });
-    saveNotifications('dailyNotificationTimeStamp', '');
+    saveNotifications('dailyNotificationBacklog', []);
+    saveNotifications('lastDisplayedDailyTimeStamp', new Date().getTime());
   }
 }
 
-const checkFailedNotifications = async (tab = false) => {
-  failedNotifications = await retrieveNotifications();
+const checkMissedNotifications = async (tab = false) => {
+  const now = new Date();
   let queryOptions = { active: true, lastFocusedWindow: true };
-  // `tab` will either be a `tabs.Tab` instance or `undefined`.
   let activeTab = tab ? tab : await chrome.tabs.query(queryOptions);
-  if (activeTab[0].id && failedNotifications.dailyNotificationTimeStamp) {
-    sendDailyNotification(activeTab[0].id);
-    return; // User to acknowledge popup before replacing with weekly below.
-  };
-  if (activeTab[0].id && failedNotifications.weeklynotificationTimeStamp) {
-    sendWeeklyNotification(activeTab[0].id);
-  };
+  notificationsStatus = await retrieveNotifications();
+
+  const lastMonday = new Date(now);
+  lastMonday.setDate(now.getDate() - (now.getDay() + 6) % 7); // Calculate last Monday's date
+
+  if (activeTab[0].id) {
+    const weekDate =  new Date(notificationsStatus.lastDisplayedWeeklyTimeStamp);
+    const date = new Date(notificationsStatus.lastDisplayedDailyTimeStamp);
+    if (!weekDate.valueOf() || weekDate < lastMonday) {
+      sendWeeklyNotification(activeTab[0].id);
+      return; // User to acknowledge popup before replacing with weekly below.
+    };
+    if (!date.valueOf() || date.getDate() < now.getDate()) {
+      sendDailyNotification(activeTab[0].id);
+    };
+  }
 }
 
 initStorage().then( async () => {
