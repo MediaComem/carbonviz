@@ -74,7 +74,7 @@ const tips = [
     },
     summaryHTML: {
       'en': 'Almost 80% of the environmental impact of digital activities comes from user device manufacturing. The most efficient way to reduce your impact is thus to <b>keep your devices longer</b>.',
-      'fr': 'près de 80% de l\'impact environnemental du numérique provient de la production des terminaux utilisateurs. La façon la plus efficace de réduire votre impact est donc de <b>garder vos appareils plus longtemps</b>.'
+      'fr': 'Près de 80% de l\'impact environnemental du numérique provient de la production des terminaux utilisateurs. La façon la plus efficace de réduire votre impact est donc de <b>garder vos appareils plus longtemps</b>.'
     },
     detailsHTML: {
       'en': 'Almost 80% of the environmental impact of digital activities comes from user device manufacturing. The most efficient way to reduce your impact is thus to <b>keep your devices longer</b> (laptop, smartphone, desktop, etc.) .',
