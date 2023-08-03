@@ -4,10 +4,10 @@ import VueApexCharts from "vue3-apexcharts";
 import { ref, computed, watchEffect, toRefs, ComputedRef } from 'vue';
 import { getLastDaysSummary, getComputerCo2Series, getTopWebsitesSeries, computerDailyEmbodiedCo2 } from '../../../storage/storage';
 import { useI18n } from 'vue-i18n';
-import PeriodPicker from './PeriodPicker.vue';
-import TypePicker from './PeriodPicker.vue';
+import { ElNotification } from 'element-plus'
 import { Indicator, Granularity } from '../utils/types';
 import { formatCo2, formatSize } from '../../../utils/format';
+import { tips } from '../../../utils/tips';
 
 export interface Props {
   type: Indicator,
@@ -18,9 +18,8 @@ export interface Props {
 
 export default {
   components: {
-    PeriodPicker,
-    TypePicker,
-    apexchart: VueApexCharts
+    apexchart: VueApexCharts,
+    ElNotification
   },
   props: {
     type: String,
@@ -29,7 +28,7 @@ export default {
     height: Number
   },
   setup(props) {
-    const { t } = useI18n({});
+    const { t, locale } = useI18n({});
 
     const { type, subtype, granularity } = toRefs(props);
 
@@ -190,6 +189,43 @@ export default {
       }
     });
 
+    const checkTips = (domains) => {
+      let tipsShown = false;
+      const tipsRelatedToDomains = tips.filter(tip => tip.domains);
+      const tipsGeneric = tips.filter(tip => !tip.domains);
+      for (const tip of tipsRelatedToDomains) {
+        for (const domain of domains) {
+          const relevantDomains = [];
+          if (tip.domains && tip.domains.includes(domain.toLowerCase())){
+            relevantDomains.push(domain);
+          }
+          if (relevantDomains.length > 0) {
+            const messageHTML = `${tip.summaryHTML[locale.value]}`;
+            ElNotification({
+              title: `Tip for ${relevantDomains.join(',')}`,
+              dangerouslyUseHTMLString: true, // safe string from inside extension
+              message: messageHTML,
+              type: 'warning',
+              duration: 0
+            })
+            tipsShown = true;
+          }
+        }
+      }
+      if (!tipsShown) {
+        // display random generix tip
+        const tip = tipsGeneric[Math.floor(Math.random() * tipsGeneric.length)];
+        const messageHTML = `${tip.summaryHTML[locale.value]}`;
+            ElNotification({
+              title: `Tip`,
+              dangerouslyUseHTMLString: true, // safe string from inside extension
+              message: messageHTML,
+              type: 'warning',
+              duration: 0
+            })
+      }
+    }
+
     watchEffect(async () => {
       let currentValue;
       let previousPeriod;
@@ -238,12 +274,14 @@ export default {
               nbActivePeriods.value = activePeriods.filter(e => e).length;
               const totalWeb = seriesData.reduce((acc, website) => acc + website.data.reduce((acc, amount) => amount + acc, 0), 0);
               average.value = nbActivePeriods.value ? totalWeb / nbActivePeriods.value : 0;
+              const domains = seriesData.map(serie => serie.name);
               switch(type.value) {
                 case 'co2':
                   // for co2 we have to consider embodied energy in addition to web
                   // and the fact that exist also for inactive period
                   const computerDailyCo2 = await computerDailyEmbodiedCo2();
                   averagePerPeriod.value = ( totalWeb + nbDays.value * computerDailyCo2 ) / nbPeriods.value;
+                  checkTips(domains); // no need to display tips for co2 and data
                   break;
                 case 'data':
                   // for Data average per period is the same as the average per active period
