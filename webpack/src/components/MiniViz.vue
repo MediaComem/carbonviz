@@ -1,19 +1,19 @@
  <template>
-  <div class="extension" v-if="showMiniViz">
+  <div class="mv-extension" v-if="showMiniViz">
     <div class="miniviz" :class="{ 'hidden': showInteraction}" id="miniViz_container">
-      <div class="anim" :class="dataType === 'data' ? 'data' : 'co2'" @mouseover="hideMiniViz">
-        <img v-for="(item, index) in iconBar" key="item" class="image" :class="currentMeter[dataType][item] ? 'fill': ''" :src="asset" height="20" width="20">
+      <div class="mv-anim" :class="dataType === 'data' ? 'mv-data' : 'mv-co2'" @mouseover="hideMiniViz">
+        <img v-for="(item, index) in iconBar" key="item" class="mv-image" :class="currentMeter[dataType][item] ? 'mv-fill': ''" :src="asset" height="20" width="20">
       </div>
       <div
-        id="description"
+        id="mv-description"
         :class="{
           hidden: !showDescription,
-          co2: dataType === 'co2',
-          data: dataType === 'data',
+          'mv-co2': dataType === 'co2',
+          'mv-data': dataType === 'data'
         }"
         @mouseover="hideMiniViz"
       >
-        <img class="image" :src="asset" height="40" width="40">
+        <img class="mv-image" :src="asset" height="40" width="40">
         <p>{{ t(`components.miniViz.description.${dataType}`,
             {
               data: dataType === 'co2' ? formatCo2(dayTotals.energy) : formatSize(dayTotals.data),
@@ -25,22 +25,22 @@
 
       </div>
       <div
-        id="notification"
+        id="mv-notification"
         :class="{
           hidden: !showNotification,
-          co2: dataType === 'co2',
-          data: dataType === 'data',
+          'mv-co2': dataType === 'co2',
+          'mv-data': dataType === 'data',
         }"
       >
         <div
-          class="notificationContainer"
+          class="mv-notificationContainer"
           v-if="notificationType === 'weekly'"
           @click="onNotificationClick"
         >
-          <img class="exit" :src="closeBtn" alt="X">
-          <div id="stats">
-            <h3 class="title"> {{ t('components.miniViz.notification.weekly.title') }} </h3>
-            <div id="current">
+          <img class="mv-exit" :src="closeBtn" alt="X">
+          <div id="mv-stats">
+            <h3 class="mv-title"> {{ t('components.miniViz.notification.weekly.title') }} </h3>
+            <div id="mv-current">
               <p>
                 {{ t(`components.miniViz.notification.weekly.${dataType}`,
                   {
@@ -55,19 +55,19 @@
                 )}}
               </p>
             </div>
-            <div id="average">
+            <div id="mv-average">
               <p>
                 {{ t('components.miniViz.notification.weekly.average') }}
                 <strong> {{ dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek.co2 / 7, 0) : formatSize(weeklyTotals.currentWeek.data / 7, 0) }} </strong>
               </p>
-              <p id="trend">
+              <p id="mv-trend">
                 {{ t('components.miniViz.notification.weekly.trend') }}:
               </p>
               <div v-if="weeklyTotals.trend[dataType] !== 0">
                 <span v-if="weeklyTotals.trend[dataType] > 0">+</span>
                 <span v-if="weeklyTotals.trend[dataType] < 0">-</span>
                 {{ Math.round(Math.abs(100 * weeklyTotals.trend[dataType]))}} %
-                <svg :class="weeklyTotals.trend[dataType] > 0 ? 'up' : 'down'" width="23" height="23" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+                <svg :class="weeklyTotals.trend[dataType] > 0 ? 'mv-up' : 'mv-down'" width="23" height="23" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
                   <path id="arrow" d="M0.93934 19.9393C0.353553 20.5251 0.353553 21.4749 0.93934 22.0607C1.52513 22.6464 2.47487 22.6464 3.06066 22.0607L0.93934 19.9393ZM22.5 2C22.5 1.17157 21.8284 0.5 21 0.5H7.5C6.67157 0.5 6 1.17157 6 2C6 2.82843 6.67157 3.5 7.5 3.5H19.5V15.5C19.5 16.3284 20.1716 17 21 17C21.8284 17 22.5 16.3284 22.5 15.5V2ZM3.06066 22.0607L22.0607 3.06066L19.9393 0.93934L0.93934 19.9393L3.06066 22.0607Z" fill="currentColor" />
                 </svg>
               </div>
@@ -76,33 +76,33 @@
               </div>
             </div>
           </div>
-          <div id="advise">
+          <div id="mv-advise">
             <h3>Recommandations</h3>
             <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laborum quo quis, porro nostrum pariatur repellendus dicta sequi ipsam, nesciunt,
               doloremque nam. Enim quo accusamus explicabo deserunt upiditate et, doloremque architecto excepturi.</p>
           </div>
         </div>
         <div
-          class="notificationContainer"
+          class="mv-notificationContainer"
           v-if="notificationType === 'daily'"
           @click="onDailyNotificationClick"
         >
-        <div id="dailyNotification">
+        <div id="mv-dailyNotification">
           <h3> {{ dailyNotificartion.title }}</h3>
           <span v-html="dailyNotificartion.messageHTML"></span>
         </div>
         </div>
       </div>
     </div>
-    <div class="actionContainer" v-if="interactive">
-      <div class="actionPanel" :class="{ 'show': showInteraction, 'hide': !showInteraction }">
-        <Logo class="icon"></Logo>
+    <div class="mv-actionContainer" v-if="interactive">
+      <div class="mv-actionPanel" :class="{ 'mv-show': showInteraction, 'mv-hide': !showInteraction }">
+        <Logo class="mv-icon"></Logo>
         {{ t('appTitle') }}
-        <svg class="icon cvz-interactive" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openTabExtension">
+        <svg class="mv-icon cvz-interactive" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openTabExtension">
           <path :fill="color" fill-rule="evenodd" clip-rule="evenodd" d="M5.56068 3.51027H3.51027V11.4897H11.4854V9.43932H12.9957V11.8139C12.9957 12.468 12.4637 13 11.8096 13H3.18609C2.53202 13 2 12.468 2 11.8139V3.18609C2 2.53202 2.53202 2 3.18609 2H5.56068V3.51027ZM7.93124 2.04474C7.41618 2.04474 6.99685 2.46406 6.99685 2.97912V7.07324C6.99685 7.5883 7.41618 8.00762 7.93124 8.00762H12.0254C12.5404 8.00762 12.9597 7.5883 12.9597 7.07324V2.97912C12.9597 2.46406 12.5404 2.04474 12.0254 2.04474H7.93124Z"/>
         </svg>
-        <span class="vl"></span>
-        <svg class="closeIcon cvz-interactive" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg" @click="closeActionPanel">
+        <span class="mv-vl"></span>
+        <svg class="mv-closeIcon cvz-interactive" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg" @click="closeActionPanel">
           <path d="M1 12.2065L12.2065 1.00003M12.2065 12.2065L1 1.00003" stroke="#333333" stroke-width="2"/>
         </svg>
       </div>
@@ -286,7 +286,6 @@ export default {
       if (request.statistics) {
         // Update stats with todays totals
         const stats = request.statistics;
-        if (stats?.extraInfo?.tabIcon?.startsWith('chrome-extension:')) return;
         dayTotals.value = {...stats};
         updateIconBar();
       }
@@ -324,10 +323,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.extension {
+.mv-extension {
   all: initial;
 }
-.miniviz, .actionContainer {
+.miniviz, .mv-actionContainer {
   font-family: Roboto, Arial, sans-serif ;
 }
 .miniviz {
@@ -344,7 +343,7 @@ export default {
     display: none;
   }
 }
-.anim {
+.mv-anim {
   display: flex;
   justify-content: space-evenly;
   max-width: 270px;
@@ -353,17 +352,17 @@ export default {
   background-color: var(--co2);
   border: 2px solid white;
   border-top: 0;
-  &.data {
+  &.mv-data {
     background-color: var(--data);
   }
   & img {
     opacity: 0.4;
   }
-  & img.fill {
+  & img.mv-fill {
     opacity: 1;
   }
 }
-.miniviz #description, .miniviz #notification {
+.miniviz #mv-description, .miniviz #mv-notification {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -378,14 +377,14 @@ export default {
     max-height: 0px;
     opacity: 0;
   }
-  & .image, p {
+  & .mv-image, p {
     margin: 5px;
     margin-left: 0;
     line-height: normal;
     font-size: 12px;
   }
 }
-.miniviz #description {
+.miniviz #mv-description {
   max-width: 270px;
   margin-right: 0px;
   margin-left: auto;
@@ -393,63 +392,60 @@ export default {
   background-color: var(--co2Active);
   box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
       inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  &.data {
+  &.mv-data {
     background-color: var(--dataActive);
     box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
       inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
   }
 }
-.miniviz #notification {
+.miniviz #mv-notification {
   flex-wrap: wrap;
   color: black;
   background-color: var(--grey);
-  & .notificationContainer {
+  & .mv-notificationContainer {
     width: 100%;
   }
-  & .notificationItem {
-    flex-basis: 100%;
-  }
-  & .title {
+  & .mv-title {
     margin-bottom: 15px
   }
-  & svg.up {
+  & svg.mv-up {
     display: inline-flex;
     color: red;
   }
-  & svg.down {
+  & svg.mv-down {
     display: inline-flex;
     transform: rotate(90deg);
     color: var(--green);
   }
 }
-.exit {
+.mv-exit {
   float: right;
   margin: 10px;
   &:hover {
     cursor: pointer;
   }
 }
-#stats, #dailyNotification {
+#mv-stats, #mv-dailyNotification {
     box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
       inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
-#stats, #advise, #dailyNotification {
+#mv-stats, #mv-advise, #mv-dailyNotification {
   padding: 10px;
 }
-#stats h3, #stats p, #advise h3 {
+#mv-stats h3, #mv-stats p, #mv-advise h3 {
   margin-left: 0;
 }
-#stats #current {
+#mv-stats #current {
   font-weight: bold;
   margin-bottom: 20px;
 }
-#stats #trend {
+#mv-stats #mv-trend {
   margin-top: 20px;
 }
-#advise h3 {
+#mv-advise h3 {
   margin-bottom: 15px
 }
-.actionContainer {
+.mv-actionContainer {
   position: fixed;
   z-index: 10000;
   width: 138px;
@@ -463,14 +459,14 @@ export default {
   }
 }
 
-.actionPanel {
+.mv-actionPanel {
   position: relative;
   height: 33px;
   background: #FFFFFF;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
-.vl {
+.mv-vl {
   display: block;
   position: absolute;
   right: 34px;
@@ -480,7 +476,7 @@ export default {
   margin: auto;
 }
 
-.icon {
+.mv-icon {
   all: initial;
   vertical-align: -0.25em;
   margin-left: 4px;
@@ -490,23 +486,17 @@ export default {
   }
 }
 
-.closeIcon {
+.mv-closeIcon {
   position: absolute;
   right: 11px;
   top: 11px;
 }
 
-.fa-icon {
-  width: 2em;
-  height: 2em;
-  vertical-align: -0.125em;
-}
-
-.show {
+.mv-show {
   --translate-amount: 45px;
   animation: slide-up 0.3s ease-out forwards;
 }
-.hide {
+.mv-hide {
   --translate-amount: 45px;
   animation: slide-down 0.3s ease-out forwards;
 }
@@ -525,10 +515,10 @@ export default {
 
 <style>
 /* styles for messageHTML which is created after injection */
-#notification.data .message a {
+#mv-notification.mv-data .mv-message a {
   color: #00A0D6;
 }
-#notification.co2 .message a {
+#mv-notification.mv-co2 .mv-message a {
   color: #52B788;
 }
 </style>

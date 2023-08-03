@@ -128,8 +128,8 @@
       "downloadAction": "Download",
       "deleteData": "Delete my data",
       "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      "confirmMiniVizStatus": "MiniViz is now {text}",
-      "confirmShareData": "Data is {text}",
+      "confirmMiniVizVisible": "MiniViz is now visible",
+      "confirmMiniVizHidden": "MiniViz is now hidden",
       "datePlaceholder": "Pick a date"
     }
   },
