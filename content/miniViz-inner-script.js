@@ -1,6 +1,6 @@
 import '../bundle/miniviz.js';
 
-export function start() {
+export function start(props) {
   console.log("Starting MiniViz");
-  CarbonVue.miniviz.mount('#miniviz');
+  CarbonVue.minivizWithProps(props).mount('#miniviz');
 }

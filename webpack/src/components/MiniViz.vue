@@ -14,14 +14,11 @@
         @mouseover="hideMiniViz"
       >
         <img class="mv-image" :src="asset" height="40" width="40">
-        <p>{{ t(`components.miniViz.description.${dataType}`,
-            {
-              data: dataType === 'co2' ? formatCo2(dayTotals.energy) : formatSize(dayTotals.data),
-              time: createTimeString(dayTotals.time),
-              amount: getAnalogyValue(customAnalogyNames, dataType, dayTotals, activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, dayTotals, activeIndex)
-            }
-          )}}
-        </p>
+        <div class="mv-counter">
+          <div class="mv-counter-quantity">{{ counterInfo.quantity }}</div>
+          <div class="mv-counter-time">{{ counterInfo.time }}</div>
+          <div class="mv-counter-analogy">{{ counterInfo.analogy }}</div>
+        </div>
 
       </div>
       <div
@@ -42,7 +39,7 @@
             <h3 class="mv-title"> {{ t('components.miniViz.notification.weekly.title') }} </h3>
             <div id="mv-current">
               <p>
-                {{ t(`components.miniViz.notification.weekly.${dataType}`,
+                {{ t(`components.miniViz.notification.${dataType}`,
                   {
                     data: dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek[dataType]) : formatSize(weeklyTotals.currentWeek[dataType])
                   }
@@ -50,8 +47,8 @@
               </p>
               <p> {{ t(`components.miniViz.notification.weekly.days`)}} </p>
               <p>
-                {{ t(`components.miniViz.notification.weekly.analogy`,
-                  { amount: getAnalogyValue(customAnalogyNames, dataType, dayTotals, activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, dayTotals, activeIndex) }
+                {{ t(`components.miniViz.notification.analogy`,
+                  { amount: getAnalogyValue(customAnalogyNames, dataType, weeklyTotals.currentWeek[dataType], activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, weeklyTotals.currentWeek[dataType], activeIndex) }
                 )}}
               </p>
             </div>
@@ -76,11 +73,13 @@
               </div>
             </div>
           </div>
+          <!--
           <div id="mv-advise">
             <h3>Recommandations</h3>
             <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laborum quo quis, porro nostrum pariatur repellendus dicta sequi ipsam, nesciunt,
               doloremque nam. Enim quo accusamus explicabo deserunt upiditate et, doloremque architecto excepturi.</p>
           </div>
+          -->
         </div>
         <div
           class="mv-notificationContainer"
@@ -110,216 +109,238 @@
   </div>
 </template>
 
-<script lang='ts'>
+<script setup lang="ts">
 
 const HIDE_MINIVIZ_DELAY = 5000;
 const SHOW_DESC_NOTIF_DELAY = 10000;
 
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, toRefs } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatSize, formatCo2 } from '../../../utils/format';
 import { retrieveSettings } from '../../../settings/settings.js';
 import { analogiesCo2, analogiesData, analogyNames, getAnalogyValue, getAnalogyText } from '../../../utils/analogies';
 
-export default {
-  props: {
-  },
-  setup(props) {
-    // Setup color theme
-    const color = ref('#333');
-    const { t, locale } = useI18n();
-    const showMiniViz = ref(true);
-    const showDescription = ref(false);
-    const showNotification = ref(false);
-    const showInteraction = ref(false);
-    const interactive = ref(false);
-    const closeBtn = chrome.runtime.getURL(`icons/roundBtnX.svg`);
-    let activeIndex = ref(0);
-    let dataType = ref('co2');
-    let notificationType = ref('weekly');
-    const dayTotals = ref({
-      co2: 0,
-      data: 0,
-      energy: 0,
-      time: 0
-    });
-    const weeklyTotals = ref({
-      currentWeek: {data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}},
-      lastWeek: {data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}},
-      trend: {co2: 0, data: 0}
-    });
-    let dailyNotificartion = ref({
-      date: '',
-      title: '',
-      messageHTML: ''
-    });
-    // Icon bar of 12
-    const iconBar = [0,1,2,3,4,5,6,7,8,9,10,11];
-    let currentMeter = {
-      co2: Array(12).fill(0),
-      shownCo2Desc: false,
-      data: Array(12).fill(0),
-      shownDataDesc: false
+type Counter = {
+  count: number,
+  previous: number,
+  step: number,
+  quantityAnalogy: number,
+  time: number,
+  previousTime: number
+}
+type Counters = {
+  co2: Counter,
+  data: Counter
+}
+
+const props = defineProps<{
+  counters: Counters
+}>()
+
+// Setup color theme
+const { counters } = toRefs(props);
+const color = ref('#333');
+const { t, locale } = useI18n();
+const showMiniViz = ref(true);
+const showDescription = ref(false);
+const showNotification = ref(false);
+const showInteraction = ref(false);
+const interactive = ref(false);
+const closeBtn = chrome.runtime.getURL(`icons/roundBtnX.svg`);
+let activeIndex = ref(0);
+let dataType = ref('data');
+let notificationType = ref('weekly');
+const countersCo2 = ref(counters.value.co2);
+const countersData = ref(counters.value.data);
+const counterInfo = computed(() => {
+  let counters;
+  if (dataType.value === 'co2') {
+    counters = countersCo2.value;
+  } else {
+    counters = countersData.value;
+  }
+  const quantity = counters.count - counters.previous;
+  const time = counters.time - counters.previousTime;
+  const nbAnalogy = quantity * counters.quantityAnalogy;
+  if (dataType.value === 'co2') {
+    return {
+      quantity: `+ ${t('components.miniViz.notification.co2', { data: formatCo2(quantity * counters.step) })}`,
+      time: t('components.miniViz.notification.time', { time: createTimeString(time) }),
+      analogy: t('components.miniViz.notification.analogy', { amount: `+${nbAnalogy} ${t('components.analogies.boiling')}` })
     }
-    const analogies = analogyNames; // ** if we want to replace customAnalogyNames and incluide all analogies with some timer to switch betweem them
-    const customAnalogyNames = {
-      co2: ['boiling'],
-      data: ['music' ]
-    };
-
-    retrieveSettings().then(settings => {
-      showMiniViz.value = settings.showMiniViz;
-    });
-    const asset = computed(() => {
-      if (dataType.value === 'co2') {
-        return chrome.runtime.getURL(`icons/analogies/${analogiesCo2[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
-      } else {
-        return chrome.runtime.getURL(`icons/analogies/${analogiesData[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
-      }
-    });
-    const showDescAnimation = () => {
-      showDescription.value = true;
-      setTimeout( () => showDescription.value = false, SHOW_DESC_NOTIF_DELAY);
-    };
-    const hideMiniViz = () => {
-      showInteraction.value = true;
-      interactive.value = true;
-      setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY);
-    };
-    const onNotificationClick = () => {
-      showNotification.value = false
-    };
-    const onDailyNotificationClick = () => {
-      // send next daily notification if any
-      chrome.runtime.sendMessage({ query: 'sendNextDailyNotification' });
-      showNotification.value = false
-    };
-
-    function switchDataType () {
-      if (dataType.value === 'co2') {
-        dataType.value = 'data';
-      } else { dataType.value = 'co2' }
+  } else {
+    return {
+      quantity: `+ ${formatSize(quantity * counters.step) }`,
+      time: t('components.miniViz.notification.time', { time: createTimeString(time) }),
+      analogy: t('components.miniViz.notification.analogy', {amount: `+${nbAnalogy} ${t('components.analogies.music')}` })
     }
-    // switch dataType every 10mins
-    setInterval(function () { switchDataType(); }, 600000);
+  }
+})
+const weeklyTotals = ref({
+  currentWeek: {data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}},
+  lastWeek: {data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}},
+  trend: {co2: 0, data: 0}
+});
+let dailyNotificartion = ref({
+  date: '',
+  title: '',
+  messageHTML: ''
+});
+// Icon bar of 12
+const iconBar = [0,1,2,3,4,5,6,7,8,9,10,11];
+let currentMeter = {
+  co2: Array(12).fill(0),
+  data: Array(12).fill(0),
+}
+const analogies = analogyNames; // ** if we want to replace customAnalogyNames and incluide all analogies with some timer to switch betweem them
+const customAnalogyNames = {
+  co2: ['boiling'],
+  data: ['music' ]
+};
 
-    function updateIconBar() {
-      currentMeter.co2.fill(0);
-      currentMeter.data.fill(0);
-      const Co2Value = getAnalogyValue(customAnalogyNames, 'co2', dayTotals.value, activeIndex.value).amount;
-      const DataValue = getAnalogyValue(customAnalogyNames, 'data', dayTotals.value, activeIndex.value).amount;
-      const normalizedCo2 = Co2Value % 12 || 12;
-      const normalizedData = DataValue % 12 || 12;
-      const Co2Index = 12 - Math.floor(normalizedCo2);
-      const DataIndex = 12 - Math.floor(normalizedData);
-      currentMeter.co2.fill(1, Co2Index);
-      currentMeter.data.fill(1, DataIndex);
-      // Switch display to data type which has maxed (0 index) to show its desc
-      Co2Index ? dataType.value = 'data' : dataType.value = 'co2';
-      // Display description when bar is full once per cycle
-      if(Co2Index === 0 && !currentMeter.shownCo2Desc) {
-        currentMeter.shownCo2Desc = true;
-        showDescAnimation();
-      } else if (DataIndex === 0 && !currentMeter.shownDataDesc) {
-        currentMeter.shownDataDesc = true;
-        showDescAnimation();
-      } else {
-        currentMeter.shownCo2Desc = false;
-        currentMeter.shownDataDesc = false;
-      }
+retrieveSettings().then(settings => {
+  showMiniViz.value = settings.showMiniViz;
+});
+const asset = computed(() => {
+  if (dataType.value === 'co2') {
+    return chrome.runtime.getURL(`icons/analogies/${analogiesCo2[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
+  } else {
+    return chrome.runtime.getURL(`icons/analogies/${analogiesData[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
+  }
+});
+const showDescAnimation = () => {
+  showDescription.value = true;
+  setTimeout( () => showDescription.value = false, SHOW_DESC_NOTIF_DELAY);
+};
+const hideMiniViz = () => {
+  showInteraction.value = true;
+  interactive.value = true;
+  setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY);
+};
+const onNotificationClick = () => {
+  showNotification.value = false
+};
+const onDailyNotificationClick = () => {
+  // send next daily notification if any
+  chrome.runtime.sendMessage({ query: 'sendNextDailyNotification' });
+  showNotification.value = false
+};
+
+function switchDataType () {
+  if (dataType.value === 'co2') {
+    dataType.value = 'data';
+  } else { dataType.value = 'co2' }
+}
+// switch dataType every 10mins
+//setInterval(function () { switchDataType(); }, 600000);
+
+function updateIconBar() {
+  currentMeter.co2.fill(0);
+  currentMeter.data.fill(0);
+  const normalizedCo2 = countersCo2.value.count % 13;
+  const normalizedData = countersData.value.count % 13;
+  const Co2Index = 12 - normalizedCo2;
+  const DataIndex = 12 - normalizedData;
+  currentMeter.co2.fill(1, Co2Index);
+  currentMeter.data.fill(1, DataIndex);
+  if(dataType.value === 'co2') {
+    if(countersCo2.value.count !== countersCo2.value.previous) {
+      showDescAnimation();
     }
-
-    function createTimeString(milliseconds: number) {
-      const dateObject = new Date(milliseconds);
-      if (dateObject.getHours() > 0) {
-          return dateObject.getHours() + 'h' + ' ' + dateObject.getMinutes() + 'min';
-        } else if (dateObject.getMinutes() > 0) {
-          return dateObject.getMinutes() + 'min' + ' ' + dateObject.getSeconds() + 's';
-        } else {
-          return dateObject.getSeconds() + 's';
-        }
-    }
-
-    function buildWeeklyNotification() {
-      let currentCo2 = weeklyTotals.value.currentWeek.co2;
-      let currentData = weeklyTotals.value.currentWeek.data;
-      let previousWeekCo2 = weeklyTotals.value.lastWeek.co2;
-      let previousWeekData = weeklyTotals.value.lastWeek.data;
-      if (previousWeekCo2 > 0 && previousWeekData > 0) {
-        weeklyTotals.value.trend.co2 = (currentCo2 - previousWeekCo2) / previousWeekCo2;
-        weeklyTotals.value.trend.data = (currentData - previousWeekData) / previousWeekData;
-      } else {
-        weeklyTotals.value.trend.co2 = 0;
-        weeklyTotals.value.trend.data = 0;
-      }
-    };
-
-    function DefaultNotification() {
-      return {
-        date: '-',
-        title: "No data to display",
-        messageHTML: '-'
-      }
-    };
-
-    async function displayNotification(type: string) {
-      switch(type) {
-        case 'weekly':
-          await buildWeeklyNotification();
-          notificationType.value = 'weekly';
-          showNotification.value = true;
-          setTimeout( () => showNotification.value = false, SHOW_DESC_NOTIF_DELAY);
-          break;
-        case 'daily':
-          notificationType.value = 'daily';
-          showNotification.value = true;
-          break;
-        default:
-          dailyNotificartion.value = DefaultNotification();
-          notificationType.value = 'daily';
-          showNotification.value = true;
-          setTimeout( () => showNotification.value = false,  SHOW_DESC_NOTIF_DELAY);
-      }
-    }
-
-    chrome.runtime.onMessage.addListener(request => {
-      if (request.statistics) {
-        // Update stats with todays totals
-        const stats = request.statistics;
-        dayTotals.value = {...stats};
-        updateIconBar();
-      }
-      if (request.weeklynotification) {
-        const stats = request.weeklynotification;
-        weeklyTotals.value = {...stats, trend: { co2: 0, data: 0 } };
-        displayNotification('weekly');
-      }
-      if (request.dailyNotifications) {
-        dailyNotificartion.value = request.dailyNotifications.data;
-        displayNotification('daily');
-      }
-    });
-
-    const openTabExtension = () => {
-      chrome.runtime.sendMessage({ query: 'openExtension' });
-    };
-
-    const closeActionPanel = () => {
-      interactive.value = false;
-    };
-
-    onMounted(async () => {
-      const settings = await retrieveSettings();
-      locale.value = settings.lang;
-    });
-
-    return { color, asset, iconBar, currentMeter, showInteraction, showDescription, showNotification, interactive, customAnalogyNames,
-      dayTotals, dataType, activeIndex, showMiniViz, notificationType, dailyNotificartion, weeklyTotals, closeBtn,
-      formatCo2, formatSize, createTimeString, openTabExtension, hideMiniViz, t, getAnalogyValue, getAnalogyText,
-      onNotificationClick, onDailyNotificationClick, closeActionPanel
+  } else {
+    if(countersData.value.count !== countersData.value.previous) {
+      showDescAnimation();
     }
   }
 }
+
+function createTimeString(seconds: number) {
+  if (seconds > 3600) {
+      const minutes = Math.floor(seconds % 3600 / 60);
+      return Math.floor(seconds/3600) + 'h' + ' ' + (minutes<10 ? '0'+minutes : minutes) + 'min';
+    } else if (seconds > 60) {
+      return Math.floor(seconds/60) + 'min';
+    } else {
+      return seconds + 's';
+    }
+}
+
+function buildWeeklyNotification() {
+  let currentCo2 = weeklyTotals.value.currentWeek.co2;
+  let currentData = weeklyTotals.value.currentWeek.data;
+  let previousWeekCo2 = weeklyTotals.value.lastWeek.co2;
+  let previousWeekData = weeklyTotals.value.lastWeek.data;
+  if (previousWeekCo2 > 0 && previousWeekData > 0) {
+    weeklyTotals.value.trend.co2 = (currentCo2 - previousWeekCo2) / previousWeekCo2;
+    weeklyTotals.value.trend.data = (currentData - previousWeekData) / previousWeekData;
+  } else {
+    weeklyTotals.value.trend.co2 = 0;
+    weeklyTotals.value.trend.data = 0;
+  }
+};
+
+function DefaultNotification() {
+  return {
+    date: '-',
+    title: "No data to display",
+    messageHTML: '-'
+  }
+};
+
+async function displayNotification(type: string) {
+  switch(type) {
+    case 'weekly':
+      await buildWeeklyNotification();
+      notificationType.value = 'weekly';
+      showNotification.value = true;
+      setTimeout( () => showNotification.value = false, SHOW_DESC_NOTIF_DELAY);
+      break;
+    case 'daily':
+      notificationType.value = 'daily';
+      showNotification.value = true;
+      break;
+    default:
+      dailyNotificartion.value = DefaultNotification();
+      notificationType.value = 'daily';
+      showNotification.value = true;
+      setTimeout( () => showNotification.value = false,  SHOW_DESC_NOTIF_DELAY);
+  }
+}
+
+chrome.runtime.onMessage.addListener(request => {
+  if (request.counters) {
+    // Update stats with todays totals
+    const counters = request.counters;
+    countersCo2.value = {...counters.co2};
+    countersData.value = {...counters.data};
+    console.log(counters)
+    updateIconBar();
+  }
+  if (request.weeklynotification) {
+    const stats = request.weeklynotification;
+    weeklyTotals.value = {...stats, trend: { co2: 0, data: 0 } };
+    displayNotification('weekly');
+  }
+  if (request.dailyNotifications) {
+    dailyNotificartion.value = request.dailyNotifications.data;
+    displayNotification('daily');
+  }
+});
+
+const openTabExtension = () => {
+  chrome.runtime.sendMessage({ query: 'openExtension' });
+};
+
+const closeActionPanel = () => {
+  interactive.value = false;
+};
+
+onMounted(async () => {
+  const settings = await retrieveSettings();
+  locale.value = settings.lang;
+  updateIconBar();
+});
+
 </script>
 
 <style lang="scss" scoped>
@@ -350,8 +371,10 @@ export default {
   margin-right: 0px;
   margin-left: auto;
   background-color: var(--co2);
-  border: 2px solid white;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  border: 1px solid white;
   border-top: 0;
+  padding: 4px;
   &.mv-data {
     background-color: var(--data);
   }
@@ -370,18 +393,12 @@ export default {
   max-height: 500px;
   transition: max-height 1.5s linear, opacity 1.5s linear;
   opacity: 1;
-  border: 2px solid white;
+  border: 1px solid white;
   border-top: 0;
   &.hidden {
     pointer-events: none;
     max-height: 0px;
     opacity: 0;
-  }
-  & .mv-image, p {
-    margin: 5px;
-    margin-left: 0;
-    line-height: normal;
-    font-size: 12px;
   }
 }
 .miniviz #mv-description {
@@ -396,6 +413,27 @@ export default {
     background-color: var(--dataActive);
     box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
       inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  }
+  .mv-image{
+    margin: 10px;
+    line-height: normal;
+    font-size: 12px;
+  }
+  .mv-counter {
+    flex-grow: 2;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-weight: 700;
+  }
+  .mv-counter-quantity {
+    font-size: 21px;
+    line-height: 21px;
+  }
+  .mv-counter-time {
+    font-size: 12px;
+  }
+  .mv-counter-analogy {
+    font-size: 12px;
   }
 }
 .miniviz #mv-notification {

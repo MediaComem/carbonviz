@@ -4,7 +4,7 @@
   chrome.runtime.sendMessage({ query: 'startMiniviz' }).then(async (response) => {
     if (response && response.show === true) {
       const miniVizScript = await import(chrome.runtime.getURL('content/miniViz-inner-script.js'));
-      miniVizScript.start();
+      miniVizScript.start({ counters: response.counters });
     }
   }).catch(e => { /* service worker not active */ });
 

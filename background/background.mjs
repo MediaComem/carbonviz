@@ -39,6 +39,13 @@ const weeklyIntervalMins = 10080; // Set the alarm to repeat every week (7 days 
 const dailyIntervalMins = 1440;
 
 let statistics = { co2: 0, data: 0, energy: 0, time: 0};
+// miniviz analogy counter
+let analogyCounter = {
+  // 10L boiling water
+  co2: { count: 0, previous: 0, step: 0.116, quantityAnalogy: 1, time: 0, previousTime: 0 },
+  // 10 mins music streaming
+  data: { count: 0, previous: 0, step: 24 * 1000000, quantityAnalogy: 10, time: 0, previousTime: 0 }
+};
 
 const domain = (packet) => {
   if (!packet.extraInfo.tabUrl) {
@@ -184,7 +191,7 @@ const completedListener = async(responseDetails) => {
   info.extraInfo = { timeStamp };
 
   statistics.co2 += info.co2 - 0;
-  statistics.data += info.contentLength - 0;
+  statistics.data += packetSize - 0;
 
   // retrieve tab url
   // we do not use initiator since some embedded frame could be different from the original website
@@ -221,16 +228,6 @@ const completedListener = async(responseDetails) => {
     });
   }
 
-  // send message to miniViz
-  chrome.tabs.query({active: true}, function(tabs) {
-    if (tabs && tabs[0]) {
-      for (const tab of tabs) {
-        sendMessageToTab(tab.id, { data: info });
-        sendMessageToTab(tab.id, { statistics });
-      }
-    }
-  });
-
 }
 
 const handleMessage = (request, _sender, sendResponse) => {
@@ -245,7 +242,7 @@ const handleMessage = (request, _sender, sendResponse) => {
             let now = new Date();
             const endDate = settings.deactivateUntil ? new Date(settings.deactivateUntil) : 0;
             if(now > endDate) {
-              sendResponse({show: true});
+              sendResponse({show: true, counters: analogyCounter });
             }
           }
         });
@@ -322,6 +319,31 @@ const writeData = async () => {
   updateRunningDurationSec(writingIntervalMs / 1000);
   statistics.time += writingIntervalMs / 1000;
   dump = [];
+  // check analogy counters
+  const co2Steps = Math.floor(statistics.co2 / analogyCounter.co2.step);
+  const dataSteps = Math.floor(statistics.data / analogyCounter.data.step);
+  analogyCounter.co2.previous = analogyCounter.co2.count;
+  if (co2Steps > analogyCounter.co2.count) {
+    analogyCounter.co2.previous = analogyCounter.co2.count;
+    analogyCounter.co2.count = co2Steps;
+    analogyCounter.co2.previousTime = analogyCounter.co2.time;
+    analogyCounter.co2.time = statistics.time;
+  }
+  analogyCounter.data.previous = analogyCounter.data.count;
+  if (dataSteps > analogyCounter.data.count) {
+    analogyCounter.data.previous = analogyCounter.data.count;
+    analogyCounter.data.count = dataSteps;
+    analogyCounter.data.previousTime = analogyCounter.data.time;
+    analogyCounter.data.time = statistics.time;
+  }
+  // send message to miniViz
+  chrome.tabs.query({active: true}, function(tabs) {
+    if (tabs && tabs[0]) {
+      for (const tab of tabs) {
+        sendMessageToTab(tab.id, { counters: analogyCounter });
+      }
+    }
+  });
 };
 
 const getNextMonday9AM = () => {

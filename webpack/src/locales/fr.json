@@ -15,7 +15,7 @@
       "sawing": "planches de bois scié",
       "dictionaries": "dictionnaires illustrés",
       "instagram": "instagram pictures",
-      "music": "minutes de musique en streaming",
+      "music": "minutes de streaming audio",
       "netflix": "épisodes Netflix UHD",
       "wordFile": "pages d'un fichier word",
       "wordFile_million": "millions de pages de fichier word",
@@ -31,7 +31,7 @@
         "sawing": "scier {number} planches de bois",
         "dictionaries": "{number} dictionnaires illustrés",
         "instagram": "{number} instagram pictures",
-        "music": "{number} minutes de musique en streaming",
+        "music": "{number} minutes de streaming audio",
         "netflix": "{number} épisodes Netflix UHD",
         "wordFile": "{number} pages d'un fichier word",
         "wordFileMillion": "{number} millions de pages de fichier word",
@@ -46,17 +46,14 @@
       "scrollEnd": "Pas d’autres données à charger"
     },
     "miniViz": {
-      "description": {
-        "co2": "Vous avez dégagé {data} de co2 en {time} Soit l'équivalent de {amount}",
-        "data": "Vous avez consommé {data} de data en {time} Soit l'équivalent de {amount}"
-      },
       "notification": {
+        "co2": "{data} de co2",
+        "data": "{data} de données",
+        "time": "en {time}",
+        "analogy": "soit {amount}",
         "weekly": {
           "title": "Notification hebdomadaire",
-          "co2": "{data} de co2",
-          "data": "{data} de data",
           "days": "Les 7 derniers jours",
-          "analogy": "soit {amount}",
           "average": "Moyenne hebdomadaire",
           "trend": "Tendance hebdomadaire"
         },
