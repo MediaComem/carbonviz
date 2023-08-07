@@ -1,29 +1,44 @@
 <script>
 import { useI18n } from 'vue-i18n'
-import { inject, onMounted } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 import { ElRow, ElCol } from 'element-plus';
+import Settings from '../components/Settings.vue'
 
 const subNav = {};
 
+
 export default {
-	components: { ElRow, ElCol},
+	components: { ElRow, ElCol, Settings},
 	setup(props, context) {
 		const { t } = useI18n({});
-		const setSubNav = inject('setSubNav');
+		const scroll = ref(null);
+
+		const setSubNav = inject('setSubNav', scroll);
 		onMounted(() => setSubNav(subNav));
-		return { t };
+		return { t, scroll };
 	}
 }
 </script>
 
 <template>
-	<el-scrollbar>
-		<h1>Settings</h1>
+	<el-scrollbar ref="scroll">
+		<h1 class="title">Settings</h1>
+		<div class="content">
+			<Settings></Settings>
+		</div>
 	</el-scrollbar>
 </template>
 
 <style scoped lang="scss">
-article h2 {
+.content {
+  max-width: 800px;
+	height: 800px;
+  padding-bottom: 20px;
+}
+.content :deep(.wrapper) {
+	height: unset;
+}
+.content :deep(h3) {
 	margin-left: 0px;
 }
 </style>

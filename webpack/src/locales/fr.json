@@ -124,7 +124,9 @@
       "downloadDataInfo": "CarbonViz ne stocke les données que localement dans votre navigateur. Aucune donnée n'est synchronisée automatiquement avec des serveurs externes. Vous pouvez télécharger les données stockées par CarbonViz.",
       "downloadAction": "Télécharger",
       "deleteData": "Effacer mes données",
-      "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "deleteDataInfo": "Vous pouvez supprimer toutes les données enregistrées par CarbonViz dans votre navigateur. Cette opération est irréversible.",
+      "deleteAction": "Supprimer",
+      "deleteConfirmation": "Supprimer définitivement les données ?",
       "confirmMiniVizVisible": "MiniViz est maintenant visible",
       "confirmMiniVizHidden": "MiniViz est maintenant caché",
       "datePlaceholder": "Choisis une date"
@@ -169,7 +171,7 @@
       "month": "Mois"
     },
     "settings": "Paramètres",
-    "trends": "Tendances"
+    "trends": "Tendances",
   },
   "locales": {
     "de": "Deutsch",

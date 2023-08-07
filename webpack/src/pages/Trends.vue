@@ -83,9 +83,6 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.content {
-  max-width: 1000px;
-}
 
 h1.title {
   font-size: 32px;

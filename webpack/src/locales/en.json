@@ -124,7 +124,9 @@
       "downloadDataInfo": "CarbonViz stores data only locally inside your broswer. No data is automatically synchronised with external servers. You can download data stored by CarbonViz.",
       "downloadAction": "Download",
       "deleteData": "Delete my data",
-      "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "deleteDataInfo": "You can delete all the data stored by CarbonViz inside your browser. This operation cannot be undone.",
+      "deleteAction": "Delete",
+      "deleteConfirmation": "Permanently delete data?",
       "confirmMiniVizVisible": "MiniViz is now visible",
       "confirmMiniVizHidden": "MiniViz is now hidden",
       "datePlaceholder": "Pick a date"
