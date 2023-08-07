@@ -374,6 +374,7 @@ export default {
   border: 2px solid white;
   border-top: 0;
   &.hidden {
+    pointer-events: none;
     max-height: 0px;
     opacity: 0;
   }
