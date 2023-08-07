@@ -86,13 +86,20 @@ export default {
 			saveSettings('lifetimeComputer', lifetimeLaptopYears.value);
 		};
 		const updateDisablePeriod = (value) => {
-			const timerObj = new Date();
-			timerObj.setMinutes(timerObj.getMinutes() + value);
-			saveSettings('deactivateUntil', timerObj.getTime());
-			saveSettings('showMiniViz', false);
-			disableTimer.value = value;
-			deactivateUntil.value = timerObj.getTime();
-			chrome.runtime.sendMessage({ query: 'deactivateDataStorage' });
+			if (value > 0) {
+				const timerObj = new Date();
+				timerObj.setMinutes(timerObj.getMinutes() + value);
+				saveSettings('deactivateUntil', timerObj.getTime());
+				saveSettings('showMiniViz', false);
+				deactivateUntil.value = timerObj.getTime();
+				showMiniViz.value = false;
+				chrome.runtime.sendMessage({ query: 'deactivateDataStorage' });
+			} else {
+				chrome.runtime.sendMessage({ query: 'reactivateDataStorage' });
+				saveSettings('deactivateUntil', 0);
+				saveSettings('showMiniViz', true);
+				showMiniViz.value = true;
+			}
 		}
 		const triggerDownloadData = () => {
 			downloadData();

@@ -283,9 +283,19 @@ const handleMessage = (request, _sender, sendResponse) => {
         }
       case 'deactivateDataStorage':
         chrome.webRequest.onCompleted.removeListener(completedListener);
+        chrome.tabs.query({}).then((tabs) => {
+          for (const tab of tabs) {
+            sendMessageToTab(tab.id, { query: 'removeMiniviz' });
+          }
+        });
         return;
       case 'reactivateDataStorage':
         addPluginHeaderListener();
+        chrome.tabs.query({}).then((tabs) => {
+          for (const tab of tabs) {
+            sendMessageToTab(tab.id, { query: 'showMiniviz' });
+          }
+        });
         return;
       default:
         break;
