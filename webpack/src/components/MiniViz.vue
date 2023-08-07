@@ -374,6 +374,7 @@ export default {
   border: 2px solid white;
   border-top: 0;
   &.hidden {
+    pointer-events: none;
     max-height: 0px;
     opacity: 0;
   }
@@ -390,8 +391,12 @@ export default {
   margin-left: auto;
   color: white;
   background-color: var(--co2Active);
+  box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
+      inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
   &.data {
     background-color: var(--dataActive);
+    box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
+      inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
   }
 }
 .miniviz #notification {
