@@ -32,12 +32,11 @@
         <div
           class="mv-notificationContainer"
           v-if="notificationType === 'weekly'"
-          @click="onNotificationClick"
         >
-          <img class="mv-exit" :src="closeBtn" alt="X">
+          <img class="mv-exit" :src="closeBtn" alt="X" @click="closeNotification">
           <div id="mv-stats">
-            <h3 class="mv-title"> {{ t('components.miniViz.notification.weekly.title') }} </h3>
-            <div id="mv-current">
+            <div class="mv-title"> {{ t('components.miniViz.notification.weekly.title') }} </div>
+            <div id="mv-current" class="mv-summary">
               <p>
                 {{ t(`components.miniViz.notification.${dataType}`,
                   {
@@ -48,14 +47,14 @@
               <p> {{ t(`components.miniViz.notification.weekly.days`)}} </p>
               <p>
                 {{ t(`components.miniViz.notification.analogy`,
-                  { amount: getAnalogyValue(customAnalogyNames, dataType, weeklyTotals.currentWeek[dataType], activeIndex).amount + getAnalogyText(customAnalogyNames, dataType, weeklyTotals.currentWeek[dataType], activeIndex) }
+                  { amount: getAnalogyValue(customAnalogyNames, dataType, weeklyTotals.currentWeek, activeIndex).amount + ' ' + getAnalogyText(customAnalogyNames, dataType, weeklyTotals.currentWeek[dataType], activeIndex) }
                 )}}
               </p>
             </div>
             <div id="mv-average">
               <p>
                 {{ t('components.miniViz.notification.weekly.average') }}
-                <strong> {{ dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek.co2 / 7, 0) : formatSize(weeklyTotals.currentWeek.data / 7, 0) }} </strong>
+                <strong> {{ dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek.co2 / 7, 0) : formatSize(weeklyTotals.currentWeek.data / 7, 0) }} / {{ t(`global.day`) }}</strong>
               </p>
               <p id="mv-trend">
                 {{ t('components.miniViz.notification.weekly.trend') }}:
@@ -86,8 +85,9 @@
           v-if="notificationType === 'daily'"
           @click="onDailyNotificationClick"
         >
+        <img class="mv-exit" :src="closeBtn" alt="X" @click="closeNotification">
         <div id="mv-dailyNotification">
-          <h3> {{ dailyNotificartion.title }}</h3>
+          <div class="mv-title"> {{ dailyNotificartion.title }}</div>
           <span v-html="dailyNotificartion.messageHTML"></span>
         </div>
         </div>
@@ -213,11 +213,15 @@ const showDescAnimation = () => {
   setTimeout( () => showDescription.value = false, SHOW_DESC_NOTIF_DELAY);
 };
 const hideMiniViz = () => {
+  if (showNotification.value) {
+    // do not hide if notification active
+    return;
+  }
   showInteraction.value = true;
   interactive.value = true;
   setTimeout( () => { showInteraction.value = false; interactive.value = false }, HIDE_MINIVIZ_DELAY);
 };
-const onNotificationClick = () => {
+const closeNotification = () => {
   showNotification.value = false
 };
 const onDailyNotificationClick = () => {
@@ -255,10 +259,10 @@ function updateIconBar() {
 }
 
 function createTimeString(seconds: number) {
-  if (seconds > 3600) {
+  if (seconds >= 3600) {
       const minutes = Math.floor(seconds % 3600 / 60);
-      return Math.floor(seconds/3600) + 'h' + ' ' + (minutes<10 ? '0'+minutes : minutes) + 'min';
-    } else if (seconds > 60) {
+      return Math.floor(seconds/3600) + 'h' + (minutes<10 ? '0'+minutes : minutes) + 'min';
+    } else if (seconds >= 60) {
       return Math.floor(seconds/60) + 'min';
     } else {
       return seconds + 's';
@@ -293,7 +297,6 @@ async function displayNotification(type: string) {
       await buildWeeklyNotification();
       notificationType.value = 'weekly';
       showNotification.value = true;
-      setTimeout( () => showNotification.value = false, SHOW_DESC_NOTIF_DELAY);
       break;
     case 'daily':
       notificationType.value = 'daily';
@@ -303,7 +306,6 @@ async function displayNotification(type: string) {
       dailyNotificartion.value = DefaultNotification();
       notificationType.value = 'daily';
       showNotification.value = true;
-      setTimeout( () => showNotification.value = false,  SHOW_DESC_NOTIF_DELAY);
   }
 }
 
@@ -378,14 +380,15 @@ onMounted(async () => {
   &.mv-data {
     background-color: var(--data);
   }
-  & img {
+  img {
     opacity: 0.4;
   }
-  & img.mv-fill {
+  img.mv-fill {
     opacity: 1;
   }
 }
 .miniviz #mv-description, .miniviz #mv-notification {
+  font-family: Roboto, Arial, sans-serif;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -430,28 +433,43 @@ onMounted(async () => {
     line-height: 21px;
   }
   .mv-counter-time {
-    font-size: 12px;
+    font-size: 10px;
   }
   .mv-counter-analogy {
-    font-size: 12px;
+    font-size: 10px;
   }
 }
 .miniviz #mv-notification {
   flex-wrap: wrap;
   color: black;
   background-color: var(--grey);
-  & .mv-notificationContainer {
+  font-size: 10px;
+  .mv-notificationContainer {
     width: 100%;
   }
-  & .mv-title {
-    margin-bottom: 15px
+  .mv-title {
+    margin-bottom: 10px
   }
-  & svg.mv-up {
+  .mv-summary {
+    font-weight: 700;
+    margin-bottom: 20px
+  }
+
+  #mv-dailyNotification .mv-title {
+    font-weight: 700;
+  }
+
+  svg {
     display: inline-flex;
+    width: 11px;
+    height: 11px;
+    margin-top: 4px;
+    margin-bottom: -2px;
+    margin-left: 2px;  }
+  svg.mv-up {
     color: red;
   }
-  & svg.mv-down {
-    display: inline-flex;
+  svg.mv-down {
     transform: rotate(90deg);
     color: var(--green);
   }
@@ -479,9 +497,6 @@ onMounted(async () => {
 }
 #mv-stats #mv-trend {
   margin-top: 20px;
-}
-#mv-advise h3 {
-  margin-bottom: 15px
 }
 .mv-actionContainer {
   position: fixed;
