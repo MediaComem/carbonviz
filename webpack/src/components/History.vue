@@ -125,8 +125,8 @@ export default {
           <p>{{ t('components.history.scrolling') }}</p>
         </div>
         <div v-else>
-          <img src="../../../icons/scrollEnd.svg" alt="" width="50" height="50">
-          <p>{{ t('components.history.scrollEnd') }}</p>
+          <img class="iconEndScroll" :src="`../../../icons/${dataType}.svg`" alt="" width="50" height="50">
+          <p id="scrollEndText">{{ t('components.history.scrollEnd') }}</p>
         </div>
       </div>
     </el-scrollbar>
@@ -170,6 +170,11 @@ export default {
   }
   .scroll div p {
     margin: auto;
+  }
+  .scroll #scrollEndText {
+    font-size: 12px;
+    width: 120px;
+    font-weight: 600;
   }
   @media (prefers-color-scheme: dark) {
 

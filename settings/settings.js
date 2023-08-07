@@ -5,7 +5,9 @@ let settings = {
   computer: 'laptop',
   showMiniViz: true,
   deactivateUntil: undefined,
-  lang: 'fr'
+  lang: 'fr',
+  positionRight: true,
+  positionTop: true
 }
 
 const saveSettings = async (key, value) => {

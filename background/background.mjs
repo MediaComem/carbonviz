@@ -261,6 +261,13 @@ const handleMessage = (request, _sender, sendResponse) => {
           }
         })
         return;
+      case 'updatePosition':
+          chrome.tabs.query({}).then((tabs) => {
+            for (const tab of tabs) {
+              sendMessageToTab(tab.id, { query: 'updatePosition' });
+            }
+          })
+          return;
       case 'sendNextDailyNotification':
         if (dailyResponseJson.length > 0) {
           chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {

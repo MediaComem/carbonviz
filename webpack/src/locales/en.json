@@ -118,6 +118,15 @@
       "computerUsageOneDay": "1 day of computer usage represents",
       "dataUseCase": "This data allows us to better calculate the gray footprint of your activity associated with your computer",
       "longerUsageTip": "By keeping your computer longer, you avoid having to produce new equipment and save a lot of energy and resources in the manufacturing process.",
+      "miniVizPosition": "MiniViz position",
+      "on": "Visable",
+      "off": "Hidden",
+      "position": {
+        "top": "Top",
+        "right": "Right",
+        "bottom": "Bottom",
+        "left": "Left"
+      },
       "showMiniViz": "Show MiniViz",
       "disablePlugin": "Disable plugin",
       "downloadData": "Download my data",

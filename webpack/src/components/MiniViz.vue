@@ -1,6 +1,6 @@
  <template>
   <div class="mv-extension" v-if="showMiniViz">
-    <div class="miniviz" :class="{ 'hidden': showInteraction}" id="miniViz_container">
+    <div class="miniviz" :class="{ 'hidden': showInteraction, 'positionBottom': !positionTop, 'positionLeft': !positionRight }" id="miniViz_container">
       <div class="mv-anim" :class="dataType === 'data' ? 'mv-data' : 'mv-co2'" @mouseover="hideMiniViz">
         <img v-for="(item, index) in iconBar" key="item" class="mv-image" :class="currentMeter[dataType][item] ? 'mv-fill': ''" :src="asset" height="20" width="20">
       </div>
@@ -146,6 +146,8 @@ const showDescription = ref(false);
 const showNotification = ref(false);
 const showInteraction = ref(false);
 const interactive = ref(false);
+const positionTop = ref(true);
+const positionRight = ref(true);
 const closeBtn = chrome.runtime.getURL(`icons/roundBtnX.svg`);
 let activeIndex = ref(0);
 let dataType = ref('data');
@@ -197,10 +199,6 @@ const customAnalogyNames = {
   co2: ['boiling'],
   data: ['music' ]
 };
-
-retrieveSettings().then(settings => {
-  showMiniViz.value = settings.showMiniViz;
-});
 const asset = computed(() => {
   if (dataType.value === 'co2') {
     return chrome.runtime.getURL(`icons/analogies/${analogiesCo2[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
@@ -291,6 +289,14 @@ function DefaultNotification() {
   }
 };
 
+async function resyncSettings() {
+  const settings = await retrieveSettings();
+  locale.value = settings.lang;
+  showMiniViz.value = settings.showMiniViz;
+  positionTop.value = settings.positionTop;
+  positionRight.value = settings.positionRight;
+}
+
 async function displayNotification(type: string) {
   switch(type) {
     case 'weekly':
@@ -327,6 +333,9 @@ chrome.runtime.onMessage.addListener(request => {
     dailyNotificartion.value = request.dailyNotifications.data;
     displayNotification('daily');
   }
+  if (request.query === 'updatePosition') {
+    resyncSettings();
+  }
 });
 
 const openTabExtension = () => {
@@ -340,6 +349,9 @@ const closeActionPanel = () => {
 onMounted(async () => {
   const settings = await retrieveSettings();
   locale.value = settings.lang;
+  showMiniViz.value = settings.showMiniViz;
+  positionTop.value = settings.positionTop;
+  positionRight.value = settings.positionRight;
   updateIconBar();
 });
 
@@ -358,12 +370,20 @@ onMounted(async () => {
   top: 5%;
   right: 5px;
   height: auto;
-  max-height: 130px;
+  max-height: 250px;
   width: auto;
   max-width: 270px;
   z-index: 10000;
   &.hidden {
     display: none;
+  }
+  &.positionBottom {
+    top: auto;
+    bottom: 5%;
+  }
+  &.positionLeft {
+    right: auto;
+    left: 5px;
   }
 }
 .mv-anim {
@@ -388,6 +408,10 @@ onMounted(async () => {
   }
 }
 .miniviz #mv-description, .miniviz #mv-notification {
+  p, h1, h2, h3, img {
+    margin: initial;
+    padding: initial;
+  }
   font-family: Roboto, Arial, sans-serif;
   display: flex;
   justify-content: space-evenly;
@@ -474,11 +498,13 @@ onMounted(async () => {
     color: var(--green);
   }
 }
-.mv-exit {
-  float: right;
-  margin: 10px;
-  &:hover {
-    cursor: pointer;
+.miniviz #mv-description, .miniviz #mv-notification {
+  .mv-exit {
+    float: right;
+    margin: 10px;
+    &:hover {
+      cursor: pointer;
+    }
   }
 }
 #mv-stats, #mv-dailyNotification {
