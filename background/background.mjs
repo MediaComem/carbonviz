@@ -544,7 +544,11 @@ const checkMissedNotifications = async (tab = false) => {
   notificationsStatus = await retrieveNotifications();
 
   const lastMonday = new Date(now);
-  lastMonday.setDate(now.getDate() - (now.getDay() + 6) % 7); // Calculate last Monday's date
+  if (now.getDay() === 1) {
+    lastMonday.setDate(lastMonday.getDate() - 7);
+  } else {
+    lastMonday.setDate(now.getDate() - (now.getDay() + 6) % 7); // Calculate last Monday's date
+  }
 
   if (activeTab[0].id) {
     const weekDate =  new Date(notificationsStatus.lastDisplayedWeeklyTimeStamp);
