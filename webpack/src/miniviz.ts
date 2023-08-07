@@ -20,3 +20,4 @@ const i18n = createI18n({
 })
 
 export const miniviz = createApp(MiniViz).use(i18n);
+export const minivizWithProps = (props) => createApp(MiniViz, props).use(i18n);

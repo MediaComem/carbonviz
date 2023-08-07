@@ -25,7 +25,7 @@
     {
       "matches": ["https://*/*", "http://*/*"],
       "css": ["bundle/miniviz.css"],
-      "js": ["content/miniViz-script.js","content/miniViz.js","content/matter.js"]
+      "js": ["content/miniViz-script.js","content/miniViz.js"]
     }
   ],
   "action": {
@@ -40,8 +40,6 @@
       "resources": [
         "content/*",
         "model/*",
-        "unplug/js/*",
-        "unplug/assets/*",
         "icons/*",
         "bundle/*",
         "popup/*"

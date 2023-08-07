@@ -15,7 +15,7 @@
       "sawing": "wood boards sawed",
       "dictionaries": "illustrated dictionaries",
       "instagram": "instagram pictures",
-      "music": "minutes of streaming music",
+      "music": "minutes of audio streaming",
       "netflix": "Netflix UHD episodes",
       "wordFile": "pages of a word file",
       "wordFile_million": "million pages of word file",
@@ -31,7 +31,7 @@
         "sawing": "sawing {number} wood boards",
         "dictionaries": "{number} illustrated dictionaries",
         "instagram": "{number} instagram pictures",
-        "music": "{number} minutes of streaming music",
+        "music": "{number} minutes of audio streaming",
         "netflix": "{number} Netflix UHD episodes",
         "wordFile": "{number} pages of a word file",
         "wordFileMillion": "{number} million pages of word file",
@@ -46,17 +46,14 @@
       "scrollEnd": "No more data to load"
     },
     "miniViz": {
-      "description": {
-        "co2": "You have released {data} of co2 in {time} That is the equivalent of {amount}",
-        "data": "You have consumed {data} of data in {time} That is the equivalent of {amount}"
-      },
       "notification": {
+        "co2": "{data} of co2",
+        "data": "{data} of data",
+        "time": "in {time}",
+        "analogy": "as much as {amount}",
         "weekly": {
           "title": "Weekly Notification",
-          "co2": "{data} of co2",
-          "data": "{data} of data",
           "days": "The last 7 days",
-          "analogy": "Equal to {amount}",
           "average": "Weekly average",
           "trend": "Weekly trend"
         },
@@ -128,8 +125,8 @@
       "downloadAction": "Download",
       "deleteData": "Delete my data",
       "deleteDataInfo": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      "confirmMiniVizStatus": "MiniViz is now {text}",
-      "confirmShareData": "Data is {text}",
+      "confirmMiniVizVisible": "MiniViz is now visible",
+      "confirmMiniVizHidden": "MiniViz is now hidden",
       "datePlaceholder": "Pick a date"
     }
   },

@@ -60,12 +60,20 @@ export default {
 
 		const setMinvizDisplay = (status) => {
 			miniVizStatusUpdating.value = true;
-			const text = status ? "visible" : "hidden";
 			saveSettings('showMiniViz', status).then(() => {
 				miniVizStatusUpdating.value = false;
-				ElMessage.success(
-					t('components.settings.confirmMiniVizStatus', { text })
-				);
+				if (status) {
+					chrome.runtime.sendMessage({ query: 'showMiniviz' });
+					ElMessage.success(
+						t('components.settings.confirmMiniVizVisible')
+					);
+				} else {
+					chrome.runtime.sendMessage({ query: 'removeMiniviz' });
+					ElMessage.success(
+						t('components.settings.confirmMiniVizHidden')
+					);
+				}
+
 			});
 		};
 		const lifetimeUpdate = () => {

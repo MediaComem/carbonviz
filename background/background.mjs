@@ -33,15 +33,19 @@ const refreshSettings = async () => {
 let DBInitialized = false;
 let dailyResponseJson = [];
 let dump = [];
-let co2ComputerInterval;
-const co2ComputerIntervalMs = 2000;
-let lastCo2Tick = new Date();
 let writeDataInterval;
 const writingIntervalMs = 60000;
 const weeklyIntervalMins = 10080; // Set the alarm to repeat every week (7 days * 24 hours * 60 minutes = 10080 minutes)
 const dailyIntervalMins = 1440;
 
 let statistics = { co2: 0, data: 0, energy: 0, time: 0};
+// miniviz analogy counter
+let analogyCounter = {
+  // 10L boiling water
+  co2: { count: 0, previous: 0, step: 0.116, quantityAnalogy: 1, time: 0, previousTime: 0 },
+  // 10 mins music streaming
+  data: { count: 0, previous: 0, step: 24 * 1000000, quantityAnalogy: 10, time: 0, previousTime: 0 }
+};
 
 const domain = (packet) => {
   if (!packet.extraInfo.tabUrl) {
@@ -187,7 +191,7 @@ const completedListener = async(responseDetails) => {
   info.extraInfo = { timeStamp };
 
   statistics.co2 += info.co2 - 0;
-  statistics.data += info.contentLength - 0;
+  statistics.data += packetSize - 0;
 
   // retrieve tab url
   // we do not use initiator since some embedded frame could be different from the original website
@@ -224,23 +228,6 @@ const completedListener = async(responseDetails) => {
     });
   }
 
-  // send message to miniViz
-  chrome.tabs.query({active: true}, function(tabs) {
-    if (tabs && tabs[0]) {
-      for (const tab of tabs) {
-        sendMessageToTab(tab.id, { data: info });
-        sendMessageToTab(tab.id, { statistics });
-      }
-    }
-  });
-
-  // check if co2 computer tick OK
-  // prevent setInterval not working after long computer sleep
-  // allow some margin
-  const now = new Date();
-  if(now - lastCo2Tick > 2 * co2ComputerIntervalMs) {
-    startComputerCo2Interval();
-  }
 }
 
 const handleMessage = (request, _sender, sendResponse) => {
@@ -255,7 +242,7 @@ const handleMessage = (request, _sender, sendResponse) => {
             let now = new Date();
             const endDate = settings.deactivateUntil ? new Date(settings.deactivateUntil) : 0;
             if(now > endDate) {
-              sendResponse({show: true});
+              sendResponse({show: true, counters: analogyCounter });
             }
           }
         });
@@ -264,6 +251,13 @@ const handleMessage = (request, _sender, sendResponse) => {
         chrome.tabs.query({}).then((tabs) => {
           for (const tab of tabs) {
             sendMessageToTab(tab.id, { query: 'removeMiniviz' });
+          }
+        })
+        return;
+      case 'showMiniviz':
+        chrome.tabs.query({}).then((tabs) => {
+          for (const tab of tabs) {
+            sendMessageToTab(tab.id, { query: 'showMiniviz' });
           }
         })
         return;
@@ -307,44 +301,6 @@ const sendOSAlert = (type) => {
   });
 }
 
-// computer CO2 default usage
-const computerCo2 =  () => {
-  // const co2 =  0.023651219231638508 * 10000000 / 3600;
-  // const energgyNREHomeDefaultPerHour = 0.5285774234423879;
-  // const energyREHomeDefaultPerHour = 0.12011280706531807;
-  // doesnt need to calculate, it's a constant value: ~6.57 [mg/sec]
-  const seconds = co2ComputerIntervalMs / 1000;
-  const computerCo2 =  {
-    initiator: 'computer',
-    contentLength: 0,
-    co2: 6.57e-6 * seconds,
-    energyNRE: 1.47e-4 * seconds,
-    energyRE: 3.34e-5 * seconds,
-    extraInfo: { timeStamp: new Date() }
-  };
-
-  statistics.co2 += computerCo2.co2 - 0;
-
-  // send message to miniViz
-  chrome.tabs.query({active: true}, function(tabs) {
-    if (tabs && tabs[0]) {
-      for (const tab of tabs) {
-        sendMessageToTab(tab.id, { data: computerCo2 });
-        sendMessageToTab(tab.id, { statistics });
-      }
-    }
-  });
-  lastCo2Tick = new Date();
-};
-
-const startComputerCo2Interval = () => {
-  console.log("Starting computer co2 consumption interval");
-  if (co2ComputerInterval) {
-    clearInterval(co2ComputerInterval);
-  }
-  co2ComputerInterval = setInterval(computerCo2, co2ComputerIntervalMs);
-}
-
 const addPluginHeaderListener = () => {
   const pluginListener = chrome.webRequest.onCompleted.hasListener(completedListener);
   if(!pluginListener) {
@@ -363,6 +319,31 @@ const writeData = async () => {
   updateRunningDurationSec(writingIntervalMs / 1000);
   statistics.time += writingIntervalMs / 1000;
   dump = [];
+  // check analogy counters
+  const co2Steps = Math.floor(statistics.co2 / analogyCounter.co2.step);
+  const dataSteps = Math.floor(statistics.data / analogyCounter.data.step);
+  analogyCounter.co2.previous = analogyCounter.co2.count;
+  if (co2Steps > analogyCounter.co2.count) {
+    analogyCounter.co2.previous = analogyCounter.co2.count;
+    analogyCounter.co2.count = co2Steps;
+    analogyCounter.co2.previousTime = analogyCounter.co2.time;
+    analogyCounter.co2.time = statistics.time;
+  }
+  analogyCounter.data.previous = analogyCounter.data.count;
+  if (dataSteps > analogyCounter.data.count) {
+    analogyCounter.data.previous = analogyCounter.data.count;
+    analogyCounter.data.count = dataSteps;
+    analogyCounter.data.previousTime = analogyCounter.data.time;
+    analogyCounter.data.time = statistics.time;
+  }
+  // send message to miniViz
+  chrome.tabs.query({active: true}, function(tabs) {
+    if (tabs && tabs[0]) {
+      for (const tab of tabs) {
+        sendMessageToTab(tab.id, { counters: analogyCounter });
+      }
+    }
+  });
 };
 
 const getNextMonday9AM = () => {
@@ -373,8 +354,6 @@ const getNextMonday9AM = () => {
   nextMonday.setHours(9, 0, 0, 0); // Set the time to 9 AM
   return nextMonday;
 };
-
-startComputerCo2Interval();
 
 addPluginHeaderListener();
 
