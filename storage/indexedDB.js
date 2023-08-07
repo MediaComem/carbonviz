@@ -331,5 +331,23 @@ async function downloadData(dbStore) {
   });
 }
 
-export { init, getLastStoredEntries, updateData, getDailyAggregates, getTodayCounter, deleteData, getWebsites, getAggregate,
+async function deleteStore(dbStore) {
+  return new Promise(function (resolve, reject) {
+    const db = DBInstance.db;
+    if(db) {
+      const trans = db.transaction([dbStore], "readwrite");
+      const objectStore = trans.objectStore(dbStore);
+
+      const clearRequest = objectStore.clear();
+      clearRequest.onerror = event => reject(event.target.error);
+      clearRequest.onsuccess = event => {
+        resolve();
+      };
+    } else {
+      console.log("Unable to connect to CarbonViz database");
+    }
+  });
+}
+
+export { init, getLastStoredEntries, updateData, getDailyAggregates, getTodayCounter, deleteData, deleteStore, getWebsites, getAggregate,
   downloadData, getMonday, getWeekOfYear, dateStringHour, dateString }

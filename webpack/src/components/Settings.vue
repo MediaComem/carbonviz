@@ -7,6 +7,7 @@ import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 import { formatCo2, roundToPrecision } from '../../../utils/format.js';
 import { ONE_DAY_SEC, co2ImpactHomeHardware } from '../../../model/model.js';
 import { downloadData } from '../../../storage/dataDownload.js'
+import { eraseAll } from '../../../storage/resetData.js'
 
 import 'dayjs/locale/fr'
 
@@ -93,13 +94,15 @@ export default {
 		const triggerDownloadData = () => {
 			downloadData();
 		};
-
+		const triggerDeletedData = () => {
+			eraseAll();
+		};
 		return {
 			showMiniViz, miniVizStatusUpdating, marks,
 			yearsSincePurchase, yearsRemaining, lifetimeLaptopYears, disableTimer,
 			co2ImpactDefault, co2ImpactCustom, co2VsDefault,
 			Check, Close,
-			t, roundToPrecision, formatCo2, setMinvizDisplay, lifetimeUpdate, triggerDownloadData, updateDisablePeriod
+			t, roundToPrecision, formatCo2, setMinvizDisplay, lifetimeUpdate, triggerDownloadData, triggerDeletedData, updateDisablePeriod
 		};
 	}
 }
@@ -194,6 +197,23 @@ export default {
 				<h3> {{ t('components.settings.deleteData') }} </h3>
 				<el-row class="mt3">
 					<el-col :span="24">{{ t('components.settings.deleteDataInfo') }}</el-col>
+				</el-row>
+				<el-row>
+					<el-col :span="24">
+						<el-popconfirm
+							width="320"
+							:hide-icon="true"
+							:confirm-button-text="t('components.settings.deleteAction')"
+							confirm-button-type="danger"
+							:cancel-button-text="t('global.cancel')"
+							:title="t('components.settings.deleteConfirmation')"
+							@confirm='triggerDeletedData()'
+						>
+							<template #reference>
+								<el-button type="danger" style="margin: 10px; cursor: pointer;">{{ t('components.settings.deleteAction') }}</el-button>
+							</template>
+						</el-popconfirm>
+					</el-col>
 				</el-row>
 			</div>
 		</div>
