@@ -139,7 +139,6 @@ const props = defineProps<{
 
 // Setup color theme
 const { counters } = toRefs(props);
-console.log(counters.value.data);
 const color = ref('#333');
 const { t, locale } = useI18n();
 const showMiniViz = ref(true);
@@ -162,7 +161,6 @@ const counterInfo = computed(() => {
   } else {
     counters = countersData.value;
   }
-  console.log(counters);
 
   const quantity = counters.count - counters.previous;
   const time = counters.time - counters.previousTime;
@@ -240,7 +238,6 @@ function switchDataType () {
 //setInterval(function () { switchDataType(); }, 600000);
 
 function updateIconBar() {
-  console.log('updating bars');
   currentMeter.co2.fill(0);
   currentMeter.data.fill(0);
   const normalizedCo2 = countersCo2.value.count % 13;
@@ -325,7 +322,6 @@ chrome.runtime.onMessage.addListener(request => {
     const counters = request.counters;
     countersCo2.value = {...counters.co2};
     countersData.value = {...counters.data};
-    console.log(counters)
     updateIconBar();
   }
   if (request.weeklynotification) {
