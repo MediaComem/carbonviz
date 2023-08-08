@@ -40,7 +40,7 @@
               <p>
                 {{ t(`components.miniViz.notification.${dataType}`,
                   {
-                    data: dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek[dataType]) : formatSize(weeklyTotals.currentWeek[dataType])
+                    data: dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek[dataType], 0) : formatSize(weeklyTotals.currentWeek[dataType], 0)
                   }
                 )}}
               </p>
