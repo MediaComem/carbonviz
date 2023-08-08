@@ -14,8 +14,8 @@ export default {
 	setup() {
 		const { t } = useI18n({});
 		const showMiniViz = ref(true);
-		const positionRight = ref(true);
-		const positionTop = ref(true);
+		const mvPositionRight = ref(true);
+		const mvPositionTop = ref(true);
 		const miniVizStatusUpdating = ref(false);
 		const deactivateUntil = ref(undefined);
 		const disableTimer = ref(0);
@@ -46,8 +46,8 @@ export default {
 			showMiniViz.value = settings.showMiniViz;
 			computer.value = settings.computer;
 			deactivateUntil.value = settings.deactivateUntil;
-			positionTop.value = settings.positionTop;
-			positionRight.value = settings.positionRight;
+			mvPositionTop.value = settings.mvPositionTop;
+			mvPositionRight.value = settings.mvPositionRight;
 		}).then(() => {
 			// check if plugin deactivation is still active
 			if (deactivateUntil.value) {
@@ -109,28 +109,28 @@ export default {
 		};
 		const setpositionX = (right) => {
 			if(right) {
-				positionRight.value = true;
-				saveSettings('positionRight', true);
+				mvPositionRight.value = true;
+				saveSettings('mvPositionRight', true);
 			} else {
-				positionRight.value = false;
-				saveSettings('positionRight', false);
+				mvPositionRight.value = false;
+				saveSettings('mvPositionRight', false);
 			}
 			chrome.runtime.sendMessage({ query: 'updatePosition' });
 		};
 		const setpositionY = (top) => {
 			if(top) {
-				positionTop.value = true;
-				saveSettings('positionTop', true);
+				mvPositionTop.value = true;
+				saveSettings('mvPositionTop', true);
 			} else {
-				positionTop.value = false;
-				saveSettings('positionTop', false);
+				mvPositionTop.value = false;
+				saveSettings('mvPositionTop', false);
 			}
 			chrome.runtime.sendMessage({ query: 'updatePosition' });
 		};
 
 		return {
 			showMiniViz, miniVizStatusUpdating, marks, yearsSincePurchase, yearsRemaining, lifetimeLaptopYears, disableTimer,
-			co2ImpactDefault, co2ImpactCustom, co2VsDefault, positionRight, positionTop,
+			co2ImpactDefault, co2ImpactCustom, co2VsDefault, mvPositionRight, mvPositionTop,
 			t, roundToPrecision, formatCo2, setMinvizDisplay, lifetimeUpdate, triggerDownloadData, triggerDeletedData, updateDisablePeriod,
 			setpositionX, setpositionY
 		};
@@ -201,7 +201,7 @@ export default {
 				<div id="miniPosition">
 					<h3> {{ t('components.settings.miniVizPosition') }} </h3>
 					<el-switch
-						v-model="positionRight"
+						v-model="mvPositionRight"
 						class="mt-2"
 						size="large"
 						:active-text="t('components.settings.position.right')"
@@ -210,7 +210,7 @@ export default {
 						@change="setpositionX"
 					/>
 					<el-switch
-						v-model="positionTop"
+						v-model="mvPositionTop"
 						class="mt-2 position"
 						size="large"
 						:active-text="t('components.settings.position.top')"

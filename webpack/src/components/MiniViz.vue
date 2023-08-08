@@ -1,6 +1,6 @@
  <template>
   <div class="mv-extension" v-if="showMiniViz">
-    <div class="miniviz" :class="{ 'hidden': showInteraction, 'positionBottom': !positionTop, 'positionLeft': !positionRight }" id="miniViz_container">
+    <div class="miniviz" :class="{ 'hidden': showInteraction, 'mv-positionBottom': !mvPositionTop, 'mv-positionLeft': !mvPositionRight }" id="miniViz_container">
       <div class="mv-anim" :class="dataType === 'data' ? 'mv-data' : 'mv-co2'" @mouseover="hideMiniViz">
         <img v-for="(item, index) in iconBar" key="item" class="mv-image" :class="currentMeter[dataType][item] ? 'mv-fill': ''" :src="asset" height="20" width="20">
       </div>
@@ -93,7 +93,7 @@
         </div>
       </div>
     </div>
-    <div class="mv-actionContainer" :class="{'positionBottom': !positionTop, 'positionLeft': !positionRight}" v-if="interactive">
+    <div class="mv-actionContainer" :class="{'ac-positionTop': !mvPositionTop, 'ac-positionLeft': !mvPositionRight}" v-if="interactive">
       <div class="mv-actionPanel" :class="{ 'mv-show': showInteraction, 'mv-hide': !showInteraction }">
         <Logo class="mv-icon"></Logo>
         {{ t('appTitle') }}
@@ -146,8 +146,8 @@ const showDescription = ref(false);
 const showNotification = ref(false);
 const showInteraction = ref(false);
 const interactive = ref(false);
-const positionTop = ref(true);
-const positionRight = ref(true);
+const mvPositionTop = ref(true);
+const mvPositionRight = ref(true);
 const closeBtn = chrome.runtime.getURL(`icons/roundBtnX.svg`);
 let activeIndex = ref(0);
 let dataType = ref('data');
@@ -293,8 +293,8 @@ async function resyncSettings() {
   const settings = await retrieveSettings();
   locale.value = settings.lang;
   showMiniViz.value = settings.showMiniViz;
-  positionTop.value = settings.positionTop;
-  positionRight.value = settings.positionRight;
+  mvPositionTop.value = settings.mvPositionTop;
+  mvPositionRight.value = settings.mvPositionRight;
 }
 
 async function displayNotification(type: string) {
@@ -350,8 +350,8 @@ onMounted(async () => {
   const settings = await retrieveSettings();
   locale.value = settings.lang;
   showMiniViz.value = settings.showMiniViz;
-  positionTop.value = settings.positionTop;
-  positionRight.value = settings.positionRight;
+  mvPositionTop.value = settings.mvPositionTop;
+  mvPositionRight.value = settings.mvPositionRight;
   updateIconBar();
 });
 
@@ -377,11 +377,11 @@ onMounted(async () => {
   &.hidden {
     display: none;
   }
-  &.positionBottom {
+  &.mv-positionBottom {
     top: auto;
     bottom: 5%;
   }
-  &.positionLeft {
+  &.mv-positionLeft {
     right: auto;
     left: 5px;
   }
@@ -536,11 +536,11 @@ onMounted(async () => {
   &.hidden {
     display: none;
   }
-  &.positionBottom {
+  &.ac-positionTop {
     bottom: auto;
     top: 10px;
   }
-  &.positionLeft {
+  &.ac-positionLeft {
     right: auto;
     left: 10px;
   }

@@ -6,8 +6,8 @@ let settings = {
   showMiniViz: true,
   deactivateUntil: undefined,
   lang: 'fr',
-  positionRight: true,
-  positionTop: true
+  mvPositionRight: true,
+  mvPositionTop: true
 }
 
 const saveSettings = async (key, value) => {
@@ -33,7 +33,9 @@ const resetSettings = () => {
     computer: 'laptop',
     showMiniViz: true,
     deactivateUntil: undefined,
-    lang: 'fr'
+    lang: 'fr',
+    mvPositionRight: true,
+    mvPositionTop: true
   }
   chrome.storage.local.set({'settings' : JSON.stringify(settings)});
 }
