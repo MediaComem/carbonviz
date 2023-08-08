@@ -193,6 +193,7 @@ export default {
       let tipsShown = false;
       const tipsRelatedToDomains = tips.filter(tip => tip.domains);
       const tipsGeneric = tips.filter(tip => !tip.domains);
+      const tipsValid = [...tipsGeneric];
       for (const tip of tipsRelatedToDomains) {
         for (const domain of domains) {
           const relevantDomains = [];
@@ -200,30 +201,22 @@ export default {
             relevantDomains.push(domain);
           }
           if (relevantDomains.length > 0) {
-            const messageHTML = `${tip.summaryHTML[locale.value]}`;
-            ElNotification({
-              title: `Tip for ${relevantDomains.join(',')}`,
-              dangerouslyUseHTMLString: true, // safe string from inside extension
-              message: messageHTML,
-              type: 'warning',
-              duration: 0
-            })
-            tipsShown = true;
+            // more relevant, x2 chance to display it
+            tipsValid.push({ ...tip, context: relevantDomains.join(',')});
+            tipsValid.push({ ...tip, context: relevantDomains.join(',')});
           }
         }
       }
-      if (!tipsShown) {
-        // display random generix tip
-        const tip = tipsGeneric[Math.floor(Math.random() * tipsGeneric.length)];
-        const messageHTML = `${tip.summaryHTML[locale.value]}`;
-            ElNotification({
-              title: `Tip`,
-              dangerouslyUseHTMLString: true, // safe string from inside extension
-              message: messageHTML,
-              type: 'warning',
-              duration: 0
-            })
-      }
+      // display random tip among relevant domain or generic tips
+      const tip = tipsValid[Math.floor(Math.random() * tipsValid.length)];
+      const messageHTML = `${tip.summaryHTML[locale.value]}`;
+          ElNotification({
+            title: tip.context ? `${t('components.statistics.tip')} ${tip.context}` : t('components.statistics.tip'),
+            dangerouslyUseHTMLString: true, // safe string from inside extension
+            message: messageHTML,
+            type: 'warning',
+            duration: 0
+          })
     }
 
     watchEffect(async () => {
@@ -281,7 +274,9 @@ export default {
                   // and the fact that exist also for inactive period
                   const computerDailyCo2 = await computerDailyEmbodiedCo2();
                   averagePerPeriod.value = ( totalWeb + nbDays.value * computerDailyCo2 ) / nbPeriods.value;
-                  checkTips(domains); // no need to display tips for co2 and data
+                  if (granularity.value === 'day') {
+                    checkTips(domains); // no need to display tips for co2 and data. Only display for week trends
+                  }
                   break;
                 case 'data':
                   // for Data average per period is the same as the average per active period
@@ -417,5 +412,12 @@ export default {
   color: var(--dark-grey);
   font-size: 11px;
   font-style: italic;
+}
+
+</style>
+
+<style>
+.el-notification__content {
+  text-align: left;
 }
 </style>

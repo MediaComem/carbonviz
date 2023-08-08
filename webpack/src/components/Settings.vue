@@ -202,7 +202,7 @@ export default {
 					<el-col :span="14">
 						<h3> {{ t('components.settings.miniVizPosition') }} </h3>
 						<el-switch
-							v-model="positionRight"
+							v-model="mvPositionRight"
 							class="mt-2"
 							size="large"
 							:active-text="t('components.settings.position.right')"
@@ -211,7 +211,7 @@ export default {
 							@change="setpositionX"
 						/>
 						<el-switch
-							v-model="positionTop"
+							v-model="mvPositionTop"
 							class="mt-2 position"
 							size="large"
 							:active-text="t('components.settings.position.top')"
