@@ -85,7 +85,7 @@ export default {
       <div v-for="(value, key) in layer">
         <div class="statsData">
           <p> {{ getAnalogyValue(customAnalogyNames, dataType, value, activeIndex).amount }} </p>
-          <p> {{ getAnalogyText(customAnalogyNames, dataType, value, activeIndex) }} </p>
+          <p> {{ getAnalogyText(customAnalogyNames, dataType, value, activeIndex, t) }} </p>
           <p> {{ key === 'year' ? t(`global.last.${key}`)+this.currentYear : t(`global.last.${key}`) }} </p>
         </div>
       </div>

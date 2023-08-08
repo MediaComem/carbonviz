@@ -47,7 +47,7 @@
               <p> {{ t(`components.miniViz.notification.weekly.days`)}} </p>
               <p>
                 {{ t(`components.miniViz.notification.analogy`,
-                  { amount: getAnalogyValue(customAnalogyNames, dataType, weeklyTotals.currentWeek, activeIndex).amount + ' ' + getAnalogyText(customAnalogyNames, dataType, weeklyTotals.currentWeek[dataType], activeIndex) }
+                  { amount: getAnalogyValue(customAnalogyNames, dataType, weeklyTotals.currentWeek, activeIndex).amount + ' ' + getAnalogyText(customAnalogyNames, dataType, weeklyTotals.currentWeek[dataType], activeIndex, t) }
                 )}}
               </p>
             </div>
@@ -229,7 +229,7 @@ const onDailyNotificationClick = () => {
   showNotification.value = false
 };
 
-function switchDataType () {
+const switchDataType = () => {
   if (dataType.value === 'co2') {
     dataType.value = 'data';
   } else { dataType.value = 'co2' }
@@ -237,7 +237,7 @@ function switchDataType () {
 // switch dataType every 10mins
 //setInterval(function () { switchDataType(); }, 600000);
 
-function updateIconBar() {
+const updateIconBar = () => {
   currentMeter.co2.fill(0);
   currentMeter.data.fill(0);
   const normalizedCo2 = countersCo2.value.count % 13;
@@ -257,7 +257,7 @@ function updateIconBar() {
   }
 }
 
-function createTimeString(seconds: number) {
+const createTimeString = (seconds: number) => {
   if (seconds >= 3600) {
       const minutes = Math.floor(seconds % 3600 / 60);
       return Math.floor(seconds/3600) + 'h' + (minutes<10 ? '0'+minutes : minutes) + 'min';
@@ -268,7 +268,7 @@ function createTimeString(seconds: number) {
     }
 }
 
-function buildWeeklyNotification() {
+const buildWeeklyNotification = () => {
   let currentCo2 = weeklyTotals.value.currentWeek.co2;
   let currentData = weeklyTotals.value.currentWeek.data;
   let previousWeekCo2 = weeklyTotals.value.lastWeek.co2;
@@ -282,7 +282,7 @@ function buildWeeklyNotification() {
   }
 };
 
-function DefaultNotification() {
+const DefaultNotification = () => {
   return {
     date: '-',
     title: "No data to display",
@@ -290,7 +290,7 @@ function DefaultNotification() {
   }
 };
 
-async function resyncSettings() {
+const resyncSettings = async () => {
   const settings = await retrieveSettings();
   locale.value = settings.lang;
   showMiniViz.value = settings.showMiniViz;
@@ -298,7 +298,7 @@ async function resyncSettings() {
   mvPositionRight.value = settings.mvPositionRight;
 }
 
-async function displayNotification(type: string) {
+const displayNotification = async (type: string) => {
   switch(type) {
     case 'weekly':
       await buildWeeklyNotification();

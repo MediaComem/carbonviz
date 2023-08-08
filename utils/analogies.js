@@ -206,9 +206,9 @@ function getAnalogyValue(customAnalogyNames, dataType, value, activeIndex) {
     }
 }
 
-function getAnalogyText(customAnalogyNames, dataType, value, activeIndex) {
-    const analogyType = this.customAnalogyNames[dataType][activeIndex];
-    return this.t(`components.analogies.${analogyType}${getAnalogyValue(customAnalogyNames, dataType, value, activeIndex).unit}`)
+function getAnalogyText(customAnalogyNames, dataType, value, activeIndex, t) {
+    const analogyType = customAnalogyNames[dataType][activeIndex];
+    return t(`components.analogies.${analogyType}${getAnalogyValue(customAnalogyNames, dataType, value, activeIndex).unit}`)
 }
 
 export { analogyNames, analogiesCo2, analogiesData, computeAnalogy, getAnalogyValue, getAnalogyText }
