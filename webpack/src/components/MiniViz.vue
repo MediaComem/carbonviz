@@ -93,7 +93,7 @@
         </div>
       </div>
     </div>
-    <div class="mv-actionContainer" v-if="interactive">
+    <div class="mv-actionContainer" :class="{'positionBottom': !positionTop, 'positionLeft': !positionRight}" v-if="interactive">
       <div class="mv-actionPanel" :class="{ 'mv-show': showInteraction, 'mv-hide': !showInteraction }">
         <Logo class="mv-icon"></Logo>
         {{ t('appTitle') }}
@@ -535,6 +535,14 @@ onMounted(async () => {
   bottom: 10px;
   &.hidden {
     display: none;
+  }
+  &.positionBottom {
+    bottom: auto;
+    top: 10px;
+  }
+  &.positionLeft {
+    right: auto;
+    left: 10px;
   }
 }
 
