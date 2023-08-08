@@ -2,7 +2,7 @@
   <div class="mv-extension" v-if="showMiniViz">
     <div class="miniviz" :class="{ 'hidden': showInteraction, 'mv-positionBottom': !mvPositionTop, 'mv-positionLeft': !mvPositionRight }" id="miniViz_container">
       <div class="mv-anim" :class="dataType === 'data' ? 'mv-data' : 'mv-co2'" @mouseover="hideMiniViz">
-        <img v-for="(item, index) in iconBar" key="item" class="mv-image" :class="currentMeter[dataType][item] ? 'mv-fill': ''" :src="asset" height="20" width="20">
+        <img v-for="(item, index) in iconBar" key="item" class="mv-image" :class="{'mv-fill': currentMeter[dataType][item]}" :src="asset" height="20" width="20">
       </div>
       <div
         id="mv-description"
@@ -114,7 +114,7 @@
 const HIDE_MINIVIZ_DELAY = 5000;
 const SHOW_DESC_NOTIF_DELAY = 10000;
 
-import { computed, ref, onMounted, toRefs } from 'vue';
+import { computed, ref, onBeforeMount, toRefs, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatSize, formatCo2 } from '../../../utils/format';
 import { retrieveSettings } from '../../../settings/settings.js';
@@ -139,6 +139,7 @@ const props = defineProps<{
 
 // Setup color theme
 const { counters } = toRefs(props);
+console.log(counters.value.data);
 const color = ref('#333');
 const { t, locale } = useI18n();
 const showMiniViz = ref(true);
@@ -161,6 +162,8 @@ const counterInfo = computed(() => {
   } else {
     counters = countersData.value;
   }
+  console.log(counters);
+
   const quantity = counters.count - counters.previous;
   const time = counters.time - counters.previousTime;
   const nbAnalogy = quantity * counters.quantityAnalogy;
@@ -190,10 +193,10 @@ let dailyNotificartion = ref({
 });
 // Icon bar of 12
 const iconBar = [0,1,2,3,4,5,6,7,8,9,10,11];
-let currentMeter = {
+let currentMeter = reactive({
   co2: Array(12).fill(0),
   data: Array(12).fill(0),
-}
+});
 const analogies = analogyNames; // ** if we want to replace customAnalogyNames and incluide all analogies with some timer to switch betweem them
 const customAnalogyNames = {
   co2: ['boiling'],
@@ -237,6 +240,7 @@ function switchDataType () {
 //setInterval(function () { switchDataType(); }, 600000);
 
 function updateIconBar() {
+  console.log('updating bars');
   currentMeter.co2.fill(0);
   currentMeter.data.fill(0);
   const normalizedCo2 = countersCo2.value.count % 13;
@@ -346,7 +350,7 @@ const closeActionPanel = () => {
   interactive.value = false;
 };
 
-onMounted(async () => {
+onBeforeMount(async () => {
   const settings = await retrieveSettings();
   locale.value = settings.lang;
   showMiniViz.value = settings.showMiniViz;
