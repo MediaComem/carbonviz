@@ -3,7 +3,7 @@ import {ref, provide, onMounted, watch} from 'vue';
 import { useI18n } from 'vue-i18n';
 import LocationHashRouter from '../composables/LocationHashRouter';
 import Historical from '../pages/Historical.vue';
-import { retrieveSettings } from '../../../settings/settings.js';
+import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 
 export default {
   components: { Historical },
@@ -55,12 +55,17 @@ export default {
       }
     }
 
+    function changeLang(lang) {
+      saveSettings('lang', lang);
+      locale.value = lang;
+    }
+
     onMounted(async () => {
       const settings = await retrieveSettings();
       locale.value = settings.lang;
     });
 
-    return {subNav, hashRoutes, currentHash, currentPage, onSubnavClick, t};
+    return {subNav, hashRoutes, currentHash, currentPage, onSubnavClick, t, changeLang};
   }
 
 }
@@ -69,7 +74,10 @@ export default {
 <template>
   <div id="carbonViz" class="wrapper">
     <div data-area="logo"></div>
-    <h1 data-area="title">{{ t('appTitle') }}</h1>
+    <div data-area="title">
+      <h1>{{ t('appTitle') }}</h1>
+      <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>
+    </div>
     <img data-area="equiwatt" src="../../../icons/logos/logo-equiwatt-large.png" id="logoEquiwatt">
     <nav data-area="nav">
       <ul>
@@ -164,10 +172,29 @@ export default {
   }
   /* title */
   [data-area="title"] {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
     padding-left: 5px;
     text-align: left;
     font-size: 48px;
     font-weight: 900;
+  }
+  [data-area="title"] h1 {
+    margin-bottom: 0px;
+    margin-top: 0px;
+  }
+  #lang {
+    display: flex;
+    align-items: center;
+  }
+  button {
+    background: none;
+    color:black;
+    border: none;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
   }
   /* logo */
   [data-area="logo"] {

@@ -118,8 +118,17 @@
       "computerUsageOneDay": "1 jour d'usage de l'ordinateur représente",
       "dataUseCase": "Cette donnée nous permet de mieux calculer l'énergie grise de votre activité liée à votre ordinateur.",
       "longerUsageTip": "En utilisant votre ordinateur plus longtemps, vous évitez la production de nouveaux appareils et économisez de grandes quantités d'énergie et de ressources nécessaires à la fabrication.",
+      "miniVizPosition": "Position de MiniViz",
+      "on": "Visible",
+      "off": "Caché",
+      "position": {
+        "top": "Haut",
+        "right": "Droite",
+        "bottom": "Bas",
+        "left": "Gauche"
+      },
       "showMiniViz": "Afficher MiniViz",
-      "disablePlugin": "Désactiver le pluggin",
+      "disablePlugin": "Désactiver le plugin",
       "downloadData": "Télécharger mes données",
       "downloadDataInfo": "CarbonViz ne stocke les données que localement dans votre navigateur. Aucune donnée n'est synchronisée automatiquement avec des serveurs externes. Vous pouvez télécharger les données stockées par CarbonViz.",
       "downloadAction": "Télécharger",

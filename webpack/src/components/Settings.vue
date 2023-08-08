@@ -1,7 +1,6 @@
 <script>
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Check, Close } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 import { formatCo2, roundToPrecision } from '../../../utils/format.js';
@@ -15,6 +14,8 @@ export default {
 	setup() {
 		const { t } = useI18n({});
 		const showMiniViz = ref(true);
+		const positionRight = ref(true);
+		const positionTop = ref(true);
 		const miniVizStatusUpdating = ref(false);
 		const deactivateUntil = ref(undefined);
 		const disableTimer = ref(0);
@@ -45,6 +46,8 @@ export default {
 			showMiniViz.value = settings.showMiniViz;
 			computer.value = settings.computer;
 			deactivateUntil.value = settings.deactivateUntil;
+			positionTop.value = settings.positionTop;
+			positionRight.value = settings.positionRight;
 		}).then(() => {
 			// check if plugin deactivation is still active
 			if (deactivateUntil.value) {
@@ -83,13 +86,20 @@ export default {
 			saveSettings('lifetimeComputer', lifetimeLaptopYears.value);
 		};
 		const updateDisablePeriod = (value) => {
-			const timerObj = new Date();
-			timerObj.setMinutes(timerObj.getMinutes() + value);
-			saveSettings('deactivateUntil', timerObj.getTime());
-			saveSettings('showMiniViz', false);
-			disableTimer.value = value;
-			deactivateUntil.value = timerObj.getTime();
-			chrome.runtime.sendMessage({ query: 'deactivateDataStorage' });
+			if (value > 0) {
+				const timerObj = new Date();
+				timerObj.setMinutes(timerObj.getMinutes() + value);
+				saveSettings('deactivateUntil', timerObj.getTime());
+				saveSettings('showMiniViz', false);
+				deactivateUntil.value = timerObj.getTime();
+				showMiniViz.value = false;
+				chrome.runtime.sendMessage({ query: 'deactivateDataStorage' });
+			} else {
+				chrome.runtime.sendMessage({ query: 'reactivateDataStorage' });
+				saveSettings('deactivateUntil', 0);
+				saveSettings('showMiniViz', true);
+				showMiniViz.value = true;
+			}
 		}
 		const triggerDownloadData = () => {
 			downloadData();
@@ -97,12 +107,32 @@ export default {
 		const triggerDeletedData = () => {
 			eraseAll();
 		};
+		const setpositionX = (right) => {
+			if(right) {
+				positionRight.value = true;
+				saveSettings('positionRight', true);
+			} else {
+				positionRight.value = false;
+				saveSettings('positionRight', false);
+			}
+			chrome.runtime.sendMessage({ query: 'updatePosition' });
+		};
+		const setpositionY = (top) => {
+			if(top) {
+				positionTop.value = true;
+				saveSettings('positionTop', true);
+			} else {
+				positionTop.value = false;
+				saveSettings('positionTop', false);
+			}
+			chrome.runtime.sendMessage({ query: 'updatePosition' });
+		};
+
 		return {
-			showMiniViz, miniVizStatusUpdating, marks,
-			yearsSincePurchase, yearsRemaining, lifetimeLaptopYears, disableTimer,
-			co2ImpactDefault, co2ImpactCustom, co2VsDefault,
-			Check, Close,
-			t, roundToPrecision, formatCo2, setMinvizDisplay, lifetimeUpdate, triggerDownloadData, triggerDeletedData, updateDisablePeriod
+			showMiniViz, miniVizStatusUpdating, marks, yearsSincePurchase, yearsRemaining, lifetimeLaptopYears, disableTimer,
+			co2ImpactDefault, co2ImpactCustom, co2VsDefault, positionRight, positionTop,
+			t, roundToPrecision, formatCo2, setMinvizDisplay, lifetimeUpdate, triggerDownloadData, triggerDeletedData, updateDisablePeriod,
+			setpositionX, setpositionY
 		};
 	}
 }
@@ -154,19 +184,41 @@ export default {
 					</el-col>
 				</el-row>
 			</div>
-			<div id="showMiniViz">
-				<h3> {{ t('components.settings.showMiniViz') }} </h3>
-				<el-switch
-					v-model="showMiniViz"
-					class="mt-2"
-					size="large"
-					:active-icon="Check"
-					:inactive-icon="Close"
-					inline-prompt
-					style="--el-switch-on-color: var(--green)"
-					:loading="miniVizStatusUpdating"
-					@change="setMinvizDisplay"
-				/>
+			<div id="miniVisDisplay">
+				<div id="showMiniViz">
+					<h3> {{ t('components.settings.showMiniViz') }} </h3>
+					<el-switch
+						v-model="showMiniViz"
+						class="mt-2"
+						size="large"
+						:active-text="t('components.settings.on')"
+						:inactive-text="t('components.settings.off')"
+						style="--el-switch-on-color: var(--green); --el-switch-off-color: var(--red)"
+						:loading="miniVizStatusUpdating"
+						@change="setMinvizDisplay"
+					/>
+				</div>
+				<div id="miniPosition">
+					<h3> {{ t('components.settings.miniVizPosition') }} </h3>
+					<el-switch
+						v-model="positionRight"
+						class="mt-2"
+						size="large"
+						:active-text="t('components.settings.position.right')"
+						:inactive-text="t('components.settings.position.left')"
+						style="--el-switch-on-color: var(--blue); --el-switch-off-color: var(--blue)"
+						@change="setpositionX"
+					/>
+					<el-switch
+						v-model="positionTop"
+						class="mt-2 position"
+						size="large"
+						:active-text="t('components.settings.position.top')"
+						:inactive-text="t('components.settings.position.bottom')"
+						style="--el-switch-on-color: var(--blue); --el-switch-off-color: var(--blue)"
+						@change="setpositionY"
+					/>
+				</div>
 			</div>
 			<div id="disable">
 				<h3> {{ t('components.settings.disablePlugin') }} </h3>
@@ -265,8 +317,17 @@ export default {
 	margin-bottom: 5px;
 }
 
+#miniVisDisplay {
+	display: flex;
+	justify-content: space-around;
+}
+
 #showMiniViz {
 	grid-area: showMiniViz;
+}
+
+#miniPosition .position {
+	margin-left: 10px;
 }
 
 #disable {
@@ -303,5 +364,10 @@ h3 {
 	height: 6px;
 	width: 2px;
 	top: -2px;
+}
+
+:deep(.el-switch .el-switch__label) {
+	margin-right: 2px;
+	margin-left: 2px;
 }
 </style>
