@@ -185,40 +185,42 @@ export default {
 				</el-row>
 			</div>
 			<div id="miniVisDisplay">
-				<div id="showMiniViz">
-					<h3> {{ t('components.settings.showMiniViz') }} </h3>
-					<el-switch
-						v-model="showMiniViz"
-						class="mt-2"
-						size="large"
-						:active-text="t('components.settings.on')"
-						:inactive-text="t('components.settings.off')"
-						style="--el-switch-on-color: var(--green); --el-switch-off-color: var(--red)"
-						:loading="miniVizStatusUpdating"
-						@change="setMinvizDisplay"
-					/>
-				</div>
-				<div id="miniPosition">
-					<h3> {{ t('components.settings.miniVizPosition') }} </h3>
-					<el-switch
-						v-model="mvPositionRight"
-						class="mt-2"
-						size="large"
-						:active-text="t('components.settings.position.right')"
-						:inactive-text="t('components.settings.position.left')"
-						style="--el-switch-on-color: var(--blue); --el-switch-off-color: var(--blue)"
-						@change="setpositionX"
-					/>
-					<el-switch
-						v-model="mvPositionTop"
-						class="mt-2 position"
-						size="large"
-						:active-text="t('components.settings.position.top')"
-						:inactive-text="t('components.settings.position.bottom')"
-						style="--el-switch-on-color: var(--blue); --el-switch-off-color: var(--blue)"
-						@change="setpositionY"
-					/>
-				</div>
+  			<el-row align="middle">
+					<el-col :span="10">
+						<h3> {{ t('components.settings.showMiniViz') }} </h3>
+						<el-switch
+							v-model="showMiniViz"
+							class="mt-2"
+							size="large"
+							:active-text="t('components.settings.on')"
+							:inactive-text="t('components.settings.off')"
+							style="--el-switch-on-color: var(--green); --el-switch-off-color: var(--red)"
+							:loading="miniVizStatusUpdating"
+							@change="setMinvizDisplay"
+						/>
+					</el-col>
+					<el-col :span="14">
+						<h3> {{ t('components.settings.miniVizPosition') }} </h3>
+						<el-switch
+							v-model="positionRight"
+							class="mt-2"
+							size="large"
+							:active-text="t('components.settings.position.right')"
+							:inactive-text="t('components.settings.position.left')"
+							style="--el-switch-on-color: var(--blue); --el-switch-off-color: var(--blue)"
+							@change="setpositionX"
+						/>
+						<el-switch
+							v-model="positionTop"
+							class="mt-2 position"
+							size="large"
+							:active-text="t('components.settings.position.top')"
+							:inactive-text="t('components.settings.position.bottom')"
+							style="--el-switch-on-color: var(--blue); --el-switch-off-color: var(--blue)"
+							@change="setpositionY"
+						/>
+				</el-col>
+				</el-row>
 			</div>
 			<div id="disable">
 				<h3> {{ t('components.settings.disablePlugin') }} </h3>
@@ -318,16 +320,7 @@ export default {
 }
 
 #miniVisDisplay {
-	display: flex;
-	justify-content: space-around;
-}
-
-#showMiniViz {
 	grid-area: showMiniViz;
-}
-
-#miniPosition .position {
-	margin-left: 10px;
 }
 
 #disable {
