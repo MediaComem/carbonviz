@@ -331,10 +331,10 @@ export default {
       <div class="trend-title">{{ t(`components.statistics.trend`) }}:</div>
       <div class="trend-value">
         <div v-if="trend">
-          <span v-if="trend > 0">+</span>
-          <span v-if="trend < 0">-</span>
+          <span v-if="trend >= 0.01">+</span>
+          <span v-if="trend <= -0.01">-</span>
           {{ Math.round(Math.abs(100 * trend))}} %
-          <svg :class="trend > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
+          <svg v-if="Math.floor(100 * trend) !== 0" :class="trend > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
         </div>
         <div v-else>
           -
