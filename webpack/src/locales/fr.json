@@ -71,7 +71,8 @@
       "average": "Moyenne",
       "trend": "Tendance",
       "recommandations": "Recommandations",
-      "tips": "Tips sur les bonnes pratiques",
+      "tips": "Recommandations sur les bonnes pratiques",
+      "tip": "Recommandation",
       "days": {
         "Mon": "Lun.",
         "Tue": "Mar.",

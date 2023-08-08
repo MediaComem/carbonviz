@@ -21,7 +21,8 @@ export default {
     const setSubNav = inject('setSubNav');
     onMounted(() => setSubNav(subNav, scroll));
     const activeTips = ['streaming_resolution'];
-    return { t, locale, scroll, tips, activeTips };
+    const goToSettings = () => { window.location.href='#Settings' };
+    return { t, locale, scroll, tips, activeTips, goToSettings };
   }
 
 }
@@ -41,7 +42,7 @@ export default {
           <template #title>{{ t('global.computerEnergy') }}</template>
           <template #info>
             {{ t('components.statistics.computerInfo') }}<br/>
-            {{ t('components.statistics.computerTip') }} <span @click="$emit('showSettings')" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
+            {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
           </template>
         </statistics>
       </div>
@@ -61,7 +62,7 @@ export default {
           <template #title>{{ t('global.computerEnergy') }}</template>
           <template #info>
             {{ t('components.statistics.computerInfo') }}<br/>
-            {{ t('components.statistics.computerTip') }} <span @click="$emit('showSettings')" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
+            {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
           </template>
         </statistics>
       </div>

@@ -163,7 +163,7 @@ export default {
     display: grid;
     /* width: 1000px;
     margin: 0 auto; */
-    grid-template-columns: 200px auto 300px;
+    grid-template-columns: 200px minmax(auto, 800px) 300px;
     grid-template-rows: 120px 100px auto;
     grid-template-areas:
       "logo   title equiwatt"
@@ -173,16 +173,15 @@ export default {
   /* title */
   [data-area="title"] {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+    flex-direction: column;
     padding-left: 5px;
-    text-align: left;
-    font-size: 48px;
-    font-weight: 900;
   }
   [data-area="title"] h1 {
     margin-bottom: 0px;
-    margin-top: 0px;
+    align-items: baseline;
+    text-align: left;
+    font-size: 48px;
+    font-weight: 900;
   }
   #lang {
     display: flex;

@@ -1,8 +1,9 @@
 import { updateHistoryDb, updateRunningDurationSec } from "../storage/co2History.js";
-import { getTodayCounter, getDailyAggregates } from "../storage/indexedDB.js";
-import { initStorage } from "../storage/storage.js";
+import { getTodayCounter } from "../storage/indexedDB.js";
+import { initStorage, getLastDaysSummary } from "../storage/storage.js";
 import { retrieveSettings, resetSettings } from "../settings/settings.js";
 import { saveNotifications, retrieveNotifications } from '../utils/notifications.js';
+import { formatSize } from "../utils/format.js";
 
 // Note that since the switch to manifest v3, chrome extension API switched mostly to Promises (as Firefox)
 // And Firefox supports chrome.* namespace for API available in chrome and firefox
@@ -79,17 +80,6 @@ const saveToDump = (data) => {
   if(!match) {
     dump.push(data);
   }
-}
-
-const reduceDailyAggregates = (data) => {
-  return data.reduce((acc, day) => {
-    return {
-        data: acc.data + day.data,
-        energy: acc.energy + day.energy,
-        co2: acc.co2 + day.co2,
-        computer: { energy: acc.computer.energy + day.computer.energy, co2: acc.computer.co2 + day.computer.co2 }
-    }
-  }, { data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
 }
 
 const energyImpactInternet = (bytes) => {
@@ -274,8 +264,6 @@ const handleMessage = (request, _sender, sendResponse) => {
             const activeTab = tabs[0];
             if(activeTab?.id) {
               sendDailyUpdateStore(activeTab?.id)
-            } else {
-              sendOSAlert('daily');
             }
           });
         } else {
@@ -304,17 +292,30 @@ const handleMessage = (request, _sender, sendResponse) => {
   return;
 }
 
-const sendOSAlert = (type) => {
-  chrome.notifications.create(type+'-' + new Date().getTime(), {
-    type: 'basic',
-    iconUrl: notificationIcon,
-    title: 'CarbonViz '+type+' notification',
-    message: 'Notification will be shown the next time you open a chrome broswer',
-    priority: 2,
-    buttons: [
-      { title: 'Ignore' },
-      { title: 'openTab' }
-    ]
+const sendOSWeeklyAlert = async () => {
+  const weekData = await getLastDaysSummary([-7, 0]);
+  refreshSettings().then((settings) => {
+    let title = 'CarbonViz weekly trends';
+    let message = `You downloaded ${formatSize(weekData.data, 0)} in the last 7 days. Check you trends in CarbonViz.`;
+    let action0 = 'Ignore';
+    let action1 = 'Check';
+    if(settings.lang === 'fr') {
+      title = 'CarbonViz tendance hebdomadaire';
+      message = `Vous avez téléchargé ${formatSize(weekData.data, 0)} dans les 7 derniers jours. Vérifier la tendance dans CarbonViz.`;
+      action0 = 'Ignorer';
+      action1 = 'Vérifier';
+    }
+    chrome.notifications.create('CarbonViz-' + new Date().getTime(), {
+      type: 'basic',
+      iconUrl: notificationIcon,
+      title,
+      message,
+      priority: 2,
+      buttons: [
+        { title: action0 },
+        { title: action1 }
+      ]
+    });
   });
 }
 
@@ -407,7 +408,8 @@ chrome.alarms.onAlarm.addListener(alarm => {
         sendWeeklyNotification(activeTab.id);
       } else {
         saveNotifications('weeklynotificationTimeStamp', new Date().getTime());
-        sendOSAlert('weekly');
+        // send OS Notification for weekly summary if browser inactive
+        sendOSWeeklyAlert();
       }
     });
   }
@@ -418,15 +420,14 @@ chrome.alarms.onAlarm.addListener(alarm => {
         sendDailyNotification(activeTab.id);
       } else {
         saveNotifications('dailyNotificationTimeStamp', new Date().getTime());
-        sendOSAlert('daily');
       }
     });
   }
 });
 
-chrome.notifications.onButtonClicked.addListener(function(notifType, openTab) {
-  if (openTab) { // TBD what action do we want when user clicks for weekly or daily notifi...
-    notifType.startsWith('weekly') ? chrome.tabs.create({url: "https://www.equiwatt-lausanne.ch/"}) : chrome.tabs.create({url: "https://www.equiwatt-lausanne.ch/"});
+chrome.notifications.onButtonClicked.addListener(function(notifType, buttonIndex) {
+  if (buttonIndex === 1) {
+    createExtensionTab('#Trends');
   }
 });
 
@@ -455,10 +456,10 @@ if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 }
 */
 
-const createExtensionTab = () => {
-  let url = 'fullpage/fullpage.html#Statistics';
+const createExtensionTab = (hash = '') => {
+  let url = `fullpage/fullpage.html${hash}`;
   if (isFirefox) {
-    url = '../fullpage/fullpage.html#Statistics';
+    url = `../fullpage/fullpage.html${hash}`;
   }
   const options = {url, active: true};
   chrome.tabs.create(options);
@@ -498,11 +499,8 @@ const sendDailyUpdateStore = (activeTabId) => {
 }
 
 const sendWeeklyNotification = async (activeTabId) => {
-  let weekData = await getDailyAggregates('day',[-7, 0]);
-  weekData = reduceDailyAggregates(weekData);
-
-  let lastWeekData = await getDailyAggregates('day',[-14, -7]);
-  lastWeekData = reduceDailyAggregates(lastWeekData);
+  const weekData = await getLastDaysSummary([-7, 0]);
+  const lastWeekData = await getLastDaysSummary([-14, -7]);
 
   saveNotifications('lastDisplayedWeeklyTimeStamp', new Date().getTime());
   sendMessageToTab(activeTabId, { weeklynotification: {currentWeek: weekData, lastWeek: lastWeekData} });

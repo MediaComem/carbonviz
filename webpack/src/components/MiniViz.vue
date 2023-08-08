@@ -2,7 +2,7 @@
   <div class="mv-extension" v-if="showMiniViz">
     <div class="miniviz" :class="{ 'hidden': showInteraction, 'mv-positionBottom': !mvPositionTop, 'mv-positionLeft': !mvPositionRight }" id="miniViz_container">
       <div class="mv-anim" :class="dataType === 'data' ? 'mv-data' : 'mv-co2'" @mouseover="hideMiniViz">
-        <img v-for="(item, index) in iconBar" key="item" class="mv-image" :class="currentMeter[dataType][item] ? 'mv-fill': ''" :src="asset" height="20" width="20">
+        <img v-for="(item, index) in iconBar" key="item" class="mv-image" :class="{'mv-fill': currentMeter[dataType][item]}" :src="asset" height="20" width="20">
       </div>
       <div
         id="mv-description"
@@ -40,7 +40,7 @@
               <p>
                 {{ t(`components.miniViz.notification.${dataType}`,
                   {
-                    data: dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek[dataType]) : formatSize(weeklyTotals.currentWeek[dataType])
+                    data: dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek[dataType], 0) : formatSize(weeklyTotals.currentWeek[dataType], 0)
                   }
                 )}}
               </p>
@@ -114,7 +114,7 @@
 const HIDE_MINIVIZ_DELAY = 5000;
 const SHOW_DESC_NOTIF_DELAY = 10000;
 
-import { computed, ref, onMounted, toRefs } from 'vue';
+import { computed, ref, onBeforeMount, toRefs, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatSize, formatCo2 } from '../../../utils/format';
 import { retrieveSettings } from '../../../settings/settings.js';
@@ -161,6 +161,7 @@ const counterInfo = computed(() => {
   } else {
     counters = countersData.value;
   }
+
   const quantity = counters.count - counters.previous;
   const time = counters.time - counters.previousTime;
   const nbAnalogy = quantity * counters.quantityAnalogy;
@@ -190,10 +191,10 @@ let dailyNotificartion = ref({
 });
 // Icon bar of 12
 const iconBar = [0,1,2,3,4,5,6,7,8,9,10,11];
-let currentMeter = {
+let currentMeter = reactive({
   co2: Array(12).fill(0),
   data: Array(12).fill(0),
-}
+});
 const analogies = analogyNames; // ** if we want to replace customAnalogyNames and incluide all analogies with some timer to switch betweem them
 const customAnalogyNames = {
   co2: ['boiling'],
@@ -321,7 +322,6 @@ chrome.runtime.onMessage.addListener(request => {
     const counters = request.counters;
     countersCo2.value = {...counters.co2};
     countersData.value = {...counters.data};
-    console.log(counters)
     updateIconBar();
   }
   if (request.weeklynotification) {
@@ -346,7 +346,7 @@ const closeActionPanel = () => {
   interactive.value = false;
 };
 
-onMounted(async () => {
+onBeforeMount(async () => {
   const settings = await retrieveSettings();
   locale.value = settings.lang;
   showMiniViz.value = settings.showMiniViz;
