@@ -21,13 +21,13 @@ function formatSize(size, precision = 2) {
 
 function formatCo2(amount, precision = 2) {
   if (amount < 1e-3) {
-    return `${roundToPrecision(amount * 1e6, precision)} MG`;
+    return `${roundToPrecision(amount * 1e6, precision)} mg`;
   } else if (amount < 1) {
-    return `${roundToPrecision(amount * 1e3, precision)} G`;
+    return `${roundToPrecision(amount * 1e3, precision)} g`;
   } else if (amount < 1000) {
-    return `${roundToPrecision(amount, precision)} KG`;
+    return `${roundToPrecision(amount, precision)} Kg`;
   } else {
-    return `${roundToPrecision(amount / 1000, precision)} MG`;
+    return `${roundToPrecision(amount / 1000, precision)} T`;
   }
 }
 
