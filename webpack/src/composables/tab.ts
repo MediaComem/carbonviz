@@ -19,7 +19,9 @@ const setup = () => {
   });
 
   const openNewTabDialog = () => {
-
+    // Open directly main page
+    return addPluginToNewTab();
+    /*
     if (!userOptions.showTabConfirmation) {
       return addPluginToNewTab();
     }
@@ -31,6 +33,7 @@ const setup = () => {
       // The <dialog> API is not supported by this browser
       addPluginToNewTab();
     }
+    */
   }
 
   const addPluginToNewTab = async () => {

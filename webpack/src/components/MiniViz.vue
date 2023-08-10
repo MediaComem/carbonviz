@@ -1,6 +1,6 @@
  <template>
   <div class="mv-extension" v-if="showMiniViz">
-    <div class="miniviz" :class="{ 'hidden': showInteraction, 'mv-positionBottom': !mvPositionTop, 'mv-positionLeft': !mvPositionRight }" id="miniViz_container">
+    <div class="miniviz" :class="{ 'hidden': showInteraction, 'mv-positionBottom': mvPosition&POSITION_BOTTOM, 'mv-positionLeft': mvPosition&POSITION_LEFT }" id="miniViz_container">
       <div class="mv-anim" :class="dataType === 'data' ? 'mv-data' : 'mv-co2'" @mouseover="hideMiniViz">
         <img v-for="(item, index) in iconBar" key="item" class="mv-image" :class="{'mv-fill': currentMeter[dataType][item]}" :src="asset" height="20" width="20">
       </div>
@@ -93,6 +93,7 @@
         </div>
       </div>
     </div>
+    <!--
     <div class="mv-actionContainer" :class="{'ac-positionTop': !mvPositionTop, 'ac-positionLeft': !mvPositionRight}" v-if="interactive">
       <div class="mv-actionPanel" :class="{ 'mv-show': showInteraction, 'mv-hide': !showInteraction }">
         <Logo class="mv-icon"></Logo>
@@ -106,6 +107,7 @@
         </svg>
       </div>
     </div>
+    -->
   </div>
 </template>
 
@@ -113,6 +115,12 @@
 
 const HIDE_MINIVIZ_DELAY = 5000;
 const SHOW_DESC_NOTIF_DELAY = 10000;
+
+// Use flag for Mniviz position
+const POSITION_TOP = 1;
+const POSITION_BOTTOM = 2;
+const POSITION_RIGHT = 4;
+const POSITION_LEFT = 8;
 
 import { computed, ref, onBeforeMount, toRefs, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -146,8 +154,7 @@ const showDescription = ref(false);
 const showNotification = ref(false);
 const showInteraction = ref(false);
 const interactive = ref(false);
-const mvPositionTop = ref(true);
-const mvPositionRight = ref(true);
+const mvPosition = ref(5);
 const closeBtn = chrome.runtime.getURL(`icons/roundBtnX.svg`);
 let activeIndex = ref(0);
 let dataType = ref('data');
@@ -294,8 +301,7 @@ const resyncSettings = async () => {
   const settings = await retrieveSettings();
   locale.value = settings.lang;
   showMiniViz.value = settings.showMiniViz;
-  mvPositionTop.value = settings.mvPositionTop;
-  mvPositionRight.value = settings.mvPositionRight;
+  mvPosition.value = settings.positionMiniviz;
 }
 
 const displayNotification = async (type: string) => {
@@ -350,8 +356,7 @@ onBeforeMount(async () => {
   const settings = await retrieveSettings();
   locale.value = settings.lang;
   showMiniViz.value = settings.showMiniViz;
-  mvPositionTop.value = settings.mvPositionTop;
-  mvPositionRight.value = settings.mvPositionRight;
+  mvPosition.value = settings.positionMiniviz;
   updateIconBar();
 });
 

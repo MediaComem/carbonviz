@@ -38,6 +38,7 @@ export default {
 </script>
 
 <template>
+  <!--
     <dialog id="tabDialog">
       <form method="dialog">
         <p>{{ t('components.popup.messages.openTab') }}<br>
@@ -52,6 +53,7 @@ export default {
         </menu>
       </form>
     </dialog>
+  -->
     <div class="container" id="carbonViz">
       <div id="tabs">
         <button :class="currentView === 'analogies' ? 'activeTab' : '' " @click='viewChange("analogies")'>{{ t('global.analogies') }}</button>

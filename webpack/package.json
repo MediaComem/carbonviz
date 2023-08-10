@@ -29,6 +29,7 @@
     "webpack-cli": "^4.7.0"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
     "apexcharts": "^3.27.1",
     "client-zip": "^2.4.4",
     "dayjs": "^1.11.8",
