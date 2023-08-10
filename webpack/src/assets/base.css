@@ -29,6 +29,9 @@
   --activeBackground: var(--button-grey);
   --activeColor: var(--dark-grey);
   --activeWeight: var(--normal);
+  --el-color-primary: var(--black);
+  --el-text-color-regular: var(--black);
+  --el-font-size-base: 12px;
 }
 
 .activeButton {
@@ -59,4 +62,18 @@
 
 .el-date-editor {
   --el-date-editor-width: 130px;
+}
+
+.el-button {
+  --el-button-hover-bg-color: var(--light-grey);
+  --el-button-hover-border-color: var(--grey);
+}
+
+.el-button.el-button--danger {
+  --el-button-text-color: red;
+  --el-button-bg-color: white;
+  --el-button-border-color: var(--grey);
+  --el-button-hover-bg-color: var(--red);
+  --el-button-hover-border-color: red;
+  font-weight: 700;
 }

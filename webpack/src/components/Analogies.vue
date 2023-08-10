@@ -99,7 +99,7 @@ export default {
       width: 480px; */
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 54px 220px 206px;
+  grid-template-rows: 60px 214px 206px;
   grid-template-areas:
     "header"
     "analogies"
@@ -166,7 +166,7 @@ export default {
 </style>
 
 <style lang="scss">
-.el-carousel__container {
+.analogiesWrapper .el-carousel__container {
   height: 130px;
   & button {
     background-color: inherit;

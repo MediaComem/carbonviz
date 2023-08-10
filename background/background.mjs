@@ -224,7 +224,7 @@ const handleMessage = (request, _sender, sendResponse) => {
   if (request.query) {
     switch (request.query) {
       case 'openExtension':
-        addPluginToNewTab();
+        addPluginToNewTab('#Trends');
         break;
       case 'startMiniviz':
         refreshSettings().then((settings) => {
@@ -465,7 +465,7 @@ const createExtensionTab = (hash = '') => {
   chrome.tabs.create(options);
 
 }
-const addPluginToNewTab = async () => {
+const addPluginToNewTab = async (hash = '') => {
   let fullpageTabIndex = undefined;
 
   await chrome.storage.local.get(['fullpageTabIndex']).then(storage => {
@@ -476,12 +476,12 @@ const addPluginToNewTab = async () => {
     chrome.tabs.update(fullpageTabIndex,{active: true}, function() {
       // if tab was closed and no longer exists
       if (chrome.runtime.lastError) {
-        createExtensionTab();
+        createExtensionTab(hash);
       }
     });
   }
   else {
-    createExtensionTab();
+    createExtensionTab(hash);
   }
 }
 

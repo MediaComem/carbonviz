@@ -215,7 +215,8 @@ export default {
             dangerouslyUseHTMLString: true, // safe string from inside extension
             message: messageHTML,
             type: 'warning',
-            duration: 0
+            duration: 30000,
+            offset: 40
           })
     }
 
@@ -398,6 +399,8 @@ export default {
 }
 
 .title {
+  position: relative;
+  z-index: 200;
   text-align: center;
   margin-top: 8px;
   margin-bottom: -20px;

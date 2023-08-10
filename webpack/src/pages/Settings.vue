@@ -39,6 +39,11 @@ export default {
 	height: unset;
 }
 .content :deep(h3) {
-	margin-left: 0px;
+	margin: 0;
+	color: black;
+	margin-top: 16px;
+	margin-bottom: 14px;
+	font-size: 13px;
+	font-weight: 700;
 }
 </style>

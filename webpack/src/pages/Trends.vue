@@ -39,7 +39,7 @@ export default {
           <template #title>{{ t('global.internet') }}</template>
         </statistics>
         <statistics type="co2" subtype="computer" granularity="day" :height="180" class="computer_trends">
-          <template #title>{{ t('global.computerEnergy') }}</template>
+          <template #title>{{ t('global.computerEnergy') }} <span @click="goToSettings" style="font-weight: 400; text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span></template>
           <template #info>
             {{ t('components.statistics.computerInfo') }}<br/>
             {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
@@ -59,7 +59,7 @@ export default {
           <template #title>{{ t('global.internet') }}</template>
         </statistics>
         <statistics type="co2" subtype="computer" granularity="month" :height="180" class="computer_trends">
-          <template #title>{{ t('global.computerEnergy') }}</template>
+          <template #title>{{ t('global.computerEnergy') }} <span @click="goToSettings" style="font-weight: 400; text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span></template>
           <template #info>
             {{ t('components.statistics.computerInfo') }}<br/>
             {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>

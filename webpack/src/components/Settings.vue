@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ElMessage } from 'element-plus';
+import { Check, Close } from '@element-plus/icons-vue'
 import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 import { formatCo2, roundToPrecision } from '../../../utils/format.js';
 import { ONE_DAY_SEC, co2ImpactHomeHardware } from '../../../model/model.js';
@@ -10,12 +11,23 @@ import { eraseAll } from '../../../storage/resetData.js'
 
 import 'dayjs/locale/fr'
 
+// Use flag for Mniviz position
+const POSITION_TOP = 1;
+const POSITION_BOTTOM = 2;
+const POSITION_RIGHT = 4;
+const POSITION_LEFT = 8;
+
 export default {
 	setup() {
 		const { t } = useI18n({});
 		const showMiniViz = ref(true);
-		const mvPositionRight = ref(true);
-		const mvPositionTop = ref(true);
+		const positionMiniviz = ref(3); // Top Right
+		const positionOptions = computed(() => [
+			{ label: t('components.settings.position.topRight'), value: 5 },
+			{ label: t('components.settings.position.bottomRight'), value: 6 },
+			{ label: t('components.settings.position.topLeft'), value: 9 },
+			{ label: t('components.settings.position.bottomLeft'), value: 10 }
+		]);
 		const miniVizStatusUpdating = ref(false);
 		const deactivateUntil = ref(undefined);
 		const disableTimer = ref(0);
@@ -46,8 +58,7 @@ export default {
 			showMiniViz.value = settings.showMiniViz;
 			computer.value = settings.computer;
 			deactivateUntil.value = settings.deactivateUntil;
-			mvPositionTop.value = settings.mvPositionTop;
-			mvPositionRight.value = settings.mvPositionRight;
+			positionMiniviz.value = settings.positionMiniviz;
 		}).then(() => {
 			// check if plugin deactivation is still active
 			if (deactivateUntil.value) {
@@ -62,7 +73,7 @@ export default {
 			}
 		});
 
-		const setMinvizDisplay = (status) => {
+		const setMinivizDisplay = (status) => {
 			miniVizStatusUpdating.value = true;
 			saveSettings('showMiniViz', status).then(() => {
 				miniVizStatusUpdating.value = false;
@@ -107,32 +118,17 @@ export default {
 		const triggerDeletedData = () => {
 			eraseAll();
 		};
-		const setpositionX = (right) => {
-			if(right) {
-				mvPositionRight.value = true;
-				saveSettings('mvPositionRight', true);
-			} else {
-				mvPositionRight.value = false;
-				saveSettings('mvPositionRight', false);
-			}
-			chrome.runtime.sendMessage({ query: 'updatePosition' });
-		};
-		const setpositionY = (top) => {
-			if(top) {
-				mvPositionTop.value = true;
-				saveSettings('mvPositionTop', true);
-			} else {
-				mvPositionTop.value = false;
-				saveSettings('mvPositionTop', false);
-			}
+		const setPosition = (position) => {
+			saveSettings('positionMiniviz', position);
 			chrome.runtime.sendMessage({ query: 'updatePosition' });
 		};
 
 		return {
 			showMiniViz, miniVizStatusUpdating, marks, yearsSincePurchase, yearsRemaining, lifetimeLaptopYears, disableTimer,
-			co2ImpactDefault, co2ImpactCustom, co2VsDefault, mvPositionRight, mvPositionTop,
-			t, roundToPrecision, formatCo2, setMinvizDisplay, lifetimeUpdate, triggerDownloadData, triggerDeletedData, updateDisablePeriod,
-			setpositionX, setpositionY
+			co2ImpactDefault, co2ImpactCustom, co2VsDefault,
+			t, roundToPrecision, formatCo2, setMinivizDisplay, lifetimeUpdate, triggerDownloadData, triggerDeletedData, updateDisablePeriod,
+			setPosition, positionMiniviz, positionOptions,
+			Check, Close
 		};
 	}
 }
@@ -143,85 +139,90 @@ export default {
 		<div id="settingsWrapper">
 			<div id="lifetime">
 				<el-row align="middle">
-					<el-col :span="15">
-						<h3> {{ t('components.settings.usingSince') }} </h3>
-					</el-col>
-					<el-col :span="7">
-						<el-input-number v-model="yearsSincePurchase" :min="0" size="small" @change="lifetimeUpdate" />
-					</el-col>
-					<el-col :span="2">
-						{{ t('global.years') }}
+					<el-col :span="24">
+						<h3> {{ t('components.settings.computerImpact') }} </h3>
 					</el-col>
 				</el-row>
+				<el-row align="middle" class="mb4">
+					<el-col :span="12">
+						{{ t('components.settings.usingSince') }}
+					</el-col>
+					<el-col :span="12">
+						{{ t('components.settings.usingUntil') }}
+					</el-col>
+
+				</el-row>
 				<el-row align="middle">
-					<el-col :span="15">
-						<h3> {{ t('components.settings.usingUntil') }} </h3>
+					<el-col :span="12">
+						<el-input-number
+						  v-model="yearsSincePurchase"
+							:min="0"
+							size="small"
+							style="--el-fill-color-light: var(--grey); --color: var(--dark-grey);"
+							@change="lifetimeUpdate"
+						/>
+						&nbsp;{{ t('global.years') }}
 					</el-col>
-					<el-col :span="7">
-						<el-input-number v-model="yearsRemaining" :min="0" size="small" @change="lifetimeUpdate" />
-					</el-col>
-					<el-col :span="2">
-						{{ t('global.years') }}
+					<el-col :span="12">
+						<el-input-number
+							v-model="yearsRemaining"
+							:min="0"
+							size="small"
+							style="--el-fill-color-light: var(--grey); --color: var(--dark-grey);"
+							@change="lifetimeUpdate"
+						/>
+						&nbsp;{{ t('global.years') }}
 					</el-col>
 				</el-row>
 				<el-row>
-					<el-col :span="24">
+					<el-col :span="24" class="mt16">{{ t('components.settings.computerUsageOneDay') }}: <b>{{ formatCo2(co2ImpactCustom, 0) }} / {{ t('global.day') }}</b></el-col>
+				</el-row>
+				<el-row>
+					<el-col :span="24" class="mt8">
 						{{ t('components.settings.dataUseCase') }}
 					</el-col>
 				</el-row>
 				<el-row>
-					<el-col :span="24">{{ t('components.settings.computerUsageOneDay') }}:</el-col>
-				</el-row>
-				<el-row>
-					<el-col :span="6" justify="center"> {{ t('components.settings.computerLifetimeDefault') }} </el-col>
-					<el-col :span="6" justify="center"> {{ formatCo2(co2ImpactDefault, 0) }} </el-col>
-					<el-col :span="6"> {{ roundToPrecision(lifetimeLaptopYears, 1) }} {{ t('global.years') }} </el-col>
-					<el-col :span="6"> {{ formatCo2(co2ImpactCustom, 0) }} ({{ co2VsDefault }})</el-col>
-				</el-row>
-				<el-row>
-					<el-col :span="24">
-						{{ t('components.settings.longerUsageTip') }}
+					<el-col :span="24" class="mt8 tip">
+						💡 {{ t('components.settings.longerUsageTip') }}
 					</el-col>
 				</el-row>
 			</div>
-			<div id="miniVisDisplay">
+			<div class="hr"></div>
+			<div id="minivizDisplay">
+				<h3> {{ t('components.settings.display') }} </h3>
   			<el-row align="middle">
-					<el-col :span="10">
-						<h3> {{ t('components.settings.showMiniViz') }} </h3>
+					<el-col :span="12">
+						{{ t('components.settings.visible') }}
 						<el-switch
 							v-model="showMiniViz"
-							class="mt-2"
+							inline-prompt
 							size="large"
-							:active-text="t('components.settings.on')"
-							:inactive-text="t('components.settings.off')"
-							style="--el-switch-on-color: var(--green); --el-switch-off-color: var(--red)"
+							class="miniviz-switch"
+							:active-icon="Check"
+    					:inactive-icon="Close"
+							style="--el-switch-on-color: #95e466; --el-switch-off-color: var(--light-grey)"
 							:loading="miniVizStatusUpdating"
-							@change="setMinvizDisplay"
+							@change="setMinivizDisplay"
 						/>
 					</el-col>
-					<el-col :span="14">
-						<h3> {{ t('components.settings.miniVizPosition') }} </h3>
-						<el-switch
-							v-model="mvPositionRight"
-							class="mt-2"
-							size="large"
-							:active-text="t('components.settings.position.right')"
-							:inactive-text="t('components.settings.position.left')"
-							style="--el-switch-on-color: var(--blue); --el-switch-off-color: var(--blue)"
-							@change="setpositionX"
-						/>
-						<el-switch
-							v-model="mvPositionTop"
-							class="mt-2 position"
-							size="large"
-							:active-text="t('components.settings.position.top')"
-							:inactive-text="t('components.settings.position.bottom')"
-							style="--el-switch-on-color: var(--blue); --el-switch-off-color: var(--blue)"
-							@change="setpositionY"
-						/>
+					<el-col :span="12">
+						<span> {{ t('components.settings.miniVizPosition') }} </span>
+					  <el-select class="position-select" v-model="positionMiniviz" @change="setPosition" placeholder="">
+							<el-option
+								v-for="position in positionOptions"
+								:key="position.value"
+								:label="position.label"
+								:value="position.value"
+							>
+							  <img :src="`../../../icons/miniviz_pos_${position.value}.svg`" class="position-icon">
+								<span>{{ position.label }}</span>
+							</el-option>
+						</el-select>
 				</el-col>
 				</el-row>
 			</div>
+			<!--
 			<div id="disable">
 				<h3> {{ t('components.settings.disablePlugin') }} </h3>
 				<el-row>
@@ -236,6 +237,8 @@ export default {
 					</el-col>
 				</el-row>
 			</div>
+		-->
+			<div class="hr"></div>
 			<div id="download">
 				<h3> {{ t('components.settings.downloadData') }} </h3>
 				<el-row class="mt3">
@@ -243,38 +246,39 @@ export default {
 				</el-row>
 				<el-row>
 					<el-col :span="24">
-						<el-button style="margin: 10px; cursor: pointer;" @click='triggerDownloadData()'>{{ t('components.settings.downloadAction') }} </el-button>
+						<el-button @click='triggerDownloadData()'>{{ t('components.settings.downloadAction') }} </el-button>
 					</el-col>
 				</el-row>
 			</div>
+			<div class="hr"></div>
 			<div id="delete">
-				<h3> {{ t('components.settings.deleteData') }} </h3>
-				<el-row class="mt3">
-					<el-col :span="24">{{ t('components.settings.deleteDataInfo') }}</el-col>
-				</el-row>
-				<el-row>
-					<el-col :span="24">
-						<el-popconfirm
-							width="320"
-							:hide-icon="true"
-							:confirm-button-text="t('components.settings.deleteAction')"
-							confirm-button-type="danger"
-							:cancel-button-text="t('global.cancel')"
-							:title="t('components.settings.deleteConfirmation')"
-							@confirm='triggerDeletedData()'
-						>
-							<template #reference>
-								<el-button type="danger" style="margin: 10px; cursor: pointer;">{{ t('components.settings.deleteAction') }}</el-button>
-							</template>
-						</el-popconfirm>
-					</el-col>
-				</el-row>
-			</div>
+			<h3> {{ t('components.settings.deleteData') }} </h3>
+			<el-row class="mt3">
+				<el-col :span="24">{{ t('components.settings.deleteDataInfo') }}</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="24">
+					<el-popconfirm
+						width="320"
+						:hide-icon="true"
+						:confirm-button-text="t('components.settings.deleteAction')"
+						confirm-button-type="danger"
+						:cancel-button-text="t('global.cancel')"
+						:title="t('components.settings.deleteConfirmation')"
+						@confirm='triggerDeletedData()'
+					>
+						<template #reference>
+							<el-button type="danger">{{ t('components.settings.deleteAction') }}</el-button>
+						</template>
+					</el-popconfirm>
+				</el-col>
+			</el-row>
 		</div>
+	</div>
 	</el-scrollbar>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .wrapper {
 	width: 100%;
 	height: 476px;
@@ -282,61 +286,89 @@ export default {
 	border-radius: 10px 10px 10px 10px;
 	box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25);
 	background-color: var(--background-grey);
+	color: var(--dark-grey);
+}
+
+
+#settingsWrapper>div {
+	margin: 10px;
+	&#lifetime, &#minivizDisplay, &#download, &#delete {
+		margin-left: 26px;
+	}
+}
+
+#settingsWrapper > div.hr {
+	width: 95%;
+	height: 1px;
+	background-color: var(--grey);
+	margin: auto;
 }
 
 .mt3 {
 	margin-top: 3px;
 }
 
-#settingsWrapper {
-	/*  height: 490px;
-    width: 480px; */
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: 180px 80px 80px 120px 100px;
-	grid-template-areas:
-		"lifetime"
-		"showMiniViz"
-		"disable"
-		"download"
-		"delete";
+.mt8 {
+	margin-top: 8px;
 }
 
-#settingsWrapper>div {
-	margin: 10px;
+.mt16 {
+	margin-top: 16px;
 }
 
-#lifetime {
-	grid-area: lifetime;
-}
-
-#lifetime h3 {
-	float: left;
-	margin-right: 20px;
-}
-
-#lifetime .el-row {
-	margin-bottom: 5px;
-}
-
-#miniVisDisplay {
-	grid-area: showMiniViz;
-}
-
-#disable {
-	grid-area: disable;
-}
-
-#download {
-	grid-area: download;
-}
-
-#delete {
-	grid-area: delete;
+.mb4 {
+	margin-bottom: 4px;
 }
 
 h3 {
 	margin: 0;
+	color: black;
+	margin-top: 16px;
+	margin-bottom: 14px;
+	font-size: 13px;
+	font-weight: 700;
+}
+
+#lifetime {
+	:deep(.el-input-number--small ) {
+		width: 95px;
+		:deep(.el-input--small) {
+			font-size: 13px;
+		}
+	}
+  :deep(.el-input-number--small .el-input-number__decrease .el-icon),
+	:deep(.el-input-number--small .el-input-number__increase .el-icon) {
+		transform: scale(1.1);
+	}
+}
+
+.tip {
+	border-radius: 5px;
+    background-color: white;
+    padding: 4px;
+}
+
+.miniviz-switch, .position-select {
+	margin-left: 10px;
+}
+
+.position-select {
+	margin-top: -2px;
+	:deep(.el-input__inner) {
+		width: 110px;
+	}
+}
+
+.position-icon {
+	margin-right: 3px;
+}
+
+:deep(.el-button) {
+	width: 143px;
+	height: 30px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	cursor: pointer;
 }
 
 :deep(.el-slider) {
