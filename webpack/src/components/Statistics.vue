@@ -215,7 +215,8 @@ export default {
             dangerouslyUseHTMLString: true, // safe string from inside extension
             message: messageHTML,
             type: 'warning',
-            duration: 0
+            duration: 30000,
+            offset: 40
           })
     }
 

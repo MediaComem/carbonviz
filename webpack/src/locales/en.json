@@ -51,6 +51,7 @@
         "data": "{data} of data",
         "time": "in {time}",
         "analogy": "as much as {amount}",
+        "details": "See details",
         "weekly": {
           "title": "Weekly Notification",
           "days": "The last 7 days",

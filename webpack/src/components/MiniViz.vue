@@ -71,6 +71,7 @@
                 -
               </div>
             </div>
+            <div class="mv-cta"><a @click="openExtension">{{ t('components.miniViz.notification.details') }}</a></div>
           </div>
           <!--
           <div id="mv-advise">
@@ -322,6 +323,10 @@ const displayNotification = async (type: string) => {
   }
 }
 
+const openExtension = () => {
+  chrome.runtime.sendMessage({ query: 'openExtension' });
+}
+
 chrome.runtime.onMessage.addListener(request => {
   if (request.counters) {
     // Update stats with todays totals
@@ -482,6 +487,15 @@ onBeforeMount(async () => {
   .mv-summary {
     font-weight: 700;
     margin-bottom: 20px
+  }
+
+  .mv-cta{
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    a {
+      cursor: pointer;
+    }
   }
 
   #mv-dailyNotification .mv-title {
