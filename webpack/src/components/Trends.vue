@@ -68,7 +68,7 @@ const switchType = (newType: Indicator) => {
   .wrapper {
     width: 100%;
     height: 426px;
-    margin-top: 20px;
+    margin-top: 29px;
     position: relative;
     box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25);
     border-radius: 5px;
