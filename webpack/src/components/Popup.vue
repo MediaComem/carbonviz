@@ -70,8 +70,10 @@ export default {
       <div id="footer">
         <div data-area="logo" id="appTitle"></div>
         <h2 data-area="title"> {{ t('appTitle') }} </h2>
-        <div data-area="logo" id="openTab"></div>
-        <button id="openNewTab" @click='openNewTabDialog()'> {{ t('global.newTab') }} </button>
+        <div class="tab-action">
+          <div data-area="logo" id="openTab"></div>
+          <button id="openNewTab" @click='openNewTabDialog()'> {{ t('global.newTab') }} </button>
+        </div>
         <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>
         <div data-area="logo" id="logoEquiwatt"></div>
       </div>
@@ -120,19 +122,24 @@ export default {
   width: 100%;
 }
 #openNewTab {
-  color: var(--grey);
+  color: black;
+  font-weight: 400;
 }
 #lang {
   display: flex;
   align-items: center;
+  flex-grow: 1;
 }
 /* title */
 [data-area="title"] {
-  padding: 0px 10px;
+  padding: 0px 4px;
   margin: auto;
   text-align: left;
-  font-weight: 900;
-  text-decoration: underline;
+  color: var(--dark-grey);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
 }
 /* logo */
 [data-area="logo"] {
@@ -140,22 +147,26 @@ export default {
   align-items: center;
   flex-direction: row-reverse;
 }
-#footer #logoEquiwatt {
+#footer .tab-action {
+  display:flex;
+  justify-content: center;
   flex-grow: 1;
 }
 [data-area="logo"]#appTitle::before {
   display: inline-block;
   content: ' ';
-  background: url("../icons/icon16.png") no-repeat;
-  width: 16px;
-  height: 16px;
+  background: url("../icons/ico_footer.svg") no-repeat;
+  width: 20px;
+  height: 20px;
+  margin-bottom: 3px;
 }
 [data-area="logo"]#logoEquiwatt::before {
   display: inline-block;
   content: ' ';
   background: url("../icons/logos/logoEquiwatt.svg") no-repeat;
-  width: 80px;
-  height: 20px;
+  width: 70px;
+  height: 15px;
+  margin-bottom: 3px;
 }
 [data-area="logo"]#openTab::before {
   display: inline-block;

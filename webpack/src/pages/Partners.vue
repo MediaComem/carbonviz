@@ -53,7 +53,7 @@ export default {
       </article>
       <el-row justify="center" align="middle" class="logos">
         <el-col :span="6"><img src="../../../icons/logos/logoSiL.svg"></el-col>
-        <el-col :span="6"><img src="../../../icons/logos/logoEquiwatt.svg"></el-col>
+        <el-col :span="6"><img src="../../../icons/logos/logo-equiwatt-large.png"></el-col>
         <el-col :span="6"><img src="../../../icons/logos/logo-fond-FEE.png"></el-col>
       </el-row>
       <article>
