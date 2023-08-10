@@ -9,7 +9,7 @@
         <template #title>{{ t('global.internet') }}</template>
       </statistics>
       <statistics :type="type" subtype="computer" :granularity="granularity" :height="180" class="computer_trends">
-        <template #title>{{ t('global.computerEnergy') }}</template>
+        <template #title>{{ t('global.computerEnergy') }} <span @click="$emit('showSettings')" style="font-weight: 400; text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span></template>
         <template #info>
           {{ t('components.statistics.computerInfo') }}<br/>
           {{ t('components.statistics.computerTip') }} <span @click="$emit('showSettings')" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>

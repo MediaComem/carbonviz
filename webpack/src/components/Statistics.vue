@@ -399,6 +399,8 @@ export default {
 }
 
 .title {
+  position: relative;
+  z-index: 200;
   text-align: center;
   margin-top: 8px;
   margin-bottom: -20px;
