@@ -187,14 +187,6 @@ export default {
     display: flex;
     align-items: center;
   }
-  button {
-    background: none;
-    color:black;
-    border: none;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-  }
   /* logo */
   [data-area="logo"] {
     display: flex;
@@ -341,12 +333,5 @@ export default {
     :deep(.apexcharts-text) {
       fill: white;
     }
-  }
-</style>
-
-<style>
-  /* Analogies spacing when no dataType buttons*/
-  .AnalogyItem .section {
-    margin-top: -60px;
   }
 </style>

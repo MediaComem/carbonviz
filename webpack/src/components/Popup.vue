@@ -82,6 +82,15 @@ export default {
 
 
 <style scoped>
+/* dialog {
+  max-width: 350px;
+  border-radius: 10px;
+  border-width: 1px;
+}
+
+dialog menu {
+  text-align: right;
+} */
 .container {
   /*  height: 600px;
       width: 500px; */
@@ -178,5 +187,17 @@ export default {
 </style>
 
 <style>
-/* styles for elementPlus HTML after build */
+/* styles for elementPlus HTML after build or targets outside of template*/
+body {
+  background-color: white;
+  margin: 0px;
+  font-family: Roboto, Arial, sans-serif !important;
+}
+body * {
+  font-family: Roboto, Arial, sans-serif !important;
+}
+#popupPage{
+  height: 600px;
+  width: 500px;
+}
 </style>
