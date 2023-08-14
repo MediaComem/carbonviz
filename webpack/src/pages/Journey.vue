@@ -36,7 +36,7 @@ export default {
       <p class="video-container">
         <video autoplay loop width="600">
           <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
-          <source src="assets/Data_Journey.mp4" type="video/mp4">
+          <source src="../../../assets/video/Data_Journey.mp4" type="video/mp4">
         </video>
         <div> <!-- energy -->
           <el-popover
@@ -51,7 +51,7 @@ export default {
               <el-col :span="10">
                 <video class="video-explanation" autoplay loop style="width:200">
                   <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
-                  <source src="assets/Energy_Mix.mp4" type="video/mp4">
+                  <source src="../../../assets/video/Energy_Mix.mp4" type="video/mp4">
                 </video>
               </el-col>
               <el-col :span="14">
@@ -74,7 +74,7 @@ export default {
               <el-col :span="10">
                 <video class="video-explanation" autoplay loop style="width:200">
                   <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
-                  <source src="assets/Device_Color.mp4" type="video/mp4">
+                  <source src="../../../assets/video/Device_Color.mp4" type="video/mp4">
                 </video>
               </el-col>
               <el-col :span="14">
@@ -97,7 +97,7 @@ export default {
               <el-col :span="10">
                 <video class="video-explanation" autoplay loop style="width:200">
                   <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
-                  <source src="assets/Network_Color.mp4" type="video/mp4">
+                  <source src="../../../assets/video/Network_Color.mp4" type="video/mp4">
                 </video>
               </el-col>
               <el-col :span="14">
@@ -120,7 +120,7 @@ export default {
               <el-col :span="10">
                 <video class="video-explanation" autoplay loop style="width:200">
                   <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
-                  <source src="assets/Server_Color.mp4" type="video/mp4">
+                  <source src="../../../assets/video/Server_Color.mp4" type="video/mp4">
                 </video>
               </el-col>
               <el-col :span="14">

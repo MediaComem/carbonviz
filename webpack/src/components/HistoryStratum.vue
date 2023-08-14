@@ -143,7 +143,7 @@ export default {
           <img
             :class="index === 0 ? '': 'filter'"
             class="icon"
-            :src="`../icons/${index === 0 ? 'loading'+type+'.gif': type+'.svg'}`"
+            :src="`../assets/icons/${index === 0 ? 'loading'+type+'.gif': type+'.svg'}`"
             :style="`--height: ${height - 4}px;`"
           >
       </el-col>
@@ -153,7 +153,7 @@ export default {
         <div class="title bold"> {{ layerName }}</div>
           <img
             class="icon"
-            :src="`../icons/${type}.svg`"
+            :src="`../assets/icons/${type}.svg`"
             :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`"
           >
       </el-col>

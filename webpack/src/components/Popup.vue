@@ -155,7 +155,7 @@ export default {
 [data-area="logo"]#appTitle::before {
   display: inline-block;
   content: ' ';
-  background: url("../icons/ico_footer.svg") no-repeat;
+  background: url("../assets/icons/ico_footer.svg") no-repeat;
   width: 20px;
   height: 20px;
   margin-bottom: 3px;
@@ -163,7 +163,7 @@ export default {
 [data-area="logo"]#logoEquiwatt::before {
   display: inline-block;
   content: ' ';
-  background: url("../icons/logos/logoEquiwatt.svg") no-repeat;
+  background: url("../assets/icons/logos/logoEquiwatt.svg") no-repeat;
   width: 70px;
   height: 15px;
   margin-bottom: 3px;
@@ -171,7 +171,7 @@ export default {
 [data-area="logo"]#openTab::before {
   display: inline-block;
   content: ' ';
-  background: url("../icons/iconOpenTab.svg") no-repeat;
+  background: url("../assets/icons/iconOpenTab.svg") no-repeat;
   width: 13px;
   height: 13px;
 }

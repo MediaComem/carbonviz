@@ -215,7 +215,7 @@ export default {
 								:label="position.label"
 								:value="position.value"
 							>
-							  <img :src="`../../../icons/miniviz_pos_${position.value}.svg`" class="position-icon">
+							  <img :src="`../../../assets/icons/miniviz_pos_${position.value}.svg`" class="position-icon">
 								<span>{{ position.label }}</span>
 							</el-option>
 						</el-select>

@@ -28,7 +28,7 @@ export default {
       }
     });
     const asset = computed(() => {
-        return `../icons/analogies/${analogy.value.asset}`
+        return `../assets/icons/analogies/${analogy.value.asset}`
     });
     const legend = computed(() => {
       if (!label.value) {

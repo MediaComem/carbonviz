@@ -121,11 +121,11 @@ export default {
       <!-- infinite scroll check if more items to load -->
       <div class="scroll">
         <div v-if="scrollMore">
-          <img :src="`../../../icons/scroll${dataType}.gif`" alt="" width="50" height="50">
+          <img :src="`../../../assets/icons/scroll${dataType}.gif`" alt="" width="50" height="50">
           <p>{{ t('components.history.scrolling') }}</p>
         </div>
         <div v-else>
-          <img class="iconEndScroll" :src="`../../../icons/${dataType}.svg`" alt="" width="50" height="50">
+          <img class="iconEndScroll" :src="`../../../assets/icons/${dataType}.svg`" alt="" width="50" height="50">
           <p id="scrollEndText">{{ t('components.history.scrollEnd') }}</p>
         </div>
       </div>

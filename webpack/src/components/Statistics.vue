@@ -330,7 +330,7 @@ export default {
           <span v-if="trend >= 0.01">+</span>
           <span v-if="trend <= -0.01">-</span>
           {{ Math.round(Math.abs(100 * trend))}} %
-          <svg v-if="Math.floor(100 * trend) !== 0" :class="trend > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
+          <svg v-if="Math.floor(100 * trend) !== 0" :class="trend > 0 ?'up' : 'down'"><use href="../../../assets/icons/arrow.svg#arrow"></use></svg>
         </div>
         <div v-else>
           -

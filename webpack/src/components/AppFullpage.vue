@@ -78,7 +78,7 @@ export default {
       <h1>{{ t('appTitle') }}</h1>
       <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>
     </div>
-    <img data-area="equiwatt" src="../../../icons/logos/logo-equiwatt-large.png" id="logoEquiwatt">
+    <img data-area="equiwatt" src="../../../assets/icons/logos/logo-equiwatt-large.png" id="logoEquiwatt">
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">
@@ -205,7 +205,7 @@ export default {
     display: inline-block;
     padding-right: 15px;
     content: ' ';
-    background: url("../icons/icon48.png") no-repeat;
+    background: url("../assets/icons/icon48.png") no-repeat;
     width: 42px;
     height: 48px;
   }
@@ -333,7 +333,7 @@ export default {
       background-color: white;
     }
     [data-area="logo"]::before {
-      background: url("../icons/icon48Dark.png") no-repeat;
+      background: url("../assets/icons/icon48Dark.png") no-repeat;
     }
     :deep(.apexcharts-menu) {
       color: black;

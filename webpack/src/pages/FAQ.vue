@@ -156,7 +156,7 @@ export default {
           <li>{{ t('pages.faq.model.principle_example_network_dc') }}</li>
         </ul>
         <el-row justify="start">
-          <img src="../../../icons/model_scope.png">
+          <img src="../../../assets/icons/model_scope.png">
         </el-row>
         <h2>{{ t('pages.faq.model.data_sources') }}</h2>
         <p>
@@ -197,13 +197,13 @@ export default {
         </p>
         <h2> {{ t('pages.faq.example') }} </h2>
         <el-row justify="start">
-          <img src="../../../icons/web.png">
+          <img src="../../../assets/icons/web.png">
         </el-row>
         <el-row justify="start">
-          <img src="../../../icons/720p.png">
+          <img src="../../../assets/icons/720p.png">
         </el-row>
         <el-row justify="start">
-          <img src="../../../icons/4K.png">
+          <img src="../../../assets/icons/4K.png">
         </el-row>
         <p>
           <b>{{ t('pages.faq.disclaimer') }}</b>: {{ t('pages.faq.disclaimer_text_video') }}
@@ -218,13 +218,13 @@ export default {
           {{ t('pages.faq.model_result_video.part2') }}
         </p>
         <el-row justify="start">
-          <img src="../../../icons/standard_vs_renewable.svg">
+          <img src="../../../assets/icons/standard_vs_renewable.svg">
         </el-row>
         <p>
           {{ t('pages.faq.model_result_video.part3') }}
         </p>
         <el-row justify="start">
-          <img src="../../../icons/energy.svg">
+          <img src="../../../assets/icons/energy.svg">
         </el-row>
         <h2>{{ t('pages.faq.model_result_video.subtitle2') }}</h2>
         <p>
@@ -235,7 +235,7 @@ export default {
           {{ t('pages.faq.model_result_video.part6') }}
         </p>
         <el-row justify="start">
-          <img src="../../../icons/lifespan.svg">
+          <img src="../../../assets/icons/lifespan.svg">
         </el-row>
       </article>
       <article data-section="Analogies">
@@ -256,7 +256,7 @@ export default {
               <el-carousel trigger="click" :interval="10000" height="260px" class="analogies">
                 <el-carousel-item v-for="(item, index) in analogies" :key="index">
                   <el-row justify="center" align="middle">
-                    <img :src="`../../../icons/analogies/${item.image}`">
+                    <img :src="`../../../assets/icons/analogies/${item.image}`">
                   </el-row>
                   <el-row justify="center" align="middle" class="title">
                     <el-col :span="20">

@@ -11,7 +11,7 @@ import { formatSize } from "../utils/format.js";
 const isFirefox = typeof(browser) !== 'undefined';
 
 const dailyNotificationURL = 'https://carbonviz.heig-vd.ch/notification.json';
-const notificationIcon = '../icons/logos/carbonViz-48.png'  //'../icons/logos/logo-equiwatt-large.png';
+const notificationIcon = '../assets/icons/logos/carbonViz-48.png'  //'../assets/icons/logos/logo-equiwatt-large.png';
 
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
@@ -452,7 +452,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 // TODO handle light / dark also with service worker
 /*
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-  chrome.browserAction.setIcon({path: '../icons/iconDark.png'});
+  chrome.browserAction.setIcon({path: '../assets/icons/iconDark.png'});
 }
 */
 
@@ -533,25 +533,26 @@ const sendDailyNotification = async (activeTabId) => {
 
 const checkMissedNotifications = async (tab = false) => {
   const now = new Date();
+  const todayIsMonday = (now.getDay() === 1);
   let queryOptions = { active: true, lastFocusedWindow: true };
   let activeTab = tab ? tab : await chrome.tabs.query(queryOptions);
   notificationsStatus = await retrieveNotifications();
 
-  const lastMonday = new Date(now);
-  if (now.getDay() === 1) {
-    lastMonday.setDate(lastMonday.getDate() - 7);
+  let weekStartMonday = new Date(now);
+  if (todayIsMonday) {
+    weekStartMonday.setHours(0,0,0);
   } else {
-    lastMonday.setDate(now.getDate() - (now.getDay() + 6) % 7); // Calculate last Monday's date
+    weekStartMonday.setDate(now.getDate() - (now.getDay() + 6) % 7); // Calculate last Monday's date
   }
 
   if (activeTab[0].id) {
-    const weekDate =  new Date(notificationsStatus.lastDisplayedWeeklyTimeStamp);
-    const date = new Date(notificationsStatus.lastDisplayedDailyTimeStamp);
-    if (!weekDate.valueOf() || weekDate < lastMonday) {
+    const lastWeeklyDisplay =  new Date(notificationsStatus.lastDisplayedWeeklyTimeStamp);
+    const lastDailyDisplay = new Date(notificationsStatus.lastDisplayedDailyTimeStamp);
+    if (!lastWeeklyDisplay.valueOf() || lastWeeklyDisplay < weekStartMonday) {
       sendWeeklyNotification(activeTab[0].id);
       return; // User to acknowledge popup before replacing with weekly below.
     };
-    if (!date.valueOf() || date.getDate() < now.getDate()) {
+    if (!lastDailyDisplay.valueOf() || lastDailyDisplay.getDate() < now.getDate()) {
       sendDailyNotification(activeTab[0].id);
     };
   }
