@@ -193,7 +193,6 @@ export default {
     });
 
     const checkTips = (domains) => {
-      let tipsShown = false;
       const tipsRelatedToDomains = tips.filter(tip => tip.domains);
       const tipsGeneric = tips.filter(tip => !tip.domains);
       const tipsValid = [...tipsGeneric];
