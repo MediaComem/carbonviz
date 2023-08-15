@@ -191,10 +191,10 @@ dialog menu {
 body {
   background-color: white;
   margin: 0px;
-  font-family: Roboto, Arial, sans-serif !important;
+  font-family: Roboto, system-ui, Arial, sans-serif !important;
 }
 body * {
-  font-family: Roboto, Arial, sans-serif !important;
+  font-family: Roboto, system-ui, Arial, sans-serif !important;
 }
 #popupPage{
   height: 600px;

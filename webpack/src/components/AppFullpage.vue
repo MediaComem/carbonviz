@@ -104,7 +104,6 @@ export default {
 
 <style>
   /* global */
-  * { box-sizing: border-box }
   body {
     margin: 0;
     padding: 0;
@@ -159,16 +158,14 @@ export default {
   [data-area="subnav"] {grid-area: subnav;}
   [data-area="body"] {grid-area: body}
   .wrapper {
-    font-family: Roboto, Arial, sans-serif ;
+    font-family: Roboto, system-ui, Arial, sans-serif ;
     display: grid;
-    /* width: 1000px;
-    margin: 0 auto; */
-    grid-template-columns: 200px minmax(auto, 800px) 300px;
+    grid-template-columns: auto 200px 800px 200px auto;
     grid-template-rows: 120px 100px auto;
     grid-template-areas:
-      "logo   title equiwatt"
-      ".      nav nav"
-      "subnav body body"
+      ". logo   title equiwatt ."
+      ". .      nav nav nav"
+      ". subnav body body body"
   }
   /* title */
   [data-area="title"] {
@@ -296,7 +293,7 @@ export default {
 
   @media only screen and (max-width: 1000px) {
     .wrapper {
-      grid-template-columns: 60px auto 300px;
+      grid-template-columns: auto 0px 800px 200px auto;
     }
 
     [data-area="subnav"] {

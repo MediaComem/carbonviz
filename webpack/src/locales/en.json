@@ -169,8 +169,8 @@
     "internet": "Internet",
     "last": {
       "today": "Today",
-      "week": "The 7 last days",
-      "month": "The 30 last days",
+      "week": "last 7 days",
+      "month": "last 30 days",
       "year": "Since January {year}"
     },
     "method_links": "Method & links",

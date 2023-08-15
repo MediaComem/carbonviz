@@ -114,11 +114,11 @@ const tips = [
     },
     summaryHTML: {
       'en': 'When possible, connect to <b>Wifi</b> instead of mobile network. Wifi needs less energy than mobile networks.',
-      'fr': 'Quand cela est possible, connectez-vous au <b>Wifi</b> plutôlt qu\'au réseau mobile. Le Wifi nécessite moins d\'énergie qu\'une connexion mobile.'
+      'fr': 'Quand cela est possible, connectez-vous au <b>Wifi</b> plutôt qu\'au réseau mobile. Le Wifi nécessite moins d\'énergie qu\'une connexion mobile.'
     },
     detailsHTML: {
       'en': 'When possible, connect to <b>Wifi</b> instead of mobile network. Wifi needs less energy than mobile networks.',
-      'fr': 'Quand cela est possible, connectez-vous au <b>Wifi</b> plutôlt qu\'au réseau mobile. Le Wifi nécessite moins d\'énergie qu\'une connexion mobile.'
+      'fr': 'Quand cela est possible, connectez-vous au <b>Wifi</b> plutôt qu\'au réseau mobile. Le Wifi nécessite moins d\'énergie qu\'une connexion mobile.'
     }
   },
   {
