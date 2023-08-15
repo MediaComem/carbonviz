@@ -161,14 +161,12 @@ export default {
   .wrapper {
     font-family: Roboto, Arial, sans-serif ;
     display: grid;
-    /* width: 1000px;
-    margin: 0 auto; */
-    grid-template-columns: 200px minmax(auto, 800px) 300px;
+    grid-template-columns: auto 200px 800px 200px auto;
     grid-template-rows: 120px 100px auto;
     grid-template-areas:
-      "logo   title equiwatt"
-      ".      nav nav"
-      "subnav body body"
+      ". logo   title equiwatt ."
+      ". .      nav nav nav"
+      ". subnav body body body"
   }
   /* title */
   [data-area="title"] {

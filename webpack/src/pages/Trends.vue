@@ -112,6 +112,7 @@ h3.subtitle {
 }
 
 .tips {
+  max-width: 800px;
   margin-bottom: 20px;
   :deep(.el-collapse-item__header) {
     font-weight: 700;
