@@ -159,7 +159,7 @@ export default {
   [data-area="subnav"] {grid-area: subnav;}
   [data-area="body"] {grid-area: body}
   .wrapper {
-    font-family: Roboto, Arial, sans-serif ;
+    font-family: Roboto, system-ui, Arial, sans-serif ;
     display: grid;
     grid-template-columns: auto 200px 800px 200px auto;
     grid-template-rows: 120px 100px auto;

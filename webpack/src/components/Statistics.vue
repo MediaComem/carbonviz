@@ -63,7 +63,7 @@ export default {
           style: {
             background: '#f8f8f8',
             color: '#616161',
-            fontFamily: 'Roboto, Arial, sans-serif'
+            fontFamily: 'Roboto, system-ui, Arial, sans-serif'
           },
           text: 'Moy'
         }
@@ -141,7 +141,7 @@ export default {
         chart: {
           type: 'bar',
           stacked: true,
-          fontFamily: 'Roboto, Arial, sans-serif',
+          fontFamily: 'Roboto, system-ui, Arial, sans-serif',
           toolbar: {
             show: false
           },
