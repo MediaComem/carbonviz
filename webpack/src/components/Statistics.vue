@@ -1,10 +1,9 @@
 <script lang="ts">
 import { ApexOptions } from 'apexcharts';
 import VueApexCharts from "vue3-apexcharts";
-import { ref, computed, watchEffect, toRefs, ComputedRef } from 'vue';
+import { ref, computed, watchEffect, toRefs, useSlots, ComputedRef } from 'vue';
 import { getLastDaysSummary, getComputerCo2Series, getTopWebsitesSeries, computerDailyEmbodiedCo2 } from '../../../storage/storage';
 import { useI18n } from 'vue-i18n';
-import { ElNotification } from 'element-plus'
 import { Indicator, Granularity } from '../utils/types';
 import { formatCo2, formatSize } from '../../../utils/format';
 import { tips } from '../../../utils/tips';
@@ -18,8 +17,7 @@ export interface Props {
 
 export default {
   components: {
-    apexchart: VueApexCharts,
-    ElNotification
+    apexchart: VueApexCharts
   },
   props: {
     type: String,
@@ -30,12 +28,17 @@ export default {
   setup(props) {
     const { t, locale } = useI18n({});
 
+    const slots = useSlots();
+
     const { type, subtype, granularity } = toRefs(props);
 
     // Summary for the last 7 or 30 days
     const summary = ref({ data: 0, energy: 0, co2: 0, computer: { energy: 0, co2: 0}});
     // Trends compared to the previous 7 or 30 days
     const trend =ref(0);
+
+    // Tips
+    const tipHTML = ref(null);
 
     // Number of active days for weekly stats or month for yearly stats
     const nbActivePeriods = ref(1);
@@ -209,15 +212,8 @@ export default {
       }
       // display random tip among relevant domain or generic tips
       const tip = tipsValid[Math.floor(Math.random() * tipsValid.length)];
-      const messageHTML = `${tip.summaryHTML[locale.value]}`;
-          ElNotification({
-            title: tip.context ? `${t('components.statistics.tip')} ${tip.context}` : t('components.statistics.tip'),
-            dangerouslyUseHTMLString: true, // safe string from inside extension
-            message: messageHTML,
-            type: 'warning',
-            duration: 30000,
-            offset: 40
-          })
+      const tipTile = tip.context ? `${t('components.statistics.tip')} ${tip.context}` : t('components.statistics.tip');
+      tipHTML.value = `<b>${tipTile}</b>&nbsp; ${tip.summaryHTML[locale.value]}`
     }
 
     watchEffect(async () => {
@@ -301,7 +297,7 @@ export default {
           throw('Invalid trends type')
       }
     })
-    return { summary, averagePerPeriod, trend, nbActivePeriods, type, granularity, chart, chartOptions, series, t, formatCo2, formatSize };
+    return { summary, averagePerPeriod, trend, tipHTML, nbActivePeriods, type, granularity, chart, chartOptions, series, t, formatCo2, formatSize, slots };
   }
 }
 </script>
@@ -309,34 +305,43 @@ export default {
 <template>
   <div>
     <div class="header" :class="type" v-if="subtype==='web'">
-      <div class="teaser">
-        <span v-if="type==='co2'">{{ formatCo2(summary.co2, 0) }} {{ t('global.of_co2') }}</span>
-        <span v-if="type==='data'">{{ formatSize(summary.data, 0) }} </span>
+      <div class="trend">
+        <div class="trend-title">{{ t(`components.statistics.trend`) }}</div>
+        <div class="trend-value">
+          <div v-if="trend">
+            <span v-if="trend >= 0.01">+</span>
+            <span v-if="trend <= -0.01">-</span>{{ Math.round(Math.abs(100 * trend))}}%
+            <svg v-if="Math.floor(100 * trend) !== 0" :class="trend > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
+          </div>
+          <div v-else>
+            -
+          </div>
+        </div>
       </div>
-      <div class="teaser-subtitle">
-        <span v-if="granularity==='day'">{{ t('global.last.week') }}</span>
-        <span v-if="granularity==='month'">{{ t('global.last.month') }}</span>
-        <span class="computer" v-if="type==='co2'">&nbsp;incl. {{ formatCo2(summary.computer.co2, 0) }} {{ t('components.statistics.computerImpact') }}</span>
+      <div class="vr"></div>
+      <div class="summary">
+        <div class="period">
+          <span v-if="granularity==='day'">{{ t('global.last.week') }}</span>
+          <span v-if="granularity==='month'">{{ t('global.last.month') }}</span>
+        </div>
+        <span v-if="type==='co2'"><span class="unit">CO<span class="subscript">2</span></span>&nbsp;<span class="summary-value">{{ formatCo2(summary.co2, 0) }}</span></span>
+        <span v-if="type==='data'"><span class="summary-value">{{ formatSize(summary.data, 0) }}</span></span>
+        <div class="web_vs_laptop" v-if="type==='co2'">
+          <div class="web"><img src="../../../icons/web.svg">{{ formatCo2(summary.co2 - summary.computer.co2, 0) }}</div>
+          <div class="laptop"><img src="../../../icons/laptop.svg">{{ formatCo2(summary.computer.co2, 0) }}</div>
+        </div>
       </div>
-      <div class="average">{{ t(`components.statistics.average`) }}:
+      <div class="vr"></div>
+      <div class="average">
+        <div class="average-title">{{ t(`components.statistics.average`) }}</div>
         <span class="value">
           <span v-if="type==='co2'">{{ formatCo2(averagePerPeriod, 0) }} / {{ t(`global.${granularity}`) }} </span>
           <span v-if="type==='data'">{{ formatSize( averagePerPeriod, 0) }} / {{ t(`global.${granularity}`) }} </span>
         </span>
       </div>
-      <div class="trend-title">{{ t(`components.statistics.trend`) }}:</div>
-      <div class="trend-value">
-        <div v-if="trend">
-          <span v-if="trend >= 0.01">+</span>
-          <span v-if="trend <= -0.01">-</span>
-          {{ Math.round(Math.abs(100 * trend))}} %
-          <svg v-if="Math.floor(100 * trend) !== 0" :class="trend > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
-        </div>
-        <div v-else>
-          -
-        </div>
-      </div>
     </div>
+    <div class="hr" v-if="tipHTML"></div>
+    <div v-if="tipHTML" class="tip" ><div>💡</div><div v-html="tipHTML" class="description"></div></div>
     <div class="title"><slot name="title"></slot></div>
     <apexchart
       ref="chart"
@@ -346,55 +351,88 @@ export default {
       :options="chartOptions"
       :series="series"
     ></apexchart>
-    <div class="info"><slot name="info"></slot></div>
+    <div class="info" v-if="slots.info"><slot name="info"></slot></div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .header {
-  padding-top: 15px;
-  padding-left: 15px;
-
+  display: flex;
   color: var(--dark-grey);
-
-  .teaser {
-    font-size: 40px;
-    font-weight: 700;
-    line-height: 40px;
-  }
-  .teaser-subtitle {
-    font-size: 14px;
-    text-transform: lowercase;
-    .computer {
+  font-size: 13px;
+  .trend {
+    width: 150px;
+    padding-left: 24px;
+    padding-top: 14px;
+    .trend-value {
+      font-size: 32px;
       font-weight: 700;
+      color: black;
+      svg {
+        width: 23px;
+        height: 23px;
+        &.up {
+          color: red;
+        }
+        &.down {
+          color: var(--green);
+          transform: rotate(90deg);
+        }
+      }
     }
+  }
+  .summary {
+    width: 160px;
+    padding-left: 8px;
+    padding-top: 14px;
+    font-size: 13px;
+
+    .period {
+      margin-bottom: 1px;
+    }
+    .unit {
+      font-weight: 700;
+      color: var(--dark-grey);
+    }
+    .summary-value {
+      color: black;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .web_vs_laptop {
+      font-size: 12px;
+      display: flex;
+      column-gap: 10px;
+      margin-top: 25px;
+      img {
+        margin-right: 2px;
+      }
+      .web img{
+        margin-bottom: -1px;
+      }
+      .laptop img{
+        margin-bottom: -2px;
+      }
+      }
+    .subscript {
+      vertical-align: sub;
+      font-size: 10px;
+    }
+
   }
 
   .average {
-    margin-top: 18px;
-  }
-  .average, .trend-title {
-    font-size: 12px;
-    line-height: 16px;
-  }
-  .average .value {
-    font-weight: 700;
-  }
-  .trend-value {
-    margin-top: 15px;
-    font-size: 32px;
-    font-weight: 700;
-    svg {
-      width: 23px;
-      height: 23px;
-      &.up {
-        color: red;
-      }
-      &.down {
-        color: var(--green);
-        transform: rotate(90deg);
-      }
+    padding-left: 8px;
+    padding-top: 14px;
+    .average-title {
+      margin-bottom: 1px;
     }
+    .value {
+      font-weight: 700;
+      color: black;
+      font-size: 13px;
+    }
+
   }
 }
 
@@ -410,17 +448,65 @@ export default {
   font-style: italic;
 }
 .info {
+  display: flex;
   margin-top: -15px;
   margin-left: 15px;
+  margin-right: 15px;
   color: var(--dark-grey);
-  font-size: 11px;
-  font-style: italic;
+  font-size: 12px;
+  border-radius: 5px;
+	background-color: var(--white);
+	padding: 4px;
 }
 
-</style>
-
-<style>
-.el-notification__content {
-  text-align: left;
+div.hr {
+	width: 95%;
+	height: 1px;
+	background-color: var(--grey);
+	margin-left: auto;
+	margin-right: auto;
+  margin-top: 8px;
+  margin-bottom: 16px;
 }
+
+div.vr {
+	width: 1px;
+	height: 95px;
+	background-color: var(--grey);
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.tip {
+  display: flex;
+  border-radius: 17px;
+  border: 1px solid var(--carbon-viz-ui-white-extra, #FFF);
+  background: var(--green);
+  height: 26px;
+  width: 420px;
+  line-height: 26px;
+  margin: auto;
+  padding-left: 4px;
+  padding-right: 4px;
+  .description {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &:hover {
+    box-shadow: 0px 0px 16px 0px rgba(150, 228, 103, 0.50);
+    background: var(--white);
+    border-radius: 0px;
+    line-height: initial;
+    height: auto;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    .description {
+      overflow: initial;
+      white-space: initial;
+    }
+  }
+}
+
 </style>

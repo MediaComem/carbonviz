@@ -104,7 +104,6 @@ export default {
 
 <style>
   /* global */
-  * { box-sizing: border-box }
   body {
     margin: 0;
     padding: 0;
@@ -302,7 +301,7 @@ export default {
 
   @media only screen and (max-width: 1000px) {
     .wrapper {
-      grid-template-columns: 60px auto 300px;
+      grid-template-columns: auto 0px 800px 200px auto;
     }
 
     [data-area="subnav"] {
