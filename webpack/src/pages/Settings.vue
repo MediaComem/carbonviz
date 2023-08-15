@@ -31,7 +31,7 @@ export default {
 
 <style scoped lang="scss">
 .content {
-  max-width: 800px;
+	max-width: 800px;
 	height: 800px;
   padding-bottom: 20px;
 }
@@ -43,7 +43,7 @@ export default {
 	color: black;
 	margin-top: 16px;
 	margin-bottom: 14px;
-	font-size: 13px;
+	font-size: 0.813rem;
 	font-weight: 700;
 }
 </style>

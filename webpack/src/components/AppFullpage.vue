@@ -108,6 +108,7 @@ export default {
     margin: 0;
     padding: 0;
     min-width: 800px;
+    font-size: 0.875rem;
   }
   :root {
     --trans-time: 0.3s;
@@ -116,7 +117,7 @@ export default {
     padding: 10px 10px 0px 0px;
   }
   [data-area="body"] h1 {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 900;
     margin: 0;
     padding: 30px 0 17px 0px;
@@ -125,7 +126,7 @@ export default {
     margin-left: 60px;
   }
   [data-area="body"] h2 {
-    font-size: 22px;
+    font-size: 1.4rem;
     font-weight: 800;
     margin-top: 0;
     padding: 10px 0 17px 0;
@@ -138,7 +139,7 @@ export default {
   [data-area="body"] p, [data-area="body"] article > div, [data-area="body"] ul li {
     max-width: 600px;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 1rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -177,7 +178,7 @@ export default {
     margin-bottom: 0px;
     align-items: baseline;
     text-align: left;
-    font-size: 48px;
+    font-size: 3rem;
     font-weight: 900;
   }
   #lang {
@@ -208,7 +209,7 @@ export default {
 
   /* nav */
   [data-area="nav"] {
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 700;
   }
   [data-area="nav"] ul {
@@ -235,7 +236,7 @@ export default {
   }
   /* sub nav */
   [data-area="subnav"] {
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 700;
     margin: 25px 0 0 0;
     padding: 0;

@@ -121,7 +121,7 @@ dialog menu {
 #tabs button {
   flex-grow: 1;
   color: var(--light-grey);
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 #tabs button.activeTab {
   color: var(--black);
@@ -145,7 +145,7 @@ dialog menu {
   margin: auto;
   text-align: left;
   color: var(--dark-grey);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-style: normal;
   font-weight: 400;
   line-height: 140%;
