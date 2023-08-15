@@ -372,7 +372,7 @@ onBeforeMount(async () => {
   all: initial;
 }
 .miniviz, .mv-actionContainer {
-  font-family: Roboto, Arial, sans-serif ;
+  font-family: Roboto, system-ui, Arial, sans-serif ;
 }
 .miniviz {
   all: initial;
@@ -422,7 +422,7 @@ onBeforeMount(async () => {
     margin: initial;
     padding: initial;
   }
-  font-family: Roboto, Arial, sans-serif;
+  font-family: Roboto, system-ui, Arial, sans-serif;
   display: flex;
   justify-content: space-evenly;
   align-items: center;

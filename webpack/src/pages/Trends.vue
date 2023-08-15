@@ -32,41 +32,45 @@ export default {
   <el-scrollbar ref="scroll">
     <h1 class="title" data-section="Weekly trends">{{ t(`components.statistics.day.trend`) }}</h1>
     <h3 class="subtitle">{{ t(`components.statistics.day.details`) }}</h3>
-    <div class="line"></div>
     <div class="weekly">
-      <div>
+      <div class="stats">
         <statistics type="co2" subtype="web" granularity="day" :height="180">
           <template #title>{{ t('global.internet') }}</template>
         </statistics>
         <statistics type="co2" subtype="computer" granularity="day" :height="180" class="computer_trends">
           <template #title>{{ t('global.computerEnergy') }} <span @click="goToSettings" style="font-weight: 400; text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span></template>
           <template #info>
-            {{ t('components.statistics.computerInfo') }}<br/>
-            {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
+            <div>💡</div>
+            <div>
+              {{ t('components.statistics.computerInfo') }}
+              {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
+            </div>
           </template>
         </statistics>
       </div>
-      <div>
+      <div class="stats">
         <statistics type="data" subtype="web" granularity="day" :height="200"></statistics>
       </div>
     </div>
     <h1 class="title" data-section="Monthly trends">{{ t(`components.statistics.month.trend`) }}</h1>
     <h3 class="subtitle">{{ t(`components.statistics.month.details`) }}</h3>
-    <div class="line"></div>
     <div class="monthly">
-      <div>
+      <div class="stats">
         <statistics type="co2" subtype="web" granularity="month" :height="180">
           <template #title>{{ t('global.internet') }}</template>
         </statistics>
         <statistics type="co2" subtype="computer" granularity="month" :height="180" class="computer_trends">
           <template #title>{{ t('global.computerEnergy') }} <span @click="goToSettings" style="font-weight: 400; text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span></template>
           <template #info>
-            {{ t('components.statistics.computerInfo') }}<br/>
-            {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
+            <div>💡</div>
+            <div>
+              {{ t('components.statistics.computerInfo') }}
+              {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
+            </div>
           </template>
         </statistics>
       </div>
-      <div>
+      <div class="stats">
         <statistics type="data" subtype="web" granularity="month" :height="200"></statistics>
       </div>
     </div>
@@ -111,7 +115,12 @@ h3.subtitle {
   padding-bottom: 20px;
 }
 
+.stats {
+  width: 470px;
+}
+
 .tips {
+  max-width: 800px;
   margin-bottom: 20px;
   :deep(.el-collapse-item__header) {
     font-weight: 700;

@@ -169,8 +169,8 @@
     "internet": "Internet",
     "last": {
       "today": "Aujourd'hui",
-      "week": "Les 7 derniers jours",
-      "month": "Les 30 derniers jours",
+      "week": "7 derniers jours",
+      "month": "30 derniers jours",
       "year": "Depuis janvier {year}"
     },
     "method_links": "Méthode & liens",
@@ -184,7 +184,7 @@
       "month": "Mois"
     },
     "settings": "Paramètres",
-    "trends": "Tendances",
+    "trends": "Tendances"
   },
   "locales": {
     "de": "Deutsch",

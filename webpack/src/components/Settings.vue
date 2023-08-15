@@ -184,7 +184,7 @@ export default {
 				</el-row>
 				<el-row>
 					<el-col :span="24" class="mt8 tip">
-						💡 {{ t('components.settings.longerUsageTip') }}
+						<div>💡</div><div>{{ t('components.settings.longerUsageTip') }}</div>
 					</el-col>
 				</el-row>
 			</div>
@@ -343,9 +343,10 @@ h3 {
 }
 
 .tip {
+	display: flex;
 	border-radius: 5px;
-    background-color: white;
-    padding: 4px;
+	background-color: white;
+	padding: 4px;
 }
 
 .miniviz-switch, .position-select {
