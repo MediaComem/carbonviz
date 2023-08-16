@@ -156,7 +156,7 @@ const showNotification = ref(false);
 const showInteraction = ref(false);
 const interactive = ref(false);
 const mvPosition = ref(5);
-const closeBtn = chrome.runtime.getURL(`icons/roundBtnX.svg`);
+const closeBtn = chrome.runtime.getURL(`assets/icons/roundBtnX.svg`);
 let activeIndex = ref(0);
 let dataType = ref('data');
 let notificationType = ref('weekly');
@@ -210,9 +210,9 @@ const customAnalogyNames = {
 };
 const asset = computed(() => {
   if (dataType.value === 'co2') {
-    return chrome.runtime.getURL(`icons/analogies/${analogiesCo2[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
+    return chrome.runtime.getURL(`assets/icons/analogies/${analogiesCo2[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
   } else {
-    return chrome.runtime.getURL(`icons/analogies/${analogiesData[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
+    return chrome.runtime.getURL(`assets/icons/analogies/${analogiesData[customAnalogyNames[dataType.value][activeIndex.value]].asset}`);
   }
 });
 const showDescAnimation = () => {

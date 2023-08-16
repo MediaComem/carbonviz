@@ -34,6 +34,15 @@
   --el-font-size-base: 12px;
 }
 
+button {
+  background: none;
+  color:black;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .activeButton {
   --activeBackground: var(--white);
   --activeColor: var(--black);

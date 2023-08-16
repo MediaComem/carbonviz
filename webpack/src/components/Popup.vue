@@ -38,22 +38,6 @@ export default {
 </script>
 
 <template>
-  <!--
-    <dialog id="tabDialog">
-      <form method="dialog">
-        <p>{{ t('components.popup.messages.openTab') }}<br>
-          {{ t('components.popup.messages.checkActivity') }}<br>
-          {{ t('components.popup.messages.accessPopup') }}
-        </p>
-        <input type="checkbox" ref="checkbox" name="tabConfirmation">
-        <label for="tabConfirmation">{{ t('global.askAgain') }}</label>
-        <menu>
-          <button value="cancel">{{ t('global.cancel') }}</button>
-          <button id="confirmBtn" @click='addPluginToNewTab()' value="default">{{ t('global.newTab') }}</button>
-        </menu>
-      </form>
-    </dialog>
-  -->
     <div class="container" id="carbonViz">
       <div id="tabs">
         <button :class="currentView === 'analogies' ? 'activeTab' : '' " @click='viewChange("analogies")'>{{ t('global.analogies') }}</button>
@@ -112,7 +96,7 @@ export default {
 #tabs button {
   flex-grow: 1;
   color: var(--light-grey);
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 #tabs button.activeTab {
   color: var(--black);
@@ -136,7 +120,7 @@ export default {
   margin: auto;
   text-align: left;
   color: var(--dark-grey);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-style: normal;
   font-weight: 400;
   line-height: 140%;
@@ -155,7 +139,7 @@ export default {
 [data-area="logo"]#appTitle::before {
   display: inline-block;
   content: ' ';
-  background: url("../icons/ico_footer.svg") no-repeat;
+  background: url("../assets/icons/ico_footer.svg") no-repeat;
   width: 20px;
   height: 20px;
   margin-bottom: 3px;
@@ -163,7 +147,7 @@ export default {
 [data-area="logo"]#logoEquiwatt::before {
   display: inline-block;
   content: ' ';
-  background: url("../icons/logos/logoEquiwatt.svg") no-repeat;
+  background: url("../assets/icons/logos/logoEquiwatt.svg") no-repeat;
   width: 70px;
   height: 15px;
   margin-bottom: 3px;
@@ -171,12 +155,28 @@ export default {
 [data-area="logo"]#openTab::before {
   display: inline-block;
   content: ' ';
-  background: url("../icons/iconOpenTab.svg") no-repeat;
+  background: url("../assets/icons/iconOpenTab.svg") no-repeat;
   width: 13px;
   height: 13px;
 }
 </style>
 
 <style>
-/* styles for elementPlus HTML after build */
+/* styles for elementPlus HTML after build or targets outside of template*/
+body {
+  background-color: white;
+  margin: 0px;
+  font-family: Roboto, system-ui, Arial, sans-serif !important;
+}
+body * {
+  font-family: Roboto, system-ui, Arial, sans-serif !important;
+}
+#popupPage{
+  height: 600px;
+  width: 500px;
+}
+/* HistoryStratum labels container on popup have wider width */
+#history .summary .label {
+  left: 5px;
+}
 </style>

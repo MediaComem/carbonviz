@@ -310,7 +310,7 @@ export default {
           <div v-if="trend">
             <span v-if="trend >= 0.01">+</span>
             <span v-if="trend <= -0.01">-</span>{{ Math.round(Math.abs(100 * trend))}}%
-            <svg v-if="Math.floor(100 * trend) !== 0" :class="trend > 0 ?'up' : 'down'"><use href="../../../icons/arrow.svg#arrow"></use></svg>
+            <svg v-if="Math.floor(100 * trend) !== 0" :class="trend > 0 ?'up' : 'down'"><use href="../../../assets/icons/arrow.svg#arrow"></use></svg>
           </div>
           <div v-else>
             -
@@ -326,8 +326,8 @@ export default {
         <span v-if="type==='co2'"><span class="unit">CO<span class="subscript">2</span></span>&nbsp;<span class="summary-value">{{ formatCo2(summary.co2, 0) }}</span></span>
         <span v-if="type==='data'"><span class="summary-value">{{ formatSize(summary.data, 0) }}</span></span>
         <div class="web_vs_laptop" v-if="type==='co2'">
-          <div class="web"><img src="../../../icons/web.svg">{{ formatCo2(summary.co2 - summary.computer.co2, 0) }}</div>
-          <div class="laptop"><img src="../../../icons/laptop.svg">{{ formatCo2(summary.computer.co2, 0) }}</div>
+          <div class="web"><img src="../../../assets/icons/web.svg">{{ formatCo2(summary.co2 - summary.computer.co2, 0) }}</div>
+          <div class="laptop"><img src="../../../assets/icons/laptop.svg">{{ formatCo2(summary.computer.co2, 0) }}</div>
         </div>
       </div>
       <div class="vr"></div>

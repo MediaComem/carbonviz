@@ -78,7 +78,7 @@ export default {
       <h1>{{ t('appTitle') }}</h1>
       <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>
     </div>
-    <img data-area="equiwatt" src="../../../icons/logos/logo-equiwatt-large.png" id="logoEquiwatt">
+    <img data-area="equiwatt" src="../../../assets/icons/logos/logo-equiwatt-large.png" id="logoEquiwatt">
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">
@@ -108,6 +108,7 @@ export default {
     margin: 0;
     padding: 0;
     min-width: 800px;
+    font-size: 0.875rem;
   }
   :root {
     --trans-time: 0.3s;
@@ -116,7 +117,7 @@ export default {
     padding: 10px 10px 0px 0px;
   }
   [data-area="body"] h1 {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 900;
     margin: 0;
     padding: 30px 0 17px 0px;
@@ -125,7 +126,7 @@ export default {
     margin-left: 60px;
   }
   [data-area="body"] h2 {
-    font-size: 22px;
+    font-size: 1.4rem;
     font-weight: 800;
     margin-top: 0;
     padding: 10px 0 17px 0;
@@ -138,7 +139,7 @@ export default {
   [data-area="body"] p, [data-area="body"] article > div, [data-area="body"] ul li {
     max-width: 600px;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 1rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -177,20 +178,12 @@ export default {
     margin-bottom: 0px;
     align-items: baseline;
     text-align: left;
-    font-size: 48px;
+    font-size: 3rem;
     font-weight: 900;
   }
   #lang {
     display: flex;
     align-items: center;
-  }
-  button {
-    background: none;
-    color:black;
-    border: none;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
   }
   /* logo */
   [data-area="logo"] {
@@ -202,7 +195,7 @@ export default {
     display: inline-block;
     padding-right: 15px;
     content: ' ';
-    background: url("../icons/icon48.png") no-repeat;
+    background: url("../assets/icons/icon48.png") no-repeat;
     width: 42px;
     height: 48px;
   }
@@ -216,7 +209,7 @@ export default {
 
   /* nav */
   [data-area="nav"] {
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 700;
   }
   [data-area="nav"] ul {
@@ -243,7 +236,7 @@ export default {
   }
   /* sub nav */
   [data-area="subnav"] {
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 700;
     margin: 25px 0 0 0;
     padding: 0;
@@ -330,7 +323,7 @@ export default {
       background-color: white;
     }
     [data-area="logo"]::before {
-      background: url("../icons/icon48Dark.png") no-repeat;
+      background: url("../assets/icons/icon48Dark.png") no-repeat;
     }
     :deep(.apexcharts-menu) {
       color: black;
@@ -338,12 +331,5 @@ export default {
     :deep(.apexcharts-text) {
       fill: white;
     }
-  }
-</style>
-
-<style>
-  /* Analogies spacing when no dataType buttons*/
-  .AnalogyItem .section {
-    margin-top: -60px;
   }
 </style>

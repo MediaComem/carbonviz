@@ -89,6 +89,10 @@ export default {
 .stats > div > p:first-child {
   font-size: 1.5em;
 }
+/* Analogies spacing when no dataType buttons*/
+.AnalogyItem .section {
+  margin-top: -60px;
+}
 .AnalogyItem .el-carousel__container {
   height: 170px;
 }

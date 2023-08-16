@@ -38,9 +38,9 @@ export default {
         </p>
       </article>
       <el-row justify="center" align="middle" class="logos">
-        <el-col :span="6"><img src="../../../icons/logos/innosuisse.svg"></el-col>
-        <el-col :span="6"><img src="../../../icons/logos/mei.svg"></el-col>
-        <el-col :span="6"><img src="../../../icons/logos/igt.svg"></el-col>
+        <el-col :span="6"><img src="../../../assets/icons/logos/innosuisse.svg"></el-col>
+        <el-col :span="6"><img src="../../../assets/icons/logos/mei.svg"></el-col>
+        <el-col :span="6"><img src="../../../assets/icons/logos/igt.svg"></el-col>
       </el-row>
       <article>
         <h1> {{ t('pages.partners.partnersIndustrial') }}</h1>
@@ -52,9 +52,9 @@ export default {
         </p>
       </article>
       <el-row justify="center" align="middle" class="logos">
-        <el-col :span="6"><img src="../../../icons/logos/logoSiL.svg"></el-col>
-        <el-col :span="6"><img src="../../../icons/logos/logo-equiwatt-large.png"></el-col>
-        <el-col :span="6"><img src="../../../icons/logos/logo-fond-FEE.png"></el-col>
+        <el-col :span="6"><img src="../../../assets/icons/logos/logoSiL.svg"></el-col>
+        <el-col :span="6"><img src="../../../assets/icons/logos/logo-equiwatt-large.png"></el-col>
+        <el-col :span="6"><img src="../../../assets/icons/logos/logo-fond-FEE.png"></el-col>
       </el-row>
       <article>
         <h1>{{ t('pages.partners.team.project') }}</h1>

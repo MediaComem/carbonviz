@@ -1,7 +1,7 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { retrieveHistoryLayers } from '../../../storage/storage.js';
 
-const MAX_HEIGHT = 150;
+const MAX_HEIGHT = 120;
 
 const layerHeightCo2 = (amount) => {
   // amount is the co2 impact without computer daily embodied energy

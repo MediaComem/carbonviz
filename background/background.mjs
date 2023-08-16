@@ -11,7 +11,7 @@ import { formatSize } from "../utils/format.js";
 const isFirefox = typeof(browser) !== 'undefined';
 
 const dailyNotificationURL = 'https://carbonviz.heig-vd.ch/notification.json';
-const notificationIcon = '../icons/logos/carbonViz-48.png'  //'../icons/logos/logo-equiwatt-large.png';
+const notificationIcon = '../assets/icons/logos/carbonViz-48.png'  //'../assets/icons/logos/logo-equiwatt-large.png';
 
 const coreNetworkElectricityUsePerByte = 8.39e-11;
 const dataCenterElectricityUsePerByte = 6.16e-11;
@@ -452,7 +452,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 // TODO handle light / dark also with service worker
 /*
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-  chrome.browserAction.setIcon({path: '../icons/iconDark.png'});
+  chrome.browserAction.setIcon({path: '../assets/icons/iconDark.png'});
 }
 */
 
@@ -499,14 +499,18 @@ const sendDailyUpdateStore = (activeTabId) => {
 }
 
 const sendWeeklyNotification = async (activeTabId) => {
+  const today = new Date();
+  today.setHours(0,0,0);
   const weekData = await getLastDaysSummary([-7, 0]);
   const lastWeekData = await getLastDaysSummary([-14, -7]);
 
-  saveNotifications('lastDisplayedWeeklyTimeStamp', new Date().getTime());
+  saveNotifications('lastDisplayedWeeklyTimeStamp', today.getTime());
   sendMessageToTab(activeTabId, { weeklynotification: {currentWeek: weekData, lastWeek: lastWeekData} });
 }
 
 const sendDailyNotification = async (activeTabId) => {
+  const today = new Date();
+  today.setHours(0,0,0);
   dailyResponseJson =  await fetch(dailyNotificationURL).then((response) => {
     if (response.ok) {
       return response.json();
@@ -527,31 +531,31 @@ const sendDailyNotification = async (activeTabId) => {
   } else {
     sendMessageToTab(activeTabId, { dailyNotifications: {data: dailyResponseJson[0]} });
     saveNotifications('dailyNotificationBacklog', []);
-    saveNotifications('lastDisplayedDailyTimeStamp', new Date().getTime());
+    saveNotifications('lastDisplayedDailyTimeStamp', today.getTime());
   }
 }
 
 const checkMissedNotifications = async (tab = false) => {
-  const now = new Date();
+  const today = new Date();
+  today.setHours(0,0,0);
+  const todayIsMonday = (today.getDay() === 1);
   let queryOptions = { active: true, lastFocusedWindow: true };
   let activeTab = tab ? tab : await chrome.tabs.query(queryOptions);
   notificationsStatus = await retrieveNotifications();
 
-  const lastMonday = new Date(now);
-  if (now.getDay() === 1) {
-    lastMonday.setDate(lastMonday.getDate() - 7);
-  } else {
-    lastMonday.setDate(now.getDate() - (now.getDay() + 6) % 7); // Calculate last Monday's date
+  let weekStartMonday = new Date(today);
+  if (!todayIsMonday) {
+    weekStartMonday.setDate(today.getDate() - (today.getDay() + 6) % 7); // Calculate last Monday's date
   }
 
   if (activeTab[0].id) {
-    const weekDate =  new Date(notificationsStatus.lastDisplayedWeeklyTimeStamp);
-    const date = new Date(notificationsStatus.lastDisplayedDailyTimeStamp);
-    if (!weekDate.valueOf() || weekDate < lastMonday) {
+    const lastWeeklyDisplay =  new Date(notificationsStatus.lastDisplayedWeeklyTimeStamp);
+    const lastDailyDisplay = new Date(notificationsStatus.lastDisplayedDailyTimeStamp);
+    if (!lastWeeklyDisplay.valueOf() || lastWeeklyDisplay < weekStartMonday) {
       sendWeeklyNotification(activeTab[0].id);
       return; // User to acknowledge popup before replacing with weekly below.
     };
-    if (!date.valueOf() || date.getDate() < now.getDate()) {
+    if (!lastDailyDisplay.valueOf() || lastDailyDisplay < today) {
       sendDailyNotification(activeTab[0].id);
     };
   }

@@ -215,7 +215,7 @@ export default {
 								:label="position.label"
 								:value="position.value"
 							>
-							  <img :src="`../../../icons/miniviz_pos_${position.value}.svg`" class="position-icon">
+							  <img :src="`../../../assets/icons/miniviz_pos_${position.value}.svg`" class="position-icon">
 								<span>{{ position.label }}</span>
 							</el-option>
 						</el-select>
@@ -325,7 +325,7 @@ h3 {
 	color: black;
 	margin-top: 16px;
 	margin-bottom: 14px;
-	font-size: 13px;
+	font-size: 0.8125rem;
 	font-weight: 700;
 }
 
@@ -333,7 +333,7 @@ h3 {
 	:deep(.el-input-number--small ) {
 		width: 95px;
 		:deep(.el-input--small) {
-			font-size: 13px;
+			font-size: 0.8125rem;
 		}
 	}
   :deep(.el-input-number--small .el-input-number__decrease .el-icon),
@@ -377,7 +377,7 @@ h3 {
 }
 
 :deep(.el-slider__marks .el-slider__marks-text) {
-	font-size: 10px;
+	font-size: 0.625rem;
 }
 
 :deep(.el-slider .el-slider__button) {
