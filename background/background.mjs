@@ -380,6 +380,12 @@ chrome.runtime.onMessage.addListener(handleMessage);
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
     resetSettings();
+    // Ask for permissions on firefox
+    if (isFirefox) {
+      const url = `../firefox/onboarding.html`;
+      const options = {url, active: true};
+      chrome.tabs.create(options);
+    }
     return;
   }
   // Event can trigger before initStorage is complete and DB instance is not ready. 
