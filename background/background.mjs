@@ -499,14 +499,18 @@ const sendDailyUpdateStore = (activeTabId) => {
 }
 
 const sendWeeklyNotification = async (activeTabId) => {
+  const today = new Date();
+  today.setHours(0,0,0);
   const weekData = await getLastDaysSummary([-7, 0]);
   const lastWeekData = await getLastDaysSummary([-14, -7]);
 
-  saveNotifications('lastDisplayedWeeklyTimeStamp', new Date().getTime());
+  saveNotifications('lastDisplayedWeeklyTimeStamp', today.getTime());
   sendMessageToTab(activeTabId, { weeklynotification: {currentWeek: weekData, lastWeek: lastWeekData} });
 }
 
 const sendDailyNotification = async (activeTabId) => {
+  const today = new Date();
+  today.setHours(0,0,0);
   dailyResponseJson =  await fetch(dailyNotificationURL).then((response) => {
     if (response.ok) {
       return response.json();
@@ -527,22 +531,22 @@ const sendDailyNotification = async (activeTabId) => {
   } else {
     sendMessageToTab(activeTabId, { dailyNotifications: {data: dailyResponseJson[0]} });
     saveNotifications('dailyNotificationBacklog', []);
-    saveNotifications('lastDisplayedDailyTimeStamp', new Date().getTime());
+    saveNotifications('lastDisplayedDailyTimeStamp', today.getTime());
   }
 }
 
 const checkMissedNotifications = async (tab = false) => {
-  const now = new Date();
-  const todayIsMonday = (now.getDay() === 1);
+  const today = new Date();
+  today.setHours(0,0,0);
+  const todayIsMonday = (today.getDay() === 1);
   let queryOptions = { active: true, lastFocusedWindow: true };
   let activeTab = tab ? tab : await chrome.tabs.query(queryOptions);
   notificationsStatus = await retrieveNotifications();
 
-  let weekStartMonday = new Date(now);
+  let weekStartMonday = new Date(today);
   if (!todayIsMonday) {
-    weekStartMonday.setDate(now.getDate() - (now.getDay() + 6) % 7); // Calculate last Monday's date
+    weekStartMonday.setDate(today.getDate() - (today.getDay() + 6) % 7); // Calculate last Monday's date
   }
-  weekStartMonday.setHours(0,0,0);
 
   if (activeTab[0].id) {
     const lastWeeklyDisplay =  new Date(notificationsStatus.lastDisplayedWeeklyTimeStamp);
@@ -551,7 +555,7 @@ const checkMissedNotifications = async (tab = false) => {
       sendWeeklyNotification(activeTab[0].id);
       return; // User to acknowledge popup before replacing with weekly below.
     };
-    if (!lastDailyDisplay.valueOf() || lastDailyDisplay.getTime() < now.getTime()) {
+    if (!lastDailyDisplay.valueOf() || lastDailyDisplay < today) {
       sendDailyNotification(activeTab[0].id);
     };
   }
