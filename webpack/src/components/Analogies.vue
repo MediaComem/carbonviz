@@ -93,7 +93,7 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .analogiesWrapper {
   /*  height: 490px;
       width: 480px; */
@@ -119,7 +119,7 @@ export default {
   padding-top: 5%;
   white-space: pre-line;
   text-align: center;
-  color: var(--white);
+  color: var(--black);
 }
 .stats {
   grid-area: stats;
@@ -159,10 +159,24 @@ export default {
 }
 .co2 {
   background-color: var(--co2Analogies);
+  :deep(.analogy) {
+    background-color: var(--co2Analogies);
+  }
 }
 .data {
   background-color: var(--dataAnalogies);
+  :deep(.analogy) {
+    background-color: var(--dataAnalogies);
+  }
 }
+:deep(.blend) {
+  mix-blend-mode: color-burn; background: #FFF;
+  img {mix-blend-mode: difference; opacity: 0.89;}
+}
+.analogiesWrapper :deep(.el-carousel__container button .el-icon) {
+  color: black;
+}
+
 </style>
 
 <style lang="scss">
@@ -179,6 +193,11 @@ export default {
     width: 2em;
   }
 }
+
+.analogiesWrapper .el-carousel.analogies .el-carousel__button {
+  color: black;
+}
+
 .hideButtons .el-carousel__container button{
   display: none;
 }

@@ -52,10 +52,13 @@ export default {
 </script>
 
 <template>
-  <div>
-    <img class="image" :src="asset">
-    <div v-if="legend" class="legend"> {{ legend }} </div>
+  <div class="analogy">
+    <div class="blend">
+      <img class="image" :src="asset">
+      <div v-if="legend" class="legend"> {{ legend }} </div>
+    </div>
   </div>
+
 </template>
 
 <style scoped lang="scss">
@@ -66,11 +69,12 @@ export default {
 .legend {
   justify-content: center;
 }
+
 </style>
 
 <style lang="scss">
 /* override elementPlus styles */
-#carbonViz .analogies .el-carousel__button {
+.analogies .el-carousel__button {
   color: white;
   background-color: initial;
   font-size: 24px;
