@@ -37,6 +37,9 @@ export default {
 }
 .content :deep(.wrapper) {
 	height: unset;
+	background-color: initial;
+	box-shadow: initial;
+
 }
 .content :deep(h3) {
 	margin: 0;
@@ -46,4 +49,5 @@ export default {
 	font-size: 0.813rem;
 	font-weight: 700;
 }
+
 </style>
