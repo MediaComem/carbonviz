@@ -108,7 +108,7 @@ export default {
     margin: 0;
     padding: 0;
     min-width: 800px;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
   }
   :root {
     --trans-time: 0.3s;

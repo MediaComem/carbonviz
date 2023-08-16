@@ -34,6 +34,7 @@ export default {
 	max-width: 800px;
 	height: 800px;
   padding-bottom: 20px;
+	font-size: 14px;
 }
 .content :deep(.wrapper) {
 	height: unset;
@@ -46,7 +47,6 @@ export default {
 	color: black;
 	margin-top: 16px;
 	margin-bottom: 14px;
-	font-size: 0.813rem;
 	font-weight: 700;
 }
 
