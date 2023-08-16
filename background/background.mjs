@@ -539,11 +539,10 @@ const checkMissedNotifications = async (tab = false) => {
   notificationsStatus = await retrieveNotifications();
 
   let weekStartMonday = new Date(now);
-  if (todayIsMonday) {
-    weekStartMonday.setHours(0,0,0);
-  } else {
+  if (!todayIsMonday) {
     weekStartMonday.setDate(now.getDate() - (now.getDay() + 6) % 7); // Calculate last Monday's date
   }
+  weekStartMonday.setHours(0,0,0);
 
   if (activeTab[0].id) {
     const lastWeeklyDisplay =  new Date(notificationsStatus.lastDisplayedWeeklyTimeStamp);
@@ -552,7 +551,7 @@ const checkMissedNotifications = async (tab = false) => {
       sendWeeklyNotification(activeTab[0].id);
       return; // User to acknowledge popup before replacing with weekly below.
     };
-    if (!lastDailyDisplay.valueOf() || lastDailyDisplay.getDate() < now.getDate()) {
+    if (!lastDailyDisplay.valueOf() || lastDailyDisplay.getTime() < now.getTime()) {
       sendDailyNotification(activeTab[0].id);
     };
   }

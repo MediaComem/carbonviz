@@ -38,22 +38,6 @@ export default {
 </script>
 
 <template>
-  <!--
-    <dialog id="tabDialog">
-      <form method="dialog">
-        <p>{{ t('components.popup.messages.openTab') }}<br>
-          {{ t('components.popup.messages.checkActivity') }}<br>
-          {{ t('components.popup.messages.accessPopup') }}
-        </p>
-        <input type="checkbox" ref="checkbox" name="tabConfirmation">
-        <label for="tabConfirmation">{{ t('global.askAgain') }}</label>
-        <menu>
-          <button value="cancel">{{ t('global.cancel') }}</button>
-          <button id="confirmBtn" @click='addPluginToNewTab()' value="default">{{ t('global.newTab') }}</button>
-        </menu>
-      </form>
-    </dialog>
-  -->
     <div class="container" id="carbonViz">
       <div id="tabs">
         <button :class="currentView === 'analogies' ? 'activeTab' : '' " @click='viewChange("analogies")'>{{ t('global.analogies') }}</button>
@@ -82,15 +66,6 @@ export default {
 
 
 <style scoped>
-/* dialog {
-  max-width: 350px;
-  border-radius: 10px;
-  border-width: 1px;
-}
-
-dialog menu {
-  text-align: right;
-} */
 .container {
   /*  height: 600px;
       width: 500px; */
@@ -199,5 +174,9 @@ body * {
 #popupPage{
   height: 600px;
   width: 500px;
+}
+/* HistoryStratum labels container on popup have wider width */
+#history .summary .label {
+  left: 5px;
 }
 </style>

@@ -214,7 +214,7 @@ export default {
       top: 50%;
       margin-top: -5px;
       text-align: left;
-      left: -10px;
+      left: -20px;
     }
   }
   .details {
