@@ -29,7 +29,6 @@
     }
   ],
   "action": {
-    "browser_style": true,
     "default_popup": "popup/popup.html",
     "default_icon": {
       "48": "assets/icons/icon48.png"
