@@ -74,7 +74,7 @@ export default {
 
 <style lang="scss">
 /* override elementPlus styles */
-.analogies .el-carousel__button {
+.analogies .el-carousel__indicators--labels .el-carousel__button {
   color: white;
   background-color: initial;
   font-size: 24px;

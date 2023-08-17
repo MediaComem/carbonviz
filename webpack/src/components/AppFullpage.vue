@@ -16,7 +16,6 @@ export default {
       '#Historical': t('global.history'),
       '#Analogies': t('global.analogies'),
       '#Trends': t('global.trends'),
-      '#Journey': t('global.data_journey'),
       '#FAQ': t('global.faq'),
       '#Settings': t('global.settings'),
       '#Partners': t('global.partners'),
@@ -28,7 +27,6 @@ export default {
       hashRoutes['#Historical'] = t('global.history');
       hashRoutes['#Analogies'] = t('global.analogies');
       hashRoutes['#Trends'] = t('global.trends');
-      hashRoutes['#Journey'] = t('global.data_journey');
       hashRoutes['#FAQ'] = t('global.faq');
       hashRoutes['#Settings'] = t('global.settings');
       hashRoutes['#Partners'] = t('global.partners');
@@ -37,21 +35,18 @@ export default {
     const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
 
     const subNav = ref([]);
-    const scrollElt = ref(null);
-    provide('setSubNav', (nav, scroll = undefined) => {
+    const subnavPages = ['#Trends', '#FAQ'];
+    const scroll = ref(null);
+    provide('setSubNav', (nav) => {
       subNav.value = nav;
-      if (scroll)
-      {
-        scrollElt.value = scroll.value;
-      }
     });
 
     const onSubnavClick = evt => {
       const data = evt.currentTarget.dataset;
       const scrollTo = document.querySelector(`[data-section="${data.scrollto}"]`);
       const topPos = scrollTo?.offsetTop ?? 0;
-      if (scrollElt.value) {
-        scrollElt.value.setScrollTop(topPos);
+      if (scroll.value) {
+        scroll.value.scrollTop = topPos - 120;
       }
     }
 
@@ -65,20 +60,21 @@ export default {
       locale.value = settings.lang;
     });
 
-    return {subNav, hashRoutes, currentHash, currentPage, onSubnavClick, t, changeLang};
+    return {scroll, subNav, subnavPages, hashRoutes, currentHash, currentPage, onSubnavClick, t, changeLang};
   }
 
 }
 </script>
 
 <template>
-  <div id="carbonViz" class="wrapper">
-    <div data-area="logo"></div>
-    <div data-area="title">
+  <div id="carbonViz" class="wrapper" ref="scroll">
+    <div data-area="logo">
       <h1>{{ t('appTitle') }}</h1>
+      <img src="../../../assets/icons/logos/logo-equiwatt-large.png" class="logoEquiwatt">
+    </div>
+    <div data-area="language">
       <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>
     </div>
-    <img data-area="equiwatt" src="../../../assets/icons/logos/logo-equiwatt-large.png" id="logoEquiwatt">
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">
@@ -86,8 +82,8 @@ export default {
         </li>
       </ul>
     </nav>
-    <nav data-area="subnav">
-      <ul v-show="currentHash !== '#Historical'">
+    <nav data-area="subnav" :class="{ hidden: !subnavPages.includes(currentHash)}">
+      <ul>
         <li v-for="(label, id) in subNav" :key="id">
           <a :data-scrollto="id" @click.prevent="onSubnavClick">{{ label }}</a>
         </li>
@@ -114,16 +110,13 @@ export default {
     --trans-time: 0.3s;
   }
   [data-area="body"] {
-    padding: 10px 10px 0px 0px;
+    padding: 50px 0px 0px 0px;
   }
   [data-area="body"] h1 {
     font-size: 1.5rem;
     font-weight: 900;
     margin: 0;
     padding: 30px 0 17px 0px;
-  }
-  [data-area="body"] h2, [data-area="body"] h3, [data-area="body"] ul, [data-area="body"] p, [data-area="body"] article > div {
-    margin-left: 60px;
   }
   [data-area="body"] h2 {
     font-size: 1.4rem;
@@ -153,43 +146,35 @@ export default {
 
 <style scoped>
   [data-area="logo"] {grid-area: logo;}
-  [data-area="title"] {grid-area: title;}
-  [data-area="equiwatt"] {grid-area: equiwatt;}
+  [data-area="language"] {grid-area: language;}
   [data-area="nav"] {grid-area: nav;}
-  [data-area="subnav"] {grid-area: subnav;}
+  [data-area="subnav"] {grid-area: nav;}
   [data-area="body"] {grid-area: body}
   .wrapper {
     font-family: Roboto, system-ui, Arial, sans-serif ;
     display: grid;
-    grid-template-columns: auto 200px 800px 200px auto;
-    grid-template-rows: 120px 100px auto;
+    grid-template-columns: 1fr 300px 400px 300px 1fr;
+    grid-template-rows: 100px 70px 1fr;
     grid-template-areas:
-      ". logo   title equiwatt ."
-      ". .      nav nav nav"
-      ". subnav body body body"
+      ". logo   .      language ."
+      ". nav    nav    nav      ."
+      ". body   body   body     .";
+    overflow: auto;
   }
-  /* title */
-  [data-area="title"] {
-    display: flex;
-    flex-direction: column;
-    padding-left: 5px;
+
+  [data-area="subnav"] {
+    margin-top: 70px;
   }
-  [data-area="title"] h1 {
-    margin-bottom: 0px;
-    align-items: baseline;
-    text-align: left;
-    font-size: 3rem;
-    font-weight: 900;
+
+  [data-area="subnav"].hidden {
+    display:none;
   }
-  #lang {
-    display: flex;
-    align-items: center;
-  }
+
   /* logo */
   [data-area="logo"] {
     display: flex;
     align-items: center;
-    flex-direction: row-reverse;
+    flex-direction: row;
   }
   [data-area="logo"]::before {
     display: inline-block;
@@ -200,33 +185,52 @@ export default {
     height: 48px;
   }
 
-  [data-area="equiwatt"] {
-    width: 200px;
+  .logoEquiwatt {
+    width: 107px;
     height: auto;
-    margin: auto;
-    justify-self: start;
+    margin-left: 20px;
+    margin-top: 3px;
   }
 
-  /* nav */
+  [data-area="language"] {
+    align-self: center;
+  }
+
+  #lang {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+  }
+
+  /* nav + subnav*/
   [data-area="nav"] {
     font-size: 1.125rem;
     font-weight: 700;
+    justify-self: center;
+    position: sticky;
+    top: 0px;
+    width: 1000px;
+    height: 70px;
+    margin: auto;
+    background-color: white;
+    z-index: 1000;
   }
-  [data-area="nav"] ul {
+  [data-area="nav"] ul, [data-area="subnav"] ul {
     padding-left: 0px;
+    text-align: center;
   }
-  [data-area="nav"] li {
+  [data-area="nav"] li, [data-area="subnav"] li {
     display: inline-block;
   }
   [data-area="nav"] a {
     display: inline-block;
     text-align: center;
-    color:#BFBFBF;
-    min-width: 150px;
+    color:#CECECE;
+    width: 166px;
     text-decoration: none;
     padding-bottom: 8px;
     padding-top: 8px;
-    border-bottom: solid 5px;
+    border-bottom: solid 2px;
     border-bottom-color: #BFBFBF;
     transition: border-bottom-color var(--trans-time), color var(--trans-time);
   }
@@ -237,48 +241,23 @@ export default {
   /* sub nav */
   [data-area="subnav"] {
     font-size: 0.75rem;
-    font-weight: 700;
-    margin: 25px 0 0 0;
-    padding: 0;
-  }
-  [data-area="subnav"] ul {
-    padding-left: 0px;
-  }
-  [data-area="subnav"] li {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-    text-align: right;
+    justify-self: center;
+    position: sticky;
+    top: 70px;
+    width: 1000px;
+    height: 48px;
+    background-color: #F8F8F8;
+    z-index: 1000;
   }
   [data-area="subnav"] a {
-    cursor: pointer;
     display: inline-block;
-    color:#BFBFBF;
-    min-width: 100px;
+    text-align: center;
+    color:black;
     text-decoration: none;
-    padding-bottom: 8px;
-    transition: color var(--trans-time);
+    padding: 3px 8px 0px 8px;
+    cursor: pointer;
   }
-  [data-area="subnav"] a::after {
-    display: inline-block;
-    content: ' ';
-    width: 6px;
-    height: 6px;
-    border: 1px solid;
-    border-color: #BFBFBF;
-    background-color: white;
-    margin-left: 6px;
-    margin-right: 16px;
-    border-radius: 12px;
-    transition: background-color var(--trans-time), border-color var(--trans-time);
-  }
-  [data-area="subnav"] a.active, [data-area="subnav"] a:hover {
-    color: black;
-  }
-  [data-area="subnav"] a.active::after, [data-area="subnav"] a:hover::after {
-    border-color: black;
-    background-color: black;
-  }
+
   /* body */
   [data-area="body"] {
     justify-self: stretch;
@@ -290,16 +269,6 @@ export default {
   }
   .fade-enter-from, .fade-leave-to {
     opacity: 0;
-  }
-
-  @media only screen and (max-width: 1000px) {
-    .wrapper {
-      grid-template-columns: auto 0px 800px 200px auto;
-    }
-
-    [data-area="subnav"] {
-      display: none;
-    }
   }
 
   @media (prefers-color-scheme: dark) {

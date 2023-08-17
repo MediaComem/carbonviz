@@ -30,10 +30,12 @@ export default {
 .flexContainer {
   position: relative;
   max-width: 1000px;
-  height: 100%;
+  width: 100%;
+  margin: auto;
+  height: calc(100% - 10px);
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
+  justify-content: space-between;
 }
 .flexContainer div{
   max-width: 400px;

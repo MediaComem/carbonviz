@@ -26,7 +26,7 @@ export default {
       <h3>{{ t('global.co2') }}</h3>
       <h3>{{ t('global.data') }}</h3>
     </div>
-    <el-scrollbar class="scroll">
+    <div class="scroll">
       <div  class="content">
         <div class="co2">
           <div class="AnalogyItem" v-for="(item, index) in analogyNames['co2']" :key="index">
@@ -39,7 +39,7 @@ export default {
           </div>
         </div>
       </div>
-    </el-scrollbar>
+    </div>
   </div>
 </template>
 
@@ -53,6 +53,7 @@ export default {
 
 .header, .content {
     max-width: 1000px;
+    margin: auto;
     display: flex;
     justify-content: space-between;
 }

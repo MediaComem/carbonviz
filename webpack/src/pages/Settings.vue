@@ -11,28 +11,31 @@ export default {
 	components: { ElRow, ElCol, Settings},
 	setup(props, context) {
 		const { t } = useI18n({});
-		const scroll = ref(null);
 
-		const setSubNav = inject('setSubNav', scroll);
+		const setSubNav = inject('setSubNav');
 		onMounted(() => setSubNav(subNav));
-		return { t, scroll };
+		return { t };
 	}
 }
 </script>
 
 <template>
-	<el-scrollbar ref="scroll">
-		<h1 class="title">Settings</h1>
+	<div class="settings">
 		<div class="content">
+			<h1 class="title">Settings</h1>
 			<Settings></Settings>
 		</div>
-	</el-scrollbar>
+	</div>
 </template>
 
 <style scoped lang="scss">
+.settings {
+	display: flex;
+}
 .content {
-	max-width: 800px;
+	max-width: 600px;
 	height: 800px;
+  margin: auto;
   padding-bottom: 20px;
 	font-size: 14px;
 }
@@ -40,8 +43,14 @@ export default {
 	height: unset;
 	background-color: initial;
 	box-shadow: initial;
-
 }
+.content :deep(#settingsWrapper > div#lifetime),
+.content :deep(#settingsWrapper > div#minivizDisplay),
+.content :deep(#settingsWrapper > div#download),
+.content :deep(#settingsWrapper > div#delete) {
+	margin-left: 0px;
+}
+
 .content :deep(h3) {
 	margin: 0;
 	color: black;
