@@ -21,7 +21,7 @@ export default {
 </script>
 
 <template>
-  <div id="Analogies" class="container">
+  <div class="container">
     <div class="header">
       <h3>{{ t('global.co2') }}</h3>
       <h3>{{ t('global.data') }}</h3>
