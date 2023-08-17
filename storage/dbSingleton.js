@@ -198,6 +198,11 @@ export class DBInstance {
             }
             if (week !== lastRunningWeek || day !== lastRunningDay) {
               const days = [0, 1, 2, 3, 4, 5, 6];
+              // compare date disregarding time
+              // ex: if inactive from yesterday 10PM to today 8AM -> 1 day inactive => clear daily storage for today week day
+              // ex: if inactive from the day before yesterday 7AM to today 8AM -> 2 days inactive => clear daily storage for today week day and yesterday
+              today.setHours(0,0,0);
+              lastRunning.setHours(0,0,0);
               // check how many days the plugin was inactive to clear irrelevant data for last 7 days
               const nbDaysInactive = Math.floor((today - lastRunning) / (1000 * 3600 * 24));
               for (let inactiveDay = 0; inactiveDay < Math.min(nbDaysInactive, 7); inactiveDay++) {
