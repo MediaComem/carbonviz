@@ -57,7 +57,14 @@ const config = {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'fonts/'
+              publicPath: (url, resourcePath, context) => {
+                // `resourcePath` is original absolute path to asset
+                // `context` is directory where stored asset (`rootContext`) or `context` option
+                // To get relative path you can use
+                const relativePath = path.relative(context, resourcePath);
+                return relativePath.replaceAll('\\', '/');
+              },
+              emitFile: false
             }
           }
         ]
