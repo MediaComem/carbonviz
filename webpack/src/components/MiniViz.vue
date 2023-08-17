@@ -37,41 +37,49 @@
           <div id="mv-stats">
             <div class="mv-title"> {{ t('components.miniViz.notification.weekly.title') }} </div>
             <div id="mv-current" class="mv-summary">
-              <p>
-                {{ t(`components.miniViz.notification.${dataType}`,
-                  {
-                    data: dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek[dataType], 0) : formatSize(weeklyTotals.currentWeek[dataType], 0)
-                  }
-                )}}
-              </p>
               <p> {{ t(`components.miniViz.notification.weekly.days`)}} </p>
               <p>
+                <span id="dataValue">
+                  {{ t(`components.miniViz.notification.${dataType}`,
+                    {
+                      data: dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek[dataType], 0) : formatSize(weeklyTotals.currentWeek[dataType], 0)
+                    }
+                  )}}
+                </span>
                 {{ t(`components.miniViz.notification.analogy`,
                   { amount: getAnalogyValue(customAnalogyNames, dataType, weeklyTotals.currentWeek, activeIndex).amount + ' ' + getAnalogyText(customAnalogyNames, dataType, weeklyTotals.currentWeek[dataType], activeIndex, t) }
                 )}}
               </p>
             </div>
             <div id="mv-average">
-              <p>
-                {{ t('components.miniViz.notification.weekly.average') }}
-                <strong> {{ dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek.co2 / 7, 0) : formatSize(weeklyTotals.currentWeek.data / 7, 0) }} / {{ t(`global.day`) }}</strong>
-              </p>
-              <p id="mv-trend">
-                {{ t('components.miniViz.notification.weekly.trend') }}:
-              </p>
-              <div v-if="weeklyTotals.trend[dataType] !== 0">
-                <span v-if="weeklyTotals.trend[dataType] > 0">+</span>
-                <span v-if="weeklyTotals.trend[dataType] < 0">-</span>
-                {{ Math.round(Math.abs(100 * weeklyTotals.trend[dataType]))}} %
-                <svg :class="weeklyTotals.trend[dataType] > 0 ? 'mv-up' : 'mv-down'" width="23" height="23" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
-                  <path id="arrow" d="M0.93934 19.9393C0.353553 20.5251 0.353553 21.4749 0.93934 22.0607C1.52513 22.6464 2.47487 22.6464 3.06066 22.0607L0.93934 19.9393ZM22.5 2C22.5 1.17157 21.8284 0.5 21 0.5H7.5C6.67157 0.5 6 1.17157 6 2C6 2.82843 6.67157 3.5 7.5 3.5H19.5V15.5C19.5 16.3284 20.1716 17 21 17C21.8284 17 22.5 16.3284 22.5 15.5V2ZM3.06066 22.0607L22.0607 3.06066L19.9393 0.93934L0.93934 19.9393L3.06066 22.0607Z" fill="currentColor" />
-                </svg>
+              <div class="averageBox">
+                <p>
+                  {{ t('components.miniViz.notification.weekly.average') }}
+                </p>
+                <span> {{ dataType === 'co2' ? formatCo2(weeklyTotals.currentWeek.co2 / 7, 0) : formatSize(weeklyTotals.currentWeek.data / 7, 0) }} / {{ t(`global.day`) }}</span>
               </div>
-              <div v-else>
-                -
+              <div class="hr"></div>
+              <div class="trendBox">
+                <p id="mv-trend">
+                  {{ t('components.miniViz.notification.weekly.trend') }}:
+                </p>
+                <div v-if="weeklyTotals.trend[dataType] !== 0">
+                  <span v-if="weeklyTotals.trend[dataType] > 0">+</span>
+                  <span v-if="weeklyTotals.trend[dataType] < 0">-</span>
+                  <span>{{ Math.round(Math.abs(100 * weeklyTotals.trend[dataType]))}} % </span>
+                  <svg :class="weeklyTotals.trend[dataType] > 0 ? 'mv-up' : 'mv-down'" width="23" height="23" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+                    <path id="arrow" d="M0.93934 19.9393C0.353553 20.5251 0.353553 21.4749 0.93934 22.0607C1.52513 22.6464 2.47487 22.6464 3.06066 22.0607L0.93934 19.9393ZM22.5 2C22.5 1.17157 21.8284 0.5 21 0.5H7.5C6.67157 0.5 6 1.17157 6 2C6 2.82843 6.67157 3.5 7.5 3.5H19.5V15.5C19.5 16.3284 20.1716 17 21 17C21.8284 17 22.5 16.3284 22.5 15.5V2ZM3.06066 22.0607L22.0607 3.06066L19.9393 0.93934L0.93934 19.9393L3.06066 22.0607Z" fill="currentColor" />
+                  </svg>
+                </div>
+                <div v-else>
+                  -
+                </div>
               </div>
             </div>
-            <div class="mv-cta"><a @click="openExtension">{{ t('components.miniViz.notification.details') }}</a></div>
+            <div class="mv-cta">
+              <div id="openTab" :style="{ 'background':'url(' + openTab + ') no-repeat', 'background-size':'cover' }"></div>
+              <button id="openNewTab" @click='openExtension'> {{ t('components.miniViz.notification.details') }} </button>
+            </div>
           </div>
           <!--
           <div id="mv-advise">
@@ -157,6 +165,7 @@ const showInteraction = ref(false);
 const interactive = ref(false);
 const mvPosition = ref(5);
 const closeBtn = chrome.runtime.getURL(`assets/icons/roundBtnX.svg`);
+const openTab = chrome.runtime.getURL(`assets/icons/iconOpenTab.svg`);
 let activeIndex = ref(0);
 let dataType = ref('data');
 let notificationType = ref('weekly');
@@ -433,6 +442,7 @@ onBeforeMount(async () => {
   border: 1px solid white;
   border-top: 0;
   &.hidden {
+    border: none;
     pointer-events: none;
     max-height: 0px;
     opacity: 0;
@@ -482,19 +492,34 @@ onBeforeMount(async () => {
     width: 100%;
   }
   .mv-title {
-    margin-bottom: 10px
+    margin-bottom: 10px;
+    color: var(--dark-grey);
+    font-size: 12px;
+    font-weight: 700;
   }
   .mv-summary {
-    font-weight: 700;
-    margin-bottom: 20px
+    margin-bottom: 20px;
+    p {
+      font-size: 13px;
+    }
+    #dataValue {
+      font-size: 14px;
+      font-weight: 700;
+    }
   }
 
   .mv-cta{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-top: 10px;
     font-size: 14px;
-    font-weight: 700;
-    a {
-      cursor: pointer;
+    #openTab {
+      display: inline-block;
+      content: ' ';
+      width: 15px;
+      height: 15px;
+      margin-right: 10px;
     }
   }
 
@@ -540,8 +565,23 @@ onBeforeMount(async () => {
   font-weight: bold;
   margin-bottom: 20px;
 }
-#mv-stats #mv-trend {
-  margin-top: 20px;
+#mv-stats #mv-average {
+  display: flex;
+  justify-content: space-around;
+  font-size: 13px;
+  .averageBox span {
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .trendBox span {
+    font-weight: 700;
+    font-size: 14px;
+  }
+}
+#mv-stats #mv-average div.hr {
+	height: auto;
+	width: 1px;
+	background-color: var(--dark-grey);
 }
 .mv-actionContainer {
   position: fixed;
@@ -620,6 +660,10 @@ onBeforeMount(async () => {
 </style>
 
 <style>
+.mv-extension .miniviz {
+  font-size: 12px !important;
+  font-family: Roboto, system-ui, Arial, sans-serif !important;
+}
 /* styles for messageHTML which is created after injection */
 #mv-notification.mv-data .mv-message a {
   color: #00A0D6;
