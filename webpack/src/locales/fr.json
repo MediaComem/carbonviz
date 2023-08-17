@@ -48,7 +48,7 @@
     "miniViz": {
       "notification": {
         "co2": "{data} de co2",
-        "data": "{data} de données",
+        "data": "{data}",
         "time": "en {time}",
         "analogy": "soit {amount}",
         "details": "Voir détails",
