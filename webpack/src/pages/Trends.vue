@@ -1,6 +1,6 @@
 <script>
 import Statistics from '../components/Statistics.vue'
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import { ElRow, ElCol } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import { tips } from '../../../utils/tips';
@@ -11,25 +11,30 @@ export default {
   },
   setup() {
     const { t, locale } = useI18n({});
-    const scroll = ref(null);
 
-    const subNav = {
+    const subNav = ref({
       'Weekly trends': t('components.statistics.day.trend'),
       'Monthly trends': t('components.statistics.month.trend'),
       'Recommandations': t('components.statistics.recommandations')
-    };
+    });
+    watch(locale, async (newLocale) => {
+      // Update the hashRoutes object with the new translations
+      subNav.value['Weekly trends'] = t('components.statistics.day.trend');
+      subNav.value['Monthly trends'] = t('components.statistics.month.trend');
+      subNav.value['Recommandations'] = t('components.statistics.recommandations');
+    });
     const setSubNav = inject('setSubNav');
-    onMounted(() => setSubNav(subNav, scroll));
+    onMounted(() => setSubNav(subNav.value));
     const activeTips = ['streaming_resolution'];
     const goToSettings = () => { window.location.href='#Settings' };
-    return { t, locale, scroll, tips, activeTips, goToSettings };
+    return { t, locale, tips, activeTips, goToSettings };
   }
 
 }
 </script>
 
 <template>
-  <el-scrollbar ref="scroll">
+  <div>
     <h1 class="title" data-section="Weekly trends">{{ t(`components.statistics.day.trend`) }}</h1>
     <h3 class="subtitle">{{ t(`components.statistics.day.details`) }}</h3>
     <div class="weekly">
@@ -84,7 +89,7 @@ export default {
       </el-collapse-item>
       </el-collapse>
     </div>
-  </el-scrollbar>
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -120,7 +125,7 @@ h3.subtitle {
 }
 
 .tips {
-  max-width: 800px;
+  max-width: 600px;
   margin-bottom: 20px;
   :deep(.el-collapse-item__header) {
     font-weight: 700;

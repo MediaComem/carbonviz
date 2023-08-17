@@ -1,5 +1,5 @@
 <script>
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n'
 import { ElCarousel, ElCarouselItem, ElRow, ElCol } from 'element-plus';
 import { downloadData } from '../../../storage/dataDownload.js'
@@ -61,36 +61,157 @@ export default {
     ElRow, ElCol
   },
   setup() {
-    const { t } = useI18n({});
+    const { locale, t } = useI18n({});
 
-    const scroll = ref(null);
-
-    const subNav = {
-      'Data & Privacy': t('pages.faq.data_privacy'),
+    const subNav = ref({
+      'Journey': t('global.data_journey'),
+      'Privacy': t('pages.faq.data_privacy'),
       'Observations': t('pages.faq.observations.title'),
       'Model': t('pages.faq.model.title'),
       'Modelshow': t('pages.faq.model_result'),
       'Analogies': t('pages.faq.analogies'),
       'Sources': t('pages.faq.sources')
-    };
+    });
+
+    watch(locale, async (newLocale) => {
+      // Update the hashRoutes object with the new translations
+      subNav.value['Journey'] = t('global.data_journey');
+      subNav.value['Privacy'] = t('pages.faq.data_privacy');
+      subNav.value['Observations'] = t('pages.faq.observations.title');
+      subNav.value['Model'] = t('pages.faq.model.title');
+      subNav.value['Modelshow'] = t('pages.faq.model_result');
+      subNav.value['Analogies'] = t('pages.faq.analogies');
+      subNav.value['Sources'] = t('pages.faq.sources');
+    });
+
     const setSubNav = inject('setSubNav');
-    onMounted(() => setSubNav(subNav, scroll));
+    onMounted(() => setSubNav(subNav.value) );
     function triggerDownloadData() {
       downloadData();
     };
 
     const analogies = ref(analogiesData);
 
-    return { analogies, scroll, triggerDownloadData, t };
+    return { analogies, triggerDownloadData, t };
   }
 
 }
 </script>
 
 <template>
-  <el-scrollbar ref="scroll">
+  <div class="faq">
     <div class="content">
-      <article>
+      <div class="data-journey" data-section="Journey">
+        <h1>{{ t('global.data_journey') }}</h1>
+        <p>
+          {{ t('pages.journey.part_1') }}
+        </p>
+        <p>
+          {{ t('pages.journey.part_2') }}
+        </p>
+        <p class="video-container">
+          <video autoplay loop width="600">
+            <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
+            <source src="../../../assets/video/Data_Journey.mp4" type="video/mp4">
+          </video>
+          <div> <!-- energy -->
+            <el-popover
+              placement="top"
+              trigger="hover"
+              :width="600"
+            >
+              <template #reference>
+                <div class="trigger energy"></div>
+              </template>
+              <el-row align="middle">
+                <el-col :span="10">
+                  <video class="video-explanation" autoplay loop style="width:200">
+                    <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
+                    <source src="../../../assets/video/Energy_Mix.mp4" type="video/mp4">
+                  </video>
+                </el-col>
+                <el-col :span="14">
+                  <span class="bold">{{ t('pages.journey.energy_mix') }}</span>
+                  <p>{{ t('pages.journey.energy_mix_details') }}</p>
+                </el-col>
+              </el-row>
+            </el-popover>
+          </div>
+          <div> <!-- device -->
+            <el-popover
+              placement="top"
+              trigger="hover"
+              :width="600"
+            >
+              <template #reference>
+                <div class="trigger device"></div>
+              </template>
+              <el-row align="middle">
+                <el-col :span="10">
+                  <video class="video-explanation" autoplay loop style="width:200">
+                    <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
+                    <source src="../../../assets/video/Device_Color.mp4" type="video/mp4">
+                  </video>
+                </el-col>
+                <el-col :span="14">
+                  <span class="bold">{{ t('pages.journey.connected_devices') }}</span>
+                  <p>{{ t('pages.journey.connected_devices_details') }}</p>
+                </el-col>
+              </el-row>
+            </el-popover>
+          </div>
+          <div> <!-- network -->
+            <el-popover
+              placement="top"
+              trigger="hover"
+              :width="600"
+            >
+              <template #reference>
+                <div class="trigger network"></div>
+              </template>
+              <el-row align="middle">
+                <el-col :span="10">
+                  <video class="video-explanation" autoplay loop style="width:200">
+                    <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
+                    <source src="../../../assets/video/Network_Color.mp4" type="video/mp4">
+                  </video>
+                </el-col>
+                <el-col :span="14">
+                  <span class="bold">{{ t('pages.journey.core_network') }}</span>
+                  <p>{{ t('pages.journey.core_network_details') }}</p>
+                </el-col>
+              </el-row>
+            </el-popover>
+          </div>
+          <div> <!-- network -->
+            <el-popover
+              placement="top"
+              trigger="hover"
+              :width="600"
+            >
+              <template #reference>
+                <div class="trigger data-center"></div>
+              </template>
+              <el-row align="middle">
+                <el-col :span="10">
+                  <video class="video-explanation" autoplay loop style="width:200">
+                    <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
+                    <source src="../../../assets/video/Server_Color.mp4" type="video/mp4">
+                  </video>
+                </el-col>
+                <el-col :span="14">
+                  <span class="bold">{{ t('pages.journey.data_center') }}</span>
+                  <p>{{ t('pages.journey.data_center_details') }}</p>
+                </el-col>
+              </el-row>
+            </el-popover>
+          </div>
+        </p>
+        <p>
+          {{ t('pages.journey.part_3') }}
+        </p>
+      </div>
+      <article data-section="Privacy">
         <h1>{{ t('pages.faq.data_privacy') }}</h1>
           <p>
               {{ t('pages.faq.data_explanation_intro') }}
@@ -301,12 +422,16 @@ export default {
         </ul>
       </article>
     </div>
-  </el-scrollbar>
+  </div>
 </template>
 
 <style scoped lang="scss">
+.faq {
+  display: flex;
+}
 .content {
-  max-width: 1000px;
+  max-width: 600px;
+  margin: auto;
 }
 .bold {
   font-weight: 700;
@@ -362,6 +487,45 @@ span.ref {
 }
 .el-carousel__indicators.el-carousel__indicators--horizontal {
   margin-left: 0px;
+}
+
+.bold {
+  font-weight: 700;
+}
+.el-popover.el-popper p {
+  word-break: break-word;
+}
+.video-container {
+  position: relative;
+}
+.trigger {
+  position: absolute;
+  cursor: pointer;
+  width: 95px;
+  height: 100px;
+  &.energy {
+    left: 230px;
+    top: 130px;
+    width: 150px;
+    height: 130px;
+  }
+  &.device {
+    left: 149px;
+    top: 296px;
+  }
+  &.network {
+    left: 260px;
+    top: 296px;
+  }
+  &.data-center {
+    left: 370px;
+    top: 296px;
+  }
+}
+
+.video-explanation {
+  width: 200px;
+  height: auto;
 }
 
 @media (prefers-color-scheme: dark) {

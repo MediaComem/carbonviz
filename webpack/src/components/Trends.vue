@@ -14,7 +14,7 @@
           <div>💡</div>
           <div>
             {{ t('components.statistics.computerInfo') }}
-            {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
+            {{ t('components.statistics.computerTip') }} <span @click="$emit('showSettings')" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
           </div>
         </template>
       </statistics>

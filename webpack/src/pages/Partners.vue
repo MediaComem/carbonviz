@@ -22,7 +22,7 @@ export default {
 </script>
 
 <template>
-  <el-scrollbar>
+  <div class="partners">
     <div class="content">
       <article>
         <h1> {{ t('pages.partners.partnersInstitution') }}</h1>
@@ -38,7 +38,7 @@ export default {
         </p>
       </article>
       <el-row justify="center" align="middle" class="logos">
-        <el-col :span="6"><img src="../../../assets/icons/logos/innosuisse.svg"></el-col>
+        <el-col :span="12"><img src="../../../assets/icons/logos/innosuisse.svg"></el-col>
         <el-col :span="6"><img src="../../../assets/icons/logos/mei.svg"></el-col>
         <el-col :span="6"><img src="../../../assets/icons/logos/igt.svg"></el-col>
       </el-row>
@@ -52,9 +52,9 @@ export default {
         </p>
       </article>
       <el-row justify="center" align="middle" class="logos">
-        <el-col :span="6"><img src="../../../assets/icons/logos/logoSiL.svg"></el-col>
-        <el-col :span="6"><img src="../../../assets/icons/logos/logo-equiwatt-large.png"></el-col>
-        <el-col :span="6"><img src="../../../assets/icons/logos/logo-fond-FEE.png"></el-col>
+        <el-col :span="10"><img src="../../../assets/icons/logos/logoSiL.svg"></el-col>
+        <el-col :span="12"><img src="../../../assets/icons/logos/logo-equiwatt-large.png"></el-col>
+        <el-col :span="2"><img src="../../../assets/icons/logos/logo-fond-FEE.png"></el-col>
       </el-row>
       <article>
         <h1>{{ t('pages.partners.team.project') }}</h1>
@@ -84,12 +84,16 @@ export default {
         </el-row>
       </article>
       </div>
-  </el-scrollbar>
+  </div>
 </template>
 
 <style scoped lang="scss">
+.partners {
+  display: flex;
+}
 .content {
-  max-width: 1000px;
+  max-width: 600px;
+  margin: auto;
   padding-bottom: 20px;
 }
 a {

@@ -325,7 +325,7 @@ h3 {
 	color: black;
 	margin-top: 16px;
 	margin-bottom: 14px;
-	font-size: 0.8125rem;
+	font-size: 1.1em;
 	font-weight: 700;
 }
 
@@ -333,7 +333,7 @@ h3 {
 	:deep(.el-input-number--small ) {
 		width: 95px;
 		:deep(.el-input--small) {
-			font-size: 0.8125rem;
+			font-size: 0.8125em;
 		}
 	}
   :deep(.el-input-number--small .el-input-number__decrease .el-icon),
@@ -377,7 +377,7 @@ h3 {
 }
 
 :deep(.el-slider__marks .el-slider__marks-text) {
-	font-size: 0.625rem;
+	font-size: 0.625em;
 }
 
 :deep(.el-slider .el-slider__button) {

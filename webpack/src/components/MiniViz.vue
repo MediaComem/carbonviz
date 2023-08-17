@@ -1,6 +1,6 @@
  <template>
   <div class="mv-extension" v-if="showMiniViz">
-    <div class="miniviz" :class="{ 'hidden': showInteraction, 'mv-positionBottom': mvPosition&POSITION_BOTTOM, 'mv-positionLeft': mvPosition&POSITION_LEFT }" id="miniViz_container">
+    <div class="mv-miniviz" :class="{ 'hidden': showInteraction, 'mv-positionBottom': mvPosition&POSITION_BOTTOM, 'mv-positionLeft': mvPosition&POSITION_LEFT }" id="mv-miniViz_container">
       <div class="mv-anim" :class="dataType === 'data' ? 'mv-data' : 'mv-co2'" @mouseover="hideMiniViz">
         <img v-for="(item, index) in iconBar" key="item" class="mv-image" :class="{'mv-fill': currentMeter[dataType][item]}" :src="asset" height="20" width="20">
       </div>
@@ -33,7 +33,7 @@
           class="mv-notificationContainer"
           v-if="notificationType === 'weekly'"
         >
-          <img class="mv-exit" :src="closeBtn" alt="X" @click="closeNotification">
+          <img class="mv-exit" :src="closeBtn" alt="X" @click="closeNotification" width="15" height="15">
           <div id="mv-stats">
             <div class="mv-title"> {{ t('components.miniViz.notification.weekly.title') }} </div>
             <div id="mv-current" class="mv-summary">
@@ -380,10 +380,10 @@ onBeforeMount(async () => {
 .mv-extension {
   all: initial;
 }
-.miniviz, .mv-actionContainer {
+.mv-miniviz, .mv-actionContainer {
   font-family: Roboto, system-ui, Arial, sans-serif ;
 }
-.miniviz {
+.mv-miniviz {
   all: initial;
   position: fixed;
   top: 5%;
@@ -421,12 +421,14 @@ onBeforeMount(async () => {
   }
   img {
     opacity: 0.4;
+    width: 20px;
+    height: 20px;
   }
   img.mv-fill {
     opacity: 1;
   }
 }
-.miniviz #mv-description, .miniviz #mv-notification {
+.mv-miniviz #mv-description, .mv-miniviz #mv-notification {
   p, h1, h2, h3, img {
     margin: initial;
     padding: initial;
@@ -448,7 +450,7 @@ onBeforeMount(async () => {
     opacity: 0;
   }
 }
-.miniviz #mv-description {
+.mv-miniviz #mv-description {
   max-width: 270px;
   margin-right: 0px;
   margin-left: auto;
@@ -456,6 +458,10 @@ onBeforeMount(async () => {
   background-color: var(--co2Active);
   box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
       inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  img {
+    width: 40px;
+    height: 40px;
+  }
   &.mv-data {
     background-color: var(--dataActive);
     box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
@@ -483,7 +489,7 @@ onBeforeMount(async () => {
     font-size: 10px;
   }
 }
-.miniviz #mv-notification {
+.mv-miniviz #mv-notification {
   flex-wrap: wrap;
   color: black;
   background-color: var(--grey);
@@ -542,7 +548,7 @@ onBeforeMount(async () => {
     color: var(--green);
   }
 }
-.miniviz #mv-description, .miniviz #mv-notification {
+.mv-miniviz #mv-description, .mv-miniviz #mv-notification {
   .mv-exit {
     float: right;
     margin: 10px;
