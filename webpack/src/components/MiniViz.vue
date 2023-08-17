@@ -77,17 +77,10 @@
               </div>
             </div>
             <div class="mv-cta">
-              <div id="openTab" :style="{ 'background':'url(' + openTab + ') no-repeat', 'background-size':'cover' }"></div>
+              <div id="openTab" :style="{ 'background':'url(' + openTab + ') no-repeat', 'background-size':'cover' }" @click='openExtension'></div>
               <button id="openNewTab" @click='openExtension'> {{ t('components.miniViz.notification.details') }} </button>
             </div>
           </div>
-          <!--
-          <div id="mv-advise">
-            <h3>Recommandations</h3>
-            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laborum quo quis, porro nostrum pariatur repellendus dicta sequi ipsam, nesciunt,
-              doloremque nam. Enim quo accusamus explicabo deserunt upiditate et, doloremque architecto excepturi.</p>
-          </div>
-          -->
         </div>
         <div
           class="mv-notificationContainer"
@@ -102,21 +95,6 @@
         </div>
       </div>
     </div>
-    <!--
-    <div class="mv-actionContainer" :class="{'ac-positionTop': !mvPositionTop, 'ac-positionLeft': !mvPositionRight}" v-if="interactive">
-      <div class="mv-actionPanel" :class="{ 'mv-show': showInteraction, 'mv-hide': !showInteraction }">
-        <Logo class="mv-icon"></Logo>
-        {{ t('appTitle') }}
-        <svg class="mv-icon cvz-interactive" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openTabExtension">
-          <path :fill="color" fill-rule="evenodd" clip-rule="evenodd" d="M5.56068 3.51027H3.51027V11.4897H11.4854V9.43932H12.9957V11.8139C12.9957 12.468 12.4637 13 11.8096 13H3.18609C2.53202 13 2 12.468 2 11.8139V3.18609C2 2.53202 2.53202 2 3.18609 2H5.56068V3.51027ZM7.93124 2.04474C7.41618 2.04474 6.99685 2.46406 6.99685 2.97912V7.07324C6.99685 7.5883 7.41618 8.00762 7.93124 8.00762H12.0254C12.5404 8.00762 12.9597 7.5883 12.9597 7.07324V2.97912C12.9597 2.46406 12.5404 2.04474 12.0254 2.04474H7.93124Z"/>
-        </svg>
-        <span class="mv-vl"></span>
-        <svg class="mv-closeIcon cvz-interactive" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg" @click="closeActionPanel">
-          <path d="M1 12.2065L12.2065 1.00003M12.2065 12.2065L1 1.00003" stroke="#333333" stroke-width="2"/>
-        </svg>
-      </div>
-    </div>
-    -->
   </div>
 </template>
 
@@ -380,9 +358,7 @@ onBeforeMount(async () => {
 .mv-extension {
   all: initial;
 }
-.mv-miniviz, .mv-actionContainer {
-  font-family: Roboto, system-ui, Arial, sans-serif ;
-}
+
 .mv-miniviz {
   all: initial;
   position: fixed;
@@ -414,7 +390,6 @@ onBeforeMount(async () => {
   background-color: var(--co2);
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   border: 1px solid white;
-  border-top: 0;
   padding: 4px;
   &.mv-data {
     background-color: var(--data);
@@ -521,11 +496,20 @@ onBeforeMount(async () => {
     margin-top: 10px;
     font-size: 14px;
     #openTab {
+      cursor: pointer;
       display: inline-block;
       content: ' ';
-      width: 15px;
-      height: 15px;
-      margin-right: 10px;
+      width: 13px;
+      height: 13px;
+      margin-right: 2px;
+    }
+    button {
+      background: initial;
+      font-size: 12px;
+      box-shadow: initial;
+      color: black;
+      padding: 0px;
+      font-weight: 400;
     }
   }
 
@@ -573,8 +557,12 @@ onBeforeMount(async () => {
 }
 #mv-stats #mv-average {
   display: flex;
-  justify-content: space-around;
+  justify-content: start;
+  gap: 20px;
   font-size: 13px;
+  .averageBox, .trendBox {
+    width: 50%;
+  }
   .averageBox span {
     font-weight: 700;
     font-size: 14px;
@@ -589,34 +577,7 @@ onBeforeMount(async () => {
 	width: 1px;
 	background-color: var(--dark-grey);
 }
-.mv-actionContainer {
-  position: fixed;
-  z-index: 10000;
-  width: 138px;
-  height: 33px;
-  line-height: 33px;
-  font-size: 10px;
-  right: 10px;
-  bottom: 10px;
-  &.hidden {
-    display: none;
-  }
-  &.ac-positionTop {
-    bottom: auto;
-    top: 10px;
-  }
-  &.ac-positionLeft {
-    right: auto;
-    left: 10px;
-  }
-}
 
-.mv-actionPanel {
-  position: relative;
-  height: 33px;
-  background: #FFFFFF;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-}
 
 .mv-vl {
   display: block;
@@ -666,7 +627,7 @@ onBeforeMount(async () => {
 </style>
 
 <style>
-.mv-extension .miniviz {
+.mv-extension .mv-miniviz {
   font-size: 12px !important;
   font-family: Roboto, system-ui, Arial, sans-serif !important;
 }
