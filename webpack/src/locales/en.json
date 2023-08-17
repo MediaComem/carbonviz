@@ -54,9 +54,9 @@
         "details": "See details",
         "weekly": {
           "title": "Weekly Notification",
-          "days": "The last 7 days",
-          "average": "Weekly average",
-          "trend": "Weekly trend"
+          "days": "last 7 days",
+          "average": "Average",
+          "trend": "Trend"
         },
         "daily": "daily notification"
       }
