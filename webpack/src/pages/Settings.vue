@@ -22,7 +22,7 @@ export default {
 <template>
 	<div class="settings">
 		<div class="content">
-			<h1 class="title">Settings</h1>
+			<h1 class="title">{{ t('global.settings') }}</h1>
 			<Settings></Settings>
 		</div>
 	</div>

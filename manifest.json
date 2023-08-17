@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "CarbonViz",
-  "description": "Your browsing climate impact, made visible.",
+  "name": "__MSG_appName__",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
   "author": "Media Engineering Institute - HEIG-VD",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "icons": {
     "16": "assets/icons/icon16.png",
     "48": "assets/icons/icon48.png",
