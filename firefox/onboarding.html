@@ -1,14 +1,87 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
     <script src="./onboarding.js"></script>
-    <style>.hidden { display: none; }</style>
+    <style>
+      body {
+        font-family: Roboto, system-ui, Arial, sans-serif;
+      }
+      h1 {
+        font-weight: 400;
+      }
+      .onboarding, .ok {
+        width: 800px;
+        margin: auto;
+      }
+      .button {
+        padding: 10px 20px 10px 20px;
+        border: none;
+        border-radius: 5px;
+      }
+      .todo {
+        height: 300px;
+        margin-top: 20px;
+        display: flex;
+        gap: 20px;
+      }
+      .todo .list {
+        border: 1px solid #E6E6E6;
+        display: inline-flex;
+        padding: 11px 0px 75px 10px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 13px;
+        width: 400px;
+      }
+
+      .hidden { display: none; }
+    </style>
   </head>
   <body>
-    <h1>Thanks for installing CarbonViz.</h1>
-    <p>In order for CarbonViz to assess your online activities and give you feedback on its impact, you need to allow it to run on all websites.</p>
-    <button id="permissions">Allow CarbonViz</button>
-    <div id="ok" style="color: green" class="hidden">CarbonViz can access your data to monitor your activites. You can close this tab.</div>
-    <div id="error" style="color: red" class="hidden">There was an error granting permissions to CarbonViz. Please try again.</div>
+    <div id="en" class="onboarding">
+      <h1>Thanks for installing CarbonViz.</h1>
+      <h2>One last thing...</h2>
+      <p>In order to get feedback on your browsing impact, you need to authorise CarbonViz on all websites.</p>
+      <button id="permissions" class="button">Continue to Allow</button>
+      <div id="error" style="color: red" class="hidden">
+        There was an error granting permissions to CarbonViz. Please try again.
+      </div>
+      <div class="todo">
+        <div class="list">
+          <div>1. Click Continue above</div>
+          <div>2. Click Allow on the pop-up window</div>
+        </div>
+        <div>
+          <img src="./authorization_popup.png">
+        </div>
+      </div>
+    </div>
+    <div id="ok" class="ok hidden">
+      <h1>CarbonViz is all set!</h1>
+      <p>You can close this tab.</p>
+    </div>
+    <div id="fr" class="hidden onboarding">
+      <h1>Merci d'avoir installé CarbonViz.</h1>
+      <h2>Une dernière chose...</h2>
+      <p>Afin d'obtenir les informations sur l'impact de votre navigation, vous devez authoriser CarbonViz sur tous les sites.</p>
+      <button id="permissions" class="button">Continuer pour Authoriser</button>
+      <div id="error_fr" style="color: red" class="hidden">
+        L'authorisation des permissions a échoué. Merci de réessayer.
+      </div>
+      <div class="todo">
+        <div class="list">
+          <div>1. Cliquer sur Continuer ci-dessus</div>
+          <div>2. Cliquer sur Authoriser dans la fenêtre pop-up</div>
+        </div>
+        <div>
+          <img src="./authorization_popup.png">
+        </div>
+      </div>
+    </div>
+    <div id="ok_fr"class="ok hidden">
+      <h1>CarbonViz est prêt!</h1>
+      <p>Vous pouvez fermer cet onglet.</p>
+    </div>
   </body>
 </html>

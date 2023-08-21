@@ -3,6 +3,13 @@ const permissionsToRequest = {
   origins: ['<all_urls>']
 }
 
+function checkLanguage() {
+  if (/^fr\b/.test(navigator.language)) {
+    document.getElementById('fr').classList.remove('hidden');
+    document.getElementById('en').classList.add('hidden');
+  }
+}
+
 async function requestPermissions() {
   function onResponse(response) {
     if (response) {
@@ -20,9 +27,19 @@ async function requestPermissions() {
   const origins = currentPermissions.origins;
   const permissions = currentPermissions.permissions;
   if (origins.includes('<all_urls>') && permissions.includes('webRequest')) {
-    document.getElementById('ok').classList.remove('hidden');
+    if (/^fr\b/.test(navigator.language)) {
+      document.getElementById('fr').classList.add('hidden');
+      document.getElementById('ok_fr').classList.remove('hidden');
+    } else {
+      document.getElementById('en').classList.add('hidden');
+      document.getElementById('ok').classList.remove('hidden');
+    }
   } else {
-    document.getElementById('error').classList.remove('hidden');
+    if (/^fr\b/.test(navigator.language)) {
+      document.getElementById('error_fr').classList.remove('hidden');
+    } else {
+      document.getElementById('error').classList.remove('hidden');
+    }
   }
   console.log(`Current permissions:`, currentPermissions);
 }
@@ -34,3 +51,7 @@ document.addEventListener('click', function (event) {
   event.preventDefault();
   requestPermissions();
   }, false);
+
+  window.onload = (event) => {
+    checkLanguage();
+  };
