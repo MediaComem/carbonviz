@@ -1,0 +1,88 @@
+/* variables */
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --green: #96E467;
+  --grey: #E6E6E6;
+  --red: #f15552;
+  --blue: #409eff;
+  --light-grey: #CECECE;
+  --dark-grey: #616161;
+  --button-grey: #F8F8F8;
+  --background-grey: #F8F8F8;
+  --co2: #906C0D;
+  --co2Active: #7E6115;
+  --co2Week: #8B7B52;
+  --co2WeekActive: #766845;
+  --co2Month: #685F47;
+  --co2MonthActive: #4F4835;
+  --co2Analogies: #EBE1C9;
+  --data: #4F6D70;
+  --dataActive: #415C5F;
+  --dataWeek: #213C3F;
+  --dataWeekActive: #1D3436;
+  --dataMonth: #0F2D30;
+  --dataMonthActive: #041F22;
+  --dataAnalogies: #DCEAEB;
+  --normal: 500;
+  --heavy: 700;
+  --activeBackground: var(--button-grey);
+  --activeColor: var(--dark-grey);
+  --activeWeight: var(--normal);
+  --el-color-primary: var(--black);
+  --el-text-color-regular: var(--black);
+  --el-font-size-base: 12px;
+}
+
+button {
+  background: none;
+  color:black;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.activeButton {
+  --activeBackground: var(--white);
+  --activeColor: var(--black);
+  --activeWeight: var(--heavy);
+}
+
+
+.el-scrollbar {
+  --el-scrollbar-bg-color: var(--dark-grey);
+  --el-scrollbar-opacity: 1;
+  --el-scrollbar-hover-bg-color: var(--dark-grey);
+  --el-scrollbar-hover-opacity: 1
+}
+
+.el-scrollbar__bar {
+  background-color: white;
+}
+
+.el-slider {
+  --el-slider-height: 2px;
+  --el-slider-runway-bg-color: var(--dark-grey);
+  --el-slider-main-bg-color: var(--dark-grey);
+  --el-slider-stop-bg-color: var(--dark-grey);
+  --el-slider-button-size: 15px;
+}
+
+.el-date-editor {
+  --el-date-editor-width: 130px;
+}
+
+.el-button {
+  --el-button-hover-bg-color: var(--light-grey);
+  --el-button-hover-border-color: var(--grey);
+}
+
+.el-button.el-button--danger {
+  --el-button-text-color: red;
+  --el-button-bg-color: white;
+  --el-button-border-color: var(--grey);
+  --el-button-hover-bg-color: var(--red);
+  --el-button-hover-border-color: red;
+  font-weight: 700;
+}
