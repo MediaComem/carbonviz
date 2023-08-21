@@ -485,8 +485,14 @@ const addPluginToNewTab = async (hash = '') => {
   }
 }
 
-const checkDailyDates = (notifications) => {
-  return notifications.sort((a, b) => new Date(a.date) - new Date(b.date));
+const filterSortDailyDates = (notifications) => {
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() - 2);
+  const filteredNotifications = notifications.filter(notification => {
+    return new Date(notification.date) > minDate;
+  });
+
+  return filteredNotifications.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
 const sendDailyUpdateStore = (activeTabId) => {
@@ -518,7 +524,7 @@ const sendDailyNotification = async (activeTabId) => {
     throw new Error('Failed to fetch dailyNotification');
   })
   .then((responseJson) => {
-    const orderByDate = checkDailyDates(responseJson.dailyNotifications);
+    const orderByDate = filterSortDailyDates(responseJson.dailyNotifications);
     return orderByDate;
   })
   .catch((error) => {
