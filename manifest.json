@@ -49,5 +49,10 @@
       ],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{f54e3186-d8c4-4693-ad23-c70468bd3434}"
+    }
+  }
 }
