@@ -510,6 +510,10 @@ const sendWeeklyNotification = async (activeTabId) => {
   const weekData = await getLastDaysSummary([-7, 0]);
   const lastWeekData = await getLastDaysSummary([-14, -7]);
 
+  if (weekData.data === 0) {
+    return;
+  }
+
   saveNotifications('lastDisplayedWeeklyTimeStamp', today.getTime());
   sendMessageToTab(activeTabId, { weeklynotification: {currentWeek: weekData, lastWeek: lastWeekData} });
 }
