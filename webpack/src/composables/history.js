@@ -1,110 +1,58 @@
-import { ref, onMounted, watch } from 'vue';
-import { retrieveHistoryLayers } from './storage';
+import { ref, onMounted, watch, computed } from 'vue';
+import { retrieveHistoryLayers } from '../../../storage/storage.js';
 
-const MAX_HEIGHT = 150;
+const MAX_HEIGHT = 120;
 
 const layerHeightCo2 = (amount) => {
-  const height = 11 + (amount / 0.9) * MAX_HEIGHT; // min 11px, max 150 px for 900g CO2eq ( 8h laptop consumption no activities ~ 200g)
+  // amount is the co2 impact without computer daily embodied energy
+  const height = 25 + (amount / 0.05) * MAX_HEIGHT; // min 25px, max 175 px for 50g CO2eq ( 8h laptop consumption no activities ~ 200g)
   return Math.min(height, MAX_HEIGHT);
 }
 
 const layerHeightData = (amount) => {
-  const height = 11 + (amount / (1*750000000)) * MAX_HEIGHT; // min 11px, max 150 px for 750MB
+  const height = 25 + (amount / (1*750000000)) * MAX_HEIGHT; // min 25px, max 175 px for 750MB
   return Math.min(height, MAX_HEIGHT);
 }
 
-const setup = (type) => {
-  const maxHeight = 600;
-  const barHeight = 37;
-
+const setup = (type, period, scrollCount) => {
   const layers = ref([]);
+  const historyCount = ref(0);
   const scroll = ref(0);
-  const show = ref(false);
-
-  const stage = ref(0);
-  const maxStage = ref(0);
+  const isData = computed(() => type.value === 'data');
+  const isCo2 = computed(() => type.value === 'co2');
 
   const totalHeight = ref(0);
-  const isData = type === 'data';
-  const isCo2 = type === 'co2';
-
-
-  const updateScroll = () => {
-    let layer;
-    if (isCo2) {
-      if (stage.value === 0) {
-        layer = layers.value[layers.value.length-1];
-        if (!layer) {
-          scroll.value = totalHeight.value;
-        } else {
-          layer.visible = true;
-          scroll.value = totalHeight.value - layerHeightCo2(layer.amount) - 37 /* top bar*/;
-        }
-      } else {
-        scroll.value = Math.max(totalHeight.value - stage.value*maxHeight, -37 /* top bar*/);
-      };
-    }
-    if (isData) {
-      if (stage.value === 0) {
-        layer = layers.value[0];
-        if (!layer) {
-          scroll.value = 0;
-        } else {
-          layer.visible = true;
-          scroll.value = layerHeightData(layer.amount) + 37 /* top bar*/;
-        }
-      } else {
-        scroll.value = Math.min(stage.value*maxHeight, totalHeight.value + 37 /* top bar*/);
-      };
-    }
-  }
 
   const retrieveData = async () => {
     // get layers from history
-    const { co2, data } = await retrieveHistoryLayers();
+    const { co2, data, count } = await retrieveHistoryLayers(period.value, scrollCount.value);
 
-    if (isCo2) {
+    historyCount.value = count;
+
+    if (isCo2.value) {
       layers.value = co2.reverse();
       // layer height (+1px border)
       totalHeight.value = layers.value.reduce((acc, layer) => acc + layerHeightCo2(layer.amount) + 1, 0);
     }
-    if(isData) {
-      layers.value = data;
+    if (isData.value) {
+      layers.value = data.reverse();
       // layer height (+1px border)
       totalHeight.value = layers.value.reduce((acc, layer) => acc + layerHeightData(layer.amount) + 1, 0);
     }
 
-    maxStage.value = layers.value.length === 1 ? 0 : Math.ceil(totalHeight.value / maxHeight);
   }
 
   onMounted(async () => {
     await retrieveData();
-    updateScroll();
   });
 
 
-  watch(stage, updateScroll)
-  watch(show, value => {
-    if(!value) {
-      stage.value = 0;
-    }
-  });
+  watch(period, retrieveData)
+  watch(type, retrieveData)
+  watch(scrollCount, retrieveData)
 
-  const nextStage = () => {
-    if (stage.value === maxStage.value) {
-      return;
-    }
-    stage.value++;
-  }
 
-  const previousStage = () => {
-    if (stage.value === 0) {
-      return;
-    }
-    stage.value--;
-  }
-
-  return {layers, scroll, totalHeight, show, stage, maxStage, nextStage, previousStage};
+  return { layers, historyCount, scroll, totalHeight };
 }
 
 export { setup, layerHeightCo2, layerHeightData };
