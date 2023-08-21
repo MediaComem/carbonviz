@@ -487,9 +487,9 @@ const addPluginToNewTab = async (hash = '') => {
 
 const filterSortDailyDates = (notifications) => {
   const minDate = new Date();
-  minDate.setDate(minDate.getDate() -2);
+  minDate.setDate(minDate.getDate() - 2);
   const filteredNotifications = notifications.filter(notification => {
-    return new Date(notification.date).getTime() > minDate.getTime();
+    return new Date(notification.date) > minDate;
   });
 
   return filteredNotifications.sort((a, b) => new Date(a.date) - new Date(b.date));
