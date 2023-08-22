@@ -1,44 +1,80 @@
 <script>
-import {ref, provide} from 'vue';
+import {ref, provide, onMounted, watch} from 'vue';
+import { useI18n } from 'vue-i18n';
 import LocationHashRouter from '../composables/LocationHashRouter';
-import Live from '../pages/Live.vue';
-
-// Hash's name must mach the Page's name in the pages folder
-const hashRoutes = {
-  '#Live': 'Live consumption',
-  '#Statistics': 'Statistics',
-  '#Journey': "Data's journey",
-  '#Method': 'Method & links',
-  '#About': 'About',
-  '#Privacy': 'Data & Privacy'
-};
+import Historical from '../pages/Historical.vue';
+import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 
 export default {
-  components: { Live },
+  components: { Historical },
 
   setup(props, context) {
+    const { t, locale } = useI18n({});
+
+    // Hash's name must mach the Page's name in the pages folder
+    const hashRoutes = {
+      '#Historical': t('global.history'),
+      '#Analogies': t('global.analogies'),
+      '#Trends': t('global.trends'),
+      '#FAQ': t('global.faq'),
+      '#Settings': t('global.settings'),
+      '#Partners': t('global.partners'),
+    };
+
+    // Watch for changes to the locale value
+    watch(locale, async (newLocale) => {
+      // Update the hashRoutes object with the new translations
+      hashRoutes['#Historical'] = t('global.history');
+      hashRoutes['#Analogies'] = t('global.analogies');
+      hashRoutes['#Trends'] = t('global.trends');
+      hashRoutes['#FAQ'] = t('global.faq');
+      hashRoutes['#Settings'] = t('global.settings');
+      hashRoutes['#Partners'] = t('global.partners');
+    });
+
     const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
 
     const subNav = ref([]);
-    provide('setSubNav', nav => subNav.value = nav);
+    const subnavPages = ['#Trends', '#FAQ'];
+    const scroll = ref(null);
+    provide('setSubNav', (nav) => {
+      subNav.value = nav;
+    });
 
     const onSubnavClick = evt => {
       const data = evt.currentTarget.dataset;
       const scrollTo = document.querySelector(`[data-section="${data.scrollto}"]`);
-      const topPos = scrollTo?.offsetTop ?? 200;
-      document.querySelector('[data-area="body"]').scrollTop = topPos - 200;
+      const topPos = scrollTo?.offsetTop ?? 0;
+      if (scroll.value) {
+        scroll.value.scrollTop = topPos - 120;
+      }
     }
 
-    return {subNav, hashRoutes, currentHash, currentPage, onSubnavClick};
+    function changeLang(lang) {
+      saveSettings('lang', lang);
+      locale.value = lang;
+    }
+
+    onMounted(async () => {
+      const settings = await retrieveSettings();
+      locale.value = settings.lang;
+    });
+
+    return {scroll, subNav, subnavPages, hashRoutes, currentHash, currentPage, onSubnavClick, t, changeLang};
   }
 
 }
 </script>
 
 <template>
-  <div class="wrapper">
-    <div data-area="logo"></div>
-    <h1 data-area="title">Carbonviz</h1>
+  <div id="carbonViz" class="wrapper" ref="scroll">
+    <div data-area="logo">
+      <h1>{{ t('appTitle') }}</h1>
+      <img src="../../../assets/icons/logos/logo-equiwatt-large.png" class="logoEquiwatt">
+    </div>
+    <div data-area="language">
+      <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>
+    </div>
     <nav data-area="nav">
       <ul>
         <li v-for="(label, hash) in hashRoutes" :key="hash">
@@ -46,52 +82,47 @@ export default {
         </li>
       </ul>
     </nav>
-    <nav data-area="subnav">
-      <ul v-show="currentHash !== '#Live'">
+    <nav data-area="subnav" :class="{ hidden: !subnavPages.includes(currentHash)}">
+      <ul>
         <li v-for="(label, id) in subNav" :key="id">
           <a :data-scrollto="id" @click.prevent="onSubnavClick">{{ label }}</a>
         </li>
       </ul>
     </nav>
-    <main data-area="body">
-      <live v-show="currentHash === '#Live'"></live>
+    <div data-area="body">
+      <Historical v-show="currentHash === '#Historical'"></Historical>
       <transition name="fade" mode="out-in">
-          <component :is="currentPage" v-if="currentHash !== '#Live'"></component>
+          <component :is="currentPage" v-if="currentHash !== '#Historical'"></component>
       </transition>
-    </main>
+    </div>
   </div>
 </template>
 
 <style>
   /* global */
-  * { box-sizing: border-box }
   body {
     margin: 0;
     padding: 0;
+    min-width: 800px;
+    font-size: 0.75rem;
   }
   :root {
     --trans-time: 0.3s;
   }
+  [data-area="body"] {
+    padding: 50px 0px 0px 0px;
+  }
   [data-area="body"] h1 {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 900;
     margin: 0;
-    padding: 34px 0 17px 59px;
-  }
-  [data-area="body"] h1::after {
-    display: block;
-    margin: 17px 84px 0 23px;
-    content: '';
-    border-bottom: solid #BFBFBF 2px;
-  }
-  [data-area="body"] h2, [data-area="body"] h3, [data-area="body"] ul, [data-area="body"] p, [data-area="body"] article > div {
-    margin-left: 122px;
+    padding: 30px 0 17px 0px;
   }
   [data-area="body"] h2 {
-    font-size: 22px;
+    font-size: 1.4rem;
     font-weight: 800;
     margin-top: 0;
-    padding: 34px 0 17px 0;
+    padding: 10px 0 17px 0;
   }
   [data-area="body"] h3 {
     font-weight: 600;
@@ -101,7 +132,7 @@ export default {
   [data-area="body"] p, [data-area="body"] article > div, [data-area="body"] ul li {
     max-width: 600px;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 1rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -110,66 +141,96 @@ export default {
       color: #BFBFBF;
     }
   }
+
 </style>
 
 <style scoped>
   [data-area="logo"] {grid-area: logo;}
-  [data-area="title"] {grid-area: title;}
+  [data-area="language"] {grid-area: language;}
   [data-area="nav"] {grid-area: nav;}
-  [data-area="subnav"] {grid-area: subnav;}
+  [data-area="subnav"] {grid-area: nav;}
   [data-area="body"] {grid-area: body}
   .wrapper {
-    font-family: Roboto, Arial, sans-serif ;
+    font-family: Roboto, system-ui, Arial, sans-serif ;
     display: grid;
-    /* width: 1000px;
-    margin: 0 auto; */
-    grid-template-columns: 200px auto;
-    grid-template-rows: 120px 100px auto;
+    grid-template-columns: 1fr 300px 400px 300px 1fr;
+    grid-template-rows: 100px 70px 1fr;
     grid-template-areas:
-      "logo   title"
-      ".      nav"
-      "subnav body"
+      ". logo   .      language ."
+      ". nav    nav    nav      ."
+      ". body   body   body     .";
+    overflow: auto;
   }
-  /* title */
-  [data-area="title"] {
-    padding-left: 5px;
-    text-align: left;
-    font-size: 48px;
-    font-weight: 900;
+
+  [data-area="subnav"] {
+    margin-top: 70px;
   }
+
+  [data-area="subnav"].hidden {
+    display:none;
+  }
+
   /* logo */
   [data-area="logo"] {
     display: flex;
     align-items: center;
-    flex-direction: row-reverse;
+    flex-direction: row;
   }
   [data-area="logo"]::before {
     display: inline-block;
     padding-right: 15px;
     content: ' ';
-    background: url("../icons/icon48.png") no-repeat;
+    background: url("../assets/icons/icon48.png") no-repeat;
     width: 42px;
     height: 48px;
   }
-  /* nav */
+
+  .logoEquiwatt {
+    width: 107px;
+    height: auto;
+    margin-left: 20px;
+    margin-top: 3px;
+  }
+
+  [data-area="language"] {
+    align-self: center;
+  }
+
+  #lang {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+  }
+
+  /* nav + subnav*/
   [data-area="nav"] {
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 700;
+    justify-self: center;
+    position: sticky;
+    top: 0px;
+    width: 1000px;
+    height: 70px;
+    margin: auto;
+    background-color: white;
+    z-index: 1000;
   }
-  [data-area="nav"] ul {
-    padding-left: 70px;
+  [data-area="nav"] ul, [data-area="subnav"] ul {
+    padding-left: 0px;
+    text-align: center;
   }
-  [data-area="nav"] li {
+  [data-area="nav"] li, [data-area="subnav"] li {
     display: inline-block;
   }
   [data-area="nav"] a {
     display: inline-block;
     text-align: center;
-    color:#BFBFBF;
-    min-width: 150px;
+    color:#CECECE;
+    width: 166px;
     text-decoration: none;
     padding-bottom: 8px;
-    border-bottom: solid 5px;
+    padding-top: 8px;
+    border-bottom: solid 2px;
     border-bottom-color: #BFBFBF;
     transition: border-bottom-color var(--trans-time), color var(--trans-time);
   }
@@ -179,53 +240,28 @@ export default {
   }
   /* sub nav */
   [data-area="subnav"] {
-    font-size: 12px;
-    font-weight: 700;
-    margin: 25px 0 0 0;
-    padding: 0;
-  }
-  [data-area="subnav"] li {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-    text-align: right;
+    font-size: 0.75rem;
+    justify-self: center;
+    position: sticky;
+    top: 70px;
+    width: 1000px;
+    height: 48px;
+    background-color: #F8F8F8;
+    z-index: 1000;
   }
   [data-area="subnav"] a {
-    cursor: pointer;
     display: inline-block;
-    color:#BFBFBF;
-    min-width: 100px;
+    text-align: center;
+    color:black;
     text-decoration: none;
-    padding-bottom: 8px;
-    transition: color var(--trans-time);
+    padding: 3px 8px 0px 8px;
+    cursor: pointer;
   }
-  [data-area="subnav"] a::after {
-    display: inline-block;
-    content: ' ';
-    width: 6px;
-    height: 6px;
-    border: 1px solid;
-    border-color: #BFBFBF;
-    background-color: white;
-    margin-left: 6px;
-    margin-right: 16px;
-    border-radius: 12px;
-    transition: background-color var(--trans-time), border-color var(--trans-time);
-  }
-  [data-area="subnav"] a.active, [data-area="subnav"] a:hover {
-    color: black;
-  }
-  [data-area="subnav"] a.active::after, [data-area="subnav"] a:hover::after {
-    border-color: black;
-    background-color: black;
-  }
+
   /* body */
   [data-area="body"] {
-    background-color: #F8F8F8;
-    width: 1000px;
-    height: calc(100vh - 240px);
-    padding-bottom: 20px;
-    overflow: auto;
+    justify-self: stretch;
+    height: calc(100vh - 220px);
   }
   /* Vue3 transition */
   .fade-enter-active, .fade-leave-active {
@@ -256,7 +292,7 @@ export default {
       background-color: white;
     }
     [data-area="logo"]::before {
-      background: url("../icons/icon48Dark.png") no-repeat;
+      background: url("../assets/icons/icon48Dark.png") no-repeat;
     }
     :deep(.apexcharts-menu) {
       color: black;

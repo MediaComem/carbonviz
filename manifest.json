@@ -1,40 +1,50 @@
 {
-  "manifest_version": 2,
-  "name": "CarbonViz",
-  "description": "Your browsing climate impact, made visible.",
+  "manifest_version": 3,
+  "name": "__MSG_appName__",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
   "author": "Media Engineering Institute - HEIG-VD",
-  "version": "0.4.0",
+  "version": "1.0.1",
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png" },
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png" },
   "permissions": [
-    "webRequest",
-    "<all_urls>"
+      "webRequest",
+      "storage",
+      "alarms",
+      "notifications"
+  ],
+  "host_permissions": [
+      "<all_urls>"
   ],
   "background": {
-    "page": "background/background.html",
-    "persistent": true
+    "service_worker": "background/background.mjs",
+    "type": "module"
   },
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*"],
-      "css": [],
-      "js": ["content/miniViz-script.js","content/miniVizPopup.js","content/matter.js"]
+      "css": ["bundle/miniviz.css"],
+      "js": ["content/miniViz-script.js","content/miniViz.js"]
     }
   ],
-  "browser_action": {
-    "browser_style": true,
+  "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
-      "48": "icons/icon48.png"
+      "48": "assets/icons/icon48.png"
     }
   },
   "web_accessible_resources": [
-    "content/*",
-    "unplug/js/*",
-    "unplug/assets/*",
-    "bundle/*",
-    "popup/*"
+    {
+      "resources": [
+        "content/*",
+        "model/*",
+        "assets/*",
+        "bundle/*",
+        "popup/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
   ]
 }

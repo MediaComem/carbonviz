@@ -10,7 +10,7 @@ const config = {
   entry: {
     'popup': './src/popup.js',
     'fullpage': './src/fullpage.js',
-    'miniviz': './src/miniviz.js'
+    'miniviz': './src/miniviz.ts'
   },
   output: {
     filename: '[name].js',
@@ -26,7 +26,13 @@ const config = {
       {
         test: /\.vue$/,
         loader: 'vue-loader'
-      }, {
+      },
+      {
+        test: /\.ts$/,
+        loader: "ts-loader",
+        options: { appendTsSuffixTo: [/\.vue$/] }
+      },
+      {
         test:/\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
@@ -35,24 +41,40 @@ const config = {
             options: {url: false}
           }
         ]
-      }, {
+      },
+      {
         test: /\.scss$/,
         use: [
-          'vue-style-loader',
+          MiniCssExtractPlugin.loader,
           'css-loader',
           'sass-loader'
         ]
       },
       {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        test: /\.(woff(2)?|ttf|eot|svg|png|gif|mp4)(\?v=\d+\.\d+\.\d+)?$/,
         use: [
           {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'fonts/'
+              publicPath: (url, resourcePath, context) => {
+                // `resourcePath` is original absolute path to asset
+                // `context` is directory where stored asset (`rootContext`) or `context` option
+                // To get relative path you can use
+                const relativePath = path.relative(context, resourcePath);
+                return relativePath.replaceAll('\\', '/');
+              },
+              emitFile: false
             }
           }
+        ]
+      },
+      {
+        test: /\.(json5?|ya?ml)$/, // target json, json5, yaml and yml files
+        type: 'javascript/auto',
+        loader: '@intlify/vue-i18n-loader',
+        include: [ // Use `Rule.include` to specify the files of locale messages to be pre-compiled
+          path.resolve(__dirname, 'src/locales')
         ]
       }
     ]
@@ -61,14 +83,18 @@ const config = {
     modules: [
       path.resolve('./src'),
       path.resolve('./node_modules')
-    ]
+    ],
+    extensions: ['.ts', '.js']
   },
   plugins: [
     new MiniCssExtractPlugin({filename: '[name].css'}),
     new VueLoaderPlugin(),
     new webpack.DefinePlugin({
       __VUE_OPTIONS_API__: false,
-      __VUE_PROD_DEVTOOLS__: false
+      __VUE_PROD_DEVTOOLS__: false,
+      __VUE_I18N_FULL_INSTALL__: true,
+      __VUE_I18N_LEGACY_API__: false,
+      __VUE_I18N_PROD_DEVTOOLS__: false
     }),
     Components({
       resolvers: [ElementPlusResolver()],

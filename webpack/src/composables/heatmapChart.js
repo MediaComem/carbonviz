@@ -1,4 +1,4 @@
-import {formatSize, formatCo2, days} from '../utils/format';
+import {formatSize, formatCo2, days} from '../../../utils/format';
 import {computed, watch} from 'vue';
 
 

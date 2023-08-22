@@ -1,12 +1,14 @@
 <script>
+import { useI18n } from 'vue-i18n';
 import { computed, inject, ref, toRefs, watch } from 'vue';
 import VueApexCharts from "vue3-apexcharts";
 import { ElCarousel, ElCarouselItem, ElRow, ElCol } from 'element-plus';
-import 'element-plus/lib/theme-chalk/index.css';
-import Analogy from './Analogy.vue'
+import 'element-plus/theme-chalk/index.css';
+import Analogy from './Analogy.vue';
 import layerChart from '../composables/layerChart';
-import { layerHeightCo2, layerHeightData } from '../composables/history'
-import { formatSize, formatCo2 } from '../utils/format'
+import { layerHeightCo2, layerHeightData } from '../composables/history';
+import { formatSize, formatCo2 } from '../../../utils/format';
+import { analogyNames } from '../../../utils/analogies';
 
 export default {
   components: {
@@ -19,16 +21,13 @@ export default {
   props: {
     index: {type: Number},
     layer: {type: Object},
-    type: {type: String},
-    stage: {type: Number}
+    type: {type: String}
   },
   emits: ['willExpand', 'willCollapse'],
   setup(props, { emit }) {
-
+    const { t } = useI18n({});
     const active_index = inject('active_index');
-
     const stratum = ref(null);
-
     const fullHeight = 200;
     const barHeight = 37;
     const historyHeight = 600 - barHeight /* container - bottom bar*/;
@@ -40,7 +39,7 @@ export default {
     const height = computed(() => {
       switch(type.value) {
         case 'co2':
-          return layerHeightCo2(layerInfo.amount);
+          return layerHeightCo2(layerInfo.amount - layerInfo.computer);
         case 'data':
           return layerHeightData(layerInfo.amount);
         default:
@@ -57,48 +56,34 @@ export default {
           throw('Invalid layer type');
       }
     });
+    const layerName = computed(() => {
+      return layerInfo.label.startsWith('current') ? t('global.'+layerInfo.label) : 
+         layerInfo.level != 'day' ? t('global.period.'+layerInfo.level) + ' ' + layerInfo.label : layerInfo.label
+    });
     const legend = computed(() => {
       switch(type.value) {
         case 'co2':
-          return 'of Co2';
+          return t('global.of_co2');
         case 'data':
-          return 'downloaded';
+          return t('global.downloaded');
         default:
           throw('Invalid layer type');
       }
     });
     const expand = () => {
       // When expanded, we may need to move up or down the outer container
-      // to avoid hiding par tof the expanded layer
+      // to avoid hiding part of the expanded layer
       const isExpanded = expanded.value;
-      active_index.value = isExpanded ? -1 : index.value;
+      active_index.value = isExpanded ? -1 : type.value+layerInfo.level+index.value;
       shouldAnimate.value = true;
       // check offset
       const layerPosition = stratum.value.getBoundingClientRect();
       let outerOffsetNeeded = 0;
-      switch(type.value) {
-        case 'co2': {
-          // co2 history stratum are on top
-          const availableHeight = historyHeight - layerPosition.top;
-          if (layerPosition.top + fullHeight > historyHeight) { // layer will be hidden at bottom when expanding
-            outerOffsetNeeded = fullHeight - availableHeight;
-          } else if (layerPosition.top < barHeight){ // top of the layer is already partially outside
-            outerOffsetNeeded = layerPosition.top - barHeight;
-          }
-        }
-        break;
-        case 'data': {
-          // data layer are at bottom and the animation container is offseted while navigating them
-          const availableHeight = historyHeight - layerPosition.top;
-          if (layerPosition.top + fullHeight > historyHeight) { // layer will be hidden at bottom when expanding
-            outerOffsetNeeded = fullHeight - availableHeight;
-          } else if (layerPosition.top < barHeight){ // top of the layer is already partially outside
-            outerOffsetNeeded = layerPosition.top - barHeight;
-          }
-          break;
-        }
-        default:
-          throw('Invalid layer type');
+      const availableHeight = historyHeight - layerPosition.top;
+      if (layerPosition.top + fullHeight > historyHeight) {
+        outerOffsetNeeded = fullHeight - availableHeight;
+      } else if (layerPosition.top < barHeight){
+        outerOffsetNeeded = layerPosition.top - barHeight;
       }
       if (!isExpanded) {
         emit('willExpand', outerOffsetNeeded);
@@ -107,7 +92,7 @@ export default {
       }
     };
     watch(active_index, () => {
-      const active = active_index.value===index.value;
+      const active = active_index.value===(type.value+layerInfo.level+index.value);
       if(!expanded.value && !active) {
         return;
       }
@@ -124,11 +109,13 @@ export default {
     }
 
     return {
+      t,
+      formatCo2,
       stratum,
       active_index, height,
-      amount, legend,
+      amount, legend, layerName,
       expanded, expand, shouldAnimate,
-      showGraph, options, series
+      showGraph, options, series, analogyNames
     };
   }
 }
@@ -150,14 +137,25 @@ export default {
       :style="`--height: ${height}px`"
       @click="expand()"
   >
-    <el-row justify="center" align="center" class="summary">
+    <el-row justify="center" align="middle" class="summary">
       <el-col :span="12">
-        <div class="label bold">{{ layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px;`">
+        <div class="label bold"> {{ layerName }} </div>
+          <img
+            :class="index === 0 ? '': 'filter'"
+            class="icon"
+            :src="`../assets/icons/${index === 0 ? 'loading'+type+'.gif': type+'.svg'}`"
+            :style="`--height: ${height - 4}px;`"
+          >
       </el-col>
     </el-row>
     <el-row class="details">
       <el-col :span="4">
-        <div class="title bold">{{ layer.label }}</div><img class="icon" :src="`assets/${type}.svg`" :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`">
+        <div class="title bold"> {{ layerName }}</div>
+          <img
+            class="icon"
+            :src="`../assets/icons/${type}.svg`"
+            :style="`--height: ${height - 4}px; --margin-icon: ${-(height - 4)/2}px;`"
+          >
       </el-col>
       <el-col :span="4" class="section info">
         <div class="amount">
@@ -166,21 +164,22 @@ export default {
         <div class="legend">
           {{ legend }}
         </div>
+        <div v-if="type === 'co2'" class="computer">
+          (<span class="bold">{{ formatCo2(layer.computer, 0) }}</span> {{ t('components.statistics.fromComputer') }})
+        </div>
       </el-col>
       <el-col :span="showGraph ? 8 : 16" class="section">
-        <div v-if="type === 'co2'" class="section-title bold">The same energy as</div>
-        <div v-if="type === 'data'" class="section-title bold">The same as</div>
-        <el-carousel v-if="expanded" arrow="never" class="analogies" trigger="click" indicator-position="none">
-          <el-carousel-item v-for="(item, index) in [0, 1, 2, 3, 4, 5]" :key="index" label="." class="analogy">
-            <analogy :type="type" :layer="layer" :index="item"></analogy>
+        <el-carousel v-if="expanded" arrow="always" class="analogies" trigger="click">
+          <el-carousel-item v-for="(item, index) in analogyNames[type]" :key="item" label="." class="analogy">
+            <analogy :label="true" :type="type" :layer="layer" :name="item"></analogy>
           </el-carousel-item>
         </el-carousel>
       </el-col>
       <el-col :span="8" class="section graph">
         <div v-if="showGraph">
-          <div v-if="layer.level === 'week'" class="section-title bold">Weekly consumption</div>
-          <div v-if="layer.level === 'month'" class="section-title bold">Monthly consumption</div>
-          <apexchart class="apexchart" type="bar" height="180" width="160" :options="options" :series="series"></apexchart>
+          <div v-if="layer.level === 'week'" class="section-title bold"> {{ t('components.history.WeeklyConsumption') }}</div>
+          <div v-if="layer.level === 'month'" class="section-title bold"> {{ t('components.history.MonthlyConsumption') }} </div>
+          <apexchart class="apexchart" type="bar" height="180" max-width="160" :options="options" :series="series"></apexchart>
         </div>
       </el-col>
     </el-row>
@@ -201,11 +200,9 @@ export default {
     height: 200px;
     margin-left: 0px;
   }
-
   .bold {
       font-weight: 700;
   }
-
   .summary {
     opacity: 1;
     height: 0px;
@@ -215,8 +212,9 @@ export default {
     .label {
       position: absolute;
       top: 50%;
-      margin-top: -8px;
+      margin-top: -5px;
       text-align: left;
+      left: -20px;
     }
   }
   .details {
@@ -242,51 +240,32 @@ export default {
       }
     }
   }
-
   .title {
     margin-top: 10px;
     margin-left: 10px;
     text-align: left;
   }
-
   .icon {
     display: block;
     margin-left: auto;
     margin-right: auto;
     margin-top: 2px;
   }
-
   .section {
     margin-top: 33px;
   }
   .section-title {
-    margin-left: 10px;
-    text-align: left;
-  }
-
-  .expanded .analogies {
-    :deep(.el-carousel__indicators--labels .el-carousel__indicator) {
-      width: 5px;
-    }
-  }
-  .expanded .analogies {
-    :deep(.el-carousel__button) {
-      color: white;
-      background-color: initial;
-      font-size: 24px;
-    }
+    text-align: center;
   }
   .expanded .analogies {
     :deep(.el-carousel__container) {
       height: 150px;
     }
   }
-
   .expanded .graph {
     border-left: solid 1px white;
     padding-left: 6px;
   }
-
   .expanded .info {
     text-align: left;
     border-right: solid 1px white;
@@ -295,121 +274,113 @@ export default {
       font-size: 2em;
       font-weight: 700;
     }
+    .computer {
+      margin-top: 8px;
+    }
   }
   .co2 {
-    background-color: #906C0D;
+    background-color: var(--co2);
     border-top: solid 1px white;
 
     &.today{
-      background-color: #906C0D;
+      background-color: var(--co2);
       &:hover{
-        background-color: darken(#906C0D, 5);
+        background-color: var(--co2Active);
       }
       &.expanded{
-        background-color: darken(#906C0D, 10);
+        background-color: var(--co2Active);
       }
     }
-
     &.daily{
-      background-color: #A59366;
+      background-color: var(--co2);
       &:hover{
-        background-color: darken(#A59366, 5);
+        background-color: var(--co2Active);
       }
       &.expanded{
-        background-color: darken(#A59366, 10);
+        background-color: var(--co2Active);
       }
     }
-
     &.weekly{
-      background-color: #958A70;
+      background-color: var(--co2Week);
       &:hover{
-        background-color: darken(#958A70, 5);
+        background-color: var(--co2WeekActive);
       }
       &.expanded{
-        background-color: darken(#958A70, 10);
+        background-color: var(--co2WeekActive);
       }
     }
-
     &.monthly{
-      background-color: #827E76;
+      background-color: var(--co2Month);
       &:hover{
-        background-color: darken(#827E76, 5);
+        background-color: var(--co2MonthActive);
       }
       &.expanded{
-        background-color: darken(#827E76, 10);
+        background-color: var(--co2MonthActive);
       }
     }
   }
-
   .data {
-    background-color: #384E50;
+    background-color: var(--data);
     border-bottom: solid 1px white;
-
     &.today{
-      background-color: #384E50;
+      background-color: var(--data);
       &:hover{
-        background-color: darken(#384E50, 5);
+        background-color: var(--dataActive);
       }
       &.expanded{
-        background-color: darken(#384E50, 10);
+        background-color: var(--dataActive);
       }
     }
-
     &.daily{
-      background-color: #719598;
+      background-color: var(--data);
       &:hover{
-        background-color: darken(#719598, 5);
+        background-color: var(--dataActive);
       }
       &.expanded{
-        background-color: darken(#719598, 10);
+        background-color: var(--dataActive);
       }
     }
-
     &.weekly{
-      background-color: #213C3F;
+      background-color: var(--dataWeek);
       &:hover{
-        background-color: darken(#213C3F, 5);
+        background-color: var(--dataWeekActive);
       }
       &.expanded{
-        background-color: darken(#213C3F, 10);
+        background-color: var(--dataWeekActive);
       }
     }
-
     &.monthly{
-      background-color: #0F2D30;
+      background-color: var(--dataMonth);
       &:hover{
-        background-color: darken(#0F2D30, 5);
+        background-color: var(--dataMonthActive);
       }
       &.expanded{
-        background-color: darken(#0F2D30, 10);
+        background-color: var(--dataMonthActive);
       }
     }
   }
-
  .details .icon{
     position: absolute;
     top: calc((200px - var(--height))/2);
     margin-left: var(--margin-icon);
   }
-
   img {
     display: inline-block;
     height: var(--height);
     transition: transform 0.5s ease;
+  }
+  img.filter {
     filter: brightness(0) saturate(100%) invert(100%);
   }
-
   .analogy {
     text-align:center;
   }
-
   .apexchart {
     position: absolute;
     top: 0;
     right: 0;
     display: block;
   }
-
   @media (prefers-color-scheme: dark) {
 
   }
