@@ -1,6 +1,7 @@
 <script>
 import {ref} from 'vue';
-import {formatSize, formatCo2} from '../utils/format';
+import { useI18n } from 'vue-i18n';
+import {formatSize, formatCo2} from '../../../utils/format';
 export default {
   data() {
     return {
@@ -11,7 +12,8 @@ export default {
     const large = ref(false);
     const data = ref(0);
     const co2 = ref(0);
-    return {large, data, co2, formatSize, formatCo2};
+    const { t } = useI18n({})
+    return {large, data, co2, formatSize, formatCo2, t};
   }
 }
 </script>
@@ -25,7 +27,7 @@ export default {
     <div class="data">
       <svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 13.212L13.212 8 8 2.788 2.788 8 8 13.212z" stroke-width="3"></path></svg>
     </div>
-    <span>Data - <span class="val">{{ formatSize(data) }}</span></span>
+    <span>{{ t('global.data') }} - <span class="val">{{ formatSize(data) }}</span></span>
   </section>
 </template>
 

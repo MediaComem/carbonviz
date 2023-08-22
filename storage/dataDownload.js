@@ -1,14 +1,44 @@
-import { downloadData } from './indexedDB.js';
+import { downloadData as downloadDB } from './indexedDB.js';
+import { downloadZip } from 'client-zip';
 
-export function downloadCSV(dbStore) {
-    loadAndDownloadData(dbStore).catch(console.warn);
+export async function downloadData() {
+    // Main DB tables
+    const stores = [
+        {
+            db: 'domains',
+            name: 'summaryByDomain'
+        },
+        {
+            db: 'history',
+            name: 'summaryByHours'
+        },
+        {
+            db: 'historySummary',
+            name: 'summaryByDay'
+        }
+    ];
+    // Monthly summariey
+    for (const month of [1,2,3,4,5,6,7,8,9,10,11,12]) {
+        stores.push({ db: `domains_month_${month}`, name: `currentYear/month/${month}/domains`});
+    }
+    for (const day of [0,1,2,3,4,5,6]) {
+        stores.push({ db: `domains_day_${day}`, name: `currentWeek/day/${day}/domains`});
+    }
+    const data = [];
+    for (const store of stores) {
+        const csv = await createCSVInputforDB(store.db, store.name);
+        data.push(csv);
+    }
+    const blob = await downloadZip(data).blob();
+    const now = new Date();
+    downloadBlob(blob, `carbonviz_data_${now.toISOString().split('T')[0]}.zip`);
+
 }
 
-async function loadAndDownloadData(dbStore) {
-    const data = await downloadData(dbStore);
+async function createCSVInputforDB(dbStore, name) {
+    const data = await downloadDB(dbStore);
     const csvstring = toCSV(data);
-    const blob = createCSVFileFromString(csvstring);
-    downloadBlob(blob, dbStore+'.csv');
+    return { name: `${name}.csv`, input: csvstring};
 }
 
 function toCSV(data) {
@@ -40,10 +70,7 @@ function to_csv_value(value) {
     output += value.replace('"', '\\"');
     return output + '"';
 }
-function createCSVFileFromString(string) {
-    const csv_mime_type = 'text/csv';
-    return new Blob([string], { type: csv_mime_type });
-}
+
 function downloadBlob(blob, filename) {
     const anchor = document.createElement('a');
     anchor.setAttribute('download', filename);
