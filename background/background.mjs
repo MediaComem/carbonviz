@@ -378,6 +378,12 @@ addPluginHeaderListener();
 chrome.runtime.onMessage.addListener(handleMessage);
 
 chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason === chrome.runtime.OnInstalledReason.UPDATE
+    || reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    const url = 'chrome/info.html';
+    const options = {url, active: true};
+    chrome.tabs.create(options);
+  }
   if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
     resetSettings();
     return;
