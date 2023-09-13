@@ -378,18 +378,19 @@ addPluginHeaderListener();
 chrome.runtime.onMessage.addListener(handleMessage);
 
 chrome.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
+  console.log(reason)
   if (reason === chrome.runtime.OnInstalledReason.INSTALL
     || ( reason === chrome.runtime.OnInstalledReason.UPDATE && /^0.*/.test(previousVersion))) {
+    // Display update information
+    const url = '../chrome/info.html';
+    const options = {url, active: true};
+    chrome.tabs.create(options);
     // Ask for permissions on firefox
     if (isFirefox) {
       const url = `../firefox/onboarding.html`;
       const options = {url, active: true};
       chrome.tabs.create(options);
     }
-    // Display update information
-    const url = '../chrome/info.html';
-    const options = {url, active: true};
-    chrome.tabs.create(options);
   }
   if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
     // resetSettings(); TODO uncomment in case of settings version change
