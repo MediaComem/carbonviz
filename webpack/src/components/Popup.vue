@@ -59,7 +59,7 @@ export default {
           <button id="openNewTab" @click='openNewTabDialog()'> {{ t('global.newTab') }} </button>
         </div>
         <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>
-        <div data-area="logo" id="logoEquiwatt"></div>
+        <div data-area="logo"><a href="https://www.equiwatt-lausanne.ch/" target="_blank"><div id="logoEquiwatt"></div></a></div>
       </div>
     </div>
 </template>
@@ -144,13 +144,12 @@ export default {
   height: 20px;
   margin-bottom: 3px;
 }
-[data-area="logo"]#logoEquiwatt::before {
+#logoEquiwatt::before {
   display: inline-block;
   content: ' ';
   background: url("../assets/icons/logos/logoEquiwatt.svg") no-repeat;
   width: 70px;
   height: 15px;
-  margin-bottom: 3px;
 }
 [data-area="logo"]#openTab::before {
   display: inline-block;

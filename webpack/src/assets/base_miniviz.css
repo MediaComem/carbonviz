@@ -1,0 +1,20 @@
+:root {
+  --miniviz-green: #96E467;
+  --miniviz-grey: #E6E6E6;
+  --miniviz-dark-grey: #616161;
+  --miniviz-co2: #906C0D;
+  --miniviz-co2Active: #7E6115;
+  --miniviz-data: #4F6D70;
+  --miniviz-dataActive: #415C5F;
+}
+
+.mv-miniviz {
+  button {
+    background: none;
+    color:black;
+    border: none;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+}
