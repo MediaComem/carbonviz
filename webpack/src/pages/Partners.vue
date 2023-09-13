@@ -38,9 +38,9 @@ export default {
         </p>
       </article>
       <el-row justify="center" align="middle" class="logos">
-        <el-col :span="12"><img src="../../../assets/icons/logos/innosuisse.svg"></el-col>
-        <el-col :span="6"><img src="../../../assets/icons/logos/mei.svg"></el-col>
-        <el-col :span="6"><img src="../../../assets/icons/logos/igt.svg"></el-col>
+        <el-col :span="12"><a href="https://www.innosuisse.ch"><img src="../../../assets/icons/logos/innosuisse.svg"></a></el-col>
+        <el-col :span="6"><a href="https://heig-vd.ch/rad/instituts/mei"><img src="../../../assets/icons/logos/mei.svg"></a></el-col>
+        <el-col :span="6"><a href="https://heig-vd.ch/"><img src="../../../assets/icons/logos/igt.svg"></a></el-col>
       </el-row>
       <article>
         <h1> {{ t('pages.partners.partnersIndustrial') }}</h1>
@@ -52,9 +52,9 @@ export default {
         </p>
       </article>
       <el-row justify="center" align="middle" class="logos">
-        <el-col :span="10"><img src="../../../assets/icons/logos/logoSiL.svg"></el-col>
-        <el-col :span="12"><img src="../../../assets/icons/logos/logo-equiwatt-large.png"></el-col>
-        <el-col :span="2"><img src="../../../assets/icons/logos/logo-fond-FEE.png"></el-col>
+        <el-col :span="10"><a href="https://www.lausanne.ch/vie-pratique/energies-et-eau/services-industriels.html"><img src="../../../assets/icons/logos/logoSiL.svg"></a></el-col>
+        <el-col :span="12"><a href="https://www.equiwatt-lausanne.ch/"><img src="../../../assets/icons/logos/logo-equiwatt-large.png"></a></el-col>
+        <el-col :span="2"><a href="https://www.lausanne.ch/vie-pratique/energies-et-eau/services-industriels/a-propos-sil/notre-engagement/politique/fonds-efficacite-energetique"><img src="../../../assets/icons/logos/logo-fond-FEE.png"></a></el-col>
       </el-row>
       <article>
         <h1>{{ t('pages.partners.team.project') }}</h1>
