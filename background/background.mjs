@@ -378,7 +378,6 @@ addPluginHeaderListener();
 chrome.runtime.onMessage.addListener(handleMessage);
 
 chrome.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
-  console.log(reason)
   if (reason === chrome.runtime.OnInstalledReason.INSTALL
     || ( reason === chrome.runtime.OnInstalledReason.UPDATE && /^0.*/.test(previousVersion))) {
     // Display update information
