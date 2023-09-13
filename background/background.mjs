@@ -293,30 +293,7 @@ const handleMessage = (request, _sender, sendResponse) => {
 }
 
 const sendOSWeeklyAlert = async () => {
-  const weekData = await getLastDaysSummary([-7, 0]);
-  refreshSettings().then((settings) => {
-    let title = 'CarbonViz weekly trends';
-    let message = `You downloaded ${formatSize(weekData.data, 0)} in the last 7 days. Check you trends in CarbonViz.`;
-    let action0 = 'Ignore';
-    let action1 = 'Check';
-    if(settings.lang === 'fr') {
-      title = 'CarbonViz tendance hebdomadaire';
-      message = `Vous avez téléchargé ${formatSize(weekData.data, 0)} dans les 7 derniers jours. Vérifier la tendance dans CarbonViz.`;
-      action0 = 'Ignorer';
-      action1 = 'Vérifier';
-    }
-    chrome.notifications.create('CarbonViz-' + new Date().getTime(), {
-      type: 'basic',
-      iconUrl: notificationIcon,
-      title,
-      message,
-      priority: 2,
-      buttons: [
-        { title: action0 },
-        { title: action1 }
-      ]
-    });
-  });
+    // unsupported on Safari
 }
 
 const addPluginHeaderListener = () => {
@@ -425,11 +402,13 @@ chrome.alarms.onAlarm.addListener(alarm => {
   }
 });
 
+/* unsupported on Safari
 chrome.notifications.onButtonClicked.addListener(function(notifType, buttonIndex) {
   if (buttonIndex === 1) {
     createExtensionTab('#Trends');
   }
 });
+ */
 
 // Check for missed notifications on new tab & pluginListener if disabled
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {

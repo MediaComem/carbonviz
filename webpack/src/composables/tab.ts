@@ -48,17 +48,7 @@ const setup = () => {
       chrome.storage.local.set({'options': JSON.stringify(userOptions)});
     }
 
-    if(fullpageTabIndex) {
-      chrome.tabs.update(fullpageTabIndex,{active: true}, function() {
-        // if tab was closed and no longer exists
-        if (chrome.runtime.lastError) {
-          createNewTab();
-        }
-      });
-    }
-    else {
-      createNewTab();
-    }
+    createNewTab();
   }
   // set new tab index to local storage
   const  createNewTab = async () => {

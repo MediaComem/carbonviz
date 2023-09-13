@@ -1,10 +1,10 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
   "author": "Media Engineering Institute - HEIG-VD",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "icons": {
     "16": "assets/icons/icon16.png",
     "48": "assets/icons/icon48.png",
@@ -13,14 +13,11 @@
       "webRequest",
       "storage",
       "alarms",
-      "notifications"
-  ],
-  "host_permissions": [
+      "notifications",
       "<all_urls>"
   ],
   "background": {
-    "service_worker": "background/background.mjs",
-    "type": "module"
+      "page": "background/background.html"
   },
   "content_scripts": [
     {
@@ -29,22 +26,18 @@
       "js": ["content/miniViz-script.js","content/miniViz.js"]
     }
   ],
-  "action": {
+  "browser_action": {
+    "browser_style": true,
     "default_popup": "popup/popup.html",
     "default_icon": {
       "48": "assets/icons/icon48.png"
     }
   },
   "web_accessible_resources": [
-    {
-      "resources": [
         "content/*",
         "model/*",
         "assets/*",
         "bundle/*",
         "popup/*"
-      ],
-      "matches": ["<all_urls>"]
-    }
   ]
 }

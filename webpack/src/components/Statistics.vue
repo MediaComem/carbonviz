@@ -144,6 +144,7 @@ export default {
         chart: {
           type: 'bar',
           stacked: true,
+          redrawOnWindowResize: false,
           fontFamily: 'Roboto, system-ui, Arial, sans-serif',
           toolbar: {
             show: false
@@ -216,6 +217,7 @@ export default {
     }
 
     watchEffect(async () => {
+      console.log('watch');
       let currentValue;
       let previousPeriod;
       let previousPeriodValue;
@@ -346,7 +348,7 @@ export default {
       ref="chart"
       width="450"
       :height="height"
-      id="chart"
+      :id="`chart_${granularity}_${type}`"
       :options="chartOptions"
       :series="series"
     ></apexchart>

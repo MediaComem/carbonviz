@@ -143,7 +143,7 @@ export default {
           <img
             :class="index === 0 ? '': 'filter'"
             class="icon"
-            :src="`../assets/icons/${index === 0 ? 'loading'+type+'.gif': type+'.svg'}`"
+            :src="`../assets/icons/${type+'.svg'}`"
             :style="`--height: ${height - 4}px;`"
           >
       </el-col>
