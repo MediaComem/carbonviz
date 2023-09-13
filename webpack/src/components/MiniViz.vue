@@ -387,16 +387,17 @@ onBeforeMount(async () => {
   max-width: 270px;
   margin-right: 0px;
   margin-left: auto;
-  background-color: var(--co2);
+  background-color: var(--miniviz-co2);
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   border: 1px solid white;
   padding: 4px;
   &.mv-data {
-    background-color: var(--data);
+    background-color: var(--miniviz-data);
   }
   img {
     opacity: 0.4;
     width: 20px;
+    min-height: 20px;
     height: 20px;
   }
   img.mv-fill {
@@ -430,7 +431,7 @@ onBeforeMount(async () => {
   margin-right: 0px;
   margin-left: auto;
   color: white;
-  background-color: var(--co2Active);
+  background-color: var(--miniviz-co2Active);
   box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
       inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
   img {
@@ -438,7 +439,7 @@ onBeforeMount(async () => {
     height: 40px;
   }
   &.mv-data {
-    background-color: var(--dataActive);
+    background-color: var(--miniviz-dataActive);
     box-shadow: inset 0px 10px 10px -8px rgba(0, 0, 0, 0.25),
       inset 0px 0px 0px 0px rgba(0, 0, 0, 0);
   }
@@ -467,14 +468,14 @@ onBeforeMount(async () => {
 .mv-miniviz #mv-notification {
   flex-wrap: wrap;
   color: black;
-  background-color: var(--grey);
+  background-color: var(--miniviz-grey);
   font-size: 10px;
   .mv-notificationContainer {
     width: 100%;
   }
   .mv-title {
     margin-bottom: 10px;
-    color: var(--dark-grey);
+    color: var(--miniviz-dark-grey);
     font-size: 12px;
     font-weight: 700;
   }
@@ -529,7 +530,7 @@ onBeforeMount(async () => {
   }
   svg.mv-down {
     transform: rotate(90deg);
-    color: var(--green);
+    color: var(--miniviz-green);
   }
 }
 .mv-miniviz #mv-description, .mv-miniviz #mv-notification {
@@ -575,7 +576,7 @@ onBeforeMount(async () => {
 #mv-stats #mv-average div.hr {
 	height: auto;
 	width: 1px;
-	background-color: var(--dark-grey);
+	background-color: var(--miniviz-dark-grey);
 }
 
 
