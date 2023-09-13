@@ -1,7 +1,7 @@
 import {createApp} from 'vue';
 import { createI18n } from 'vue-i18n';
 import MiniViz from './components/MiniViz.vue';
-import "./assets/base.css";
+import "./assets/base_miniviz.css";
 
 // import i18n resources
 import en from './locales/en.json'
