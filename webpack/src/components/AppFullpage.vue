@@ -70,7 +70,7 @@ export default {
   <div id="carbonViz" class="wrapper" ref="scroll">
     <div data-area="logo">
       <h1>{{ t('appTitle') }}</h1>
-      <img src="../../../assets/icons/logos/logo-equiwatt-large.png" class="logoEquiwatt">
+      <a href="https://www.equiwatt-lausanne.ch/" target="_blank"><img src="../../../assets/icons/logos/logo-equiwatt-large.png" class="logoEquiwatt"></a>
     </div>
     <div data-area="language">
       <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>

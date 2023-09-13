@@ -377,15 +377,22 @@ addPluginHeaderListener();
 
 chrome.runtime.onMessage.addListener(handleMessage);
 
-chrome.runtime.onInstalled.addListener(({ reason }) => {
-  if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
-    resetSettings();
+chrome.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
+  if (reason === chrome.runtime.OnInstalledReason.INSTALL
+    || ( reason === chrome.runtime.OnInstalledReason.UPDATE && /^0.*/.test(previousVersion))) {
     // Ask for permissions on firefox
     if (isFirefox) {
       const url = `../firefox/onboarding.html`;
       const options = {url, active: true};
       chrome.tabs.create(options);
     }
+    // Display update information
+    const url = '../chrome/info.html';
+    const options = {url, active: true};
+    chrome.tabs.create(options);
+  }
+  if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
+    // resetSettings(); TODO uncomment in case of settings version change
     return;
   }
   // Event can trigger before initStorage is complete and DB instance is not ready. 
