@@ -137,7 +137,7 @@ export default {
 
   @media (prefers-color-scheme: dark) {
     #fullpage, [data-area="body"] {
-      background-color: #262626;
+      background-color: var(--activeBackground);
       color: #BFBFBF;
     }
   }
@@ -273,19 +273,30 @@ export default {
 
   @media (prefers-color-scheme: dark) {
     [data-area="body"] {
-      background-color: #262626;
+      background-color: var(--activeBackground);
       color: white;
     }
      [data-area="title"] {
-      background-color: #262626;
+      background-color: var(--activeBackground);
+      color: white;
+    }
+    [data-area="nav"] {
+      background-color: var(--activeBackground);
       color: white;
     }
     [data-area="nav"] a.active, [data-area="nav"] a:hover {
       color:white;
       border-bottom-color: white;
     }
+    [data-area="subnav"] {
+      background-color: var(--dark-grey);
+      color: var(--white);
+    }
+    [data-area="subnav"] a {
+      color: var(--light-grey);
+    }
     [data-area="subnav"] a.active, [data-area="subnav"] a:hover {
-      color: white;
+      color: var(--white);
     }
     [data-area="subnav"] a.active::after, [data-area="subnav"] a:hover::after {
       border-color: white;
@@ -297,8 +308,17 @@ export default {
     :deep(.apexcharts-menu) {
       color: black;
     }
-    :deep(.apexcharts-text) {
+    :deep(.apexcharts-xaxis-label),
+    :deep(.apexcharts-yaxis-label) {
       fill: white;
     }
+    :deep(.apexcharts-yaxis-annotations line) {
+      stroke: var(--green) !important;
+    }
+
+    [data-area="language"] button {
+      color: white;
+    }
+
   }
 </style>

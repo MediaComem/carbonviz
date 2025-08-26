@@ -396,4 +396,16 @@ h3 {
 	margin-right: 2px;
 	margin-left: 2px;
 }
+
+@media (prefers-color-scheme: dark) {
+	.wrapper {
+		color: white;
+		.tip {
+			color: var(--dark-grey);
+		}
+		.content h3 {
+			color: white;
+		}
+	}
+}
 </style>

@@ -121,5 +121,9 @@ a:visited {
   a:visited {
     color: white;
   }
+  img {
+    background-color: white;
+    padding: 8px;
+  }
 }
 </style>

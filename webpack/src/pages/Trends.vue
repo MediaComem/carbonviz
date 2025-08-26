@@ -139,4 +139,21 @@ a, :deep(a) {
 a:visited, :deep(a:visited) {
   color: black;
 }
+
+@media (prefers-color-scheme: dark) {
+  :deep(.el-collapse-item__header),
+  :deep(.el-collapse-item__content) {
+    background-color: transparent;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: white;
+  }
+  :deep(.el-collapse-item__wrap) {
+    background-color: transparent;
+  }
+  a, :deep(a) {
+    color: white;
+    font-style: italic;
+  }
+}
 </style>

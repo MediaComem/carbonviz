@@ -61,4 +61,23 @@ const changePeriod = (period) => {
     }
   }
 
+  @media (prefers-color-scheme: dark) {
+    #time button {
+      border: none;
+      &:not(:first-child) {
+        border-left: 1px solid var(--activeBackground);
+      }
+      color: white;
+    }
+
+    #time {
+      border: 1px solid var(--activeBackground);
+    }
+
+    #time button.activeButton {
+      background-color: var(--light-grey);
+    }
+
+  }
+
 </style>
