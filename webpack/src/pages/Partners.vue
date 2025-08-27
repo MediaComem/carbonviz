@@ -115,11 +115,11 @@ a:visited {
 
 @media (prefers-color-scheme: dark) {
   a {
-    color: white;
+    color: var(--light-grey);
     font-style: italic;
   }
   a:visited {
-    color: white;
+    color: var(--light-grey);
   }
   img {
     background-color: white;

@@ -81,4 +81,18 @@ const switchType = (newType: Indicator) => {
     margin-top: 20px;
     padding-bottom: 12px;
   }
+
+  @media (prefers-color-scheme: dark) {
+    .wrapper {
+      background-color: var(--activeBackground);
+    }
+    :deep(.apexcharts-xaxis-label),
+    :deep(.apexcharts-yaxis-label) {
+      fill: white;
+    }
+    :deep(.apexcharts-yaxis-annotations line) {
+      stroke: var(--green) !important;
+    }
+
+  }
 </style>

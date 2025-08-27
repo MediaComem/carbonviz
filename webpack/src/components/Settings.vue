@@ -399,11 +399,19 @@ h3 {
 
 @media (prefers-color-scheme: dark) {
 	.wrapper {
-		color: white;
+		color: var(--light-grey);
 		.tip {
 			color: var(--dark-grey);
 		}
 		.content h3 {
+			color: white;
+		}
+	}
+	@media (prefers-color-scheme: dark) {
+		.wrapper {
+			background-color: var(--activeBackground);
+		}
+		#settingsWrapper h3 {
 			color: white;
 		}
 	}

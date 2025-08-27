@@ -574,6 +574,9 @@ div.vr {
   :deep(.apexcharts-text.apexcharts-yaxis-annotation-label) {
     color: var(--dark-grey) !important;
   }
+  :deep(.apexcharts-tooltip-text) {
+    color: var(--dark-grey) !important;
+  }
   .vr {
     background-color: #000000;
   }

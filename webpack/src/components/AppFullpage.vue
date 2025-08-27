@@ -274,11 +274,11 @@ export default {
   @media (prefers-color-scheme: dark) {
     [data-area="body"] {
       background-color: var(--activeBackground);
-      color: white;
+      color: var(--light-grey);
     }
      [data-area="title"] {
       background-color: var(--activeBackground);
-      color: white;
+      color: var(--light-grey);
     }
     [data-area="nav"] {
       background-color: var(--activeBackground);
@@ -310,14 +310,14 @@ export default {
     }
     :deep(.apexcharts-xaxis-label),
     :deep(.apexcharts-yaxis-label) {
-      fill: white;
+      fill: var(--light-grey);
     }
     :deep(.apexcharts-yaxis-annotations line) {
       stroke: var(--green) !important;
     }
 
     [data-area="language"] button {
-      color: white;
+      color: var(--light-grey);
     }
 
   }
