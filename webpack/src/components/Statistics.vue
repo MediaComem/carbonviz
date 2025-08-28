@@ -51,8 +51,18 @@ export default {
     const chart = ref(null);
 
     const colors = ['#7D76DE', '#AC84FA', '#8EA3F5', '#76A6DE', '#84DBFA'];
-    const series = ref([]);
+    const rawSeries = ref([]);
     const average = ref(0);
+    
+    const series = computed(() => {
+      return rawSeries.value.map(item => {
+        if (item.name === 'otherCategory') {
+          return { ...item, name: t('components.statistics.otherCategory') };
+        }
+        return item;
+      });
+    });
+    
     const annotation = computed(() => {
       return {
         y: average.value,
@@ -100,6 +110,10 @@ export default {
             t('components.statistics.months.Dec'),
           ];
       }
+    });
+
+    const translatedLabels = computed(() => {
+      
     });
 
     // Should it be dynamic depending on value range?
@@ -251,7 +265,7 @@ export default {
       switch(subtype.value) {
         case 'web':
           getTopWebsitesSeries(type.value, 4, granularity.value).then(async (seriesData: {name: String, data: [number]}[]) => {
-              series.value = seriesData;
+              rawSeries.value = seriesData;
               // update annotation with mean value
               // get number of active periods
               const activePeriods = Array(seriesData[0].data.length).fill(false);
@@ -283,7 +297,7 @@ export default {
           break;
         case 'computer':
           getComputerCo2Series(granularity.value).then((seriesData: {name: String, data: number[]}[]) => {
-              series.value = seriesData;
+              rawSeries.value = seriesData;
               const computer = seriesData[0];
               // update annotation with mean value
               // get number of active period
