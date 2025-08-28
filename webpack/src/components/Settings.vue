@@ -184,7 +184,7 @@ export default {
 				</el-row>
 				<el-row>
 					<el-col :span="24" class="mt8 tip">
-						<div>💡</div><div>{{ t('components.settings.longerUsageTip') }}</div>
+						<div class="info-icon">💡</div><div>{{ t('components.settings.longerUsageTip') }}</div>
 					</el-col>
 				</el-row>
 			</div>
@@ -362,6 +362,10 @@ h3 {
 
 .position-icon {
 	margin-right: 3px;
+}
+
+.info-icon {
+  margin-right: 6px;
 }
 
 :deep(.el-button) {

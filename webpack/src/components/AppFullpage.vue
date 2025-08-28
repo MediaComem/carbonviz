@@ -305,20 +305,8 @@ export default {
     [data-area="logo"]::before {
       background: url("../assets/icons/icon48Dark.png") no-repeat;
     }
-    :deep(.apexcharts-menu) {
-      color: black;
-    }
-    :deep(.apexcharts-xaxis-label),
-    :deep(.apexcharts-yaxis-label) {
-      fill: var(--light-grey);
-    }
-    :deep(.apexcharts-yaxis-annotations line) {
-      stroke: var(--green) !important;
-    }
-
     [data-area="language"] button {
       color: var(--light-grey);
     }
-
   }
 </style>

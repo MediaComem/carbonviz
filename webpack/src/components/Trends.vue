@@ -11,7 +11,7 @@
       <statistics :type="type" subtype="computer" :granularity="granularity" :height="180" class="computer_trends">
         <template #title>{{ t('global.computerEnergy') }} <span @click="$emit('showSettings')" style="font-weight: 400; text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span></template>
         <template #info>
-          <div>💡</div>
+          <div class="info-icon">💡</div>
           <div>
             {{ t('components.statistics.computerInfo') }}
             {{ t('components.statistics.computerTip') }} <span @click="$emit('showSettings')" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
@@ -86,13 +86,5 @@ const switchType = (newType: Indicator) => {
     .wrapper {
       background-color: var(--activeBackground);
     }
-    :deep(.apexcharts-xaxis-label),
-    :deep(.apexcharts-yaxis-label) {
-      fill: white;
-    }
-    :deep(.apexcharts-yaxis-annotations line) {
-      stroke: var(--green) !important;
-    }
-
   }
 </style>

@@ -366,7 +366,7 @@ export default {
       </div>
     </div>
     <div class="hr" v-if="tipHTML"></div>
-    <div v-if="tipHTML" class="tip" ><div>💡</div><div v-html="tipHTML" class="description"></div></div>
+    <div v-if="tipHTML" class="tip" ><div class="info-icon">💡</div><div v-html="tipHTML" class="description"></div></div>
     <div class="title"><slot name="title"></slot></div>
     <apexchart
       ref="chart"
@@ -483,6 +483,9 @@ export default {
 	background-color: var(--white);
 	padding: 4px;
 }
+.info-icon {
+  margin-right: 6px;
+}
 
 div.hr {
 	width: 95%;
@@ -568,15 +571,6 @@ div.vr {
   .title {
     color: var(--light-grey);
   }
-  :deep(.apexcharts-legend-text:not(.apexcharts-yaxis-annotation-label)) {
-    color: var(--light-grey) !important;
-  }
-  :deep(.apexcharts-text.apexcharts-yaxis-annotation-label) {
-    color: var(--dark-grey) !important;
-  }
-  :deep(.apexcharts-tooltip-text) {
-    color: var(--dark-grey) !important;
-  }
   .vr {
     background-color: #000000;
   }
@@ -584,7 +578,12 @@ div.vr {
     background-color: rgb(67, 144, 67);
     &:hover {
       background: var(--background-active);
+      box-shadow: none;
     }
+  }
+  .info {
+    background-color: var(--background-active);
+    color: var(--light-grey)
   }
 }
 
