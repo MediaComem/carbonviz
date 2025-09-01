@@ -173,9 +173,9 @@ const getTopWebsitesSeries = async (mode = 'co2', number = 3, granularity = 'day
     // sort series
     result.sort((a,b) => b.aggregate - a.aggregate);
 
-    // Add remaing data consumption to 'Divers' category
+    // Add remaing data consumption to 'otherCategory' category
     result.push({
-        name: 'Divers',
+        name: 'otherCategory',
         data: totalPerTimeEntity.map((total, idx) => total - totalPerTimeEntity4TopWebsites[idx])
     });
 
