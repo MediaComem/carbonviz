@@ -536,5 +536,11 @@ span.ref {
   a:visited {
     color: white;
   }
+  button {
+    background-color: var(--light-grey);
+    color: var(--activeBackground);
+    border-color: var(--grey);
+    padding: 10px 20px;
+  }
 }
 </style>
