@@ -178,6 +178,37 @@ body * {
 #history .summary .label {
   left: 5px;
 }
+
+@media (prefers-color-scheme: dark) {
+  #popupPage {
+    color: var(--light-grey);
+    box-sizing: border-box;
+    box-shadow:inset 0px 0px 0px 1px var(--light-grey);
+    background-color: var(--activeBackground);
+  }
+  #tabs {
+    color: white;
+  }
+  #tabs button.activeTab.activeTab {
+    color:white;
+    border-bottom-color: white;
+  }
+  #footer [data-area="logo"]#appTitle::before {
+    filter: invert(0.9);
+  }
+  #footer [data-area="title"] {
+    color: var(--light-grey);
+  }
+  #footer [data-area="logo"]#openTab::before {
+    filter: invert(0.9);
+  }
+  .tab-action #openNewTab {
+    color: var(--light-grey);
+  }
+  #lang button {
+    color: var(--light-grey);
+  }
+}
 </style>
 
 <style>
@@ -185,3 +216,4 @@ body {
   font-size: 0.75rem;
 }
 </style>
+

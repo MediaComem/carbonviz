@@ -51,8 +51,18 @@ export default {
     const chart = ref(null);
 
     const colors = ['#7D76DE', '#AC84FA', '#8EA3F5', '#76A6DE', '#84DBFA'];
-    const series = ref([]);
+    const rawSeries = ref([]);
     const average = ref(0);
+    
+    const series = computed(() => {
+      return rawSeries.value.map(item => {
+        if (item.name === 'otherCategory') {
+          return { ...item, name: t('components.statistics.otherCategory') };
+        }
+        return item;
+      });
+    });
+    
     const annotation = computed(() => {
       return {
         y: average.value,
@@ -253,7 +263,7 @@ export default {
       switch(subtype.value) {
         case 'web':
           getTopWebsitesSeries(type.value, 4, granularity.value).then(async (seriesData: {name: String, data: [number]}[]) => {
-              series.value = seriesData;
+              rawSeries.value = seriesData;
               // update annotation with mean value
               // get number of active periods
               const activePeriods = Array(seriesData[0].data.length).fill(false);
@@ -285,7 +295,7 @@ export default {
           break;
         case 'computer':
           getComputerCo2Series(granularity.value).then((seriesData: {name: String, data: number[]}[]) => {
-              series.value = seriesData;
+              rawSeries.value = seriesData;
               const computer = seriesData[0];
               // update annotation with mean value
               // get number of active period
@@ -328,8 +338,34 @@ export default {
         <span v-if="type==='co2'"><span class="unit">CO<span class="subscript">2</span></span>&nbsp;<span class="summary-value">{{ formatCo2(summary.co2, 0) }}</span></span>
         <span v-if="type==='data'"><span class="summary-value">{{ formatSize(summary.data, 0) }}</span></span>
         <div class="web_vs_laptop" v-if="type==='co2'">
-          <div class="web"><img src="../../../assets/icons/web.svg">{{ formatCo2(summary.co2 - summary.computer.co2, 0) }}</div>
-          <div class="laptop"><img src="../../../assets/icons/laptop.svg">{{ formatCo2(summary.computer.co2, 0) }}</div>
+          <div class="web">
+            <svg width="10" height="11" viewBox="0 0 10 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="iconmonstr-globe-7 1" clip-path="url(#clip0_1699_2649)">
+                <path id="Vector" fill-rule="evenodd" clip-rule="evenodd" d="M6.3525 7.86947C5.96625 9.41155 5.29125 10.3695 5 10.7861C4.70875 10.3695 4.03333 9.41197 3.6475 7.86947H6.3525ZM9.54583 7.86947C8.89667 9.28238 7.60833 10.3415 6.05167 10.6749C6.59958 9.81322 6.98583 8.85738 7.20875 7.86947H9.54583ZM0.454167 7.86947H2.79125C3.01583 8.86363 3.40375 9.81863 3.94833 10.6749C2.39167 10.3415 1.10333 9.28238 0.454167 7.86947ZM6.51667 7.03613H3.48333C3.3625 6.20905 3.3625 5.36363 3.48333 4.53613H6.51708C6.63708 5.36363 6.63708 6.20905 6.51667 7.03613ZM2.64208 7.03613H0.157917C0.0545833 6.63697 0 6.2178 0 5.78613C0 5.35447 0.0545833 4.93572 0.157917 4.53613H2.64208C2.5325 5.36447 2.5325 6.2078 2.64208 7.03613ZM9.84208 7.03613H7.3575C7.46792 6.2078 7.46792 5.36447 7.35792 4.53613H9.84208C9.945 4.93572 10 5.35447 10 5.78613C10 6.2178 9.945 6.63697 9.84208 7.03613ZM6.3525 3.7028H3.6475C4.03292 2.1603 4.70833 1.2028 5 0.786133C5.4975 1.4978 6.01833 2.36905 6.3525 3.7028ZM2.79083 3.70238H0.45375C1.10333 2.28988 2.39167 1.23072 3.94833 0.896966C3.43292 1.7053 3.02583 2.66238 2.79083 3.70238ZM9.54583 3.70238H7.20875C6.97667 2.67655 6.57833 1.72322 6.05125 0.896966C7.60792 1.23072 8.89667 2.28988 9.54583 3.70238Z" fill="var(--stats-icon-color)"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_1699_2649">
+                <rect width="10" height="10" fill="var(--stats-icon-color)" transform="translate(0 0.786133)"/>
+                </clipPath>
+              </defs>
+            </svg>
+
+
+            {{ formatCo2(summary.co2 - summary.computer.co2, 0) }}</div>
+          <div class="laptop">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="iconmonstr-laptop-6 1" clip-path="url(#clip0_1699_2651)">
+                <path id="Vector" d="M11.0742 9.03125V3.13125C11.0742 2.79975 10.8057 2.53125 10.4742 2.53125H1.67422C1.34272 2.53125 1.07422 2.79975 1.07422 3.13125V9.03125H11.0742ZM2.07422 3.53125H10.0742V8.03125H2.07422V3.53125ZM12.0742 9.53125V9.93125C12.0742 10.2627 11.8057 10.5312 11.4742 10.5312H0.674219C0.342719 10.5312 0.0742188 10.2627 0.0742188 9.93125V9.53125H5.07422C5.07422 9.66925 5.18622 9.78125 5.32422 9.78125H6.82422C6.96222 9.78125 7.07422 9.66925 7.07422 9.53125H12.0742Z" fill="var(--stats-icon-color)"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_1699_2651">
+                <rect width="12" height="12" fill="var(--stats-icon-color)" transform="translate(0.0742188 0.53125)"/>
+                </clipPath>
+              </defs>
+            </svg>
+
+            {{ formatCo2(summary.computer.co2, 0) }}
+          </div>
         </div>
       </div>
       <div class="vr"></div>
@@ -342,7 +378,7 @@ export default {
       </div>
     </div>
     <div class="hr" v-if="tipHTML"></div>
-    <div v-if="tipHTML" class="tip" ><div>💡</div><div v-html="tipHTML" class="description"></div></div>
+    <div v-if="tipHTML" class="tip" ><div class="info-icon">💡</div><div v-html="tipHTML" class="description"></div></div>
     <div class="title"><slot name="title"></slot></div>
     <apexchart
       ref="chart"
@@ -408,10 +444,10 @@ export default {
       img {
         margin-right: 2px;
       }
-      .web img{
+      .web svg{
         margin-bottom: -1px;
       }
-      .laptop img{
+      .laptop svg{
         margin-bottom: -2px;
       }
       }
@@ -458,6 +494,9 @@ export default {
   border-radius: 5px;
 	background-color: var(--white);
 	padding: 4px;
+}
+.info-icon {
+  margin-right: 6px;
 }
 
 div.hr {
@@ -507,6 +546,56 @@ div.vr {
       overflow: initial;
       white-space: initial;
     }
+  }
+
+}
+
+@media (prefers-color-scheme: dark) {
+  .trend-title,.period,.average-title {
+    color: white;
+  }
+  .header {
+    .trend {
+      .trend-value {
+        color: white;
+      }
+    }
+    .summary {
+      .summary-value {
+        color: white;
+      }
+      .unit {
+        color: var(--light-grey);
+      }
+    }
+    .web_vs_laptop {
+      color: var(--light-grey);
+      img {
+        filter: invert(1);
+      }
+    }
+    .average {
+      .value {
+        color: white;
+      }
+    }
+  }
+  .title {
+    color: var(--light-grey);
+  }
+  .vr {
+    background-color: #000000;
+  }
+  .tip {
+    background-color: rgb(67, 144, 67);
+    &:hover {
+      background: var(--background-active);
+      box-shadow: none;
+    }
+  }
+  .info {
+    background-color: var(--background-active);
+    color: var(--light-grey)
   }
 }
 

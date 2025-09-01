@@ -393,4 +393,31 @@ export default {
   .apexcharts-yaxis-label title {
     display: none;
   }
+  @media (prefers-color-scheme: dark) {
+    .apexcharts-menu {
+      color: black;
+    }
+    .apexcharts-xaxis-label,
+    .apexcharts-yaxis-label {
+      fill: var(--light-grey);
+    }
+    .apexcharts-yaxis-annotations line {
+      stroke: var(--green) !important;
+    }
+    .apexcharts-yaxis-annotations text {
+      fill: var(--light-grey) !important;
+    }
+    .apexcharts-yaxis-annotations rect {
+      fill: var(--dark-grey) !important;
+    }
+    .apexcharts-legend-text:not(.apexcharts-yaxis-annotation-label) {
+      color: var(--light-grey) !important;
+    }
+    .apexcharts-text.apexcharts-yaxis-annotation-label {
+      color: var(--dark-grey) !important;
+    }
+    .apexcharts-tooltip-text {
+      color: var(--dark-grey) !important;
+    }
+  }
 </style>
