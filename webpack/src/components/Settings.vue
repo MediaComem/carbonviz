@@ -184,7 +184,7 @@ export default {
 				</el-row>
 				<el-row>
 					<el-col :span="24" class="mt8 tip">
-						<div>💡</div><div>{{ t('components.settings.longerUsageTip') }}</div>
+						<div class="info-icon">💡</div><div>{{ t('components.settings.longerUsageTip') }}</div>
 					</el-col>
 				</el-row>
 			</div>
@@ -364,6 +364,10 @@ h3 {
 	margin-right: 3px;
 }
 
+.info-icon {
+  margin-right: 6px;
+}
+
 :deep(.el-button) {
 	width: 143px;
 	height: 30px;
@@ -395,5 +399,25 @@ h3 {
 :deep(.el-switch .el-switch__label) {
 	margin-right: 2px;
 	margin-left: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+	.wrapper {
+		color: var(--light-grey);
+		.tip {
+			color: var(--dark-grey);
+		}
+		.content h3 {
+			color: white;
+		}
+	}
+	@media (prefers-color-scheme: dark) {
+		.wrapper {
+			background-color: var(--activeBackground);
+		}
+		#settingsWrapper h3 {
+			color: white;
+		}
+	}
 }
 </style>
