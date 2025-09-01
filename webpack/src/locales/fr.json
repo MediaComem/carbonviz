@@ -19,7 +19,7 @@
       "netflix": "épisodes Netflix UHD",
       "wordFile": "pages d'un fichier word",
       "wordFile_million": "millions de pages word",
-      "usb": "ancienne clé USB (8 MB)",
+      "usb": "anciennes clés USB (8 MB)",
       "number": {
         "marathon": "courir {number}% d'un marathon",
         "marathons": "courir {number} marathons",
@@ -35,7 +35,7 @@
         "netflix": "{number} épisodes Netflix UHD",
         "wordFile": "{number} pages d'un fichier word",
         "wordFileMillion": "{number} millions de pages word",
-        "usb": "{number} ancienne clé USB (8 MB)"
+        "usb": "{number} anciennes clés USB (8 MB)"
       }
     },
     "analogy": {},
@@ -74,6 +74,7 @@
       "recommandations": "Recommandations",
       "tips": "Recommandations sur les bonnes pratiques",
       "tip": "Recommandation",
+      "otherCategory": "Divers",
       "days": {
         "Mon": "Lun.",
         "Tue": "Mar.",

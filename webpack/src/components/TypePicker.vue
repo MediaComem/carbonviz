@@ -46,4 +46,36 @@ const changeType = (type) => {
       border-left: 1px solid var(--grey);
     }
   }
+  @media (prefers-color-scheme: dark) {
+    #type button {
+        border: none;
+        color: white;
+        margin: 0px;
+        overflow: hidden;
+        flex: 1;
+        &:not(:first-child) {
+          border-left: 1px solid var(--dark-grey);
+        }
+    }
+
+    #type button:first-child {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+
+    #type button:last-child {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+
+    #type {
+      border: 1px solid var(--dark-grey);
+      display: flex;
+    }
+
+    #type button.activeButton {
+      background-color: var(--dark-grey);
+      box-shadow: none;
+    }
+  }
 </style>

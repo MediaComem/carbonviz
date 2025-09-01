@@ -59,7 +59,7 @@ export default {
           <button id="openNewTab" @click='openNewTabDialog()'> {{ t('global.newTab') }} </button>
         </div>
         <div id="lang"><button @click='changeLang("en")'>EN</button><button @click='changeLang("fr")'>FR</button></div>
-        <div data-area="logo" id="logoEquiwatt"></div>
+        <div data-area="logo"><a href="https://www.equiwatt-lausanne.ch/" target="_blank"><div id="logoEquiwatt"></div></a></div>
       </div>
     </div>
 </template>
@@ -144,13 +144,12 @@ export default {
   height: 20px;
   margin-bottom: 3px;
 }
-[data-area="logo"]#logoEquiwatt::before {
+#logoEquiwatt::before {
   display: inline-block;
   content: ' ';
   background: url("../assets/icons/logos/logoEquiwatt.svg") no-repeat;
   width: 70px;
   height: 15px;
-  margin-bottom: 3px;
 }
 [data-area="logo"]#openTab::before {
   display: inline-block;
@@ -178,5 +177,36 @@ body * {
 /* HistoryStratum labels container on popup have wider width */
 #history .summary .label {
   left: 5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #popupPage {
+    color: var(--light-grey);
+    box-sizing: border-box;
+    box-shadow:inset 0px 0px 0px 1px var(--light-grey);
+    background-color: var(--activeBackground);
+  }
+  #tabs {
+    color: white;
+  }
+  #tabs button.activeTab.activeTab {
+    color:white;
+    border-bottom-color: white;
+  }
+  #footer [data-area="logo"]#appTitle::before {
+    filter: invert(0.9);
+  }
+  #footer [data-area="title"] {
+    color: var(--light-grey);
+  }
+  #footer [data-area="logo"]#openTab::before {
+    filter: invert(0.9);
+  }
+  .tab-action #openNewTab {
+    color: var(--light-grey);
+  }
+  #lang button {
+    color: var(--light-grey);
+  }
 }
 </style>
