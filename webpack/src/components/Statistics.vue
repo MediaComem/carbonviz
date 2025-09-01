@@ -112,10 +112,6 @@ export default {
       }
     });
 
-    const translatedLabels = computed(() => {
-      
-    });
-
     // Should it be dynamic depending on value range?
     const yAxisCo2 = {
       tickAmount: 3,
