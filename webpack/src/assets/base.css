@@ -32,6 +32,14 @@
   --el-color-primary: var(--black);
   --el-text-color-regular: var(--black);
   --el-font-size-base: 12px;
+  --stats-icon-color: #616161;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --activeBackground: #262626;
+    --stats-icon-color: var(--light-grey);
+  }
 }
 
 button {

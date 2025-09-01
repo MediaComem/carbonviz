@@ -61,4 +61,38 @@ const changePeriod = (period) => {
     }
   }
 
+  @media (prefers-color-scheme: dark) {
+    #time button {
+      border: none;
+      &:not(:first-child) {
+        border-left: 1px solid var(--dark-grey);
+      }
+      color: white;
+      margin: 0px;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    #time button:first-child {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+
+    #time button:last-child {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+
+    #time {
+      border: 1px solid var(--dark-grey);
+      display: flex;
+    }
+
+    #time button.activeButton {
+      background-color: var(--dark-grey);
+      box-shadow: none;
+    }
+
+  }
+
 </style>

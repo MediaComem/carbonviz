@@ -45,7 +45,7 @@ export default {
         <statistics type="co2" subtype="computer" granularity="day" :height="180" class="computer_trends">
           <template #title>{{ t('global.computerEnergy') }} <span @click="goToSettings" style="font-weight: 400; text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span></template>
           <template #info>
-            <div>💡</div>
+            <div class="info-icon">💡</div>
             <div>
               {{ t('components.statistics.computerInfo') }}
               {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
@@ -67,7 +67,7 @@ export default {
         <statistics type="co2" subtype="computer" granularity="month" :height="180" class="computer_trends">
           <template #title>{{ t('global.computerEnergy') }} <span @click="goToSettings" style="font-weight: 400; text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span></template>
           <template #info>
-            <div>💡</div>
+            <div class="info-icon">💡</div>
             <div>
               {{ t('components.statistics.computerInfo') }}
               {{ t('components.statistics.computerTip') }} <span @click="goToSettings" style="text-decoration : underline; cursor: pointer;">{{ t('global.settings') }}</span>
@@ -138,5 +138,26 @@ a, :deep(a) {
 }
 a:visited, :deep(a:visited) {
   color: black;
+}
+
+.info-icon {
+  margin-right: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :deep(.el-collapse-item__header),
+  :deep(.el-collapse-item__content) {
+    background-color: transparent;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: white;
+  }
+  :deep(.el-collapse-item__wrap) {
+    background-color: transparent;
+  }
+  a, :deep(a) {
+    color: white;
+    font-style: italic;
+  }
 }
 </style>
