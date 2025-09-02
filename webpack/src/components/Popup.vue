@@ -183,7 +183,7 @@ body * {
   #popupPage {
     color: var(--light-grey);
     box-sizing: border-box;
-    /* box-shadow:inset 0px 0px 0px 1px var(--light-grey); */
+    box-shadow:inset 0px 0px 0px 1px var(--light-grey);
     background-color: var(--activeBackground);
   }
   #tabs {
