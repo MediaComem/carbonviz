@@ -183,7 +183,8 @@ body * {
   #popupPage {
     color: var(--light-grey);
     box-sizing: border-box;
-    box-shadow:inset 0px 0px 0px 1px var(--light-grey);
+    /* NOT NEEDED FOR SAFARI (DEFAULT BROWSER STYLE IS ENOUGH) */
+    /* box-shadow:inset 0px 0px 0px 1px var(--light-grey); */
     background-color: var(--activeBackground);
   }
   #tabs {
