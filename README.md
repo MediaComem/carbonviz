@@ -80,17 +80,19 @@ CarbonViz addresses this issue by seeking to improve perception and understandin
    - Open `chrome://extensions/` (or `edge://extensions/`)
    - Enable "Developer mode"
    - Click "Load unpacked"
-   - Select the `dist` folder from your project directory
+   - Select the root folder (containing the `manifest.json` file)
 
    **For Firefox:**
    - Open `about:debugging`
    - Click "This Firefox"
    - Click "Load Temporary Add-on"
-   - Select the `manifest.json` file from the `dist` folder
+   - Select the `manifest.json` file from the root folder
 
    **For Safari:**
-   - Use Xcode to open the Safari App Extension project
-   - Build and run the extension
+   - Open the Safari settings
+   - Click on "Developper" tab
+   - Click on "Add a temporary extension"
+   - Select the `manifest.json` file from the root folder
 
 ### Available Scripts
 
