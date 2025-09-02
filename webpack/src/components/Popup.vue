@@ -144,7 +144,7 @@ export default {
   height: 20px;
   margin-bottom: 3px;
 }
-#logoEquiwatt::before {
+div[data-area="logo"] div#logoEquiwatt::before {
   display: inline-block;
   content: ' ';
   background: url("../assets/icons/logos/logoEquiwatt.svg") no-repeat;

@@ -33,6 +33,7 @@
   --el-text-color-regular: var(--black);
   --el-font-size-base: 12px;
   --stats-icon-color: #616161;
+  color-scheme: light dark
 }
 
 @media (prefers-color-scheme: dark) {
