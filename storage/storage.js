@@ -203,8 +203,12 @@ const retrieveHistoryLayers = async (period, scrollCount) => {
 
     const getDaysList = () => {
         for(let data of dailyData) {
-            layersCo2.push({ amount: data.co2, computer: data.computer.co2, energy: data.energy, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `co2Day${data.index}` });
-            layersData.push({ amount: data.data, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `dataDay${data.index}`  });
+            let yearForLabel = year;
+            if (data.month > currentMonth) {
+                yearForLabel = year - 1;
+            }
+            layersCo2.push({ amount: data.co2, computer: data.computer.co2, energy: data.energy, label: `${data.date}.${months[data.month - 1]}.${yearForLabel}`, level: 'day', key: `co2Day${data.index}` });
+            layersData.push({ amount: data.data, label: `${data.date}.${months[data.month - 1]}.${yearForLabel}`, level: 'day', key: `dataDay${data.index}`  });
         }
         layersCo2[layersCo2.length-1].label = 'current_today';
         layersData[layersCo2.length-1].label = 'current_today';
