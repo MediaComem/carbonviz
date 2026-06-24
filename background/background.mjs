@@ -35,11 +35,29 @@ let DBInitialized = false;
 let dailyResponseJson = [];
 let dump = [];
 let writeDataInterval;
-const writingIntervalMs = 60000;
+const writingIntervalMs = 1000; // write every second for experiment
 const weeklyIntervalMins = 10080; // Set the alarm to repeat every week (7 days * 24 hours * 60 minutes = 10080 minutes)
 const dailyIntervalMins = 1440;
 
 let statistics = { co2: 0, data: 0, energy: 0, time: 0};
+
+// Packets with no Content-Length and no URL range, waiting for resource timing data
+const pendingWithoutSize = new Map(); // url -> { tab, timeStamp, expiresAt }
+// Resource timing entries that arrived before onCompleted registered a pending entry
+const receivedSizes = new Map();      // url -> { transferSize, expiresAt }
+const PENDING_TTL_MS = 5000;
+
+const processResourcePacket = (packetSize, tab, timeStamp) => {
+  if (!(packetSize > 0)) return;
+  const co2Internet = co2ImpactInternet(packetSize);
+  const energyInternet = energyImpactInternet(packetSize);
+  const info = { extraInfo: { tabUrl: tab.url, tabIcon: tab.favIconUrl, tabTitle: tab.title } };
+  const domainName = domain(info);
+  statistics.co2 += co2Internet;
+  statistics.data += packetSize;
+  if (!writeDataInterval) writeDataInterval = setInterval(writeData, writingIntervalMs);
+  saveToDump({ domainName, co2Size: co2Internet, packetSize, energySize: energyInternet.energyNRE + energyInternet.energyRE, timeStamp });
+};
 // miniviz analogy counter
 let analogyCounter = {
   // 10L boiling water
@@ -66,6 +84,8 @@ const domain = (packet) => {
 }
 
 const saveToDump = (data) => {
+  // EXPERIMENT all domain in same counter logged every second
+  data.domainName = 'internet';
   let match = false;
   for(let entry of dump) {
     if (entry.domainName === data.domainName) {
@@ -165,7 +185,23 @@ const completedListener = async(responseDetails) => {
     }
   }
 
-  if(!packetWithSize) { // no size
+  if (!packetWithSize) {
+    if (responseDetails.tabId > 0) {
+      chrome.tabs.get(responseDetails.tabId, tab => {
+        if (chrome.runtime.lastError || !tab?.url) return;
+        if (tab.url.startsWith('http://localhost') || tab.url.startsWith('https://localhost') ||
+            tab.url.startsWith('chrome-extension:')) return;
+        const received = receivedSizes.get(url);
+        if (received) {
+          receivedSizes.delete(url);
+          processResourcePacket(received.transferSize, tab, timeStamp);
+        } else {
+          const now = Date.now();
+          for (const [k, v] of pendingWithoutSize) { if (v.expiresAt < now) pendingWithoutSize.delete(k); }
+          pendingWithoutSize.set(url, { tab, timeStamp, expiresAt: now + PENDING_TTL_MS });
+        }
+      });
+    }
     return;
   }
 
@@ -285,6 +321,20 @@ const handleMessage = (request, _sender, sendResponse) => {
           }
         });
         return;
+      case 'resourceSize': {
+        const { url, transferSize } = request;
+        if (!(transferSize > 0)) break;
+        const pending = pendingWithoutSize.get(url);
+        if (pending) {
+          pendingWithoutSize.delete(url);
+          processResourcePacket(transferSize, pending.tab, pending.timeStamp);
+        } else {
+          const now = Date.now();
+          for (const [k, v] of receivedSizes) { if (v.expiresAt < now) receivedSizes.delete(k); }
+          receivedSizes.set(url, { transferSize, expiresAt: now + PENDING_TTL_MS });
+        }
+        break;
+      }
       default:
         break;
     }

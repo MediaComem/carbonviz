@@ -1,4 +1,4 @@
-import { getWeekOfYear, getMonday, dateStringHour, dateString } from "./indexedDB.js"
+import { getWeekOfYear, getMonday, dateStringHour, dateString, dateStringMs } from "./indexedDB.js"
 
 export class DBInstance {
   static db = null;
@@ -29,12 +29,13 @@ export class DBInstance {
 
     return new Promise((resolve) => {
 
-      let version = 4;
+      let version = 5;
       /*
         version 1: basic
         version 2: add by_co2 / by_data indexes for domains
         version 3: monthly data by domain
         version 4: daily data by domain
+        version 5: per-packet recent history for sub-minute aggregates
       */
       const request = self.indexedDB.open("co2HistoryDB", version);
       // For any changes to an existing DB structure, the version number needs to be incremented.
@@ -88,6 +89,11 @@ export class DBInstance {
             energy: 0,
             duration: 0
           });
+        }
+
+        if (!DBInstance.db.objectStoreNames.contains('historySecond')) {
+          const storeHistorySecond = DBInstance.db.createObjectStore("historySecond", { autoIncrement: true });
+          storeHistorySecond.createIndex("by_timestamp", "timestamp");
         }
 
         if (!DBInstance.db.objectStoreNames.contains('domains')) {
@@ -217,4 +223,5 @@ export class DBInstance {
       return resolve(trans);
     });
   }
+
 }

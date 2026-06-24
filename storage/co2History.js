@@ -1,4 +1,4 @@
-import { getLastStoredEntries, updateData, deleteData } from "./indexedDB.js";
+import { getLastStoredEntries, updateData, addRecentEntry, deleteData } from "./indexedDB.js";
 
 export function updateRunningDurationSec(duration) {
     return new Promise(async function(resolve) {
@@ -43,6 +43,7 @@ export function updateHistoryDb(packet) {
         const energyMJ = packet.energySize;
         const timestamp = packet.timeStamp;
         const date = new Date(timestamp);
+        await addRecentEntry(date, { co2: sizeCo2, data: dataBytes, energy: energyMJ });
         const lastStoredDBEntry = await getLastStoredEntries(date, domain);
         const storedDates = lastStoredDBEntry.storedDates;
         const history = lastStoredDBEntry.history;

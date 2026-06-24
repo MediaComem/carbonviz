@@ -57,8 +57,7 @@ export default {
       }
     });
     const layerName = computed(() => {
-      return layerInfo.label.startsWith('current') ? t('global.'+layerInfo.label) : 
-         layerInfo.level != 'day' ? t('global.period.'+layerInfo.level) + ' ' + layerInfo.label : layerInfo.label
+      return layerInfo.label
     });
     const legend = computed(() => {
       switch(type.value) {

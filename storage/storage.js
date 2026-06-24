@@ -1,4 +1,4 @@
-import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getAggregate, getTodayCounter, getWebsites } from './indexedDB.js';
+import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getRecentEntries as recentEntriesFromDB, getAggregate, getTodayCounter, getWebsites } from './indexedDB.js';
 import { retrieveSettings } from '../settings/settings.js';
 import { ONE_DAY_SEC, co2ImpactHomeHardware} from '../model/model.js'
 
@@ -191,24 +191,75 @@ const retrieveHistoryLayers = async (period, scrollCount) => {
 
     await initDB();
 
+
     // get data (daily summaries) for the last 4 months
     const dailyData = await getDailyAggregates('month', [-historyLimit, 0]);
     if (!dailyData) {
         return { co2: layersCo2, data: layersData };
     }
-    const today = dailyData[dailyData.length-1];
-    const currentMonth = today.month;
-    const currentWeekYear = today.weekOfYear;
-    const itemsCount = 0;
 
-    const getDaysList = () => {
-        for(let data of dailyData) {
-            layersCo2.push({ amount: data.co2, computer: data.computer.co2, energy: data.energy, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `co2Day${data.index}` });
-            layersData.push({ amount: data.data, label: `${data.date}.${months[data.month - 1]}.${year}`, level: 'day', key: `dataDay${data.index}`  });
+    // EXPERIMENT
+    // get Aggregate for the last minute, last 10 minutes and current hour
+    // HACK keep level day/week/month
+    const lastMinuteData = await recentEntriesFromDB('second', [-60, 0]);
+    const last10MinutesData = await recentEntriesFromDB('minute', [-10, 0]);
+    const lastHourData = await recentEntriesFromDB('5minutes', [-12, 0]);
+
+    const getLastMinuteList = () => {
+        for(let data of lastMinuteData) {
+            if(data.data < 1000) { // hide less than 1kB
+                continue;
+            }
+            const label = data.timestamp.slice(11, 19);
+            layersCo2.push({ amount: data.co2, computer: 0, energy: data.energy, label: label, level: 'day', key: label });
+            layersData.push({ amount: data.data, label: label, level: 'day', key: label });
         }
-        layersCo2[layersCo2.length-1].label = 'current_today';
-        layersData[layersCo2.length-1].label = 'current_today';
     }
+    const getLast10MinutesList = () => {
+        const byMinute = new Map();
+        for (const entry of last10MinutesData) {
+            const minuteKey = entry.timestamp.slice(11, 16); // HH:MM
+            if (!byMinute.has(minuteKey)) {
+                byMinute.set(minuteKey, { co2: 0, data: 0, energy: 0, entries: [] });
+            }
+            const group = byMinute.get(minuteKey);
+            group.co2 += entry.co2;
+            group.data += entry.data;
+            group.energy += entry.energy;
+            group.entries.push(entry);
+        }
+        for (const [minuteKey, group] of [...byMinute.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+            if (group.data < 1000) continue;
+            const detailsCo2 = group.entries.map(e => ({ amount: e.co2, label: e.timestamp.slice(11, 19), key: `co2Sec${e.timestamp}` }));
+            const detailsData = group.entries.map(e => ({ amount: e.data, label: e.timestamp.slice(11, 19), key: `dataSec${e.timestamp}` }));
+            layersCo2.push({ amount: group.co2, computer: 0, energy: group.energy, label: minuteKey, details: detailsCo2, level: 'week', key: `co2Min${minuteKey}` });
+            layersData.push({ amount: group.data, label: minuteKey, details: detailsData, level: 'week', key: `dataMin${minuteKey}` });
+        }
+    }
+    const getLastHourList = () => {
+        const by10Min = new Map();
+        for (const entry of lastHourData) {
+            const hour = entry.timestamp.slice(11, 13);
+            const minute = parseInt(entry.timestamp.slice(14, 16));
+            const rangeStart = Math.floor(minute / 10) * 10;
+            const rangeKey = `${hour}:${String(rangeStart).padStart(2, '0')}`;
+            if (!by10Min.has(rangeKey)) {
+                by10Min.set(rangeKey, { co2: 0, data: 0, energy: 0, byMinute: new Map() });
+            }
+            const group = by10Min.get(rangeKey);
+            group.co2 += entry.co2;
+            group.data += entry.data;
+            group.energy += entry.energy;
+        }
+        for (const [rangeKey, group] of [...by10Min.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+            if (group.data < 1000) continue;
+            const sortedMinutes = [...group.byMinute.entries()].sort(([a], [b]) => a.localeCompare(b));
+            const detailsCo2 = sortedMinutes.map(([minuteKey, v]) => ({ amount: v.co2, label: minuteKey, key: `co2Min${minuteKey}` }));
+            const detailsData = sortedMinutes.map(([minuteKey, v]) => ({ amount: v.data, label: minuteKey, key: `dataMin${minuteKey}` }));
+            layersCo2.push({ amount: group.co2, computer: 0, energy: group.energy, label: rangeKey, details: detailsCo2, level: 'month', key: `co2_10min_${rangeKey}` });
+            layersData.push({ amount: group.data, label: rangeKey, details: detailsData, level: 'month', key: `data_10min_${rangeKey}` });
+        }
+      }
 
     const getWeeksList = () => {
         const previousWeeks = [];
@@ -278,16 +329,16 @@ const retrieveHistoryLayers = async (period, scrollCount) => {
 
     switch(period) {
         case 'days':
-            getDaysList();
+            getLastMinuteList();
             break;
         case 'weeks':
-            getWeeksList();
+            getLast10MinutesList();
             break;
         case 'months':
-            getMonthsList();
+            getLastHourList();
             break;
         default:
-            getDaysList();
+            getLastHourList();
     }
 
    return { co2: layersCo2, data: layersData, count: layersCo2.length };

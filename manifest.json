@@ -26,7 +26,7 @@
     {
       "matches": ["https://*/*", "http://*/*"],
       "css": ["bundle/miniviz.css"],
-      "js": ["content/miniViz-script.js","content/miniViz.js"]
+      "js": ["content/miniViz-script.js","content/miniViz.js","content/resourceTiming.js"]
     }
   ],
   "action": {

@@ -34,6 +34,12 @@ function dateStringHour(dataObject) {
   return dateToISOLocal(dataObject).slice(0,13);
 }
 
+function dateStringMs(dataObject) {
+  const offset = dataObject.getTimezoneOffset() * 60000;
+  const timeLocal = dataObject.getTime() - offset;
+  return new Date(timeLocal).toISOString().substring(0, 23);
+}
+
 function dateString(dataObject) {
   return dateToISOLocal(dataObject).slice(0,10);
 }
@@ -118,7 +124,7 @@ async function updateData(date, hourlyData, dailyData, domainData = undefined) {
 
 async function getLastStoredEntries(today, domainName = undefined) {
   return new Promise(function (resolve) {
-    const historyIndex = dateStringHour(today);
+    const historyIndex = dateStringHour(today); // index for hourly aggregated history
     const historySummaryIndex = dateString(today);
     const month = today.getMonth()+1;
     const day = today.getDay();
@@ -183,6 +189,21 @@ function getkeyRangeSummary(period, range) {
   let startKey = '';
   let endKey = '';
 
+  if (period === 'second') {
+    startDate = new Date(now.getTime() + range[0] * 1000);
+    endDate = new Date(now.getTime() + range[1] * 1000);
+    return { startKey: dateStringMs(startDate), endKey: dateStringMs(endDate) };
+  }
+  if (period === 'minute') {
+    startDate = new Date(now.getTime() + range[0] * 60000);
+    endDate = new Date(now.getTime() + range[1] * 60000);
+    return { startKey: dateStringMs(startDate), endKey: dateStringMs(endDate) };
+  }
+  if (period === '5minutes') {
+    startDate = new Date(now.getTime() + range[0] * 300000);
+    endDate = new Date(now.getTime() + range[1] * 300000);
+    return { startKey: dateStringMs(startDate), endKey: dateStringMs(endDate) };
+  }
   if (period === 'day') {
     startDate = new Date(startDate.setDate(startDate.getDate() + range[0]));
     endDate = new Date(endDate.setDate(endDate.getDate() + range[1]));
@@ -195,6 +216,7 @@ function getkeyRangeSummary(period, range) {
     startDate = new Date(startDate.setMonth(startDate.getMonth() + range[0]));
     endDate = new Date(endDate.setMonth(endDate.getMonth() + range[1]));
   }
+
   endKey = dateString(endDate);
   startKey = dateString(startDate);
   return {startKey, endKey};
@@ -253,6 +275,69 @@ async function getTodayCounter(lifetime) {
       }
       return { co2:0, data: 0, energy: 0, time: 0};
     }
+  });
+}
+
+async function addRecentEntry(date, data) {
+  return new Promise(function(resolve) {
+    const db = DBInstance.db;
+    const trans = db.transaction(["historySecond"], "readwrite");
+    const store = trans.objectStore("historySecond");
+    store.add({
+      timestamp: dateStringMs(date),
+      co2: data.co2,
+      data: data.data,
+      energy: data.energy
+    });
+    trans.oncomplete = () => resolve();
+  });
+}
+
+async function getRecentAggregates(period, range) {
+  return new Promise(function(resolve, reject) {
+    const keys = getkeyRangeSummary(period, range);
+    const keyRangeValue = IDBKeyRange.bound(keys.startKey, keys.endKey);
+    const db = DBInstance.db;
+    const trans = db.transaction(["historySecond"], "readonly");
+    const store = trans.objectStore("historySecond");
+    const index = store.index("by_timestamp");
+    const aggregate = { co2: 0, data: 0, energy: 0 };
+    const request = index.openCursor(keyRangeValue);
+    request.onsuccess = function(event) {
+      const cursor = event.target.result;
+      if (cursor) {
+        aggregate.co2 += cursor.value.co2;
+        aggregate.data += cursor.value.data;
+        aggregate.energy += cursor.value.energy;
+        cursor.continue();
+      } else {
+        resolve(aggregate);
+      }
+    };
+    request.onerror = function(error) { reject(error); };
+  });
+}
+
+async function getRecentEntries(period, range) {
+  return new Promise(function(resolve, reject) {
+    const keys = getkeyRangeSummary(period, range);
+    const keyRangeValue = IDBKeyRange.bound(keys.startKey, keys.endKey);
+    const db = DBInstance.db;
+    const trans = db.transaction(["historySecond"], "readonly");
+    const store = trans.objectStore("historySecond");
+    const index = store.index("by_timestamp");
+    const entries = [];
+    const request = index.openCursor(keyRangeValue);
+    request.onsuccess = function(event) {
+      const cursor = event.target.result;
+      if (cursor) {
+        entries.push(cursor.value);
+        cursor.continue();
+      } else {
+        resolve(entries);
+      }
+    };
+    request.onerror = function(error) { reject(error); };
   });
 }
 
@@ -350,4 +435,4 @@ async function deleteStore(dbStore) {
 }
 
 export { init, getLastStoredEntries, updateData, getDailyAggregates, getTodayCounter, deleteData, deleteStore, getWebsites, getAggregate,
-  downloadData, getMonday, getWeekOfYear, dateStringHour, dateString }
+  downloadData, getMonday, getWeekOfYear, dateStringHour, dateString, dateStringMs, addRecentEntry, getRecentAggregates, getRecentEntries }
