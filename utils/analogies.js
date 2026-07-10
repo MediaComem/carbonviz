@@ -63,7 +63,11 @@ const analogiesCo2 = {
     biking: {
         text: (value, t) => {
             const kwPerUnit = kwPerUnitCo2.biking;
-            let number = Math.floor(value / kwPerUnit);
+            const ratio = value / kwPerUnit;
+            const number = Math.floor(ratio);
+            if (number < 1) {
+                return t('components.analogies.number.biking_meter', {number: Math.round(ratio * 1000)});
+            }
             return t('components.analogies.number.biking', {number});
         },
         asset: 'analogy_bicycle.png'
@@ -71,7 +75,11 @@ const analogiesCo2 = {
     cooking: {
         text: (value, t) => {
             const kwPerUnit = kwPerUnitCo2.cooking;
-            let number = roundToPrecision(value/kwPerUnit, 1);
+            const ratio = value / kwPerUnit;
+            if (ratio < 1) {
+                return t('components.analogies.number.cooking_percent', {number: Math.ceil(100 * ratio)});
+            }
+            const number = roundToPrecision(ratio, 1);
             return t('components.analogies.number.cooking', {number});
         },
         asset: 'analogy_frozenpizza.png'
@@ -79,7 +87,11 @@ const analogiesCo2 = {
     boiling: {
         text: (value, t) => {
             const kwPerUnit = kwPerUnitCo2.boiling;
-            let number = roundToPrecision(value/kwPerUnit, 1);
+            const ratio = value / kwPerUnit;
+            if (ratio < 1) {
+                return t('components.analogies.number.boiling_ml', {number: Math.round(ratio * 1000)});
+            }
+            const number = roundToPrecision(ratio, 1);
             return t('components.analogies.number.boiling', {number});
         },
         asset: 'analogy_boiling.png'
@@ -87,7 +99,11 @@ const analogiesCo2 = {
     sawing: {
         text: (value, t) => {
             const kwPerUnit = kwPerUnitCo2.sawing;
-            let number = Math.floor(value / kwPerUnit);
+            const ratio = value / kwPerUnit;
+            const number = Math.floor(ratio);
+            if (number < 1) {
+                return t('components.analogies.number.sawing_percent', {number: Math.ceil(100 * ratio)});
+            }
             return t('components.analogies.number.sawing', {number});
         },
         asset: 'analogy_sawing.png'
@@ -98,7 +114,11 @@ const analogiesData = {
     dictionaries: {
         text: (value, t) =>  {
             const mbPerUnit = mbPerUnitData.dictionaries;
-            let number = roundToPrecision(value/mbPerUnit, 1);
+            const ratio = value / mbPerUnit;
+            if (ratio < 1) {
+                return t('components.analogies.number.dictionaries_percent', {number: Math.ceil(100 * ratio)});
+            }
+            const number = roundToPrecision(ratio, 1);
             return t('components.analogies.number.dictionaries', {number});
         },
         asset: 'analogy_dictionary.png'
@@ -106,7 +126,11 @@ const analogiesData = {
     instagram: {
         text: (value, t) =>  {
             const mbPerUnit = mbPerUnitData.instagram;
-            let number = Math.floor(value / mbPerUnit);
+            const ratio = value / mbPerUnit;
+            const number = Math.floor(ratio);
+            if (number < 1) {
+                return t('components.analogies.number.instagram_percent', {number: Math.ceil(100 * ratio)});
+            }
             return t('components.analogies.number.instagram', {number});
         },
         asset: 'analogy_insta.png'
@@ -114,7 +138,11 @@ const analogiesData = {
     music: {
         text: (value, t) =>  {
             const mbPerUnit = mbPerUnitData.music;
-            let number = Math.floor(value / mbPerUnit);
+            const ratio = value / mbPerUnit;
+            const number = Math.floor(ratio);
+            if (number < 1) {
+                return t('components.analogies.number.music_second', {number: Math.round(ratio * 60)});
+            }
             return t('components.analogies.number.music', {number});
         },
         asset: 'analogy_streaming.png'
@@ -122,7 +150,11 @@ const analogiesData = {
     netflix: {
         text: (value, t) =>  {
             const mbPerUnit = mbPerUnitData.netflix;
-            let number = roundToPrecision(value/mbPerUnit, 2);
+            const ratio = value / mbPerUnit;
+            if (ratio < 1) {
+                return t('components.analogies.number.netflix_percent', {number: Math.ceil(100 * ratio)});
+            }
+            const number = roundToPrecision(ratio, 2);
             return t('components.analogies.number.netflix', {number});
         },
         asset: 'analogy_tvzomby.png'
@@ -130,7 +162,11 @@ const analogiesData = {
     wordFile: {
         text: (value, t) =>  {
             const mbPerUnit = mbPerUnitData.wordFile;
-            let number = Math.floor(value / mbPerUnit);
+            const ratio = value / mbPerUnit;
+            let number = Math.floor(ratio);
+            if (number < 1) {
+                return t('components.analogies.number.wordFile_percent', {number: Math.ceil(100 * ratio)});
+            }
             if (number < 1000000) {
                 return t('components.analogies.number.wordFile', {number});
             }
@@ -142,7 +178,11 @@ const analogiesData = {
     usb: {
         text: (value, t) =>  {
             const mbPerUnit = mbPerUnitData.usb;
-            let number = Math.floor(value / mbPerUnit);
+            const ratio = value / mbPerUnit;
+            const number = Math.floor(ratio);
+            if (number < 1) {
+                return t('components.analogies.number.usb_percent', {number: Math.ceil(100 * ratio)});
+            }
             return t('components.analogies.number.usb', {number});
         },
         asset: 'analogy_usbdrive.png'
