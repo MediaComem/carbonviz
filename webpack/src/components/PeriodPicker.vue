@@ -14,10 +14,9 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { ref, toRefs } from 'vue';
-import { Period } from '../utils/types';
 
 export interface Props {
-  periods?: Period[]
+  periods?: string[]
 }
 
 const { t } = useI18n({});
@@ -29,12 +28,12 @@ const props = withDefaults(defineProps<Props>(), {
 const { periods } = toRefs(props);
 
 const emit = defineEmits<{
-  (e: 'change', value: 'days' | 'weeks' | 'months'): void
+  (e: 'change', value: string): void
 }>()
 
-const timePeriod = ref("days");
+const timePeriod = ref(props.periods[0]);
 
-const changePeriod = (period) => {
+const changePeriod = (period: string) => {
   timePeriod.value = period;
   emit('change', period);
 }

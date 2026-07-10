@@ -182,7 +182,9 @@
       "weeks": "Weeks",
       "months": "Months",
       "week": "Week",
-      "month": "Month"
+      "month": "Month",
+      "seconds": "Seconds",
+      "minutes": "Minutes"
     },
     "settings": "Settings",
     "trends": "Trends"

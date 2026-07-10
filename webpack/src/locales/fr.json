@@ -182,7 +182,9 @@
       "weeks": "Semaines",
       "months": "Mois",
       "week": "Semaine",
-      "month": "Mois"
+      "month": "Mois",
+      "seconds": "Secondes",
+      "minutes": "Minutes"
     },
     "settings": "Paramètres",
     "trends": "Tendances"
