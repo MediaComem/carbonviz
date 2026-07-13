@@ -57,11 +57,17 @@ export default function (type, points = []) {
     stroke: { curve: 'smooth', width: 2 },
     dataLabels: { enabled: false },
     markers: { size: 0, hover: { size: 5 } },
+    // click is only used as a signal to toggle our own analogies panel below the
+    // chart -- disable apexcharts' own "selected point" dimming so the line/area
+    // doesn't visually change on click
+    states: { active: { filter: { type: 'none' } } },
     xaxis: {
       type: 'datetime',
       min: minX,
       max: maxX,
       tickAmount: X_TICK_AMOUNT,
+      // the floating axis label would just repeat the date/time already in the tooltip
+      tooltip: { enabled: false },
       labels: { datetimeUTC: false, style: { colors: labelColor } },
       axisBorder: { color: gridColor },
       axisTicks: { color: gridColor }
@@ -74,8 +80,10 @@ export default function (type, points = []) {
     },
     tooltip: {
       theme: isDark ? 'dark' : 'light',
+      marker: { show: false },
       x: { format: 'dd MMM HH:mm:ss' },
-      y: { formatter }
+      // only one series per chart -- drop the series-name prefix, just show the value
+      y: { formatter, title: { formatter: () => '' } }
     },
     grid: { show: true, borderColor: gridColor },
     legend: { show: false }
