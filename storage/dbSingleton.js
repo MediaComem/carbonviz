@@ -29,13 +29,14 @@ export class DBInstance {
 
     return new Promise((resolve) => {
 
-      let version = 5;
+      let version = 6;
       /*
         version 1: basic
         version 2: add by_co2 / by_data indexes for domains
         version 3: monthly data by domain
         version 4: daily data by domain
         version 5: per-packet recent history for sub-minute aggregates
+        version 6: manually tracked consumption sessions
       */
       const request = self.indexedDB.open("co2HistoryDB", version);
       // For any changes to an existing DB structure, the version number needs to be incremented.
@@ -94,6 +95,10 @@ export class DBInstance {
         if (!DBInstance.db.objectStoreNames.contains('historySecond')) {
           const storeHistorySecond = DBInstance.db.createObjectStore("historySecond", { autoIncrement: true });
           storeHistorySecond.createIndex("by_timestamp", "timestamp");
+        }
+
+        if (!DBInstance.db.objectStoreNames.contains('sessions')) {
+          DBInstance.db.createObjectStore("sessions", { keyPath: "start" });
         }
 
         if (!DBInstance.db.objectStoreNames.contains('domains')) {
@@ -165,6 +170,13 @@ export class DBInstance {
       request.onerror = (e) => {
         this._opening = false;
         return reject();
+      }
+
+      request.onblocked = (e) => {
+        // another open connection (e.g. the background script) is still on an
+        // older DB version -- it must close before this upgrade can proceed.
+        // fully reloading the extension (not just the popup) resolves this.
+        console.warn('CarbonViz: database upgrade blocked by another open connection. Reload the extension.', e);
       }
     })
   }

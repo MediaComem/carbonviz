@@ -1,7 +1,7 @@
 const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 function roundToPrecision(val, precision = 2) {
-  if (!val) {
+  if (val === undefined || val === null) {
     return;
   }
   return parseFloat(val.toFixed(precision).toString());
@@ -31,4 +31,19 @@ function formatCo2(amount, precision = 2) {
   }
 }
 
-export { days, roundToPrecision, formatSize, formatCo2 }
+function formatDuration(seconds) {
+  const totalSeconds = Math.max(0, Math.floor(seconds || 0));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
+  const pad = (n) => String(n).padStart(2, '0');
+  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(secs)}` : `${minutes}:${pad(secs)}`;
+}
+
+function formatDateTime(value) {
+  return new Date(value).toLocaleString(undefined, {
+    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+  });
+}
+
+export { days, roundToPrecision, formatSize, formatCo2, formatDuration, formatDateTime }
