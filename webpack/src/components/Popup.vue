@@ -70,7 +70,7 @@ export default {
   /*  height: 600px;
       width: 500px; */
   display: grid;
-  grid-template-rows: 70px 550px 50px;
+  grid-template-rows: 70px 480px 50px;
   grid-template-areas:
     "header"
     "body"

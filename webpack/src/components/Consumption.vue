@@ -145,10 +145,10 @@ export default {
     </div>
 
     <div class="session-history">
-      <div class="session-history-title">
+      <div v-if="sessions.length" class="session-history-title">
         {{ t("components.consumption.history") }}
       </div>
-      <div class="session-list">
+      <el-scrollbar class="session-list">
         <div
           v-for="session in sessions"
           :key="session.start"
@@ -170,7 +170,7 @@ export default {
             }}
           </span>
         </div>
-      </div>
+      </el-scrollbar>
     </div>
   </div>
 </template>
@@ -181,6 +181,8 @@ export default {
   flex-direction: column;
   width: 100%;
   height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
 }
 .session-control {
   display: flex;
@@ -229,21 +231,23 @@ export default {
 .session-history {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   min-height: 0;
-  overflow: auto;
 }
 .session-history-title {
   font-weight: 700;
   margin-bottom: 6px;
+  flex-shrink: 0;
 }
 .session-list {
-  overflow-y: auto;
+  flex-grow: 1;
+  min-height: 0;
   border-radius: 5px;
 }
 .session-item {
   display: flex;
   justify-content: space-between;
-  padding: 6px 8px;
+  padding: 6px 14px;
   cursor: pointer;
 }
 .session-item:not(:first-of-type) {
