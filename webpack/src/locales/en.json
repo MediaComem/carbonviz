@@ -39,6 +39,15 @@
       }
     },
     "analogy": {},
+    "consumption": {
+      "start": "Start session",
+      "stop": "Stop session",
+      "averagePower": "Average power",
+      "duration": "Duration",
+      "noSessions": "No session yet. Start one to begin tracking.",
+      "history": "Session history",
+      "ongoing": "Ongoing"
+    },
     "history": {
       "WeeklyConsumption": "Weekly consumption",
       "MonthlyConsumption": "Monthly consumption",
@@ -155,6 +164,7 @@
     "co2": "CO2",
     "of_co2": "of CO2",
     "computerEnergy": "Computer's embodied energy",
+    "consumption": "Consumption",
     "current_today": "Today",
     "current_week": "This week",
     "current_month": "This month",

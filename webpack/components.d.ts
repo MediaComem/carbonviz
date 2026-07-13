@@ -10,6 +10,7 @@ declare module 'vue' {
     Analogies: typeof import('./src/components/Analogies.vue')['default']
     Analogy: typeof import('./src/components/Analogy.vue')['default']
     AppFullpage: typeof import('./src/components/AppFullpage.vue')['default']
+    Consumption: typeof import('./src/components/Consumption.vue')['default']
     CounterCo2Data: typeof import('./src/components/CounterCo2Data.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
