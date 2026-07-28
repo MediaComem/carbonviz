@@ -26,16 +26,26 @@
         "swimming": "swimming {number}m in the sea",
         "swimmings": "swimming {number}km in the sea",
         "biking": "biking {number}km",
+        "biking_meter": "biking {number}m",
         "cooking": "cooking {number} frozen pizzas",
+        "cooking_percent": "cooking {number}% of a frozen pizza",
         "boiling": "boiling {number}L of water",
+        "boiling_ml": "boiling {number}mL of water",
         "sawing": "sawing {number} wood boards",
+        "sawing_percent": "sawing {number}% of a wood board",
         "dictionaries": "{number} illustrated dictionaries",
+        "dictionaries_percent": "{number}% of an illustrated dictionary",
         "instagram": "{number} instagram pictures",
+        "instagram_percent": "{number}% of an instagram picture",
         "music": "{number} minutes of audio streaming",
+        "music_second": "{number} seconds of audio streaming",
         "netflix": "{number} Netflix UHD episodes",
+        "netflix_percent": "{number}% of a Netflix UHD episode",
         "wordFile": "{number} pages of a word file",
+        "wordFile_percent": "{number}% of a page of a word file",
         "wordFileMillion": "{number} million pages of word file",
-        "usb": "{number} old USB Sticks (8 MB)"
+        "usb": "{number} old USB Sticks (8 MB)",
+        "usb_percent": "{number}% of an old USB Stick (8 MB)"
       }
     },
     "analogy": {},
@@ -192,7 +202,9 @@
       "weeks": "Weeks",
       "months": "Months",
       "week": "Week",
-      "month": "Month"
+      "month": "Month",
+      "seconds": "Seconds",
+      "minutes": "Minutes"
     },
     "settings": "Settings",
     "trends": "Trends"
