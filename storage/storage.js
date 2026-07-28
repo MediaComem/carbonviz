@@ -1,4 +1,5 @@
-import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getRecentEntries as recentEntriesFromDB, getAggregate, getTodayCounter, getWebsites } from './indexedDB.js';
+import { init as initDB, getDailyAggregates as dailyAggregatesFromDB, getRecentEntries as recentEntriesFromDB, getAggregate, getTodayCounter, getWebsites,
+  dateStringMs, startSession as startSessionInDB, endSession as endSessionInDB, getSessions as getSessionsFromDB, getSessionAggregate as getSessionAggregateFromDB } from './indexedDB.js';
 import { retrieveSettings } from '../settings/settings.js';
 import { ONE_DAY_SEC, co2ImpactHomeHardware} from '../model/model.js'
 
@@ -233,6 +234,33 @@ const retrieveHistorySeries = async (period) => {
     return { co2: seriesCo2, data: seriesData };
 }
 
+// Manually tracked consumption sessions (start/stop toggled by the user)
+
+const startSession = async () => {
+    await initDB();
+    return startSessionInDB(new Date());
+}
+
+const endSession = async (session) => {
+    await initDB();
+    return endSessionInDB(session, new Date());
+}
+
+const getSessions = async () => {
+    await initDB();
+    return getSessionsFromDB();
+}
+
+// Aggregate co2/data/energy for a session by summing historySecond entries
+// between its start and end (or "now" if the session is still running)
+const getSessionStats = async (session) => {
+    await initDB();
+    const end = session.end || dateStringMs(new Date());
+    const { co2, data, energy } = await getSessionAggregateFromDB(session.start, end);
+    const durationSec = (new Date(end) - new Date(session.start)) / 1000;
+    return { co2, data, energy, durationSec };
+}
+
 const retrieveAnalogiesLayer = async (type) => {
     const consumedCo2 = {
         today: '',
@@ -314,4 +342,5 @@ const retrieveAnalogiesLayer = async (type) => {
     }
 }
 
-export { initStorage, getLastDaysSummary, retrieveTodayCounter, getTopWebsites, getComputerCo2Series, getTopWebsitesSeries, retrieveHistorySeries, retrieveAnalogiesLayer, computerDailyEmbodiedCo2 }
+export { initStorage, getLastDaysSummary, retrieveTodayCounter, getTopWebsites, getComputerCo2Series, getTopWebsitesSeries, retrieveHistoryLayers, retrieveAnalogiesLayer, computerDailyEmbodiedCo2,
+  startSession, endSession, getSessions, getSessionStats }

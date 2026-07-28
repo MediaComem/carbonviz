@@ -341,6 +341,63 @@ async function getRecentEntries(period, range) {
   });
 }
 
+async function startSession(date) {
+  return new Promise(function(resolve) {
+    const db = DBInstance.db;
+    const trans = db.transaction(["sessions"], "readwrite");
+    const store = trans.objectStore("sessions");
+    const session = { start: dateStringMs(date), end: null };
+    store.add(session);
+    trans.oncomplete = () => resolve(session);
+  });
+}
+
+async function endSession(session, date) {
+  return new Promise(function(resolve) {
+    const db = DBInstance.db;
+    const trans = db.transaction(["sessions"], "readwrite");
+    const store = trans.objectStore("sessions");
+    const updated = { start: session.start, end: dateStringMs(date) };
+    store.put(updated);
+    trans.oncomplete = () => resolve(updated);
+  });
+}
+
+async function getSessions() {
+  return new Promise(function(resolve, reject) {
+    const db = DBInstance.db;
+    const trans = db.transaction(["sessions"], "readonly");
+    const store = trans.objectStore("sessions");
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result.reverse()); // most recent first
+    request.onerror = error => reject(error);
+  });
+}
+
+async function getSessionAggregate(startTimestamp, endTimestamp) {
+  return new Promise(function(resolve, reject) {
+    const keyRangeValue = IDBKeyRange.bound(startTimestamp, endTimestamp);
+    const db = DBInstance.db;
+    const trans = db.transaction(["historySecond"], "readonly");
+    const store = trans.objectStore("historySecond");
+    const index = store.index("by_timestamp");
+    const aggregate = { co2: 0, data: 0, energy: 0 };
+    const request = index.openCursor(keyRangeValue);
+    request.onsuccess = function(event) {
+      const cursor = event.target.result;
+      if (cursor) {
+        aggregate.co2 += cursor.value.co2;
+        aggregate.data += cursor.value.data;
+        aggregate.energy += cursor.value.energy;
+        cursor.continue();
+      } else {
+        resolve(aggregate);
+      }
+    };
+    request.onerror = function(error) { reject(error); };
+  });
+}
+
 function deleteData(key) {
   const db = DBInstance.db;
   const trans = db.transaction(["history", "historySummary"], "readwrite");
@@ -435,4 +492,5 @@ async function deleteStore(dbStore) {
 }
 
 export { init, getLastStoredEntries, updateData, getDailyAggregates, getTodayCounter, deleteData, deleteStore, getWebsites, getAggregate,
-  downloadData, getMonday, getWeekOfYear, dateStringHour, dateString, dateStringMs, addRecentEntry, getRecentAggregates, getRecentEntries }
+  downloadData, getMonday, getWeekOfYear, dateStringHour, dateString, dateStringMs, addRecentEntry, getRecentAggregates, getRecentEntries,
+  startSession, endSession, getSessions, getSessionAggregate }

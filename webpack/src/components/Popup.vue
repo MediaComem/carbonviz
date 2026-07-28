@@ -3,14 +3,14 @@ import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import History from './History.vue';
 import Analogies from './Analogies.vue';
-import Trends from './Trends.vue';
+import Consumption from './Consumption.vue';
 import Settings from './Settings.vue';
 import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 import { setup as setupExtensionTab } from '../composables/tab';
 
 export default {
   components: {
-    History, Analogies, Trends, Settings
+    History, Analogies, Consumption, Settings
   },
   setup() {
     let currentView = ref("history");
@@ -42,13 +42,13 @@ export default {
       <div id="tabs">
         <button :class="currentView === 'analogies' ? 'activeTab' : '' " @click='viewChange("analogies")'>{{ t('global.analogies') }}</button>
         <button :class="currentView === 'history' ? 'activeTab' : '' " @click='viewChange("history")'>{{ t('global.history') }}</button>
-        <button :class="currentView === 'statistics' ? 'activeTab' : '' " @click='viewChange("statistics")'>{{ t('global.trends') }}</button>
+        <button :class="currentView === 'consumption' ? 'activeTab' : '' " @click='viewChange("consumption")'>{{ t('global.consumption') }}</button>
         <button :class="currentView === 'settings' ? 'activeTab' : '' " @click='viewChange("settings")'>{{ t('global.settings') }}</button>
       </div>
       <div id="view">
         <History v-if="currentView === 'history'"></History>
         <Analogies v-if="currentView === 'analogies'"></Analogies>
-        <Trends v-if="currentView === 'statistics'" @show-settings='viewChange("settings")'></Trends>
+        <Consumption v-if="currentView === 'consumption'"></Consumption>
         <Settings v-if="currentView === 'settings'"></Settings>
       </div>
       <div id="footer">
@@ -172,7 +172,7 @@ body * {
 }
 #popupPage{
   height: 600px;
-  width: 500px;
+  width: 550px;
 }
 /* HistoryStratum labels container on popup have wider width */
 #history .summary .label {

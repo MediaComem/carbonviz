@@ -49,6 +49,15 @@
       }
     },
     "analogy": {},
+    "consumption": {
+      "start": "Démarrer une session",
+      "stop": "Arrêter la session",
+      "averagePower": "Puissance moyenne",
+      "duration": "Durée",
+      "noSessions": "Aucune session pour l'instant. Démarrez-en une pour commencer le suivi.",
+      "history": "Historique des sessions",
+      "ongoing": "En cours"
+    },
     "history": {
       "WeeklyConsumption": "Consommation hebdomadaire",
       "MonthlyConsumption": "Consommation mensuelle",
@@ -165,6 +174,7 @@
     "co2": "CO2",
     "of_co2": "de CO2",
     "computerEnergy": "Énergie grise ordinateur",
+    "consumption": "Consommation",
     "current_today": "Aujourd'hui",
     "current_week": "Cette semaine",
     "current_month": "Ce mois",
