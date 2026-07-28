@@ -342,5 +342,5 @@ const retrieveAnalogiesLayer = async (type) => {
     }
 }
 
-export { initStorage, getLastDaysSummary, retrieveTodayCounter, getTopWebsites, getComputerCo2Series, getTopWebsitesSeries, retrieveAnalogiesLayer, computerDailyEmbodiedCo2,
+export { initStorage, getLastDaysSummary, retrieveTodayCounter, getTopWebsites, getComputerCo2Series, getTopWebsitesSeries, retrieveAnalogiesLayer, retrieveHistorySeries, computerDailyEmbodiedCo2,
   startSession, endSession, getSessions, getSessionStats }

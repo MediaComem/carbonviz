@@ -27,7 +27,6 @@ declare module 'vue' {
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     History: typeof import('./src/components/History.vue')['default']
-    HistoryStratum: typeof import('./src/components/HistoryStratum.vue')['default']
     Logo: typeof import('./src/components/Logo.vue')['default']
     MiniViz: typeof import('./src/components/MiniViz.vue')['default']
     PeriodPicker: typeof import('./src/components/PeriodPicker.vue')['default']
