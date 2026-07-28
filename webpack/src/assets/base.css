@@ -45,7 +45,7 @@
 
 button {
   background: none;
-  color:black;
+  color: black;
   border: none;
   font-size: 12px;
   font-weight: 700;
@@ -94,4 +94,9 @@ button {
   --el-button-hover-bg-color: var(--red);
   --el-button-hover-border-color: red;
   font-weight: 700;
+}
+
+.timeline .apexcharts-marker, .timeline .apexcharts-line {
+  cursor: pointer;
+  pointer-events: auto !important;
 }

@@ -1,193 +1,171 @@
 <script>
-import { useI18n } from 'vue-i18n';
-import { setup as setupHistoryLayers } from '../composables/history';
-import Stratum from './HistoryStratum.vue';
-import PeriodPicker from './PeriodPicker.vue';
-import TypePicker from './TypePicker.vue';
-import { onMounted, computed, provide, watch, ref, toRefs } from 'vue';
+import { useI18n } from "vue-i18n";
+import { setup as setupHistorySeries } from "../composables/history";
+import PeriodPicker from "./PeriodPicker.vue";
+import TypePicker from "./TypePicker.vue";
+import Analogy from "./Analogy.vue";
+import VueApexCharts from "vue3-apexcharts";
+import { ElCarousel, ElCarouselItem } from "element-plus";
+import "element-plus/theme-chalk/index.css";
+import { analogyNames } from "../../../utils/analogies";
+import { ref, toRefs } from "vue";
 
 export default {
-  components: { PeriodPicker, TypePicker, Stratum },
+  components: {
+    PeriodPicker,
+    TypePicker,
+    Analogy,
+    apexchart: VueApexCharts,
+    ElCarousel,
+    ElCarouselItem,
+  },
   props: {
     defaultDataType: {
       type: String,
-      default: "co2"
+      default: "co2",
     },
     hideTypeChange: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
-  setup(props, context) {
+  setup(props) {
     const { t } = useI18n({});
-    let timePeriod = ref("days");
-    const { defaultDataType , hideTypeChange } = toRefs(props);
+    const timePeriod = ref("seconds");
+    const { defaultDataType, hideTypeChange } = toRefs(props);
     const dataType = ref(defaultDataType.value);
-    const scrollContainer = ref(null);
-    let scrollCount = ref(0);
-    let scrollMore = ref(true);
-    let initialHistoryCount = 0;
-		const active_index = ref(-1);
-		provide('active_index', active_index);
+    const selectedPoint = ref(null);
+    const selectedIndex = ref(null);
 
-    const { layers, historyCount, scroll } = setupHistoryLayers(dataType, timePeriod, scrollCount);
-    const isCo2 = computed(() => dataType.value === 'co2'); //formula to find ! borne entre min max(200px) (easing linear ?)
-    const isData = computed(() => dataType.value === 'data'); //formula to find ! borne entre min max(200px) (easing linear ?)
-    const scrollDataComponent = ref(0);
-    const scrollCo2Component = ref(0);
+    const { options, series, points } = setupHistorySeries(
+      dataType,
+      timePeriod,
+    );
 
-    onMounted(() => resetDefaults());
-
-    function resetDefaults() {
-      scrollContainer.value.scrollTo(0,0);
-      scrollCount.value = 0;
-      initialHistoryCount = 0;
-      scrollMore.value = scrollContainer.value.wrapRef.scrollHeight > scrollContainer.value.wrapRef.clientHeight;
-    }
-
-    // Updating history setting, data period and type
     function periodChange(newPeriod) {
       timePeriod.value = newPeriod;
-      resetDefaults();
-    };
-    function measureChange (newDataType) {
+      selectedPoint.value = null;
+      selectedIndex.value = null;
+    }
+
+    function measureChange(newDataType) {
       dataType.value = newDataType;
-      resetDefaults();
-    };
-
-    function historyChange () {
-      scrollMore.value = (initialHistoryCount != historyCount.value);
-      initialHistoryCount = historyCount.value;
+      selectedPoint.value = null;
+      selectedIndex.value = null;
     }
 
-    // Check expansion / collapse of layers
-    const layerExpanded = (offset) => {
-      if (isCo2.value) {
-        scrollCo2Component.value = scroll.value + offset;
+    function onPointSelect(_event, _chartContext, config) {      
+      if (selectedIndex.value === config.dataPointIndex) {
+        // clicking the already-selected point closes the panel
+        selectedPoint.value = null;
+        selectedIndex.value = null;
+        return;
       }
-      if (isData.value) {
-        scrollDataComponent.value = scroll.value + offset;
-      }
-    }
 
-    const layerCollapsed = (_offset) => {
-      if (isCo2.value) {
-        scrollCo2Component.value = scroll.value;
-      }
-      if (isData.value) {
-        scrollDataComponent.value = scroll.value;
-      }
-    }
+      const point = points.value[config.dataPointIndex];
 
-    watch(scrollCount, historyChange)
+      selectedPoint.value = point
+        ? { amount: point.y, energy: point.energy }
+        : null;
 
-    // scroll event to load more history
-    function handleScroll() {
-      const { scrollTop, offsetHeight, scrollHeight } = scrollContainer.value.wrapRef;
-      if ((scrollTop + offsetHeight + 5) >= scrollHeight) {
-        if(scrollMore.value) {
-          scrollCount.value += 1;
-        }
-      }
+      selectedIndex.value = config.dataPointIndex;
     }
 
     return {
-      timePeriod, dataType, isCo2, isData, layers, scrollMore, historyCount, hideTypeChange,
-      t, periodChange, measureChange, layerExpanded, layerCollapsed, handleScroll, scrollContainer
+      t,
+      timePeriod,
+      dataType,
+      hideTypeChange,
+      options,
+      series,
+      selectedPoint,
+      analogyNames,
+      periodChange,
+      measureChange,
+      onPointSelect,
     };
-  }
-
-}
+  },
+};
 </script>
 
 <template>
   <div class="buttons">
-    <period-picker @change="periodChange"></period-picker>
+    <period-picker
+      :periods="['seconds', 'minutes']"
+      @change="periodChange"
+    ></period-picker>
     <type-picker v-if="!hideTypeChange" @change="measureChange"></type-picker>
   </div>
   <div class="dataArea">
-    <el-scrollbar
-      :noresize="true"
-      id="history"
-      class="history-wrapper"
-      @scroll="handleScroll"
-      ref="scrollContainer">
-      <stratum v-for="(layer, index) in layers" :key="layer.key"
-        :type="dataType" :index="index"
-        :layer="layer"
-        @willExpand="layerExpanded" @willCollapse="layerCollapsed">
-      </stratum>
-      <!-- infinite scroll check if more items to load -->
-      <div class="scroll">
-        <div v-if="scrollMore">
-          <img :src="`../../../assets/icons/scroll${dataType}.gif`" alt="" width="50" height="50">
-          <p>{{ t('components.history.scrolling') }}</p>
-        </div>
-        <div v-else>
-          <img class="iconEndScroll" :src="`../../../assets/icons/${dataType}.svg`" alt="" width="50" height="50">
-          <p id="scrollEndText">{{ t('components.history.scrollEnd') }}</p>
-        </div>
+    <div class="chart-wrapper">
+      <apexchart
+        class="timeline"
+        type="area"
+        height="260"
+        :options="options"
+        :series="series"
+        @click="onPointSelect"
+      >
+      </apexchart>
+      <div v-if="selectedPoint" class="analogies-panel">
+        <el-carousel arrow="always" class="analogies" trigger="click">
+          <el-carousel-item
+            v-for="item in analogyNames[dataType]"
+            :key="item"
+            label="."
+            class="analogy"
+          >
+            <analogy
+              :label="true"
+              :type="dataType"
+              :layer="selectedPoint"
+              :name="item"
+            ></analogy>
+          </el-carousel-item>
+        </el-carousel>
       </div>
-    </el-scrollbar>
+    </div>
   </div>
 </template>
 
 <style scoped>
-  div {
-    cursor: pointer;
-  }
-  .buttons {
-    height: 30px;
-    margin-bottom: 30px;
-    display: flex;
-    width: 100%;
-    column-gap: 9px;
-  }
-  .dataArea {
-    display: flex;
-    width: 100%;
-    height: 87%;
-  }
-  .history-wrapper {
-    transition: margin-top 0.5s ease;
-    flex-grow: 1;
-    width: 90%;
-    position: relative;
-    box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25);
-    border-radius: 5px;
-  }
-  .scroll>div {
-    padding-top: 40px;
-    padding-bottom: 40px;
-  }
-  .history-wrapper div:first-child {
-    border-top: none;
-  }
-
-  .scroll {
-    text-align: center;
-  }
-  .scroll div p {
-    margin: auto;
-  }
-  .scroll #scrollEndText {
-    font-size: 12px;
-    width: 120px;
-    font-weight: 600;
-  }
-  @media (prefers-color-scheme: dark) {
-
-  }
-</style>
-
-<style>
-  /* element plus overrides  */
-  .history-wrapper .wrapper .el-col.el-col-12 {
-    max-width: 60%;
-    flex: 0 0 60%;
-  }
-  .history-wrapper .wrapper .label.bold {
-    max-width: 70px;
-  }
+.buttons {
+  height: 30px;
+  margin-bottom: 30px;
+  display: flex;
+  width: 100%;
+  column-gap: 9px;
+}
+.dataArea {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 87%;
+}
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
+  padding: 10px 0;
+}
+.timeline {
+  width: 100%;
+}
+.analogies-panel {
+  /* absolutely positioned so opening/closing it never resizes the chart's
+     container -- apexcharts redraws (and briefly blanks) on container resize */
+  position: absolute;
+  top: 270px;
+  left: 0;
+  right: 0;
+}
+.analogies-panel .analogy {
+  text-align: center;
+}
+.analogies-panel .analogies {
+  height: 150px;
+}
 </style>

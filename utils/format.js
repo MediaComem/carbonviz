@@ -1,7 +1,7 @@
 const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 function roundToPrecision(val, precision = 2) {
-  if (!val) {
+  if (val === undefined || val === null) {
     return;
   }
   return parseFloat(val.toFixed(precision).toString());
