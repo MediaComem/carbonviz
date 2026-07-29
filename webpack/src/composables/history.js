@@ -1,4 +1,4 @@
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
 import { retrieveHistorySeries } from '../../../storage/storage.js';
 import buildAreaChart from './historyChart.js';
 
@@ -13,8 +13,15 @@ const setup = (type, period) => {
     points.value = type.value === 'co2' ? co2 : data;
   }
 
+  let refreshInterval = null;
+
   onMounted(async () => {
     await retrieveData();
+    refreshInterval = setInterval(retrieveData, 5000);
+  });
+
+  onUnmounted(() => {
+    clearInterval(refreshInterval);
   });
 
   watch(period, retrieveData);
