@@ -109,7 +109,7 @@ export default {
         <p>
           {{ t('pages.journey.part_2') }}
         </p>
-        <p class="video-container">
+        <div class="video-container">
           <video autoplay loop width="600">
             <span style="position: absolute; top: 0px; width: 200px; height: 200px;cursor: pointer;"></span>
             <source src="../../../assets/video/Data_Journey.mp4" type="video/mp4">
@@ -206,7 +206,7 @@ export default {
               </el-row>
             </el-popover>
           </div>
-        </p>
+        </div>
         <p>
           {{ t('pages.journey.part_3') }}
         </p>
@@ -370,7 +370,7 @@ export default {
         </p><p>
           <b>{{ t('pages.faq.disclaimer') }}</b>: {{ t('pages.faq.disclaimer_text_analogies') }}
         </p>
-        <p>
+        <div>
           <span class="bold">{{ t('pages.faq.analogies_legend') }}</span>
           <el-row justify="center" align="middle">
             <el-col :span="22">
@@ -398,7 +398,7 @@ export default {
               </el-carousel>
             </el-col>
           </el-row>
-        </p>
+        </div>
       </article>
       <article data-section="Sources">
         <h1>Sources</h1>
