@@ -35,6 +35,7 @@ declare module 'vue' {
     MiniViz: typeof import('./src/components/MiniViz.vue')['default']
     PeriodPicker: typeof import('./src/components/PeriodPicker.vue')['default']
     Popup: typeof import('./src/components/Popup.vue')['default']
+    SessionHistory: typeof import('./src/components/SessionHistory.vue')['default']
     Settings: typeof import('./src/components/Settings.vue')['default']
     Statistics: typeof import('./src/components/Statistics.vue')['default']
     Trends: typeof import('./src/components/Trends.vue')['default']
