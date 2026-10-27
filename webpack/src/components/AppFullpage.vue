@@ -2,12 +2,9 @@
 import {ref, provide, onMounted, watch} from 'vue';
 import { useI18n } from 'vue-i18n';
 import LocationHashRouter from '../composables/LocationHashRouter';
-import Historical from '../pages/Historical.vue';
 import { saveSettings, retrieveSettings } from '../../../settings/settings.js';
 
 export default {
-  components: { Historical },
-
   setup(props, context) {
     const { t, locale } = useI18n({});
 
@@ -15,7 +12,7 @@ export default {
     const hashRoutes = {
       '#Historical': t('global.history'),
       '#Analogies': t('global.analogies'),
-      '#Trends': t('global.trends'),
+      '#Sessions': t('global.consumption'),
       '#FAQ': t('global.faq'),
       '#Settings': t('global.settings'),
       '#Partners': t('global.partners'),
@@ -26,7 +23,7 @@ export default {
       // Update the hashRoutes object with the new translations
       hashRoutes['#Historical'] = t('global.history');
       hashRoutes['#Analogies'] = t('global.analogies');
-      hashRoutes['#Trends'] = t('global.trends');
+      hashRoutes['#Sessions'] = t('global.consumption');
       hashRoutes['#FAQ'] = t('global.faq');
       hashRoutes['#Settings'] = t('global.settings');
       hashRoutes['#Partners'] = t('global.partners');
@@ -35,7 +32,7 @@ export default {
     const {currentHash, currentPage} = LocationHashRouter(hashRoutes);
 
     const subNav = ref([]);
-    const subnavPages = ['#Trends', '#FAQ'];
+    const subnavPages = ['#FAQ'];
     const scroll = ref(null);
     provide('setSubNav', (nav) => {
       subNav.value = nav;
@@ -90,9 +87,8 @@ export default {
       </ul>
     </nav>
     <div data-area="body">
-      <Historical v-show="currentHash === '#Historical'"></Historical>
       <transition name="fade" mode="out-in">
-          <component :is="currentPage" v-if="currentHash !== '#Historical'"></component>
+          <component :is="currentPage"></component>
       </transition>
     </div>
   </div>

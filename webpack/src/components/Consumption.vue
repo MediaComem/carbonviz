@@ -15,6 +15,14 @@ import {
 } from "../../../utils/format";
 
 export default {
+  props: {
+    // full page layout: session history in its own column
+    wide: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
   setup() {
     const { t } = useI18n({});
     const sessions = ref([]);
@@ -107,7 +115,7 @@ export default {
 </script>
 
 <template>
-  <div class="consumption">
+  <div class="consumption" :class="{ wide }">
     <div class="session-control">
       <button
         class="session-toggle"
@@ -262,6 +270,32 @@ export default {
 }
 .session-item.running {
   font-weight: 700;
+}
+.consumption.wide {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "history control"
+    "history stats";
+  column-gap: 40px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 0;
+}
+.wide .session-history {
+  grid-area: history;
+}
+.wide .session-history-title {
+  font-size: 1rem;
+}
+.wide .session-control {
+  grid-area: control;
+}
+.wide .session-stats,
+.wide .empty {
+  grid-area: stats;
+  align-self: start;
 }
 @media (prefers-color-scheme: dark) {
   .session-toggle {
